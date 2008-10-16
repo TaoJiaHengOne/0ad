@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 
-<Entity
-	Parent="template_structure_civic_temple"
->
+<Entity	Parent="template_structure_civic_temple">
 	<Traits>
 	
 		<Id>
@@ -14,7 +12,12 @@
 			<History>(Insert History)</History>
 		
 		</Id>
-
+ 		<Footprint>
+ 			<Width>12.0</Width>
+ 			<Depth>20.0</Depth>
+ 			<Height>10.0</Height>
+ 		</Footprint>
+	
 	</Traits>
 
 	<Actor>structures/romans/temple_new.xml</Actor>

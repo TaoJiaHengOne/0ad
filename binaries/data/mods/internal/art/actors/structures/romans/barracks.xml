@@ -4,13 +4,12 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <mesh>structural/rome_mc.pmd</mesh>
-      <props>
-        <prop actor="props/structures/romans/barracks.xml" attachpoint="props_main"/>
-      </props>
-      <texture>structural/rome_struct_1.dds</texture>
+    <variant frequency="100" name="base">
+      <mesh>structural/rome_mc2.dae</mesh>
+      <texture>structural/rome_struct.dds</texture>
     </variant>
   </group>
+
+  <material>player_trans.xml</material>
 
 </actor>
