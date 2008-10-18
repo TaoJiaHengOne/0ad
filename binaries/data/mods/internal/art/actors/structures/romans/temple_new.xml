@@ -5,7 +5,7 @@
 
   <group>
     <variant frequency="100" name="base">
-      <mesh>structural/roman_temple.dae</mesh>
+      <mesh>structural/rome_temple_2.dae</mesh>
       <texture>structural/rome_struct.dds</texture>
     </variant>
   </group>
