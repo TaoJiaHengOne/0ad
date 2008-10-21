@@ -5,8 +5,8 @@
 
   <group>
     <variant frequency="100" name="base">
-      <mesh>structural/iber_fortress.dae</mesh>
-      <texture>structural/iber_struct_a.dds</texture>
+      <mesh>structural/iber_sb_mon_1.dae</mesh>
+      <texture>structural/iber_struct_monument.dds</texture>
     </variant>
   </group>
 
