@@ -12,8 +12,7 @@
         <animation file="biped/not used/inf_salute_d.psa" name="Walk" speed="2"/>
         <animation file="biped/not used/inf_salute_e.psa" name="Walk" speed="2"/>
         <animation file="biped/not used/inf_salute_e.psa" name="run" speed="100"/>
-        <animation event="0.5" file="biped/not used/inf_salute_d.psa" name="melee" speed="100"/>
-        <animation event="0.5" file="biped/not used/inf_salute_e.psa" name="melee" speed="100"/>
+        <animation event="" file="biped/not used/inf_salute_d.psa" name="melee" speed="1"/>
         <animation file="biped/rider_sword_death_a.psa" name="death" speed="200"/>
       </animations>
       <mesh>skeletal/m_tunic_long.dae</mesh>
