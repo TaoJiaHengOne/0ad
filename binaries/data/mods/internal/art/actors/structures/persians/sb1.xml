@@ -4,8 +4,11 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <mesh>structural/pers_sb1.pmd</mesh>
+    <variant frequency="1" name="base">
+      <mesh>structural/pers_sb_kahk.dae</mesh>
+      <props>
+        <prop actor="props/structures/persians/sb1_bulls.xml" attachpoint="root"/>
+      </props>
       <texture>structural/pers_struct_a.dds</texture>
     </variant>
   </group>
