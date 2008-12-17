@@ -11,10 +11,7 @@
 
   <group>
     <variant name="face-1">
-      <texture>props/head/iber_basic_a.dds</texture>
-    </variant>
-    <variant name="face-2">
-      <texture>props/head/iber_basic_b.dds</texture>
+      <texture>props/head/iber_adv_a_hood.dds</texture>
     </variant>
   </group>
 

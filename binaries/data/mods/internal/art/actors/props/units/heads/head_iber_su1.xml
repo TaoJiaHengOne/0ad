@@ -10,11 +10,11 @@
   </group>
 
   <group>
-    <variant name="face-1">
-      <texture>props/head/iber_basic_a.dds</texture>
+    <variant frequency="1" name="face-1">
+      <texture>props/head/iber_adv_a.dds</texture>
     </variant>
-    <variant name="face-2">
-      <texture>props/head/iber_basic_b.dds</texture>
+    <variant frequency="1" name="face-2">
+      <texture>props/head/iber_adv_b.dds</texture>
     </variant>
   </group>
 

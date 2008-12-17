@@ -5,16 +5,16 @@
 
   <group>
     <variant frequency="1" name="mesh">
-      <mesh>props/dude_head.pmd</mesh>
+      <mesh>props/head_longhair.pmd</mesh>
     </variant>
   </group>
 
   <group>
     <variant name="face-1">
-      <texture>props/head/iber_basic_a.dds</texture>
+      <texture>props/head/iber_adv_a.dds</texture>
     </variant>
     <variant name="face-2">
-      <texture>props/head/iber_basic_b.dds</texture>
+      <texture>props/head/iber_adv_b.dds</texture>
     </variant>
   </group>
 
