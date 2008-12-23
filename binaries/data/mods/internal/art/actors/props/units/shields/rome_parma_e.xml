@@ -20,6 +20,9 @@
     <variant frequency="1" name="Shield-Parma-G">
       <texture>props/shield/rome_parma_g.dds</texture>
     </variant>
+    <variant frequency="1" name="Shield-Parma-M">
+      <texture>props/shield/rome_parma_m.dds</texture>
+    </variant>
   </group>
 
   <material>player_trans.xml</material>
