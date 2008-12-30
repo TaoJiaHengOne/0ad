@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+
+<Entity	Parent="template_structure_civic_house">
+	<Traits>
+		<Id>
+			<Specific>Apartments</Specific>
+			<Civ>Persians</Civ>
+		</Id>
+ 		<Footprint>
+ 			<Width>25.0</Width>
+ 			<Depth>14.0</Depth>
+ 			<Height>10.0</Height>
+ 		</Footprint>
+		<Health>
+ 			<Max>2000</Max>
+		</Health>
+		<Population>
+			<Add>15</Add>
+		</Population>
+	</Traits>
+	<Actor>props/structures/persians/alt_building_03.xml</Actor>
+</Entity>
