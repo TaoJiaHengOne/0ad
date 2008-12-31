@@ -4,7 +4,7 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
+    <variant frequency="1" name="Base">
       <mesh>props/rome_s2.pmd</mesh>
       <texture>structural/rome_s2_prop.dds</texture>
     </variant>
