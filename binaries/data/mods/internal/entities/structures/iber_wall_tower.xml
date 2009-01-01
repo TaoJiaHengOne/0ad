@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 
-<Entity
-	Parent="iber_scout_tower"
->
+<Entity	Parent="iber_scout_tower">
+
+<Actor>structures/iberians/wall_tower.xml</Actor>
 </Entity>
