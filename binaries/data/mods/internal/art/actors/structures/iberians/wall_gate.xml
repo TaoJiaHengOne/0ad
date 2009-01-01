@@ -6,6 +6,9 @@
   <group>
     <variant frequency="100" name="base">
       <mesh>structural/iber_wall_gate.dae</mesh>
+      <props>
+        <prop actor="props/structures/iberians/gate_door_1.xml" attachpoint="root"/>
+      </props>
       <texture>structural/iber_struct_a.dds</texture>
     </variant>
   </group>
