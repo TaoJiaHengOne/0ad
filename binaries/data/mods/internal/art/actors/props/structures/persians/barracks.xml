@@ -4,12 +4,12 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <animations/>
-      <mesh>props/pers_mc.pmd</mesh>
-      <props/>
-      <texture>props/pers_prop_a.dds</texture>
+    <variant frequency="1" name="props-a">
+      <mesh>props/pers_barracks_props_a.dae</mesh>
+      <texture>structural/pers_struct.dds</texture>
     </variant>
   </group>
+
+  <material>basic_trans.xml</material>
 
 </actor>
