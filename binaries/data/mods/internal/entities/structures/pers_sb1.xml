@@ -2,19 +2,16 @@
 
 <Entity	Parent="template_structure_special">
 	<Traits>
-	
 		<Id>
-
 			<Specific>Kakh</Specific>
-
 			<Civ>Persians</Civ>
-
 			<History>The annual tribute that the Persians received from their satrapies and vassal states, as regularised by Darius the Great, accounted for incredible annual revenue.</History>
-		
 		</Id>
-
+ 		<Footprint>
+ 			<Width>20.0</Width>
+ 			<Depth>24.0</Depth>
+ 			<Height>8.0</Height>
+ 		</Footprint>
 	</Traits>
-
 	<Actor>structures/persians/sb1.xml</Actor>
-
 </Entity>
