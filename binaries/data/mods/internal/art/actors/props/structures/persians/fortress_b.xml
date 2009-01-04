@@ -4,12 +4,12 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <mesh>props/pers_ff_fancy.pmd</mesh>
-      <texture>structural/pers_struct_b.dds</texture>
+    <variant frequency="1" name="Base">
+      <mesh>props/pers_fortress_eagles.dae</mesh>
+      <texture>structural/pers_struct.dds</texture>
     </variant>
   </group>
 
-  <material>player_trans.xml</material>
+  <material>basic_trans.xml</material>
 
 </actor>
