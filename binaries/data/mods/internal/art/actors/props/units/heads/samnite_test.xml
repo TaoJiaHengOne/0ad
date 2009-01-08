@@ -20,8 +20,8 @@
   </group>
 
   <group>
-    <variant name="texture">
-      <texture>props/helmet/rome-c.dds</texture>
+    <variant>
+      <texture>props/helmet/samnite_02.dds</texture>
     </variant>
   </group>
 

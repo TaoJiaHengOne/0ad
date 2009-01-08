@@ -4,11 +4,17 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <animations/>
-      <mesh>props/pers_rc.pmd</mesh>
-      <props/>
-      <texture>props/pers_prop_a.dds</texture>
+    <variant frequency="1" name="props_1">
+      <mesh>props/pers_mill_1.dae</mesh>
+    </variant>
+    <variant frequency="1" name="props_2">
+      <mesh>props/pers_mill_2.dae</mesh>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
+      <texture>structural/pers_struct.dds</texture>
     </variant>
   </group>
 

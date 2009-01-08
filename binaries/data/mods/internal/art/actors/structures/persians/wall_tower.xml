@@ -5,9 +5,10 @@
 
   <group>
     <variant frequency="100" name="Base">
-      <mesh>structural/pers_mill.dae</mesh>
+      <mesh>structural/pers_wall_tower.dae</mesh>
       <props>
-        <prop actor="props/structures/persians/mill.xml" attachpoint="root"/>
+        <prop actor="props/structures/persians/wall_tower.xml" attachpoint="root"/>
+        <prop actor=""/>
       </props>
       <texture>structural/pers_struct.dds</texture>
     </variant>
