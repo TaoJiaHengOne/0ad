@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <actor version="1">
 
+  <castshadow/>
+
   <group>
     <variant frequency="1" name="shields-a">
-      <mesh>props/iber_civic_centre.dae</mesh>
+      <mesh>props/iber_scout_tower.dae</mesh>
+    </variant>
+    <variant frequency="1" name="shields-b">
+      <mesh>props/iber_scout_tower_b.dae</mesh>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
       <texture>props/iber_prop_shields.dds</texture>
     </variant>
   </group>

@@ -4,11 +4,17 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <animations/>
-      <mesh>props/iber_ho_a.pmd</mesh>
-      <props/>
-      <texture>props/iber_prop_a.dds</texture>
+    <variant frequency="1" name="House A - props 1">
+      <mesh>props/iber_house_a_1.dae</mesh>
+    </variant>
+    <variant frequency="1" name="House A - props 2">
+      <mesh>props/iber_house_a_2.dae</mesh>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
+      <texture>structural/iber_struct.dds</texture>
     </variant>
   </group>
 

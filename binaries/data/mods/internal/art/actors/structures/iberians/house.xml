@@ -3,25 +3,28 @@
 
   <group>
     <variant frequency="10" name="House A">
-      <mesh>structural/iber_ho_a.pmd</mesh>
+      <mesh>structural/iber_house_a.dae</mesh>
       <props>
-        <prop actor="props/structures/iberians/house_a.xml" attachpoint="props_main"/>
+        <prop actor="props/structures/iberians/house_a.xml" attachpoint="root"/>
       </props>
-      <texture>structural/iber_struct_a.dds</texture>
     </variant>
     <variant frequency="10" name="House B">
-      <mesh>structural/iber_ho_b.pmd</mesh>
+      <mesh>structural/iber_house_b.dae</mesh>
       <props>
-        <prop actor="props/structures/iberians/house_b.xml" attachpoint="props_main"/>
+        <prop actor="props/structures/iberians/house_b.xml" attachpoint="root"/>
       </props>
-      <texture>structural/iber_struct_a.dds</texture>
     </variant>
     <variant frequency="10" name="House C">
       <mesh>structural/iber_ho_c.pmd</mesh>
       <props>
         <prop actor="props/structures/iberians/house_c.xml" attachpoint="props_main"/>
       </props>
-      <texture>structural/iber_struct_a.dds</texture>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
+      <texture>structural/iber_struct.dds</texture>
     </variant>
   </group>
 

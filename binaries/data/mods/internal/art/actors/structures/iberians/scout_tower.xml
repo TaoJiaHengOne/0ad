@@ -5,8 +5,11 @@
 
   <group>
     <variant frequency="100" name="Base">
-      <mesh>structural/iber_st.pmd</mesh>
-      <texture>structural/iber_struct_a.dds</texture>
+      <mesh>structural/iber_scout_tower.dae</mesh>
+      <props>
+        <prop actor="props/structures/iberians/scout_tower.xml" attachpoint="root"/>
+      </props>
+      <texture>structural/iber_struct.dds</texture>
     </variant>
   </group>
 
