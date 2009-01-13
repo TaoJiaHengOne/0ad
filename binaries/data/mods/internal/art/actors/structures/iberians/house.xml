@@ -15,9 +15,9 @@
       </props>
     </variant>
     <variant frequency="10" name="House C">
-      <mesh>structural/iber_ho_c.pmd</mesh>
+      <mesh>structural/iber_house_c.dae</mesh>
       <props>
-        <prop actor="props/structures/iberians/house_c.xml" attachpoint="props_main"/>
+        <prop actor="props/structures/iberians/house_c.xml" attachpoint="root"/>
       </props>
     </variant>
   </group>

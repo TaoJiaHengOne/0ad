@@ -5,12 +5,11 @@
 
   <group>
     <variant frequency="100" name="Base">
-      <mesh>structural/iber_hc.pmd</mesh>
+      <mesh>structural/iber_temple.dae</mesh>
       <props>
-        <prop actor="props/structures/iberians/temple.xml" attachpoint="props_main"/>
-        <prop actor="props/structures/iberians/temple_fancy.xml" attachpoint="props_fancy"/>
+        <prop actor="props/structures/iberians/temple.xml" attachpoint="root"/>
       </props>
-      <texture>structural/iber_struct_a.dds</texture>
+      <texture>structural/iber_struct.dds</texture>
     </variant>
   </group>
 

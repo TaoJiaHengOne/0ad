@@ -5,7 +5,10 @@
 
   <group>
     <variant frequency="1" name="Base">
-      <mesh>structural/rome_st_01.dae</mesh>
+      <mesh>structural/rome_scout_tower.dae</mesh>
+      <props>
+        <prop actor="props/structures/romans/scout_tower.xml" attachpoint="root"/>
+      </props>
       <texture>structural/rome_struct.dds</texture>
     </variant>
   </group>

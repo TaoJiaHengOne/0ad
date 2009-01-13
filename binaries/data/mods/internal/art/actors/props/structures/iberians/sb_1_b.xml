@@ -4,11 +4,8 @@
   <castshadow/>
 
   <group>
-    <variant frequency="1" name="temple-shields-a">
-      <mesh>props/iber_temple_a.dae</mesh>
-    </variant>
-    <variant frequency="1" name="temple-shields-b">
-      <mesh>props/iber_temple_b.dae</mesh>
+    <variant frequency="1" name="monument_props_b">
+      <mesh>props/iber_sb_props_b.dae</mesh>
     </variant>
   </group>
 
