@@ -4,9 +4,17 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <mesh>props/rome_rc.pmd</mesh>
-      <texture>structural/rome_struct_2.dds</texture>
+    <variant frequency="1" name="Mill props 1">
+      <mesh>props/rome_mill_props_1.dae</mesh>
+    </variant>
+    <variant frequency="1" name="Mill props 2">
+      <mesh>props/rome_mill_props_2.dae</mesh>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
+      <texture>structural/rome_struct.dds</texture>
     </variant>
   </group>
 

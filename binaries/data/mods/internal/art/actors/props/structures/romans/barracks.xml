@@ -4,9 +4,17 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <mesh>props/rome_mc.pmd</mesh>
-      <texture>structural/rome_struct_2.dds</texture>
+    <variant frequency="1" name="Barracks Shields 1">
+      <mesh>props/rome_barracks_shields_1.dae</mesh>
+    </variant>
+    <variant frequency="1" name="Barracks Shields 2">
+      <mesh>props/rome_barracks_shields_2.dae</mesh>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
+      <texture>props/rome_prop_shields.dds</texture>
     </variant>
   </group>
 

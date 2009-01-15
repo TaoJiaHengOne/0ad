@@ -4,11 +4,9 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <animations/>
-      <mesh>props/iber_fc_hay.pmd</mesh>
-      <props/>
-      <texture>props/celt_prop_1.dds</texture>
+    <variant>
+      <mesh>props/iber_farmstead_hay.dae</mesh>
+      <texture>props/wrld_hay_a.dds</texture>
     </variant>
   </group>
 
