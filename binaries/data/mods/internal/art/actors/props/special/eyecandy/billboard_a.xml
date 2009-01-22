@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<actor version="1">
+
+  <group>
+    <variant frequency="1" name="desert_mountains">
+      <mesh>props/billboard_a.dae</mesh>
+      <texture>props/billboard_desert_mountains_a.dds</texture>
+    </variant>
+    <variant frequency="1" name="temperate_hills">
+      <mesh>props/billboard_b.dae</mesh>
+      <texture>props/billboard_temperate_hills_a.dds</texture>
+    </variant>
+    <variant frequency="1" name="temporate_panoramic">
+      <mesh>props/billboard_huge.dae</mesh>
+      <texture>props/billboard_temperate_panoramic.dds</texture>
+    </variant>
+  </group>
+
+</actor>
