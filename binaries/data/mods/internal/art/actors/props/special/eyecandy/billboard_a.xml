@@ -14,6 +14,14 @@
       <mesh>props/billboard_huge.dae</mesh>
       <texture>props/billboard_temperate_panoramic.dds</texture>
     </variant>
+    <variant frequency="1" name="temporate_panoramic_2">
+      <mesh>props/billboard_huge.dae</mesh>
+      <texture>props/billboard_panoramic_temperate_lg.dds</texture>
+    </variant>
+    <variant frequency="1" name="sky_sunset">
+      <mesh>props/billboard_b.dae</mesh>
+      <texture>props/billboard_sky_sunset.dds</texture>
+    </variant>
   </group>
 
 </actor>
