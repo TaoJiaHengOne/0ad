@@ -22,6 +22,10 @@
       <mesh>props/billboard_b.dae</mesh>
       <texture>props/billboard_sky_sunset.dds</texture>
     </variant>
+    <variant frequency="1" name="alpine_panoramic">
+      <mesh>props/billboard_panoramic.dae</mesh>
+      <texture>props/billboard_alpinemountains_panoramic.dds</texture>
+    </variant>
   </group>
 
 </actor>
