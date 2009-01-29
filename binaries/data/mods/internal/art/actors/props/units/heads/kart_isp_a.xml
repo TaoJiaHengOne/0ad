@@ -13,6 +13,9 @@
     <variant frequency="1" name="helmet-thracian-feathers">
       <mesh>props/helmet/helmet_thracian_3.dae</mesh>
     </variant>
+    <variant frequency="2" name="helmet-thracian-ridge">
+      <mesh>props/helmet/helmet_thracian_7.dae</mesh>
+    </variant>
   </group>
 
   <group>
