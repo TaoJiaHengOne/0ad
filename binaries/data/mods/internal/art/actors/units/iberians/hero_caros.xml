@@ -28,7 +28,7 @@
       </animations>
       <mesh>skeletal/m_hero_caros.dae</mesh>
       <props>
-        <prop actor="props/units/heads/iber_helmet_08.xml" attachpoint="helmet"/>
+        <prop actor="props/units/heads/iber_helmet_hero_01.xml" attachpoint="helmet"/>
         <prop actor="props/units/heads/head_iber_su1.xml" attachpoint="head"/>
         <prop actor="props/units/weapons/gladus.xml" attachpoint="r_hand"/>
         <prop actor="props/units/weapons/gladus.xml" attachpoint="l_hand"/>
