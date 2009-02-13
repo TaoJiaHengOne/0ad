@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<actor version="1">
+
+  <castshadow/>
+
+  <float/>
+
+  <group>
+    <variant frequency="100" name="Base">
+      <mesh>structural/pers_tri.dae</mesh>
+      <props>
+        <prop actor="props/structures/persians/trireme_oars.xml" attachpoint="Trireme"/>
+      </props>
+      <texture>structural/pers_tri.dds</texture>
+    </variant>
+  </group>
+
+  <material>player_trans.xml</material>
+
+</actor>
