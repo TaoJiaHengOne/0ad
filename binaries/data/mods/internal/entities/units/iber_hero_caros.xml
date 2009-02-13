@@ -13,6 +13,10 @@
 		
 		</Id>
 		
+		<Health>
+			<Max>500</Max>
+		</Health>
+		
 	</Traits>
 
 	<Actor>units/iberians/hero_caros.xml</Actor>

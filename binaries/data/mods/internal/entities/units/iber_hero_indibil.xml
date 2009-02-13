@@ -13,13 +13,8 @@
 		
 		</Id>
 		
-		<Footprint>
-			<Radius>1.5</Radius>
-			<Height>7.5</Height>
-		</Footprint>
-		
 	</Traits>
 
-	<Actor>units/iberians/hero_indibil_horse.xml</Actor>
+	<Actor>units/iberians/hero_indibil_infantry.xml</Actor>
 
 </Entity>

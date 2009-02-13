@@ -14,10 +14,8 @@
 
   <group>
     <variant frequency="1" name="texture">
-      <texture>props/shield/pict_b.dds</texture>
+      <texture>props/shield/iber_round_m.dds</texture>
     </variant>
   </group>
-
-  <material>player_trans.xml</material>
 
 </actor>
