@@ -8,13 +8,12 @@
   <group>
     <variant frequency="100" name="Base">
       <mesh>structural/pers_tri.dae</mesh>
-      <props>
-        <prop actor="props/structures/persians/trireme_oars.xml" attachpoint="root"/>
-      </props>
       <texture>structural/pers_tri.dds</texture>
     </variant>
   </group>
 
-  <material>player_trans.xml</material>
-
-</actor>
+  <group name="props">
+    <variant name="mast">
+      <props>
+        <prop actor="props/structures/persians/trireme_mast.xml" attachpoint="root"/>
+      </props>    </variant>    <variant name="oars">      <props>        <prop actor="props/structures/persians/trireme_oars.xml" attachpoint="root"/>      </props>    </variant>  </group>  <material>player_trans.xml</material></actor>
