@@ -15,20 +15,3 @@
   <material>player_trans.xml</material>
 
 </actor>
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<actor version="1">
-
-  <castshadow/>
-
-  <float/>
-
-  <group>
-    <variant frequency="100" name="Base">
-      <mesh>props/rome_qui_oars.dae</mesh>
-      <texture>structural/plac_rome.dds</texture>
-    </variant>
-  </group>
-
-  <material>player_trans.xml</material>
-
-</actor>

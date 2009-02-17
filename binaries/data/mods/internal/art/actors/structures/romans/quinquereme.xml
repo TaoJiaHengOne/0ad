@@ -28,33 +28,3 @@
   <material>player_trans.xml</material>
 
 </actor>
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<actor version="1">
-
-  <castshadow/>
-
-  <float/>
-
-  <group>
-    <variant frequency="100" name="Base">
-      <mesh>structural/rome_qui.dae</mesh>
-      <texture>structural/plac_rome.dds</texture>
-    </variant>
-  </group>
-
-  <group name="props">
-    <variant name="mast">
-      <props>
-        <prop actor="props/structures/romans/quinquereme_mast.xml" attachpoint="root"/>
-      </props>
-    </variant>
-    <variant name="oars">
-      <props>
-        <prop actor="props/structures/romans/quinquereme_oars.xml" attachpoint="root"/>
-      </props>
-    </variant>
-  </group>
-
-  <material>player_trans.xml</material>
-
-</actor>

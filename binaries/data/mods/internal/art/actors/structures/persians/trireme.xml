@@ -16,4 +16,15 @@
     <variant name="mast">
       <props>
         <prop actor="props/structures/persians/trireme_mast.xml" attachpoint="root"/>
-      </props>    </variant>    <variant name="oars">      <props>        <prop actor="props/structures/persians/trireme_oars.xml" attachpoint="root"/>      </props>    </variant>  </group>  <material>player_trans.xml</material></actor>
+      </props>
+    </variant>
+    <variant name="oars">
+      <props>
+        <prop actor="props/structures/persians/trireme_oars.xml" attachpoint="root"/>
+      </props>
+    </variant>
+  </group>
+
+  <material>player_trans.xml</material>
+
+</actor>
