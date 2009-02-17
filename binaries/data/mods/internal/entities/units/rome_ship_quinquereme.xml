@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+
+<Entity
+	Parent="template_unit_mechanical_ship_trireme"
+>
+	<Traits>
+	
+		<Id>
+		
+			<Specific>Quinquereme</Specific>
+			
+			<Civ>Romans</Civ>
+			
+			<History></History>
+			
+		</Id>
+	
+	</Traits>
+
+ 		<Footprint>
+			<Width>6.0</Width>
+ 			<Depth>50.0</Depth>
+ 			<Height>8.0</Height>
+ 		</Footprint>
+
+	<Actions>
+
+		<Move>
+			<Speed>18.0</Speed>
+			<TurningRadius>12.0</TurningRadius>
+			
+			<Run>
+				<Speed>35.0</Speed>
+				<Range>1200.0</Range>
+				<RangeMin>20.0</RangeMin>
+			</Run>
+			
+		</Move>
+
+	</Actions>
+
+	<Actor>structures/romans/quinquereme.xml</Actor>
+
+</Entity>
