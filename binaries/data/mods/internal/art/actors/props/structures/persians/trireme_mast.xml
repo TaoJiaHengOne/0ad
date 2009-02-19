@@ -8,7 +8,15 @@
   <group>
     <variant frequency="100" name="Base">
       <mesh>props/pers_tri_mast.dae</mesh>
-      <texture>structural/pers_tri.dds</texture>
+    </variant>
+  </group>
+
+  <group>
+    <variant frequency="1" name="trireme-sail-stripes">
+      <texture>props/pers_trireme_sail.dds</texture>
+    </variant>
+    <variant frequency="1" name="trireme-sail-eagle">
+      <texture>props/pers_trireme_sail_b.dds</texture>
     </variant>
   </group>
 
