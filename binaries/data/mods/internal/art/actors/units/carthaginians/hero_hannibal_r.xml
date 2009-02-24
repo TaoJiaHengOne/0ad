@@ -6,9 +6,7 @@
   <group>
     <variant frequency="1" name="Base">
       <animations>
-        <animation file="biped/not used/inf_salute_a.psa" name="Idle" speed="200"/>
-        <animation file="biped/not used/inf_salute_b.psa" name="Idle" speed="200"/>
-        <animation file="biped/not used/inf_salute_c.psa" name="Idle" speed="200"/>
+        <animation file="biped/not used/inf_salute_a.psa" name="Idle" speed="1"/>
         <animation file="biped/not used/inf_salute_d.psa" name="Walk" speed="2"/>
         <animation file="biped/not used/inf_salute_e.psa" name="Walk" speed="2"/>
         <animation file="biped/not used/inf_salute_e.psa" name="run" speed="100"/>
