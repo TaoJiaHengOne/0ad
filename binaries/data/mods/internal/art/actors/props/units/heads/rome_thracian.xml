@@ -4,10 +4,6 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base"/>
-  </group>
-
-  <group>
     <variant frequency="1" name="helmet-thracian-n">
       <mesh>props/helmet/rome_helmet_n.pmd</mesh>
     </variant>

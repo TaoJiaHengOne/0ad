@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <actor version="1">
 
+  <castshadow/>
+
   <group>
     <variant frequency="10" name="House A">
-      <mesh>structural/kart_ho_a.pmd</mesh>
+      <mesh>structural/kart_house_a.dae</mesh>
       <props>
-        <prop actor="props/structures/carthaginians/house_a.xml" attachpoint="props_main"/>
+        <prop actor="props/structures/carthaginians/house_a.xml" attachpoint="root"/>
       </props>
-      <texture>structural/kart_struct_1.dds</texture>
+      <texture>structural/kart_struct.dds</texture>
     </variant>
     <variant frequency="10" name="House B">
       <mesh>structural/kart_ho_b.pmd</mesh>
