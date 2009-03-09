@@ -4,12 +4,16 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <animations/>
-      <mesh>structural/rome_pc.pmd</mesh>
-      <props/>
-      <texture>structural/rome_struct_1.dds</texture>
+    <variant frequency="1" name="Base">
+      <mesh>structural/rome_dock.dae</mesh>
+      <props>
+        <prop actor="props/structures/romans/dock.xml" attachpoint="root"/>
+        <prop actor=""/>
+      </props>
+      <texture>structural/rome_struct.dds</texture>
     </variant>
   </group>
+
+  <material>player_trans.xml</material>
 
 </actor>
