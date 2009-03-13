@@ -4,9 +4,17 @@
   <castshadow/>
 
   <group>
-    <variant frequency="100" name="Base">
-      <mesh>props/kart_rc.pmd</mesh>
-      <texture>props/kart_prop_a.dds</texture>
+    <variant frequency="1" name="mill-props-a">
+      <mesh>props/kart_mill_a.dae</mesh>
+    </variant>
+    <variant frequency="1" name="mill-props-b">
+      <mesh>props/kart_mill_b.dae</mesh>
+    </variant>
+  </group>
+
+  <group>
+    <variant>
+      <texture>structural/kart_struct.dds</texture>
     </variant>
   </group>
 
