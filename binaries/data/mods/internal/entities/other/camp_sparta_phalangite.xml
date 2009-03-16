@@ -4,9 +4,9 @@
 	<Traits>
 		<Id>
 			<Icon_Cell>13</Icon_Cell>
-			<Specific>Pezhetairoi</Specific>
+			<Specific>Spartan Phalangite</Specific>
 			<Civ>Hellenes</Civ>
-			<History>'Foot Companions', these were the elite troops from the Macedonian phalanx, whom carried their Sarissas with both hands, the white shields being attached to their armour. The Sarissa and the new tactics they used were developed by Philip II under Theban influence. If properly protected by cavalry on both sides, the Pezhetairoi were virtually invincible to any kind of enemy unit. They were always deployed in deep formations of 16+.</History>
+			<History>The 3rd Century BC saw the brief rise of a resurgent Sparta. Eager to regain past glory, the Spartan kings Agis and Cleomenes briefly resurrected the ancient Spartan laws and nearly reconquered the Peloponese. If not for the intervention of the Macedonians in both insurrections Sparta would have reigned victorious. This soldier here is a Spartan armed in the 'Macedonian fashion' with a small round pelta shield and the line pike, or "Sarissa" for use in the Syntagma phalanx formation.</History>
 			<Tooltip>Bonused vs. Cavalry and Infantry. Weak vs. Ranged Units. Uses the Syntagma Formation.</Tooltip>			
 		</Id>
 		<Creation>
@@ -22,7 +22,7 @@
 			<Crush>14.0</Crush>
 		</Armour>
 		<Health>
-			<Max>130</Max>
+			<Max>125</Max>
 		</Health>
 		<Stamina>
 			<Max>0</Max>
@@ -33,9 +33,9 @@
 	<Actions>
 		<Attack>
 			<Melee>
- 				<Hack>10.0</Hack>
- 				<Pierce>30.0</Pierce>
-				<Range>7.5</Range>
+ 				<Hack>9.0</Hack>
+ 				<Pierce>28.0</Pierce>
+				<Range>7.25</Range>
 			</Melee>
 		</Attack>
 		<Move>
@@ -46,5 +46,5 @@
 			</Run>
 		</Move>
 	</Actions>
-	<Actor>units/hellenes/super_unit_3.xml</Actor>
+	<Actor>units/hellenes/spartan_pikeman.xml</Actor>
 </Entity>

@@ -6,9 +6,6 @@
   <group>
     <variant frequency="100" name="Base">
       <mesh>structural/rome_mill.dae</mesh>
-      <props>
-        <prop actor="props/structures/romans/mill.xml" attachpoint="root"/>
-      </props>
       <texture>structural/rome_struct.dds</texture>
     </variant>
   </group>
