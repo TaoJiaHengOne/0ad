@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 
-<Entity
-	Parent="template_structure_defense_scout_tower"
->
+<Entity	Parent="template_structure_defense_scout_tower">
 	<Traits>
-	
 		<Id>
-
 			<Specific>Turris Lignea</Specific>
-
 			<Civ>Romans</Civ>
-
-			<History>Used in camps built by the Roman army.</History>
-		
+			<History>For use by the Romans to keep an eye over surrounding hostile territory.</History>
 		</Id>
-
+ 		<Footprint>
+ 			<Width>7.5</Width>
+ 			<Depth>7.5</Depth>
+ 			<Height>15.0</Height>
+ 		</Footprint>
 	</Traits>
-
 	<Actor>structures/romans/scout_tower.xml</Actor>
-
 </Entity>

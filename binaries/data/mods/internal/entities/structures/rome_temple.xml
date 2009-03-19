@@ -2,20 +2,15 @@
 
 <Entity	Parent="template_structure_civic_temple">
 	<Traits>
-	
 		<Id>
-
 			<Specific>Nosocomium</Specific>
-
 			<Civ>Romans</Civ>
-
-			<History>(Insert History)</History>
-		
+			<History>The Roman pantheon consisted of Latinized Etruscan and Hellenic deities. Cheif among them were Jupiter, king of the gods, Minerva, goddess of wisdom, and Mars, the Roman god of war.</History>
 		</Id>
  		<Footprint>
- 			<Width>12.0</Width>
- 			<Depth>20.0</Depth>
- 			<Height>10.0</Height>
+ 			<Width>17.0</Width>
+ 			<Depth>30.0</Depth>
+ 			<Height>15.0</Height>
  		</Footprint>
 	
 	</Traits>
