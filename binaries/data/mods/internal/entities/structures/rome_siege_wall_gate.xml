@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+
+<Entity	Parent="template_structure_defense_wall_gate">
+	<Traits>
+		<Id>
+			<Specific>Porta</Specific>
+			<Civ>Romans</Civ>
+			<History>(Insert History Here)</History>
+		</Id>
+ 		<Footprint>
+ 			<Width>24.0</Width>
+ 			<Depth>8.0</Depth>
+ 			<Height>7.0</Height>
+ 		</Footprint>
+	</Traits>
+	<Actor>structures/romans/siege_wall_gate.xml</Actor>
+</Entity>
