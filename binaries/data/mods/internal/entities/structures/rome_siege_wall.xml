@@ -3,7 +3,7 @@
 <Entity	Parent="template_structure_defense_wall">
 	<Traits>
 		<Id>
-			<Specific>Moenia</Specific>
+			<Specific>Circummunitio</Specific>
 			<Civ>Romans</Civ>
 
 			<History>Quick building, but expensive wooden and earthen walls used to surround and siege an enemy town or fortified position. The most famous examples are the Roman sieges of the Iberian stronghold of Numantia and the Gallic stronghold of Alesia.</History>

@@ -3,7 +3,7 @@
 <Entity	Parent="template_structure_defense_wall_gate">
 	<Traits>
 		<Id>
-			<Specific>Porta</Specific>
+			<Specific>Porta Circummunitio</Specific>
 			<Civ>Romans</Civ>
 			<History>(Insert History Here)</History>
 		</Id>

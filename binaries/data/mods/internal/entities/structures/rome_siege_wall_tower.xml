@@ -3,7 +3,7 @@
 <Entity	Parent="template_structure_defense_wall_tower">
 	<Traits>
 		<Id>
-			<Specific>Turris Lapidea</Specific>
+			<Specific>Turris Circummunitio</Specific>
 			<Civ>Romans</Civ>
 			<History>(Insert history here)</History>
 		</Id>
