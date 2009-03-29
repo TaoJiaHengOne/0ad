@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 
-<Entity
-	Parent="template_structure_defense_scout_tower"
->
+<Entity	Parent="template_structure_defense_scout_tower">
 	<Traits>
-	
 		<Id>
-
 			<Specific>Migdal</Specific>
-
 			<Civ>Carthaginians</Civ>
-
-			<History>Possibly used as outposts.</History>
-		
+			<History>Sturdy stone outposts used to keep an eye on desert nomad tribes along the Carthaginian North African frontier.</History>
 		</Id>
-
+ 		<Footprint>
+ 			<Width>8.0</Width>
+ 			<Depth>8.0</Depth>
+ 			<Height>15.0</Height>
+ 		</Footprint>
 	</Traits>
 
 	<Actor>structures/carthaginians/scout_tower.xml</Actor>
