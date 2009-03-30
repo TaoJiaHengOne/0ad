@@ -7,6 +7,11 @@
 			<Civ>Carthaginians</Civ>
 			<History>The Carthaginians incorporated stables and barracks into their city walls.</History>
 		</Id>
+ 		<Footprint>
+ 			<Width>22.0</Width>
+ 			<Depth>23.0</Depth>
+ 			<Height>15.0</Height>
+ 		</Footprint>
 	</Traits>
 	<Actions>
 		<Create>
