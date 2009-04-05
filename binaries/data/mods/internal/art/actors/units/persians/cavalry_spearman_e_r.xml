@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -18,16 +16,14 @@
         <prop actor="props/units/heads/head_pers_a.xml" attachpoint="head"/>
         <prop actor="props/units/heads/hele_hoplite_b.xml" attachpoint="helmet"/>
         <prop actor="props/units/weapons/spear_ball.xml" attachpoint="r_hand"/>
+        <prop actor="props/units/cape_olivegreen.xml" attachpoint="shoulders"/>
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Elite-Rider-Texture-01">
       <texture>skeletal/pers_csp_e_1.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

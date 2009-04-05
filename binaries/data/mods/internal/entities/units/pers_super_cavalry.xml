@@ -20,12 +20,12 @@
  			</Resource>
 		</Creation>		
 		<Armour>
-			<Hack>12.0</Hack>
-			<Pierce>15.0</Pierce>
-			<Crush>10.0</Crush>
+			<Hack>10.0</Hack>
+			<Pierce>9.0</Pierce>
+			<Crush>15.0</Crush>
 		</Armour>
 		<Health>
-			<Max>400</Max>
+			<Max>450</Max>
 		</Health>
 		<Footprint>
 			<Radius>2.8</Radius>
@@ -60,7 +60,7 @@
  		</Attack>
 		
 		<Move>
-			<Speed>8.0</Speed>
+			<Speed>7.0</Speed>
 			<Run>
 				<Speed>14.0</Speed>
 			</Run>
