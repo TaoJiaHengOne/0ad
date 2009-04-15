@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+
+<Entity	Parent="template_structure_special">
+	<Traits>
+		<Id>
+			<Specific>Triumphal Arch</Specific>
+			<Civ>Romans</Civ>
+			<History>An arch dedicated to Mars, the Roman god of war.</History>
+		</Id>
+ 		<Footprint>
+ 			<Width>15.5</Width>
+ 			<Depth>6.0</Depth>
+ 			<Height>8.0</Height>
+ 		</Footprint>
+	</Traits>
+	<Actor>props/structures/romans/arch.xml</Actor>
+</Entity>
