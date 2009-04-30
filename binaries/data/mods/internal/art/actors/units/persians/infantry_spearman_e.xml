@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="100" name="Base">
       <animations>
-        <animation file="infantry/sword/attack/isw_s_def_06.psa" name="Idle" speed="1"/>
+        <animation file="biped/inf_sword_ready_a.dae" name="Idle" speed="100"/>
+        <animation file="biped/inf_sword_ready_a.dae" name="Idle" speed="101"/>
         <animation file="biped/walk_spearshield.psa" name="Walk" speed="18"/>
         <animation event="0.5" file="infantry/sword/attack/isw_s_def_06.psa" name="Melee" speed="100"/>
         <animation event="0.5" file="biped/inf_spear_shield_atk_b.psa" name="Melee" speed="100"/>
@@ -34,7 +33,6 @@
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Clothing-emerald">
       <texture>skeletal/pers_isp_e_1.dds</texture>
@@ -43,7 +41,6 @@
       <texture>skeletal/pers_isp_e_2.dds</texture>
     </variant>
   </group>
-
   <group>
     <variant frequency="100" name="Idle"/>
     <variant name="Melee">
@@ -97,7 +94,5 @@
       </props>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>
