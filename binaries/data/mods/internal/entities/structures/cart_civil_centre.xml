@@ -7,6 +7,11 @@
 			<Civ>Carthaginians</Civ>
 			<History>Carthiginian's History</History>
 		</Id>
+ 		<Footprint>
+ 			<Width>32.0</Width>
+ 			<Depth>32.0</Depth>
+ 			<Height>10.0</Height>
+ 		</Footprint>
 	</Traits>
 	<Actions>
 		<Create>

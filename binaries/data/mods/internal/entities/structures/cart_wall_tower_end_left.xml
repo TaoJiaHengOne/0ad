@@ -13,8 +13,8 @@
 		
 		</Id>
  		<Footprint>
- 			<Width>8.5</Width>
- 			<Depth>6.5</Depth>
+ 			<Width>9.0</Width>
+ 			<Depth>9.0</Depth>
  			<Height>18.0</Height>
  		</Footprint>
 	</Traits>

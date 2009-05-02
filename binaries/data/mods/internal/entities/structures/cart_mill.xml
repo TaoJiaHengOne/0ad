@@ -12,6 +12,11 @@
 			<History>Resources and building materials were kept in warehouses.</History>
 		
 		</Id>
+ 		<Footprint>
+ 			<Width>15.0</Width>
+ 			<Depth>15.0</Depth>
+ 			<Height>5.0</Height>
+ 		</Footprint>
 
 	</Traits>
 
