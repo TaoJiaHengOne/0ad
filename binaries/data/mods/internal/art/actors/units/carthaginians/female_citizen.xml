@@ -8,11 +8,13 @@
       <animations>
         <animation file="female/f_idle_01.dae" name="Idle" speed="200"/>
         <animation file="female/f_walk_01.dae" name="Walk" speed="10"/>
-        <animation file="female/f_lumber_01.dae" name="gather_wood" speed="100"/>
-        <animation file="female/f_farm_01.dae" name="gather_grain" speed="150"/>
-        <animation file="female/f_gather_01.dae" name="gather_fruit" speed="100"/>
-        <animation file="female/f_mine_01.dae" name="gather_stone" speed="150"/>
-        <animation file="female/f_mine_01.dae" name="gather_metal" speed="150"/>
+        <animation file="female/f_walk_01.dae" name="Run" speed="15"/>
+        <animation file="female/f_lumber_01.dae" name="gather_wood" speed="75"/>
+        <animation file="female/f_farm_01.dae" name="gather_grain" speed="75"/>
+        <animation file="female/f_gather_01.dae" name="gather_fruit" speed="50"/>
+        <animation file="female/f_gather_01.dae" name="gather_meat" speed="50"/>
+        <animation file="female/f_mine_01.dae" name="gather_stone" speed="75"/>
+        <animation file="female/f_mine_01.dae" name="gather_metal" speed="75"/>
         <animation file="female/f_build_01.dae" name="Build" speed="150"/>
         <animation file="female/f_death_01.dae" name="Death" speed="100"/>
       </animations>
