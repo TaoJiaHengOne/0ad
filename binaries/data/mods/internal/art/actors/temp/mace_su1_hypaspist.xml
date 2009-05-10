@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -17,7 +15,7 @@
         <animation file="infantry/general/death/inf_06.psa" name="Death" speed="300"/>
         <animation file="infantry/general/death/inf_07.psa" name="Death" speed="300"/>
       </animations>
-      <mesh>skeletal/m_tunic_a.pmd</mesh>
+      <mesh>skeletal/m_tunic_short.dae</mesh>
       <props>
         <prop actor="props/units/shields/mace_round_hypaspist.xml" attachpoint="shield"/>
         <prop actor="props/units/weapons/spear_hoplite.xml" attachpoint="r_hand"/>
@@ -26,7 +24,6 @@
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="hypaspist-armour-thorax">
       <texture>skeletal/mace_hypaspist_1.dds</texture>
@@ -37,8 +34,9 @@
     <variant frequency="1" name="hypaspist-armour-cuirass-2">
       <texture>skeletal/mace_su1_hypaspist_1.dds</texture>
     </variant>
+    <variant frequency="2" name="hypaspist-armour-cuirass-3">
+      <texture>skeletal/mace_su1_hypaspist_2.dds</texture>
+    </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

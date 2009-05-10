@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -26,13 +24,13 @@
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Armour-Scale-Brass">
       <texture>skeletal/rome_su1_extraordinarii.dds</texture>
     </variant>
+    <variant frequency="1" name="Armour-Cuirass">
+      <texture>skeletal/rome_su1_b.dds</texture>
+    </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>
