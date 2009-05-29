@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -17,7 +15,7 @@
         <animation event="0.5" file="infantry/sword/attack/isw_s_off_05.psa" name="melee" speed="110"/>
       </animations>
       <props>
-        <prop actor="props/units/heads/head_iber_su1.xml" attachpoint="head"/>
+        <prop actor="props/units/heads/head_iber_hero_1.xml" attachpoint="head"/>
         <prop actor="props/units/heads/iber_helmet_hero_02.xml" attachpoint="helmet"/>
         <prop actor="props/units/weapons/gladus.xml" attachpoint="r_hand"/>
         <prop actor="props/units/weapons/verutum.xml" attachpoint="l_hand"/>
@@ -26,14 +24,11 @@
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Variato-pants-yes">
       <mesh>skeletal/m_pants_tunic.dae</mesh>
       <texture>skeletal/iber_hero_variato_pants.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>
