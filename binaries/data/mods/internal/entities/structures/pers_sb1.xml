@@ -7,11 +7,14 @@
 			<Civ>Persians</Civ>
 			<History>The annual tribute that the Persians received from their satrapies and vassal states, as regularised by Darius the Great, accounted for incredible annual revenue.</History>
 		</Id>
+		<Creation>
+			<Foundation>foundation_6x6</Foundation>
+		</Creation>
  		<Footprint>
- 			<Width>20.0</Width>
- 			<Depth>24.0</Depth>
+ 			<Width>28.0</Width>
+ 			<Depth>32.0</Depth>
  			<Height>8.0</Height>
  		</Footprint>
 	</Traits>
-	<Actor>structures/persians/sb1.xml</Actor>
+	<Actor>structures/persians/sb1_new.xml</Actor>
 </Entity>
