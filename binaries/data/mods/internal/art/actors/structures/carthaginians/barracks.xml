@@ -7,6 +7,7 @@
       <props>
         <prop actor="props/structures/carthaginians/barracks.xml" attachpoint="root"/>
         <prop actor="props/structures/carthaginians/barracks_weap.xml" attachpoint="root"/>
+        <prop actor="props/structures/decals/dirt_4x4.xml" attachpoint="root"/>
       </props>
       <texture>structural/kart_struct.dds</texture>
     </variant>
