@@ -8,14 +8,26 @@
   <group>
     <variant frequency="100" name="Base">
       <mesh>structural/rome_qui.dae</mesh>
-      <props>
-        <prop actor="props/structures/romans/quinquereme_oars.xml" attachpoint="root"/>
-        <prop actor="props/structures/romans/quinquereme_mast.xml" attachpoint="root"/>
-      </props>
-      <texture>structural/plac_rome.dds</texture>
+      <texture>structural/rome_qui.dds</texture>
     </variant>
   </group>
 
-  <material>player_trans.xml</material>
+  <group>
+    <variant frequency="1" name="sail">
+      <props>
+        <prop actor="props/structures/romans/quinquereme_oars.xml" attachpoint="root" />
+        <prop actor="props/structures/romans/quinquereme_props.xml" attachpoint="root" />
+        <prop actor="props/structures/romans/quinquereme_mast.xml" attachpoint="root" />
+      </props>
+    </variant>
+    <variant frequency="1" name="no-sail">
+      <props>
+        <prop actor="props/structures/romans/quinquereme_oars.xml" attachpoint="root" />
+        <prop actor="props/structures/romans/quinquereme_props.xml" attachpoint="root" />
+      </props>
+    </variant>
+  </group>
+
+  <material>basic_trans.xml</material>
 
 </actor>
