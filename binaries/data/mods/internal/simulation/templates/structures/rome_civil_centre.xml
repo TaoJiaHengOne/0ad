@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_civic_civil_centre">
+  <Identity>
+    <Civ>rome</Civ>
+    <SpecificName>Municipium</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/romans/civic_centre.xml</Actor>
+  </VisualActor>
+  <TrainingQueue>
+    <Entities datatype="tokens">
+      units/rome_cavalry_spearman_b
+      units/rome_infantry_javelinist_b
+      units/rome_infantry_spearman_b
+    </Entities>
+  </TrainingQueue>
+</Entity>

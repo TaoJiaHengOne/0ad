@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_entity_quasi">
+  <Identity>
+    <Civ>gaia</Civ>
+    <SpecificName>Long Wooden Fence</SpecificName>
+  </Identity>
+  <Health>
+    <Max>50</Max>
+  </Health>
+  <Armour>
+    <Hack>1.0</Hack>
+    <Pierce>1.0</Pierce>
+    <Crush>1.0</Crush>
+  </Armour>
+  <VisualActor>
+    <Actor>temp/fence_wood_long_a.xml</Actor>
+  </VisualActor>
+  <Footprint>
+    <Square width="0.8" depth="13.0"/>
+    <Height>4.0</Height>
+  </Footprint>
+</Entity>

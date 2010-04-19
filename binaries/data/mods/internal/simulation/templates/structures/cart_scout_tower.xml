@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_defense_scout_tower">
+  <Identity>
+    <Civ>cart</Civ>
+    <SpecificName>Migdal</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/carthaginians/scout_tower.xml</Actor>
+  </VisualActor>
+  <Footprint>
+    <Square width="9.0" depth="9.0"/>
+    <Height>18.0</Height>
+  </Footprint>
+</Entity>

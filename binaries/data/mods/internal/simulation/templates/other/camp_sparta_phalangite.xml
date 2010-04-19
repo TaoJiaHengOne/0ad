@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_unit_super_infantry">
+  <Identity>
+    <Civ>hele</Civ>
+    <SpecificName>Spartan Phalangite</SpecificName>
+    <IconCell>13</IconCell>
+  </Identity>
+  <Cost>
+    <Resources>
+      <food>70</food>
+      <wood>75</wood>
+      <metal>50</metal>
+    </Resources>
+  </Cost>
+  <Health>
+    <Max>125</Max>
+  </Health>
+  <Armour>
+    <Hack>8.5</Hack>
+    <Pierce>7.0</Pierce>
+    <Crush>14.0</Crush>
+  </Armour>
+  <UnitMotion>
+    <WalkSpeed>6.5</WalkSpeed>
+  </UnitMotion>
+  <Attack>
+    <Hack>9.0</Hack>
+    <Pierce>28.0</Pierce>
+    <Range>7.25</Range>
+  </Attack>
+  <VisualActor>
+    <Actor>units/hellenes/spartan_pikeman.xml</Actor>
+  </VisualActor>
+</Entity>

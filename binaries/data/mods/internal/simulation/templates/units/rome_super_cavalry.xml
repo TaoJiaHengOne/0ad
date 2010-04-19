@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_unit_super_cavalry">
+  <Identity>
+    <Civ>rome</Civ>
+    <SpecificName>Decurio</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>units/romans/super_unit_2.xml</Actor>
+  </VisualActor>
+  <Footprint>
+    <Circle radius="1.5"/>
+    <Height>7.5</Height>
+  </Footprint>
+</Entity>

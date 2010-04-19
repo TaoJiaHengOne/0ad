@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="units/rome_infantry_swordsman_a">
+  <Health>
+    <Max>120</Max>
+  </Health>
+  <Armour>
+    <Hack>8.0</Hack>
+    <Pierce>5.0</Pierce>
+    <Crush>11.0</Crush>
+  </Armour>
+  <Attack>
+    <Hack>19.0</Hack>
+    <Pierce>0.0</Pierce>
+    <Crush>0.0</Crush>
+  </Attack>
+  <VisualActor>
+    <Actor>units/romans/infantry_swordsman_e.xml</Actor>
+  </VisualActor>
+</Entity>

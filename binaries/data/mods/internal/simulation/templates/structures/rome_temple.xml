@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_civic_temple">
+  <Identity>
+    <Civ>rome</Civ>
+    <SpecificName>Nosocomium</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/romans/temple_new.xml</Actor>
+  </VisualActor>
+  <Footprint>
+    <Square width="17.0" depth="30.0"/>
+    <Height>15.0</Height>
+  </Footprint>
+</Entity>

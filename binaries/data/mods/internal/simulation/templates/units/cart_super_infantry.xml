@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_unit_super_infantry">
+  <Identity>
+    <Civ>cart</Civ>
+    <SpecificName>Qacin</SpecificName>
+  </Identity>
+  <Cost>
+    <Resources>
+      <food>75</food>
+      <wood>70</wood>
+      <metal>60</metal>
+    </Resources>
+  </Cost>
+  <Health>
+    <Max>130</Max>
+  </Health>
+  <Armour>
+    <Hack>8.5</Hack>
+    <Pierce>7.0</Pierce>
+    <Crush>14.0</Crush>
+  </Armour>
+  <UnitMotion>
+    <WalkSpeed>6.5</WalkSpeed>
+  </UnitMotion>
+  <Attack>
+    <Hack>10.0</Hack>
+    <Pierce>30.0</Pierce>
+    <Range>6.0</Range>
+  </Attack>
+  <VisualActor>
+    <Actor>units/carthaginians/super_unit_1.xml</Actor>
+  </VisualActor>
+</Entity>

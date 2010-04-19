@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_military_fortress">
+  <Identity>
+    <Civ>pers</Civ>
+    <SpecificName>Dura</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/persians/fortress.xml</Actor>
+  </VisualActor>
+  <TrainingQueue>
+    <Entities datatype="tokens">
+      units/pers_super_cavalry
+      units/pers_super_infantry
+    </Entities>
+  </TrainingQueue>
+</Entity>

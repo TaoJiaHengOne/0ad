@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_unit_hero">
+  <Identity>
+    <Civ>iber</Civ>
+    <SpecificName>Caros</SpecificName>
+  </Identity>
+  <Health>
+    <Max>500</Max>
+  </Health>
+  <VisualActor>
+    <Actor>units/iberians/hero_caros.xml</Actor>
+  </VisualActor>
+</Entity>

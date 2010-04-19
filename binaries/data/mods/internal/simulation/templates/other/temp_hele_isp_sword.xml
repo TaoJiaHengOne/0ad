@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="units/hele_infantry_spearman_a">
+  <Identity>
+    <IconCell>5</IconCell>
+  </Identity>
+  <Health>
+    <Max>100</Max>
+  </Health>
+  <Armour>
+    <Hack>7.0</Hack>
+    <Pierce>5.0</Pierce>
+    <Crush>12.0</Crush>
+  </Armour>
+  <UnitMotion>
+    <WalkSpeed>7.25</WalkSpeed>
+  </UnitMotion>
+  <Attack>
+    <Hack>17.0</Hack>
+    <Pierce>8.5</Pierce>
+  </Attack>
+  <VisualActor>
+    <Actor>temp/sword_hoplite_1.xml</Actor>
+  </VisualActor>
+</Entity>

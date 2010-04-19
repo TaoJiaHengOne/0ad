@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_unit_hero">
+  <Identity>
+    <Civ>hele</Civ>
+    <SpecificName>Demetrius</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>temp/demetrius_the_ripper.xml</Actor>
+  </VisualActor>
+</Entity>

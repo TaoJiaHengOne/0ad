@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_unit_hero">
+  <Identity>
+    <Civ>hele</Civ>
+    <SpecificName>Themistocles the Killer</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>temp/themistocles_the_killer.xml</Actor>
+  </VisualActor>
+</Entity>

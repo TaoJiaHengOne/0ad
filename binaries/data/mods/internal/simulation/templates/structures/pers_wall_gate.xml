@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_defense_wall_gate">
+  <Identity>
+    <Civ>pers</Civ>
+    <SpecificName>Darvaze</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/persians/wall_gate.xml</Actor>
+  </VisualActor>
+  <Footprint>
+    <Square width="25.0" depth="8.5"/>
+    <Height>8.0</Height>
+  </Footprint>
+</Entity>

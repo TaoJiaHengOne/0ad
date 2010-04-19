@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_special">
+  <Identity>
+    <Civ>rome</Civ>
+    <SpecificName>Camp</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/romans/camp.xml</Actor>
+  </VisualActor>
+</Entity>

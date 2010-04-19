@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity parent="template_structure_military_barracks">
+  <Identity>
+    <Civ>pers</Civ>
+    <SpecificName>Apadana</SpecificName>
+  </Identity>
+  <VisualActor>
+    <Actor>structures/persians/barracks.xml</Actor>
+  </VisualActor>
+  <TrainingQueue>
+    <Entities datatype="tokens">
+      units/pers_cavalry_archer_b
+      units/pers_cavalry_javelinist_b
+      units/pers_cavalry_spearman_b
+      units/pers_cavalry_swordsman_b
+      units/pers_infantry_archer_b
+      units/pers_infantry_javelinist_b
+      units/pers_infantry_spearman_b
+    </Entities>
+  </TrainingQueue>
+</Entity>
