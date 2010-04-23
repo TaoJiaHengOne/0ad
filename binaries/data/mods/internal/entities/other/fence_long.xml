@@ -4,6 +4,8 @@
 	<Traits>
 			<Id>
 		
+			<Generic>Fence</Generic>
+
 			<Specific>Long Wooden Fence</Specific>
 
 			<Civ>Objects</Civ>
