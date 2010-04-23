@@ -8,7 +8,7 @@
     <Actor>structures/persians/barracks.xml</Actor>
   </VisualActor>
   <TrainingQueue>
-    <Entities datatype="tokens">
+    <Entities>
       units/pers_cavalry_archer_b
       units/pers_cavalry_javelinist_b
       units/pers_cavalry_spearman_b

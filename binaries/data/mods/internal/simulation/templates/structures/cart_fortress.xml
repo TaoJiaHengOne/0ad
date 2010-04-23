@@ -12,7 +12,7 @@
     <Height>8.0</Height>
   </Footprint>
   <TrainingQueue>
-    <Entities datatype="tokens">
+    <Entities>
       units/cart_hero_hamilcar
       units/cart_hero_hannibal
       units/cart_hero_maharbal

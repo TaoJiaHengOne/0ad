@@ -8,7 +8,7 @@
     <Actor>structures/carthaginians/civil_centre.xml</Actor>
   </VisualActor>
   <TrainingQueue>
-    <Entities datatype="tokens">
+    <Entities>
       units/cart_cavalry_javelinist_b
       units/cart_infantry_slinger_b
       units/cart_infantry_spearman_b

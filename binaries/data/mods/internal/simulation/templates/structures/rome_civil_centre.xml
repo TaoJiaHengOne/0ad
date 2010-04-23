@@ -8,7 +8,7 @@
     <Actor>structures/romans/civic_centre.xml</Actor>
   </VisualActor>
   <TrainingQueue>
-    <Entities datatype="tokens">
+    <Entities>
       units/rome_cavalry_spearman_b
       units/rome_infantry_javelinist_b
       units/rome_infantry_spearman_b

@@ -2,9 +2,11 @@
 <Entity parent="template_entity_quasi">
   <Identity>
     <Civ>gaia</Civ>
+    <GenericName>Fence</GenericName>
     <SpecificName>Long Wooden Fence</SpecificName>
   </Identity>
   <Health>
+    <DeathType>vanish</DeathType>
     <Max>50</Max>
   </Health>
   <Armour>

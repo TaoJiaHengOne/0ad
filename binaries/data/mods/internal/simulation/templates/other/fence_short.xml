@@ -6,6 +6,7 @@
     <SpecificName>Short Wooden Fence</SpecificName>
   </Identity>
   <Health>
+    <DeathType>vanish</DeathType>
     <Max>30</Max>
   </Health>
   <Armour>

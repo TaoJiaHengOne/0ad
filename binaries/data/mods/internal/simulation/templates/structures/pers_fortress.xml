@@ -8,7 +8,7 @@
     <Actor>structures/persians/fortress.xml</Actor>
   </VisualActor>
   <TrainingQueue>
-    <Entities datatype="tokens">
+    <Entities>
       units/pers_super_cavalry
       units/pers_super_infantry
     </Entities>

@@ -15,7 +15,7 @@
     <Hack>0.0</Hack>
     <Pierce>30.0</Pierce>
     <Crush>0.0</Crush>
-    <Range>38</Range>
+    <MaxRange>38</MaxRange>
     <ProjectileSpeed>27.0</ProjectileSpeed>
   </Attack>
   <VisualActor>

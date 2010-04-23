@@ -6,8 +6,7 @@
   </Identity>
   <ResourceSupply>
     <Amount>2000</Amount>
-    <Type>food</Type>
-    <Subtype>grain</Subtype>
+    <Type>food.grain</Type>
   </ResourceSupply>
   <VisualActor>
     <Actor>structures/plot_field.xml</Actor>

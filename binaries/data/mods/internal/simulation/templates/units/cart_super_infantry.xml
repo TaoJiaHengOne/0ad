@@ -25,7 +25,7 @@
   <Attack>
     <Hack>10.0</Hack>
     <Pierce>30.0</Pierce>
-    <Range>6.0</Range>
+    <MaxRange>6.0</MaxRange>
   </Attack>
   <VisualActor>
     <Actor>units/carthaginians/super_unit_1.xml</Actor>

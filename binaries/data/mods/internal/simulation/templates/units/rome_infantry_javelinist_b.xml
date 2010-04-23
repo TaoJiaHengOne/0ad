@@ -16,7 +16,7 @@
     <Hack>0.0</Hack>
     <Pierce>22.0</Pierce>
     <Crush>0.0</Crush>
-    <Range>34</Range>
+    <MaxRange>34</MaxRange>
     <ProjectileSpeed>25.0</ProjectileSpeed>
     <PrepareTime>900</PrepareTime>
     <RepeatTime>1500</RepeatTime>
