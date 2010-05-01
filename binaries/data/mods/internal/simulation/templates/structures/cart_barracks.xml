@@ -11,6 +11,9 @@
     <Square width="22.0" depth="23.0"/>
     <Height>15.0</Height>
   </Footprint>
+  <Obstruction>
+    <Static width="22.0" depth="23.0"/>
+  </Obstruction>
   <TrainingQueue>
     <Entities>
       units/cart_cavalry_javelinist_b

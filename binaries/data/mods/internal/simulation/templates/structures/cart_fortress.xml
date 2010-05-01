@@ -11,6 +11,9 @@
     <Square width="24.0" depth="27.0"/>
     <Height>8.0</Height>
   </Footprint>
+  <Obstruction>
+    <Static width="24.0" depth="27.0"/>
+  </Obstruction>
   <TrainingQueue>
     <Entities>
       units/cart_hero_hamilcar

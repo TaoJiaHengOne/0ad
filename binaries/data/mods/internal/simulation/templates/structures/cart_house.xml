@@ -11,4 +11,7 @@
     <Square width="13.0" depth="13.0"/>
     <Height>5.0</Height>
   </Footprint>
+  <Obstruction>
+    <Static width="13.0" depth="13.0"/>
+  </Obstruction>
 </Entity>
