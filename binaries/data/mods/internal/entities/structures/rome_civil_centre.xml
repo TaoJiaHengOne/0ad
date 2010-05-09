@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 
 <Entity	Parent="template_structure_civic_civil_centre">
-	<Actor>structures/romans/civic_centre.xml</Actor>
 	<Traits>
 		<Id>
 			<Specific>Municipium</Specific>
@@ -20,4 +19,5 @@
 			</List>
 		</Create>
 	</Actions>	
+	<Actor>structures/romans/civic_centre.xml</Actor>
 </Entity>

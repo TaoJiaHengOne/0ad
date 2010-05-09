@@ -2,8 +2,6 @@
 
 <Entity Parent="rome_infantry_javelinist_a">
 
-	<Actor>units/romans/infantry_javelinist_e.xml</Actor>
-
 	<Traits>
 		<Health>
 			<Max>105</Max>
@@ -39,5 +37,7 @@
 			</Run>
 		</Move>
 	</Actions>
+
+	<Actor>units/romans/infantry_javelinist_e.xml</Actor>
 
 </Entity>

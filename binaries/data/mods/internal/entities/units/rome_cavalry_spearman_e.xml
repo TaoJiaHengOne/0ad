@@ -2,10 +2,6 @@
 
 <Entity Parent="rome_cavalry_spearman_a">
 
-	<Actor>
-	
-	units/romans/cavalry_spearman_e.xml
-	
-	</Actor>
+	<Actor>units/romans/cavalry_spearman_e.xml</Actor>
 
 </Entity>
