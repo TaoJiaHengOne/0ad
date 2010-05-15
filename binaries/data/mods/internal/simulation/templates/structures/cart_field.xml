@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Sadéh</SpecificName>
+    <History>A farmer's field.</History>
   </Identity>
   <ResourceSupply>
     <Amount>2000</Amount>

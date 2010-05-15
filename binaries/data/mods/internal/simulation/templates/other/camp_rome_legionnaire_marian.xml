@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Legionnaire</SpecificName>
+    <History>The Marian Legionnaire.</History>
   </Identity>
   <VisualActor>
     <Actor>units/romans/super_unit_3.xml</Actor>

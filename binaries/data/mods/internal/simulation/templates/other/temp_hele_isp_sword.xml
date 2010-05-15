@@ -13,10 +13,19 @@
   </Armour>
   <UnitMotion>
     <WalkSpeed>7.25</WalkSpeed>
+    <Run>
+      <Speed>14.0</Speed>
+    </Run>
   </UnitMotion>
   <Attack>
-    <Hack>17.0</Hack>
-    <Pierce>8.5</Pierce>
+    <Melee>
+      <Hack>17.0</Hack>
+      <Pierce>8.5</Pierce>
+    </Melee>
+    <Charge>
+      <Hack>35.0</Hack>
+      <Pierce>17.0</Pierce>
+    </Charge>
   </Attack>
   <VisualActor>
     <Actor>temp/sword_hoplite_1.xml</Actor>

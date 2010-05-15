@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Nosocomium</SpecificName>
+    <History>(Insert History)</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/temple_vesta.xml</Actor>

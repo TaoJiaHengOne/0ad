@@ -3,6 +3,7 @@
   <Identity>
     <Civ>pers</Civ>
     <SpecificName>Kakh</SpecificName>
+    <History>The annual tribute that the Persians received from their satrapies and vassal states, as regularised by Darius the Great, accounted for incredible annual revenue.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/persians/sb1_new.xml</Actor>

@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Fortis</SpecificName>
+    <History>Fortified city.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/fortress.xml</Actor>

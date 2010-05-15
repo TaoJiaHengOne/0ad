@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Triumphal Arch</SpecificName>
+    <History>An arch dedicated to Mars, the Roman god of war.</History>
   </Identity>
   <VisualActor>
     <Actor>props/structures/romans/arch.xml</Actor>

@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Hannibal Barca</SpecificName>
+    <History>TBA</History>
   </Identity>
   <Cost>
     <Population>3</Population>
@@ -21,10 +22,19 @@
   </Armour>
   <UnitMotion>
     <WalkSpeed>8.0</WalkSpeed>
+    <Run>
+      <Speed>13.0</Speed>
+    </Run>
   </UnitMotion>
   <Attack>
-    <Hack>27.0</Hack>
-    <Crush>30.0</Crush>
+    <Melee>
+      <Hack>27.0</Hack>
+      <Crush>30.0</Crush>
+    </Melee>
+    <Charge>
+      <Hack>75.0</Hack>
+      <Crush>90.0</Crush>
+    </Charge>
   </Attack>
   <VisualActor>
     <Actor>units/carthaginians/hero_hannibal_mount.xml</Actor>
@@ -33,4 +43,7 @@
     <Circle radius="2.8"/>
     <Height>9.0</Height>
   </Footprint>
+  <Vision>
+    <Range>25</Range>
+  </Vision>
 </Entity>

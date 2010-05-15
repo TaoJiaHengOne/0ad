@@ -3,6 +3,7 @@
   <Identity>
     <Civ>pers</Civ>
     <SpecificName>Padgan</SpecificName>
+    <History>The narrow entrance into mountainous Cilicia was protected by wooden fortifications which made any foreign intrusions extremely difficult.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/persians/scout_tower.xml</Actor>

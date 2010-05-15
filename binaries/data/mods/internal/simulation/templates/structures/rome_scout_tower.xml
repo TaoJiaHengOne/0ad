@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Turris Lignea</SpecificName>
+    <History>For use by the Romans to keep an eye over surrounding hostile territory.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/scout_tower.xml</Actor>

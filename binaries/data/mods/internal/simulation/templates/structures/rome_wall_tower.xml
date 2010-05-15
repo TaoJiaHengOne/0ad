@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Turris Lapidea</SpecificName>
+    <History>(Insert history here)</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/wall_tower.xml</Actor>

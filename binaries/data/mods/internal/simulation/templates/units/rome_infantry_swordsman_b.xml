@@ -3,7 +3,11 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Hastatus</SpecificName>
+    <History>The hastati were the first line of heavy infantry in the early Republican Roman army. They used pila and gladii as their main weapons, throwing the former into the enemy formation and then closing with the sword. For defence they used a large shield called a scutum and wore the best armor they could afford. Hastati were recruited from the young men of Rome, a small part of the 700,000 troops Rome could bring to bear against its opponents.</History>
   </Identity>
+  <Promotion>
+    <Entity>rome_infantry_swordsman_a</Entity>
+  </Promotion>
   <Health>
     <Max>95</Max>
   </Health>
@@ -13,9 +17,11 @@
     <Crush>10.0</Crush>
   </Armour>
   <Attack>
-    <Hack>15.0</Hack>
-    <Pierce>0.0</Pierce>
-    <Crush>0.0</Crush>
+    <Melee>
+      <Hack>15.0</Hack>
+      <Pierce>0.0</Pierce>
+      <Crush>0.0</Crush>
+    </Melee>
   </Attack>
   <VisualActor>
     <Actor>units/romans/infantry_swordsman_b.xml</Actor>

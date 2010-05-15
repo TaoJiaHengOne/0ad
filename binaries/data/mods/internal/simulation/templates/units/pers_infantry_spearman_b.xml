@@ -3,7 +3,11 @@
   <Identity>
     <Civ>pers</Civ>
     <SpecificName>Neyzedar Madi</SpecificName>
+    <History>The Medes were renowned soldiers, creating an empire that predated that of the Achaemenid Persians. In combat they fought with short spears counterweighted with bronze and used large wicker shields known as spara. Secondary weapons ranged from axes known as sagaris to daggers and short swords, but armor was rare, limited to scale or linen when procured.</History>
   </Identity>
+  <Promotion>
+    <Entity>pers_infantry_spearman_a</Entity>
+  </Promotion>
   <VisualActor>
     <Actor>units/persians/infantry_spearman_b.xml</Actor>
   </VisualActor>

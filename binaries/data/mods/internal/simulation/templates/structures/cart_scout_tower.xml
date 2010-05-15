@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Migdal</SpecificName>
+    <History>Sturdy stone outposts used to keep an eye on desert nomad tribes along the Carthaginian North African frontier.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/carthaginians/scout_tower.xml</Actor>

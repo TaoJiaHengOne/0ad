@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Municipium</SpecificName>
+    <History>(Roman History goes here)</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/civic_centre.xml</Actor>

@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Atrium</SpecificName>
+    <History>The early Atrium initially included one big room with a fireplace in the middle. A garden by the house was later included under Hellenistic influence.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/house.xml</Actor>

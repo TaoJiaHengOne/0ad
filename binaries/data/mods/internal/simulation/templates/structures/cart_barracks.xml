@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Mahaneh</SpecificName>
+    <History>The Carthaginians incorporated stables and barracks into their city walls.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/carthaginians/barracks.xml</Actor>

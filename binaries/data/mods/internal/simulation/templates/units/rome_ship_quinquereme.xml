@@ -6,6 +6,11 @@
   </Identity>
   <UnitMotion>
     <WalkSpeed>18.0</WalkSpeed>
+    <Run>
+      <Speed>35.0</Speed>
+      <Range>1200.0</Range>
+      <RangeMin>20.0</RangeMin>
+    </Run>
   </UnitMotion>
   <VisualActor>
     <Actor>structures/romans/quinquereme.xml</Actor>

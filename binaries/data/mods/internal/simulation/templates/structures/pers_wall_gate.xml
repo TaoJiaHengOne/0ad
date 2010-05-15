@@ -3,6 +3,7 @@
   <Identity>
     <Civ>pers</Civ>
     <SpecificName>Darvaze</SpecificName>
+    <History>The several ceremonial entrances to the great city of Babylon were furnished with magnificent gates, the gate of Ishtar being the most splendid of all.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/persians/wall_gate.xml</Actor>

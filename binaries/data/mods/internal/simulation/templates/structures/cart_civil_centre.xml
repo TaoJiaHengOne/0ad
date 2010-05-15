@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Merkaz</SpecificName>
+    <History>Carthiginian's History</History>
   </Identity>
   <VisualActor>
     <Actor>structures/carthaginians/civil_centre.xml</Actor>

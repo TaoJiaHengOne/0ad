@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Skeleton</SpecificName>
+    <History>He lived, and obviously he died, or he wouldn't be a skeleton.</History>
   </Identity>
   <VisualActor>
     <Actor>units/skeleton_live.xml</Actor>

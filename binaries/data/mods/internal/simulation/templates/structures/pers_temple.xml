@@ -3,6 +3,7 @@
   <Identity>
     <Civ>pers</Civ>
     <SpecificName>(Insert Name)</SpecificName>
+    <History>(Insert History)</History>
   </Identity>
   <VisualActor>
     <Actor>structures/persians/temple.xml</Actor>

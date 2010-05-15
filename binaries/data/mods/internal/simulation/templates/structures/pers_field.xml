@@ -3,6 +3,7 @@
   <Identity>
     <Civ>pers</Civ>
     <SpecificName>Agros</SpecificName>
+    <History>A farmer's field.</History>
   </Identity>
   <ResourceSupply>
     <Amount>2000</Amount>

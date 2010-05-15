@@ -4,6 +4,7 @@
     <Civ>gaia</Civ>
     <GenericName>Fence</GenericName>
     <SpecificName>Short Wooden Fence</SpecificName>
+    <History>A split rail wooden fence.</History>
   </Identity>
   <Health>
     <DeathType>vanish</DeathType>
@@ -21,4 +22,8 @@
     <Square width="0.8" depth="6.5"/>
     <Height>4.0</Height>
   </Footprint>
+  <Vision>
+    <Range>1</Range>
+    <RetainInFog>true</RetainInFog>
+  </Vision>
 </Entity>

@@ -9,9 +9,11 @@
     <Crush>11.0</Crush>
   </Armour>
   <Attack>
-    <Hack>19.0</Hack>
-    <Pierce>0.0</Pierce>
-    <Crush>0.0</Crush>
+    <Melee>
+      <Hack>19.0</Hack>
+      <Pierce>0.0</Pierce>
+      <Crush>0.0</Crush>
+    </Melee>
   </Attack>
   <VisualActor>
     <Actor>units/romans/infantry_swordsman_e.xml</Actor>

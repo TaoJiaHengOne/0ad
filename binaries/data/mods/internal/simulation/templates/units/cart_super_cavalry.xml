@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Pil Qrav</SpecificName>
+    <History>By far the most famous of Carthaginian weapons was the small, ugly, and now extinct, North African forest elephants. Going into battle without a war tower carrying only a driver, Carthaginian war elephants were used as terror weapons: horses could not stand their smell, inexperienced troops were frightened, and the havoc they could cause was immense. Yet by the time of the Second Punic War elephants were at the end of their time. Armies had learned the weaknesses of the giant beasts, specifically how to hamstring and confuse them. More often than not a war elephant could be just as dangerous to its own side as the enemy.</History>
   </Identity>
   <Cost>
     <Resources>
@@ -20,10 +21,19 @@
   </Armour>
   <UnitMotion>
     <WalkSpeed>7.0</WalkSpeed>
+    <Run>
+      <Speed>14.0</Speed>
+    </Run>
   </UnitMotion>
   <Attack>
-    <Hack>20.0</Hack>
-    <Crush>40.0</Crush>
+    <Melee>
+      <Hack>20.0</Hack>
+      <Crush>40.0</Crush>
+    </Melee>
+    <Charge>
+      <Hack>60.0</Hack>
+      <Crush>120.0</Crush>
+    </Charge>
   </Attack>
   <VisualActor>
     <Actor>units/carthaginians/super_unit_2.xml</Actor>
@@ -32,4 +42,7 @@
     <Circle radius="2.5"/>
     <Height>6.0</Height>
   </Footprint>
+  <Vision>
+    <Range>23</Range>
+  </Vision>
 </Entity>

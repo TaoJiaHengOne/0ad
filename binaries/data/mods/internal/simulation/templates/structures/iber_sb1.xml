@@ -3,6 +3,8 @@
   <Identity>
     <Civ>iber</Civ>
     <SpecificName>Monumento Venerado</SpecificName>
+    <Rollover>All units within LOS of this monument will fight harder. Build limit: 1 per map.</Rollover>
+    <History>The Iberians were a religious people who built small monuments to their various gods. These monuments could also serve as family tombs.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/iberians/sb_1.xml</Actor>

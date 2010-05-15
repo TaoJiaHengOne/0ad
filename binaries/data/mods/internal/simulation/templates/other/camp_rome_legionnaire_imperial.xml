@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Legionnaire</SpecificName>
+    <History>The Imperial Legionnaire.</History>
   </Identity>
   <VisualActor>
     <Actor>units/romans/super_unit_4_imp_legion.xml</Actor>

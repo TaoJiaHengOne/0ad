@@ -3,6 +3,7 @@
   <Identity>
     <Civ>cart</Civ>
     <SpecificName>Hamilcar Barca</SpecificName>
+    <History>Hamilcar Barca, father of Hannibal, and conqueror of Iberia.</History>
   </Identity>
   <VisualActor>
     <Actor>units/carthaginians/hero_hamilcar_horse.xml</Actor>

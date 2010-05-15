@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Porta</SpecificName>
+    <History>(Insert History Here)</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/wall_gate.xml</Actor>

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="units/rome_infantry_javelinist_b">
+  <Promotion>
+    <Entity>rome_infantry_javelinist_e</Entity>
+  </Promotion>
   <Health>
     <Max>90</Max>
   </Health>
+  <Stamina>
+    <Max>550</Max>
+  </Stamina>
   <Armour>
     <Hack>2.5</Hack>
     <Pierce>4.0</Pierce>
@@ -10,13 +16,18 @@
   </Armour>
   <UnitMotion>
     <WalkSpeed>8.5</WalkSpeed>
+    <Run>
+      <Speed>16.5</Speed>
+    </Run>
   </UnitMotion>
   <Attack>
-    <Hack>0.0</Hack>
-    <Pierce>25.0</Pierce>
-    <Crush>0.0</Crush>
-    <MaxRange>34</MaxRange>
-    <ProjectileSpeed>26.0</ProjectileSpeed>
+    <Ranged>
+      <Hack>0.0</Hack>
+      <Pierce>25.0</Pierce>
+      <Crush>0.0</Crush>
+      <MaxRange>34</MaxRange>
+      <ProjectileSpeed>26.0</ProjectileSpeed>
+    </Ranged>
   </Attack>
   <VisualActor>
     <Actor>units/romans/infantry_javelinist_a.xml</Actor>

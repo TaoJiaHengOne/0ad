@@ -3,6 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Castra</SpecificName>
+    <History>Romans specialised in the building of military camps and forts. A few of them still survive.</History>
   </Identity>
   <VisualActor>
     <Actor>structures/romans/barracks.xml</Actor>
