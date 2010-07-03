@@ -21,7 +21,7 @@
     <Static width="17.0" depth="30.0"/>
   </Obstruction>
   <TrainingQueue>
-    <Entities>
+    <Entities datatype="tokens">
       units/cart_super_infantry
     </Entities>
   </TrainingQueue>

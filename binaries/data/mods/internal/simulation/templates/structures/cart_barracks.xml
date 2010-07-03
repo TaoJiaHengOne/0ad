@@ -16,7 +16,7 @@
     <Static width="22.0" depth="23.0"/>
   </Obstruction>
   <TrainingQueue>
-    <Entities>
+    <Entities datatype="tokens">
       units/cart_cavalry_javelinist_b
       units/cart_cavalry_spearman_b
       units/cart_cavalry_swordsman_b

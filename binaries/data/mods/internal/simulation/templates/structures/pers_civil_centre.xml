@@ -9,7 +9,7 @@
     <Actor>structures/persians/civil_centre.xml</Actor>
   </VisualActor>
   <TrainingQueue>
-    <Entities>
+    <Entities datatype="tokens">
       units/pers_cavalry_swordsman_b
       units/pers_infantry_archer_b
       units/pers_infantry_spearman_b

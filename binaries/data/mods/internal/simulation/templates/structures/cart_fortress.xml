@@ -16,7 +16,7 @@
     <Static width="24.0" depth="27.0"/>
   </Obstruction>
   <TrainingQueue>
-    <Entities>
+    <Entities datatype="tokens">
       units/cart_hero_hamilcar
       units/cart_hero_hannibal
       units/cart_hero_maharbal
