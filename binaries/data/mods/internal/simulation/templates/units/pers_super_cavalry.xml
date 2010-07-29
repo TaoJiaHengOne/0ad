@@ -44,6 +44,6 @@
     <Height>9.0</Height>
   </Footprint>
   <Vision>
-    <Range>25</Range>
+    <Range>100</Range>
   </Vision>
 </Entity>

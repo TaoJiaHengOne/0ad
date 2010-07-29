@@ -23,7 +23,7 @@
     <Height>4.0</Height>
   </Footprint>
   <Vision>
-    <Range>1</Range>
+    <Range>4</Range>
     <RetainInFog>true</RetainInFog>
   </Vision>
 </Entity>
