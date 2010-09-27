@@ -9,7 +9,7 @@
     <Actor>structures/carthaginians/house.xml</Actor>
   </VisualActor>
   <Footprint>
-    <Square width="13.0" depth="13.0"/>
+    <Square width="14.5" depth="14.5"/>
     <Height>5.0</Height>
   </Footprint>
   <Obstruction>
