@@ -8,4 +8,9 @@
   <VisualActor>
     <Actor>structures/persians/scout_tower.xml</Actor>
   </VisualActor>
+  <StatusBars>
+    <BarWidth>6.0</BarWidth>
+    <BarHeight>0.6</BarHeight>
+    <HeightOffset>19.0</HeightOffset>
+  </StatusBars>
 </Entity>
