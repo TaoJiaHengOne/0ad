@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<actor version="1">
-  <group>
-    <variant frequency="1" name="quarry base [A]">
-      <mesh>gaia/quarry_a_base.dae</mesh>
-      <texture>gaia/decal_quarry_temperate.dds</texture>
-    </variant>
-  </group>
-</actor>
