@@ -1,28 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_super">
   <Identity>
-    <GenericName>Super Infantry</GenericName>
+    <GenericName>Super Infantry Spearman</GenericName>
     <IconCell>43</IconCell>
     <Classes datatype="tokens">Organic Foot</Classes>
   </Identity>
   <Cost>
-    <BuildTime>13</BuildTime>
     <Resources>
       <food>50</food>
-      <wood>0</wood>
-      <stone>0</stone>
-      <metal>80</metal>
+      <wood>75</wood>
     </Resources>
   </Cost>
-  <Health>
-    <Max>130</Max>
-  </Health>
-  <Stamina>
-    <Max>1500</Max>
-  </Stamina>
   <Armour>
-    <Hack>9.0</Hack>
-    <Pierce>6.0</Pierce>
+    <Hack>8.0</Hack>
+    <Pierce>9.0</Pierce>
     <Crush>8.0</Crush>
   </Armour>
   <UnitMotion>
@@ -35,23 +26,20 @@
   </UnitMotion>
   <Attack>
     <Melee>
-      <Hack>23.0</Hack>
-      <Pierce>0.0</Pierce>
+      <Hack>8.0</Hack>
+      <Pierce>18.0</Pierce>
       <Crush>0.0</Crush>
       <MaxRange>5.0</MaxRange>
       <RepeatTime>1000</RepeatTime>
     </Melee>
     <Charge>
-      <Hack>46.0</Hack>
-      <Pierce>0.0</Pierce>
+      <Hack>16.0</Hack>
+      <Pierce>36.0</Pierce>
       <Crush>0.0</Crush>
       <MaxRange>5.0</MaxRange>
       <MinRange>0.0</MinRange>
     </Charge>
   </Attack>
-  <Vision>
-    <Range>80</Range>
-  </Vision>
   <Sound>
     <SoundGroups>
       <select>voice/hellenes/civ/civ_male_select.xml</select>

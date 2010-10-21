@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -25,10 +23,8 @@
         <prop actor="props/units/weapons/gladus.xml" attachpoint="r_hand"/>
         <prop actor="props/units/shields/rome_scutum_marian.xml" attachpoint="shield"/>
       </props>
-      <texture>skeletal/high/256_rome_su3_marian_legion.dds</texture>
+      <texture>skeletal/rome_su3_marian_legion.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

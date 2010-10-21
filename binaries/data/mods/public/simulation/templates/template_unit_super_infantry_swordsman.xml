@@ -6,29 +6,20 @@
     <Classes datatype="tokens">Organic Foot</Classes>
   </Identity>
   <Cost>
-    <BuildTime>13</BuildTime>
     <Resources>
       <food>50</food>
-      <wood>0</wood>
-      <stone>0</stone>
       <metal>80</metal>
     </Resources>
   </Cost>
-  <Health>
-    <Max>130</Max>
-  </Health>
-  <Stamina>
-    <Max>1500</Max>
-  </Stamina>
   <Armour>
     <Hack>9.0</Hack>
     <Pierce>6.0</Pierce>
     <Crush>8.0</Crush>
   </Armour>
   <UnitMotion>
-    <WalkSpeed>5.2</WalkSpeed>
+    <WalkSpeed>5.6</WalkSpeed>
     <Run>
-      <Speed>15.6</Speed>
+      <Speed>16.8</Speed>
       <Range>600.0</Range>
       <RangeMin>5.0</RangeMin>
     </Run>
@@ -49,9 +40,6 @@
       <MinRange>0.0</MinRange>
     </Charge>
   </Attack>
-  <Vision>
-    <Range>80</Range>
-  </Vision>
   <Sound>
     <SoundGroups>
       <select>voice/hellenes/civ/civ_male_select.xml</select>
