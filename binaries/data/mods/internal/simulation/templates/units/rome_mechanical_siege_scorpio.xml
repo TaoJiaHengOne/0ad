@@ -3,7 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Scorpio</SpecificName>
-    <IconCell>37</IconCell>
+    <Icon>units/rome_mechanical_siege_scorpio.png</Icon>
   </Identity>
   <Cost>
     <Resources>

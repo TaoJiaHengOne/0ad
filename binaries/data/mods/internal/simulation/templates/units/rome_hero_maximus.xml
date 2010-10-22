@@ -3,7 +3,7 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Quinctus Fabius Maximus</SpecificName>
-    <IconCell>22</IconCell>
+    <Icon>units/rome_hero_marcellus.png</Icon>
     <History>Maximus was dictator of Rome for six months during the Second Punic War. Instead of attacking the most powerful Hannibal, he started a very effective war of attrition against him, securing the nickname "Cunctator" or Delayer.
 			</History>
   </Identity>
