@@ -14,7 +14,6 @@
     <variant frequency="1" name="oars-down">
       <mesh>props/rome_qui_oars2.dae</mesh>
     </variant>
-    <variant frequency="1" name="oars-drawn"/>
   </group>
   <material>player_trans.xml</material>
 </actor>
