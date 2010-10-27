@@ -1,24 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="100" name="Base">
-      <animations>
-        <animation file="infantry/general/dude/dudeidle.psa" name="Idle" speed="200"/>
-        <animation file="biped/dudewalk_swordshield.psa" name="Walk" speed="20"/>
-        <animation file="infantry/general/dude/dudedeath_sword.psa" name="Death" speed="200"/>
-        <animation file="infantry/general/dude/dudedecay_sword.psa" name="Corpse" speed="100"/>
-      </animations>
-      <mesh>skeletal/m_pants_celt.dae</mesh>
+      <mesh>skeletal/celt_trader.pmd</mesh>
       <props>
-        <prop actor="props/units/heads/head_iber_adv.xml" attachpoint="head"/>
+        <prop actor="units/iberians/trader_r.xml" attachpoint="trader"/>
+        <prop actor="units/celts/trader_h.xml" attachpoint="donkey"/>
       </props>
-      <texture>skeletal/iber_trader_1.dds</texture>
+      <texture>null_white.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

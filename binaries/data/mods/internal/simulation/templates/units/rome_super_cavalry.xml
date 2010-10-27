@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Entity parent="template_unit_super_cavalry">
+<Entity parent="template_unit_super_cavalry_swordsman">
   <Identity>
     <Civ>rome</Civ>
-    <SpecificName>Decurio</SpecificName>
-    <History>Decurions each commanded a cavalry squad of ten Equites, three of which made up a turmae. They wore either Greek-style armor or Roman chain mail hauberks split at the thigh to allow for riding. Armed with a spear for throwing or stabbing, they would use a gladius for close combat. A round shield called a parma was a major source of protection once the heavy Roman horseman had closed with their opponents.</History>
+    <SpecificName>Eques Extraordinarius</SpecificName>
+    <Icon>units/rome_super_cavalry.png</Icon>
+    <History>The Equites Extraordinarii were the best of the cavalry of Rome's Italic allies (the socii) that were picked out by the commanding Consul and served under him directly. They functioned about identical to their infantry counterparts. The Italic cavalry was of better quality and quantity then the citizen cavalry of the Republic, and were highly prized for service. </History>
   </Identity>
   <VisualActor>
     <Actor>units/romans/super_unit_2.xml</Actor>
   </VisualActor>
-  <Footprint>
-    <Circle radius="1.5"/>
-    <Height>7.5</Height>
-  </Footprint>
 </Entity>

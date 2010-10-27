@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Entity parent="template_unit_super_infantry">
+<Entity parent="template_unit_super_infantry_swordsman">
   <Identity>
     <Civ>rome</Civ>
-    <SpecificName>Centurio</SpecificName>
-    <History>The Centurio was the commander of a century of 80 men, 10 squads or contubernium of 8 men. To attain the position a man would have had to show great personal bravery, initiative, and authority. Republican centurions were armed just as their men, although their armor could be substantially more flamboyant due to their increased social position. Unlike later centurions, in the pre-Marian army they were elected by their fellow soldiers, who considered their past actions.</History>
+    <SpecificName>Extraordinarius</SpecificName>
+    <Icon>units/rome_super_infantry.png</Icon>
+    <History>The Extraordinarii were best of the infantry fielded by Rome's Italic allies (the socii) that were picked out by the commanding Consul and served under him directly. They were charged with function of vanguard, rearguard, and bodyguard. In battle the Extraordinarii were expected to act as a special unit, to give the Consul additional tactical options.</History>
   </Identity>
   <VisualActor>
     <Actor>units/romans/super_unit_1.xml</Actor>

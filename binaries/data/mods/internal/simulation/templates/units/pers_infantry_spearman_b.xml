@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_infantry_melee_spearman">
+  <VisualActor>
+    <Actor>units/persians/infantry_spearman_b.xml</Actor>
+  </VisualActor>
   <Identity>
     <Civ>pers</Civ>
-    <SpecificName>Neyzedar Madi</SpecificName>
-    <History>The Medes were renowned soldiers, creating an empire that predated that of the Achaemenid Persians. In combat they fought with short spears counterweighted with bronze and used large wicker shields known as spara. Secondary weapons ranged from axes known as sagaris to daggers and short swords, but armor was rare, limited to scale or linen when procured.</History>
+    <SpecificName>Mada Sparabara</SpecificName>
+    <Icon>units/pers_infantry_spearman.png</Icon>
+    <History>Mede Shieldbearers comprised the main infantry regiment of the Persians during this period, especially in the reign of Xerxes. First under the Medes and later the Achaemenids these soldiers were the bread and butter infantry for hand-to-hand engagement. Within the Satabam, the basic tactical unit of the Achamenid army, the shieldbearers formed the first two ranks, protecting the arhcers and also serving as a way to keep the enemy pinned down until the cavalry could act. While well known for tenacity the shieldbearers were not equipped to last long in an extended melee with heavy infantry, like hoplites. </History>
   </Identity>
   <Promotion>
     <Entity>pers_infantry_spearman_a</Entity>
   </Promotion>
-  <VisualActor>
-    <Actor>units/persians/infantry_spearman_b.xml</Actor>
-  </VisualActor>
 </Entity>

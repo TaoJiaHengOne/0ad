@@ -8,4 +8,13 @@
   <VisualActor>
     <Actor>structures/iberians/fortress.xml</Actor>
   </VisualActor>
+  <TrainingQueue>
+    <Entities datatype="tokens">
+      units/iber_hero_caros
+      units/iber_hero_indibil
+      units/iber_hero_variato
+      units/iber_super_infantry
+      units/iber_super_cavalry
+    </Entities>
+  </TrainingQueue>
 </Entity>

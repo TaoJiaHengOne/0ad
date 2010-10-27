@@ -8,4 +8,9 @@
   <VisualActor>
     <Actor>structures/plot_corral.xml</Actor>
   </VisualActor>
+  <TrainingQueue>
+    <Entities datatype="tokens">
+      gaia/fauna_sheep
+    </Entities>
+  </TrainingQueue>
 </Entity>

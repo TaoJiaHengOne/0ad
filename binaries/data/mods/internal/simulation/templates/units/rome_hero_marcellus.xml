@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Entity parent="template_unit_hero">
+<Entity parent="template_unit_hero_cavalry_swordsman">
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Marcus Claudius Marcellus</SpecificName>
@@ -10,10 +10,6 @@
   <VisualActor>
     <Actor>units/romans/hero_marcellus_horse.xml</Actor>
   </VisualActor>
-  <Footprint>
-    <Circle radius="1.5"/>
-    <Height>7.5</Height>
-  </Footprint>
   <Auras>
     <Courage>
       <Radius>20</Radius>
