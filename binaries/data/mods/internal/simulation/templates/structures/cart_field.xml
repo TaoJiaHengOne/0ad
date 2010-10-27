@@ -5,11 +5,4 @@
     <SpecificName>Sadéh</SpecificName>
     <History>A farmer's field.</History>
   </Identity>
-  <ResourceSupply>
-    <Amount>2000</Amount>
-    <Type>food.grain</Type>
-  </ResourceSupply>
-  <VisualActor>
-    <Actor>structures/plot_field.xml</Actor>
-  </VisualActor>
 </Entity>
