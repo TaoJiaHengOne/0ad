@@ -4,8 +4,8 @@
   <group>
     <variant frequency="100" name="Base">
       <animations>
-        <animation file="biped/inf_sword_ready_a.dae" name="Idle" speed="100"/>
-        <animation file="biped/inf_sword_ready_a.dae" name="Idle" speed="101"/>
+        <animation file="biped/inf_sword_ready_e.dae" name="Idle" speed="100"/>
+        <animation file="biped/inf_sword_ready_e.dae" name="Idle" speed="95"/>
         <animation file="biped/walk_spearshield.psa" name="Walk" speed="18"/>
         <animation event="0.5" file="infantry/sword/attack/isw_s_def_06.psa" name="Melee" speed="100"/>
         <animation event="0.5" file="biped/inf_spear_shield_atk_b.psa" name="Melee" speed="100"/>
@@ -27,18 +27,16 @@
       </animations>
       <mesh>skeletal/m_pants_celt.dae</mesh>
       <props>
-        <prop actor="props/units/heads/head_pers_tiara.xml" attachpoint="head"/>
-        <prop actor="props/units/shields/pers_tower.xml" attachpoint="shield"/>
+        <prop actor="props/units/heads/head_pers_a.xml" attachpoint="head"/>
+        <prop actor="props/units/shields/pers_tower_e.xml" attachpoint="shield"/>
         <prop actor="props/units/weapons/spear_ball.xml" attachpoint="r_hand"/>
+        <prop actor="props/units/heads/thracian_cap_01.xml" attachpoint="helmet"/>
       </props>
     </variant>
   </group>
   <group>
-    <variant frequency="1" name="Clothing-emerald">
-      <texture>skeletal/pers_isp_e_1.dds</texture>
-    </variant>
-    <variant frequency="1" name="Clothing-gold">
-      <texture>skeletal/pers_isp_e_2.dds</texture>
+    <variant frequency="1" name="scale mail">
+      <texture>skeletal/pers_iar_e_2.dds</texture>
     </variant>
   </group>
   <group>
@@ -55,6 +53,7 @@
         <prop actor="" attachpoint="shield"/>
         <prop actor="props/units/tools/axe.xml" attachpoint="l_hand"/>
         <prop actor="" attachpoint="r_hand"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="gather_grain">
@@ -62,6 +61,7 @@
         <prop actor="" attachpoint="shield"/>
         <prop actor="props/units/tools/hoe.xml" attachpoint="l_hand"/>
         <prop actor="" attachpoint="r_hand"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="gather_fruit">
@@ -70,6 +70,7 @@
         <prop actor="" attachpoint="l_hand"/>
         <prop actor="props/units/tools/basket.xml" attachpoint="l_leg"/>
         <prop actor="" attachpoint="r_hand"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="gather_stone">
@@ -77,6 +78,7 @@
         <prop actor="" attachpoint="shield"/>
         <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
         <prop actor="" attachpoint="r_hand"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="gather_metal">
@@ -84,6 +86,7 @@
         <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
         <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="Build">
@@ -91,6 +94,7 @@
         <prop actor="" attachpoint="shield"/>
         <prop actor="" attachpoint="l_hand"/>
         <prop actor="props/units/tools/mallet.xml" attachpoint="r_hand"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
   </group>
