@@ -8,11 +8,4 @@
   <VisualActor>
     <Actor>structures/romans/temple_new.xml</Actor>
   </VisualActor>
-  <Footprint>
-    <Square width="17.0" depth="30.0"/>
-    <Height>15.0</Height>
-  </Footprint>
-  <Obstruction>
-    <Static width="17.0" depth="30.0"/>
-  </Obstruction>
 </Entity>

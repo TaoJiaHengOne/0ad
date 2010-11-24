@@ -4,6 +4,9 @@
   <group>
     <variant frequency="100" name="base">
       <mesh>structural/iber_fortress.dae</mesh>
+      <props>
+        <prop actor="props/structures/decals/dirt_4x4.xml" attachpoint="root"/>
+      </props>
       <texture>structural/iber_struct.dds</texture>
     </variant>
   </group>
