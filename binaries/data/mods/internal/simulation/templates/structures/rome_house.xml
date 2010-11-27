@@ -8,4 +8,14 @@
   <VisualActor>
     <Actor>structures/romans/house.xml</Actor>
   </VisualActor>
+  <Cost>
+    <PopulationBonus>10</PopulationBonus>
+    <BuildTime>120</BuildTime>
+    <Resources>
+      <wood>150</wood>
+    </Resources>
+  </Cost>
+  <Health>
+    <Max>1200</Max>
+  </Health>
 </Entity>
