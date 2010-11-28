@@ -10,7 +10,7 @@
   </VisualActor>
   <TrainingQueue>
     <Entities datatype="tokens">
-      gaia/fauna_sheep
+      gaia/fauna_goat
     </Entities>
   </TrainingQueue>
 </Entity>
