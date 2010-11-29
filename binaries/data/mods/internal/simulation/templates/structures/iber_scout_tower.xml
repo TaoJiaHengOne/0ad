@@ -31,4 +31,7 @@
   <Health>
     <Max>2000</Max>
   </Health>
+  <GarrisonHolder>
+    <Max>10</Max>
+  </GarrisonHolder>
 </Entity>
