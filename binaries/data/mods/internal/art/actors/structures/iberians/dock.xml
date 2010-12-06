@@ -5,6 +5,9 @@
   <group>
     <variant frequency="1" name="Iberian Dock">
       <mesh>structural/iber_dock.dae</mesh>
+      <props>
+        <prop actor="props/structures/iberians/dock_boat.xml" attachpoint="root"/>
+      </props>
       <texture>structural/iber_struct.dds</texture>
     </variant>
   </group>

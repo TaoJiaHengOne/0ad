@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
   <castshadow/>
-  <float/>
   <group>
-    <variant frequency="100" name="rowboat">
-      <mesh>structural/celt_rowboat.dae</mesh>
+    <variant>
+      <mesh>props/iber_dock_boat.dae</mesh>
       <texture>structural/iber_ship.dds</texture>
     </variant>
   </group>

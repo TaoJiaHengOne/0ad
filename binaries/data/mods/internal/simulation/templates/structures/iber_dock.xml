@@ -9,10 +9,10 @@
     <Actor>structures/iberians/dock.xml</Actor>
   </VisualActor>
   <Footprint>
-    <Square width="16.0" depth="28.0"/>
+    <Square width="16.0" depth="26.0"/>
     <Height>8.0</Height>
   </Footprint>
   <Obstruction>
-    <Static width="14.0" depth="26.0"/>
+    <Static width="14.0" depth="24.0"/>
   </Obstruction>
 </Entity>
