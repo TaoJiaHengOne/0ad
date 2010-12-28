@@ -5,8 +5,8 @@
     <variant name="Carthaginian Corral">
       <mesh>structural/kart_corral.dae</mesh>
       <props>
-        <prop actor="props/structures/kart_corral.xml" attachpoint="root"/>
-        <prop actor="props/structures/kart_corral_mud.xml" attachpoint="root"/>
+        <prop actor="props/structures/carthaginians/corral.xml" attachpoint="root"/>
+        <prop actor="props/structures/carthaginians/corral_mud.xml" attachpoint="root"/>
       </props>
       <texture>structural/kart_struct.dds</texture>
     </variant>
