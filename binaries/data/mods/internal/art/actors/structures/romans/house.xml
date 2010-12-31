@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="100" name="House A">
-      <mesh>structural/rome_ho_a.pmd</mesh>
-      <texture>structural/rome_struct_1.dds</texture>
+      <mesh>structural/rome_civic_house1.dae</mesh>
+      <props>
+        <prop actor="props/structures/decals/dirt_small.xml" attachpoint="root"/>
+      </props>
+      <texture>structural/rome_struct.dds</texture>
     </variant>
     <variant frequency="100" name="House B">
       <mesh>structural/rome_ho_b.pmd</mesh>
@@ -17,5 +18,5 @@
       <texture>structural/rome_struct_1.dds</texture>
     </variant>
   </group>
-
+  <material>player_trans.xml</material>
 </actor>
