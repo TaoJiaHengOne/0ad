@@ -7,13 +7,11 @@
     <variant frequency="1" name="Base">
       <animations>
         <animation file="quadraped/horse_idle_a.psa" name="Idle" speed="50"/>
-        <animation file="quadraped/horse_attack_a.psa" name="Idle" speed="70"/>
-        <animation file="quadraped/horse_attack_b.psa" name="Idle" speed="48"/>
-        <animation file="quadraped/horse_gallop.psa" name="Run" speed="8"/>
-        <animation file="quadraped/horse_walk.psa" name="Walk" speed="17"/>
-        <animation event=".5" file="quadraped/horse_attack_a.psa" name="Melee" speed="45"/>
-        <animation event=".5" file="quadraped/horse_attack_b.psa" name="Melee" speed="60"/>
-        <animation file="quadraped/horse_death.psa" name="death" speed="230"/>
+        <animation file="quadraped/horse_walk.psa" name="Walk" speed="120"/>
+        <animation file="quadraped/horse_gallop.psa" name="Run" speed="50"/>
+        <animation file="quadraped/horse_walk.psa" name="carry_meat" speed="120"/>
+        <animation event=".5" file="quadraped/horse_idle_a.psa" name="Melee" speed="20"/>
+        <animation file="quadraped/horse_death.psa" name="death" speed="240"/>
       </animations>
       <mesh>skeletal/horse.pmd</mesh>
       <props>
@@ -23,8 +21,26 @@
   </group>
 
   <group>
-    <variant frequency="1" name="horse-texture-1">
-      <texture>skeletal/horse_iber_csp_e_1.dds</texture>
+    <variant frequency="7" name="feet">
+      <texture>skeletal/horse_celt_feet_a.dds</texture>
+    </variant>
+    <variant frequency="5" name="blaze">
+      <texture>skeletal/horse_celt_blaze_a.dds</texture>
+    </variant>
+    <variant frequency="5" name="face">
+      <texture>skeletal/horse_celt_face_a.dds</texture>
+    </variant>
+    <variant frequency="7" name="star">
+      <texture>skeletal/horse_celt_star_a.dds</texture>
+    </variant>
+    <variant frequency="3" name="dapple">
+      <texture>skeletal/horse_celt_dapple_a.dds</texture>
+    </variant>
+    <variant frequency="2" name="snip">
+      <texture>skeletal/horse_celt_snip_a.dds</texture>
+    </variant>
+    <variant frequency="5" name="stripe">
+      <texture>skeletal/horse_celt_stripe_a.dds</texture>
     </variant>
   </group>
 

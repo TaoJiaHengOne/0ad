@@ -21,12 +21,6 @@
         <animation event="0.5" file="infantry/sword/attack/isw_s_def_06.psa" name="Attack" speed="100"/>
       </animations>
       <mesh>skeletal/skeleton.pmd</mesh>
-      <props>
-        <prop actor="props/units/heads/rome_monte_a.xml" attachpoint="helmet"/>
-        <prop actor="props/units/heads/head_hele_b.xml" attachpoint="head"/>
-        <prop actor="props/units/shields/rome_scutum_a.xml" attachpoint="shield"/>
-        <prop actor="props/units/weapons/gladus.xml" attachpoint="r_hand"/>
-      </props>
       <texture>structural/gravestone.dds</texture>
     </variant>
   </group>

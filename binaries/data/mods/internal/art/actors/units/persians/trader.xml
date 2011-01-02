@@ -19,7 +19,7 @@
       <props>
         <prop actor="props/temp/pers_sign_trader.xml" attachpoint="head_extra"/>
         <prop actor="props/units/heads/placeholder_head_pers.xml" attachpoint="head"/>
-        <prop actor="props/temp/eyecandy/crate_a.xml" attachpoint="back"/>
+        <prop actor="props/special/eyecandy/crate_a.xml" attachpoint="back"/>
       </props>
       <texture>skeletal/plac_pers_b.dds</texture>
     </variant>
