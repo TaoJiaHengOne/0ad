@@ -7,6 +7,6 @@
     <Icon>units/celt_ship_fishing.png</Icon>
   </Identity>
   <VisualActor>
-    <Actor>structures/iberians/fishing_boat.xml</Actor>
+    <Actor>structures/iberians/fishing_ship.xml</Actor>
   </VisualActor>
 </Entity>
