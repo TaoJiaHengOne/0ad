@@ -28,6 +28,10 @@
         <prop actor="props/units/weapons/spear_ball.xml" attachpoint="r_hand"/>
         <prop actor="props/units/pers_quiver_back.xml" attachpoint="back"/>
       </props>
+    </variant>
+  </group>
+  <group>
+    <variant frequency="10" name="Armor Iron Scales">
       <texture>skeletal/pers_su1_anusiya_iron.dds</texture>
     </variant>
   </group>
