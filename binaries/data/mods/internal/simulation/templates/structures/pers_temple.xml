@@ -7,5 +7,13 @@
   </Identity>
   <VisualActor>
     <Actor>structures/persians/temple.xml</Actor>
+    <FoundationActor>structures/fndn_4x4.xml</FoundationActor>
   </VisualActor>
+  <Footprint>
+    <Square width="19.0" depth="19.0"/>
+    <Height>12.0</Height>
+  </Footprint>
+  <Obstruction>
+    <Static width="17.5" depth="17.5"/>
+  </Obstruction>
 </Entity>
