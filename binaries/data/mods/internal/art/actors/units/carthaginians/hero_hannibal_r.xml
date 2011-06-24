@@ -1,16 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
-        <animation file="biped/not used/inf_salute_a.psa" name="Idle" speed="1"/>
-        <animation file="biped/not used/inf_salute_d.psa" name="Walk" speed="2"/>
-        <animation file="biped/not used/inf_salute_e.psa" name="Walk" speed="2"/>
-        <animation file="biped/not used/inf_salute_e.psa" name="run" speed="100"/>
-        <animation event="" file="biped/not used/inf_salute_d.psa" name="melee" speed="1"/>
+        <animation file="biped/inf_salute_a.psa" name="Idle" speed="50"/>
+        <animation file="biped/inf_salute_d.psa" name="Walk" speed="50"/>
+        <animation file="biped/inf_salute_e.psa" name="Walk" speed="50"/>
+        <animation file="biped/inf_salute_e.psa" name="run" speed="65"/>
+        <animation event="" file="biped/inf_salute_d.psa" name="melee" speed="65"/>
         <animation file="biped/rider_sword_death_a.psa" name="death" speed="200"/>
       </animations>
       <mesh>skeletal/m_tunic_long.dae</mesh>
@@ -23,7 +21,5 @@
       <texture>skeletal/kart_hero_hannibal.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>
