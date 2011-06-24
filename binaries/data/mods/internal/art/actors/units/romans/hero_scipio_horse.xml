@@ -17,8 +17,17 @@
       <mesh>skeletal/horse.pmd</mesh>
       <props>
         <prop actor="units/romans/hero_scipio_r.xml" attachpoint="rider"/>
+        <prop actor="props/units/hero_star.xml" attachpoint="root"/>
       </props>
       <texture>skeletal/horse_rome_marcellus.dds</texture>
+    </variant>
+  </group>
+  <group>
+    <variant frequency="100" name="Idle"/>
+    <variant name="Death">
+      <props>
+        <prop attachpoint="root"/>
+      </props>
     </variant>
   </group>
   <material>player_trans.xml</material>
