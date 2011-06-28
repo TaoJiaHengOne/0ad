@@ -10,8 +10,8 @@
   </VisualActor>
   <TrainingQueue>
     <Entities datatype="tokens">
-      units/pers_super_cavalry
-      units/pers_super_infantry
+      units/pers_champion_cavalry
+      units/pers_champion_infantry
     </Entities>
   </TrainingQueue>
 </Entity>

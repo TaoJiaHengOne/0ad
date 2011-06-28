@@ -20,7 +20,7 @@
       units/cart_hero_hamilcar
       units/cart_hero_hannibal
       units/cart_hero_maharbal
-      units/cart_super_cavalry
+      units/cart_champion_cavalry
     </Entities>
   </TrainingQueue>
 </Entity>
