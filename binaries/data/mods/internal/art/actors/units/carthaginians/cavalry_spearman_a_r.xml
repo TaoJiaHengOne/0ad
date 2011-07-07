@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -19,10 +17,10 @@
         <prop actor="props/units/heads/head_hele_b.xml" attachpoint="head"/>
         <prop actor="props/units/heads/samnite_test.xml" attachpoint="helmet"/>
         <prop actor="props/units/weapons/spear.xml" attachpoint="r_hand"/>
+        <prop actor="props/units/shields/cart_tarantine_a.xml" attachpoint="shield"/>
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="pectoral-tripledisc">
       <texture>skeletal/kart_csp_a_1.dds</texture>
@@ -31,7 +29,5 @@
       <texture>skeletal/kart_csp_e_1.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

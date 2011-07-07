@@ -22,7 +22,7 @@
   </Obstruction>
   <TrainingQueue>
     <Entities datatype="tokens">
-      units/cart_super_infantry
+      units/cart_champion_infantry
     </Entities>
   </TrainingQueue>
 </Entity>
