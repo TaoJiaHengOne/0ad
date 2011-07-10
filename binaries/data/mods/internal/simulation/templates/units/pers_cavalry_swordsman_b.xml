@@ -2,8 +2,10 @@
 <Entity parent="template_unit_cavalry_melee_swordsman">
   <Identity>
     <Civ>pers</Civ>
-    <SpecificName>Usubari Tazi</SpecificName>
-    <History>Camel mounted cavalry were widespread among the Arabs levied into the Persian army, armed with swords and axes to bows and spears. They could move very quickly across all terrain and they were quite effective against traditional horse-mounted cavalry as the horses themselves could not stand the smell of camels. Camels were also seen in Persian armies deployed by the Bactrians from Central Asia, who used them as platforms for archers.</History>
+	<SelectionGroupName>units/pers_cavalry_swordsman_b</SelectionGroupName>
+	<GenericName>Hyrcanian Cavalry</GenericName>
+    <SpecificName>Verkhana Asabari</SpecificName>
+    <History>The Hyrcanians were the light cavalry of the Achaemenid Great Kings. These men were of superb quality, and are mentioned in every major Persian campaign. Their homeland of Hyrcania bordering the Caspian Sea was both a lush fertile rain forest and foreboding mountain country.</History>
   </Identity>
   <Promotion>
     <Entity>pers_cavalry_swordsman_a</Entity>

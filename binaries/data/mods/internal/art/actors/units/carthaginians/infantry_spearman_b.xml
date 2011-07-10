@@ -14,6 +14,11 @@
         <animation file="biped/walk_spearshield.psa" name="Walk" speed="122"/>
         <animation file="infantry/sword/move/run/isw_s_off_01.psa" name="Run" speed="40"/>
         <animation file="infantry/sword/move/run/isw_s_off_01.psa" name="Run" speed="38"/>
+        <animation file="biped/walk_spearshield.psa" name="carry_food" speed="120"/>
+        <animation file="biped/walk_spearshield.psa" name="carry_meat" speed="120"/>
+        <animation file="biped/walk_spearshield.psa" name="carry_wood" speed="120"/>
+        <animation file="biped/walk_spearshield.psa" name="carry_stone" speed="120"/>
+        <animation file="biped/walk_spearshield.psa" name="carry_metal" speed="120"/>
         <animation event="0.5" file="biped/inf_spear_shield_atk_b.psa" name="melee" speed="100"/>
         <animation event="0.5" file="infantry/sword/attack/isw_s_def_06.psa" name="melee" speed="100"/>
         <animation event="0.23" file="infantry/general/chop.psa" name="gather_tree" speed="250"/>
@@ -48,17 +53,12 @@
   </group>
   <group>
     <variant frequency="1" name="Idle"/>
-    <variant name="Melee">
-      <props>
-        <prop actor="props/units/weapons/spear.xml" attachpoint="r_hand"/>
-        <prop actor="props/units/shields/kart_round_isp_basic.xml" attachpoint="shield"/>
-      </props>
-    </variant>
-    <variant name="gather_wood">
+    <variant name="gather_tree">
       <props>
         <prop actor="props/units/tools/axe.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
         <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="gather_grain">
@@ -66,6 +66,7 @@
         <prop actor="props/units/tools/hoe.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
         <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="gather_fruit">
@@ -73,26 +74,86 @@
         <prop actor="props/units/tools/basket.xml" attachpoint="l_leg"/>
         <prop attachpoint="r_hand"/>
         <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
-    <variant name="gather_stone">
+    <variant name="gather_meat">
+      <props>
+        <prop attachpoint="helmet"/>
+        <prop attachpoint="r_hand"/>
+        <prop attachpoint="shield"/>
+        <prop actor="props/units/tools/basket.xml" attachpoint="l_leg"/>
+      </props>
+    </variant>
+    <variant name="gather_rock">
       <props>
         <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
         <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
-    <variant name="gather_metal">
+    <variant name="gather_ore">
       <props>
         <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
         <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
+      </props>
+    </variant>
+    <variant name="gather_ruins">
+      <props>
+        <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
+        <prop attachpoint="r_hand"/>
+        <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
       </props>
     </variant>
     <variant name="Build">
       <props>
         <prop actor="props/units/tools/mallet.xml" attachpoint="r_hand"/>
         <prop attachpoint="l_hand"/>
+        <prop attachpoint="shield"/>
+        <prop attachpoint="helmet"/>
+      </props>
+    </variant>
+    <variant name="carry_food">
+      <props>
+        <prop actor="props/units/shuttle_basket.xml" attachpoint="r_hand"/>
+        <prop attachpoint="l_hand"/>
+        <prop attachpoint="helmet"/>
+        <prop attachpoint="shield"/>
+      </props>
+    </variant>
+    <variant name="carry_meat">
+      <props>
+        <prop actor="props/units/shuttle_meat.xml" attachpoint="r_hand"/>
+        <prop attachpoint="l_hand"/>
+        <prop attachpoint="helmet"/>
+        <prop attachpoint="shield"/>
+      </props>
+    </variant>
+    <variant name="carry_wood">
+      <props>
+        <prop actor="props/units/shuttle_wood.xml" attachpoint="r_hand"/>
+        <prop actor="" attachpoint="l_hand"/>
+        <prop attachpoint="helmet"/>
+        <prop attachpoint="shield"/>
+      </props>
+    </variant>
+    <variant name="carry_stone">
+      <props>
+        <prop actor="props/units/shuttle_stone.xml" attachpoint="r_hand"/>
+        <prop actor="" attachpoint="l_hand"/>
+        <prop attachpoint="helmet"/>
+        <prop attachpoint="shield"/>
+      </props>
+    </variant>
+    <variant name="carry_metal">
+      <props>
+        <prop actor="props/units/shuttle_metal.xml" attachpoint="r_hand"/>
+        <prop actor="" attachpoint="l_hand"/>
+        <prop attachpoint="helmet"/>
         <prop attachpoint="shield"/>
       </props>
     </variant>

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -40,7 +38,6 @@
       </props>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="tunic-brown">
       <texture>skeletal/iber_isl_b_1.dds</texture>
@@ -49,46 +46,47 @@
       <texture>skeletal/iber_isl_b_2.dds</texture>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Idle"/>
-    <variant name="Melee">
-      <props>
-        <prop actor="props/units/weapons/sling.xml" attachpoint="r_hand"/>
-      </props>
-    </variant>
-    <variant name="gather_wood">
+    <variant name="gather_tree">
       <props>
         <prop actor="props/units/tools/axe.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
-        <prop attachpoint="shield"/>
       </props>
     </variant>
     <variant name="gather_grain">
       <props>
         <prop actor="props/units/tools/hoe.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
-        <prop attachpoint="shield"/>
       </props>
     </variant>
     <variant name="gather_fruit">
       <props>
         <prop actor="props/units/tools/basket.xml" attachpoint="l_leg"/>
         <prop attachpoint="r_hand"/>
-        <prop attachpoint="shield"/>
       </props>
     </variant>
-    <variant name="gather_stone">
+    <variant name="gather_meat">
+      <props>
+        <prop attachpoint="r_hand"/>
+        <prop actor="props/units/tools/basket.xml" attachpoint="l_leg"/>
+      </props>
+    </variant>
+    <variant name="gather_rock">
       <props>
         <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
-        <prop attachpoint="shield"/>
       </props>
     </variant>
-    <variant name="gather_metal">
+    <variant name="gather_ore">
       <props>
         <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
-        <prop attachpoint="shield"/>
+        <prop attachpoint="r_hand"/>
+      </props>
+    </variant>
+    <variant name="gather_ruins">
+      <props>
+        <prop actor="props/units/tools/pick.xml" attachpoint="l_hand"/>
         <prop attachpoint="r_hand"/>
       </props>
     </variant>
@@ -96,11 +94,40 @@
       <props>
         <prop actor="props/units/tools/mallet.xml" attachpoint="r_hand"/>
         <prop attachpoint="l_hand"/>
+      </props>
+    </variant>
+    <variant name="carry_food">
+      <props>
+        <prop actor="props/units/shuttle_basket.xml" attachpoint="r_hand"/>
+        <prop attachpoint="l_hand"/>
+      </props>
+    </variant>
+    <variant name="carry_meat">
+      <props>
+        <prop actor="props/units/shuttle_meat.xml" attachpoint="r_hand"/>
+        <prop attachpoint="l_hand"/>
+      </props>
+    </variant>
+    <variant name="carry_wood">
+      <props>
+        <prop actor="props/units/shuttle_wood.xml" attachpoint="r_hand"/>
+        <prop actor="" attachpoint="l_hand"/>
         <prop attachpoint="shield"/>
       </props>
     </variant>
+    <variant name="carry_stone">
+      <props>
+        <prop actor="props/units/shuttle_stone.xml" attachpoint="r_hand"/>
+        <prop actor="" attachpoint="l_hand"/>
+      </props>
+    </variant>
+    <variant name="carry_metal">
+      <props>
+        <prop actor="props/units/shuttle_metal.xml" attachpoint="r_hand"/>
+        <prop actor="" attachpoint="l_hand"/>
+      </props>
+    </variant>
   </group>
-
   <material>player_trans.xml</material>
 
 </actor>
