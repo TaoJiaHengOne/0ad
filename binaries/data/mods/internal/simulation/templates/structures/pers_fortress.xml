@@ -5,13 +5,13 @@
     <SpecificName>Dura</SpecificName>
     <History>The Susa Chateau was a fortress in the administrative capital of Susa, which was reconstructed by a French archaeologist in 1890 with the use of original building material.</History>
   </Identity>
-  <VisualActor>
-    <Actor>structures/persians/fortress.xml</Actor>
-  </VisualActor>
   <TrainingQueue>
     <Entities datatype="tokens">
       units/pers_champion_cavalry
       units/pers_champion_infantry
     </Entities>
   </TrainingQueue>
+  <VisualActor>
+    <Actor>structures/persians/fortress.xml</Actor>
+  </VisualActor>
 </Entity>

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_cavalry_melee_spearman">
+  <Health>
+    <Max>1000</Max>
+  </Health>
   <Identity>
     <Civ>rome</Civ>
 	<SelectionGroupName>units/rome_cavalry_spearman_b</SelectionGroupName>
@@ -10,9 +13,6 @@
   <Promotion>
     <Entity>rome_cavalry_spearman_a</Entity>
   </Promotion>
-  <Health>
-    <Max>1000</Max>
-  </Health>
   <VisualActor>
     <Actor>units/romans/cavalry_spearman_b.xml</Actor>
   </VisualActor>

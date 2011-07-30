@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_structure_defense_wall_tower">
-  <Identity>
-    <Civ>rome</Civ>
-    <SpecificName>Turris Circummunitio</SpecificName>
-    <History>(Insert history here)</History>
-  </Identity>
+  <Armour>
+    <Hack>15.0</Hack>
+    <Pierce>35.0</Pierce>
+    <Crush>10.0</Crush>
+  </Armour>
   <Cost>
     <Resources>
       <wood>100</wood>
@@ -14,11 +14,11 @@
   <Health>
     <Max>1000</Max>
   </Health>
-  <Armour>
-    <Hack>15.0</Hack>
-    <Pierce>35.0</Pierce>
-    <Crush>10.0</Crush>
-  </Armour>
+  <Identity>
+    <Civ>rome</Civ>
+    <SpecificName>Turris Circummunitio</SpecificName>
+    <History>(Insert history here)</History>
+  </Identity>
   <VisualActor>
     <Actor>structures/romans/siege_wall_tower.xml</Actor>
     <FoundationActor>structures/fndn_1x1.xml</FoundationActor>

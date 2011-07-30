@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_infantry_ranged_javelinist">
-  <Identity>
-    <Civ>rome</Civ>
-	<SelectionGroupName>units/rome_infantry_javelinist_b</SelectionGroupName>
-	<GenericName>Roman Principes</GenericName>
-    <SpecificName>Principes</SpecificName>
-    <History>The principi were the second line of heavy infantry in the Republican Roman army. Exactly identical in equipment and fighting methods to the hastati, they differed only in age, being slightly older. As a result they could often afford slightly better arms, including chain mail hauberks known as lorica hamata. Like all Roman heavy infantry they decorated their helmets with feathers and horsehair crests in the Italian fashion.</History>
-  </Identity>
-  <Promotion>
-    <Entity>rome_infantry_javelinist_a</Entity>
-  </Promotion>
-  <Health>
-    <Max>80</Max>
-  </Health>
-  <Stamina>
-    <Max>550</Max>
-  </Stamina>
   <Armour>
     <Hack>1.5</Hack>
     <Pierce>3.5</Pierce>
@@ -32,6 +16,22 @@
       <RepeatTime>1500</RepeatTime>
     </Ranged>
   </Attack>
+  <Health>
+    <Max>80</Max>
+  </Health>
+  <Identity>
+    <Civ>rome</Civ>
+	<SelectionGroupName>units/rome_infantry_javelinist_b</SelectionGroupName>
+	<GenericName>Roman Principes</GenericName>
+    <SpecificName>Principes</SpecificName>
+    <History>The principi were the second line of heavy infantry in the Republican Roman army. Exactly identical in equipment and fighting methods to the hastati, they differed only in age, being slightly older. As a result they could often afford slightly better arms, including chain mail hauberks known as lorica hamata. Like all Roman heavy infantry they decorated their helmets with feathers and horsehair crests in the Italian fashion.</History>
+  </Identity>
+  <Promotion>
+    <Entity>rome_infantry_javelinist_a</Entity>
+  </Promotion>
+  <Stamina>
+    <Max>550</Max>
+  </Stamina>
   <VisualActor>
     <Actor>units/romans/infantry_javelinist_b.xml</Actor>
   </VisualActor>

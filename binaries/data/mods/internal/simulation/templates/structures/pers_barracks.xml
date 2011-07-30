@@ -5,9 +5,6 @@
     <SpecificName>Apadana</SpecificName>
     <History>The vassal and subject peoples sent representatives to deliver annual tribute to the Great King in Persepolis; the King accepted them in the Apadana ('Audience Hall').</History>
   </Identity>
-  <VisualActor>
-    <Actor>structures/persians/barracks.xml</Actor>
-  </VisualActor>
   <TrainingQueue>
     <Entities datatype="tokens">
       units/pers_cavalry_archer_b
@@ -19,4 +16,7 @@
       units/pers_infantry_spearman_b
     </Entities>
   </TrainingQueue>
+  <VisualActor>
+    <Actor>structures/persians/barracks.xml</Actor>
+  </VisualActor>
 </Entity>

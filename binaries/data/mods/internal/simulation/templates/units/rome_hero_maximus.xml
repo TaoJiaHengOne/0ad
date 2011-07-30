@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_hero_cavalry_swordsman">
+  <Auras>
+    <Courage>
+      <Radius>20</Radius>
+      <Bonus>10</Bonus>
+    </Courage>
+  </Auras>
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Quinctus Fabius Maximus</SpecificName>
@@ -10,10 +16,4 @@
   <VisualActor>
     <Actor>units/romans/hero_maximus_horse.xml</Actor>
   </VisualActor>
-  <Auras>
-    <Courage>
-      <Radius>20</Radius>
-      <Bonus>10</Bonus>
-    </Courage>
-  </Auras>
 </Entity>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_hero">
+  <Auras>
+    <Courage>
+      <Radius>20</Radius>
+      <Bonus>10</Bonus>
+    </Courage>
+  </Auras>
   <Identity>
     <Civ>hele</Civ>
     <SpecificName>Themistocles the Killer</SpecificName>
@@ -8,10 +14,4 @@
   <VisualActor>
     <Actor>temp/themistocles_the_killer.xml</Actor>
   </VisualActor>
-  <Auras>
-    <Courage>
-      <Radius>20</Radius>
-      <Bonus>10</Bonus>
-    </Courage>
-  </Auras>
 </Entity>

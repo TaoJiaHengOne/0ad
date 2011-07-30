@@ -5,13 +5,13 @@
     <SpecificName>Fortis</SpecificName>
     <History>Fortified city.</History>
   </Identity>
-  <VisualActor>
-    <Actor>structures/romans/fortress.xml</Actor>
-  </VisualActor>
   <TrainingQueue>
     <Entities datatype="tokens">
       units/rome_champion_cavalry
       units/rome_champion_infantry
     </Entities>
   </TrainingQueue>
+  <VisualActor>
+    <Actor>structures/romans/fortress.xml</Actor>
+  </VisualActor>
 </Entity>
