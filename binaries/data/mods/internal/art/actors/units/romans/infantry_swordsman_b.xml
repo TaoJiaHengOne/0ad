@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -29,13 +27,17 @@
       </props>
     </variant>
   </group>
-
   <group>
-    <variant frequency="1" name="texture-1">
+    <variant frequency="1" name="pectoral--plain">
       <texture>skeletal/rome_isw_b.dds</texture>
     </variant>
+    <variant frequency="1" name="pectoral--muscle">
+      <texture>skeletal/rome_isw_b_2.dds</texture>
+    </variant>
+    <variant frequency="1" name="pectoral">
+      <texture>skeletal/rome_isw_b_3.dds</texture>
+    </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Idle"/>
     <variant name="Melee">
@@ -86,7 +88,5 @@
       </props>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

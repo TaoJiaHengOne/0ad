@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Base">
       <animations>
@@ -27,6 +25,7 @@
         <animation file="infantry/general/death/inf_06.psa" name="death" speed="300"/>
         <animation file="infantry/general/death/inf_07.psa" name="death" speed="300"/>
       </animations>
+      <mesh>skeletal/m_tunic_short.dae</mesh>
       <props>
         <prop actor="props/units/heads/rome_etrusco_e.xml" attachpoint="helmet"/>
         <prop actor="props/units/heads/rome_head_veteran.xml" attachpoint="head"/>
@@ -35,14 +34,14 @@
       </props>
     </variant>
   </group>
-
   <group>
-    <variant frequency="1" name="armour-texture-1">
-      <mesh>skeletal/m_tunic_short.dae</mesh>
+    <variant frequency="1" name="armour-texture-Color Shoulders">
       <texture>skeletal/rome_isp_e_1.dds</texture>
     </variant>
+    <variant frequency="1" name="armour-texture-White Shoulders">
+      <texture>skeletal/rome_isp_e_2.dds</texture>
+    </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Idle"/>
     <variant name="Melee">
@@ -96,7 +95,5 @@
       <texture>skeletal/bloodied/rome_isp_e_1.dds</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>

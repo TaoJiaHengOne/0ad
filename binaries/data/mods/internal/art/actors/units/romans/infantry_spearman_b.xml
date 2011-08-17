@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="100" name="Base">
       <animations>
@@ -30,10 +28,9 @@
         <prop actor="props/units/shields/rome_scutum_b.xml" attachpoint="shield"/>
         <prop actor="props/units/weapons/spear_lance.xml" attachpoint="r_hand"/>
       </props>
-      <texture>skeletal/rome_isw_e.dds</texture>
+      <texture>skeletal/rome_isw_a.dds</texture>
     </variant>
   </group>
-
   <group>
     <variant frequency="1" name="Idle"/>
     <variant name="Melee">
@@ -84,7 +81,5 @@
       </props>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>
