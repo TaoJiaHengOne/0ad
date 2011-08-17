@@ -15,6 +15,9 @@
   <Health>
     <Max>105</Max>
   </Health>
+  <Identity>
+    <SpecificName>Princips</SpecificName>
+  </Identity>
   <Promotion>
     <Entity>rome_infantry_swordsman_e</Entity>
   </Promotion>
