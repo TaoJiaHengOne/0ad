@@ -1,15 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-
   <castshadow/>
-
   <group>
     <variant frequency="1" name="Civic Center">
-      <mesh>structural/rome_civic_center.dae</mesh>
-      <texture>structural/rome_struct.dds</texture>
+      <mesh>structural/roman_cc.dae</mesh>
+      <props>
+        <prop actor="props/structures/romans/rome_cc_trans.xml" attachpoint="root"/>
+      </props>
+      <texture>structural/roman_struct2.png</texture>
     </variant>
   </group>
-
   <material>player_trans.xml</material>
-
 </actor>
