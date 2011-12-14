@@ -7,16 +7,16 @@
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Municipium</SpecificName>
-    <History>(Roman History goes here)</History>
+    <History>A Municipium was a Roman settlement just below a Colonia in level, enjoying self-governance and the grant of Latin citizenship rights for its inhabitants.</History>
   </Identity>
   <Obstruction>
     <Static width="37.0" depth="37.0"/>
   </Obstruction>
   <TrainingQueue>
     <Entities datatype="tokens">
-      units/rome_cavalry_spearman_b
+      units/rome_infantry_swordsman_b
       units/rome_infantry_javelinist_b
-      units/rome_infantry_spearman_b
+      units/rome_cavalry_spearman_b
     </Entities>
   </TrainingQueue>
   <VisualActor>
