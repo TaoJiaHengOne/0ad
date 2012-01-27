@@ -4,7 +4,7 @@
   <group>
     <variant frequency="100" name="Base">
       <animations/>
-      <mesh>props/hele_mc.pmd</mesh>
+      <mesh>props/hele_mc.dae</mesh>
       <props/>
       <texture>props/hele_prop_1_winter.dds</texture>
     </variant>
