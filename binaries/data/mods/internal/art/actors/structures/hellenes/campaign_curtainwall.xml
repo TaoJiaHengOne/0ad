@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actor version="1">
+  <castshadow/>
+  <group>
+    <variant frequency="100" name="hele_curtain_wall">
+      <mesh>structural/campaign_curtainwall_hele.dae</mesh>
+      <props>
+        <prop actor="structures/hellenes/campaign_curtainwall_gates.xml" attachpoint="root"/>
+        <prop actor="structures/hellenes/campaign_curtainwall_towers.xml" attachpoint="root"/>
+      </props>
+      <texture>structural/rome_struct_2.png</texture>
+    </variant>
+  </group>
+  <material>player_trans.xml</material>
+</actor>
