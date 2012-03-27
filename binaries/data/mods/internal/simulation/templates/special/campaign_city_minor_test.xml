@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_structure_civic_civil_centre">
+  <Attack disable=""/>
   <Footprint replace="">
     <Circle radius="26.0"/>
     <Height>8.0</Height>
@@ -9,13 +10,19 @@
     <SpecificName>Minor Greek Polis</SpecificName>
   </Identity>
   <Obstruction>
-    <Static width="50.0" depth="50.0"/>
+    <Static width="48.0" depth="48.0"/>
   </Obstruction>
   <TerritoryInfluence>
     <Root>true</Root>
     <Radius>150</Radius>
     <Weight>35000</Weight>
   </TerritoryInfluence>
+  <TrainingQueue>
+    <Entities datatype="tokens">
+      -units/{civ}_support_female_citizen
+      campaigns/army_mace_hero_alexander
+    </Entities>
+  </TrainingQueue>
   <VisualActor>
     <Actor>structures/hellenes/campaign_curtainwall.xml</Actor>
   </VisualActor>

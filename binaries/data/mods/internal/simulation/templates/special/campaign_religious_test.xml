@@ -19,6 +19,7 @@
     <Radius>100</Radius>
     <Weight>65536</Weight>
   </TerritoryInfluence>
+  <TrainingQueue disable=""/>
   <VisualActor>
     <Actor>structures/hellenes/temple_new.xml</Actor>
   </VisualActor>
