@@ -3,10 +3,14 @@
   <castshadow/>
   <group>
     <variant frequency="100" name="hele_curtain_wall">
+      <animations>
+        <animation event="0.5" load="0.0" name="melee" speed="100"/>
+      </animations>
       <mesh>structural/campaign_curtainwall_hele.dae</mesh>
       <props>
         <prop actor="structures/hellenes/campaign_curtainwall_gates.xml" attachpoint="root"/>
         <prop actor="structures/hellenes/campaign_curtainwall_towers.xml" attachpoint="root"/>
+        <prop actor="props/units/weapons/arrow_front_flame.xml" attachpoint="projectile"/>
       </props>
       <texture>structural/rome_struct_2.png</texture>
     </variant>

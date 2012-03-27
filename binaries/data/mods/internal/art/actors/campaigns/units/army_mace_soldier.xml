@@ -2,10 +2,10 @@
 <actor version="1">
   <castshadow/>
   <group>
-    <variant frequency="1" name="mace hero Alexander">
+    <variant frequency="1" name="mace soldier">
       <mesh>props/campaigns/pedestal_mace_1.dae</mesh>
       <props>
-        <prop actor="campaigns/units/mace_alexander.xml" attachpoint="soldier"/>
+        <prop actor="campaigns/units/mace_soldier.xml" attachpoint="soldier"/>
       </props>
       <texture>campaigns/units/pedestal_mace_1.png</texture>
     </variant>
