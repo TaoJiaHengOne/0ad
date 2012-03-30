@@ -40,10 +40,9 @@
       -units/{civ}_support_female_citizen
       campaigns/army_mace_hero_alexander
       campaigns/army_mace_standard
-      units/{civ}_support_trader
     </Entities>
   </TrainingQueue>
   <VisualActor>
-    <Actor>structures/hellenes/campaign_curtainwall.xml</Actor>
+    <Actor>campaigns/structures/hellenes/settlement_curtainwall.xml</Actor>
   </VisualActor>
 </Entity>

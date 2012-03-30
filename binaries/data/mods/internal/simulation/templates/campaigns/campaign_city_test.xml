@@ -44,6 +44,6 @@
     </Entities>
   </TrainingQueue>
   <VisualActor>
-    <Actor>structures/hellenes/campaign_curtainwall.xml</Actor>
+    <Actor>campaigns/structures/hellenes/settlement_curtainwall.xml</Actor>
   </VisualActor>
 </Entity>

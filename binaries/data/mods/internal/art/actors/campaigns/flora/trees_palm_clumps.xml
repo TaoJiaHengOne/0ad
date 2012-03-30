@@ -2,8 +2,11 @@
 <actor version="1">
   <castshadow/>
   <group>
-    <variant frequency="1" name="mesh">
-      <mesh>gaia/campaign_trees_palms.dae</mesh>
+    <variant frequency="1" name="Palm Trees Clump 1">
+      <mesh>gaia/campaigns/trees_palm_01.dae</mesh>
+    </variant>
+    <variant frequency="1" name="Palm Trees Clump 2">
+      <mesh>gaia/campaigns/trees_palm_02.dae</mesh>
     </variant>
   </group>
   <group>

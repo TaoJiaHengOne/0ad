@@ -8,8 +8,8 @@
       </animations>
       <mesh>structural/campaign_curtainwall_hele.dae</mesh>
       <props>
-        <prop actor="structures/hellenes/campaign_curtainwall_gates.xml" attachpoint="root"/>
-        <prop actor="structures/hellenes/campaign_curtainwall_towers.xml" attachpoint="root"/>
+        <prop actor="campaigns/structures/hellenes/settlement_curtainwall_gates.xml" attachpoint="root"/>
+        <prop actor="campaigns/structures/hellenes/settlement_curtainwall_towers.xml" attachpoint="root"/>
         <prop actor="campaigns/structures/hellenes/settlement_houses.xml" attachpoint="root"/>
         <prop actor="campaigns/structures/hellenes/settlement_houses2.xml" attachpoint="root"/>
         <prop actor="campaigns/structures/hellenes/settlement_temple.xml" attachpoint="root"/>
