@@ -14,6 +14,7 @@
       <mesh>skeletal/horse.pmd</mesh>
       <props>
         <prop actor="units/macedonians/champion_cavalry_r.xml" attachpoint="rider"/>
+        <prop actor="props/units/horse_back_blanket.xml" attachpoint="rider"/>
       </props>
     </variant>
   </group>

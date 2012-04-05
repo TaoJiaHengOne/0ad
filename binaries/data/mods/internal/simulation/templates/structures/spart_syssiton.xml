@@ -19,8 +19,8 @@
     <Civ>spart</Civ>
 	<GenericName>Military Mess Hall</GenericName>
     <SpecificName>Syssíton</SpecificName>
-    <Tooltip>Train champion units.</Tooltip>
-    <History>The Syssítia was where full-blooded Spartans were barracked and dined together.</History>
+    <Tooltip>Train heroes and champion units.</Tooltip>
+    <History>The Syssítia was where full-blooded Spartans were barracked and dined together, even Spartan kings.</History>
     <Icon>structures/gymnasion.png</Icon>
   </Identity>
   <Obstruction>

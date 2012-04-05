@@ -78,19 +78,10 @@
 			"Name":"Syssiton",
 			"Class":"",
 			"Emblem":"",
-			"History":"The Syssiton was the Mess Hall for full-blooded Spartiates.",
+			"History":"The Syssiton was the Mess Hall for full-blooded Spartiates. Every Spartan peer, even kings, belonged to one.",
 			"Requirements":"",
 			"Phase":"",
-			"Special":"Train champion units and research technologies related to champions."
-		},
-		{
-			"Name":"Gerousia",
-			"Class":"",
-			"Emblem":"",
-			"History":"The Gerousia is the elected Spartiate citizen assembly.",
-			"Requirements":"",
-			"Phase":"",
-			"Special":"Train heroes and research technologies related to heroes."
+			"Special":"Train heroes and champion units and research technologies related to them."
 		}
 	],
 	"StartEntities":

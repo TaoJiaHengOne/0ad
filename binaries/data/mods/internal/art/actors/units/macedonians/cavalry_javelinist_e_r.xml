@@ -20,7 +20,7 @@
         <prop actor="props/units/weapons/jav_projectile.xml" attachpoint="projectile"/>
         <prop actor="props/units/cape_hd_cav.xml" attachpoint="shoulders"/>
       </props>
-      <texture>skeletal/mace_bronzeshield_2.png</texture>
+      <texture>skeletal/spart_phalangite_officer.dds</texture>
     </variant>
   </group>
   <group>

@@ -17,7 +17,6 @@
       -structures/{civ}_wall_gate
       -structures/{civ}_wall_tower
 	  structures/spart_syssiton
-	  structures/spart_gerousia
     </Entities>
   </Builder>
   <Cost>
