@@ -19,7 +19,7 @@
     <Civ>spart</Civ>
 	<GenericName>Military Mess Hall</GenericName>
     <SpecificName>Syssíton</SpecificName>
-    <Tooltip>Train heroes and champion units.</Tooltip>
+    <Tooltip>Train Spartan heroes and Spartiate champion hoplites.</Tooltip>
     <History>The Syssítia was where full-blooded Spartans were barracked and dined together, even Spartan kings.</History>
     <Icon>structures/gymnasion.png</Icon>
   </Identity>
@@ -35,8 +35,8 @@
   </Sound>
   <TrainingQueue>
     <Entities datatype="tokens">
+      units/hele_hero_leonidas
       units/spart_champion_infantry_spear
-      units/spart_champion_infantry_sword
     </Entities>
   </TrainingQueue>
   <VisualActor>

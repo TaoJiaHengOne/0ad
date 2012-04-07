@@ -2,17 +2,19 @@
 <Entity parent="template_unit_support_female_citizen">
   <Builder>
     <Entities datatype="tokens">
-      structures/{civ}_barracks
-      structures/{civ}_dock
-      structures/{civ}_outpost
       structures/{civ}_defense_tower
-      structures/{civ}_fortress
     </Entities>
   </Builder>
+  <Cost>
+    <Resources>
+      <food>60</food>
+    </Resources>
+  </Cost>
   <Identity>
     <Civ>spart</Civ>
+	<GenericName>Spartan Woman</GenericName>
     <SpecificName>Gýnē</SpecificName>
-    <History>Greek women were kept under tight control by their husbands, rarely leaving the home for anything beyond the necessities of daily life. They could not own anything or be involved in any business or legal transaction. They acted as household cook, nurse, seamstress, and early educator to young children. Spartan women were an exception to the normal code of conduct and enjoyed many freedoms.</History>
+    <History>Spartan women were some of the freest in the ancient world. They could own land and slaves and even exercise naked like Spartan men. It is said that only Spartan women gave birth to real men. Such tough as nails women more than once helped save their city from disaster, for example when after a lost battle against Pyrrhus of Epirus they overnight built an earthen rampart to protect the city while their men slept in preparation for the next day's siege.</History>
     <Icon>units/hele_support_female_citizen.png</Icon>
   </Identity>
   <VisualActor>
