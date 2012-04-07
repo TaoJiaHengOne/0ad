@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_support_female_citizen">
+  <Builder>
+    <Entities datatype="tokens">
+      structures/{civ}_barracks
+      structures/{civ}_dock
+      structures/{civ}_outpost
+      structures/{civ}_defense_tower
+      structures/{civ}_fortress
+    </Entities>
+  </Builder>
   <Identity>
     <Civ>spart</Civ>
     <SpecificName>Gýnē</SpecificName>
