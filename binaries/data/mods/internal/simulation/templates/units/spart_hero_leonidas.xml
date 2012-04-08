@@ -23,11 +23,6 @@
       <Bonus>5</Bonus>
     </Fear>
   </Auras>
-  <Cost>
-    <Resources>
-      <metal>225</metal>
-    </Resources>
-  </Cost>
   <Identity>
     <Civ>spart</Civ>
 	<GenericName>Leonidas I</GenericName>
