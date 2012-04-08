@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
+  <castshadow/>
   <group>
     <variant frequency="1" name="base">
       <mesh>props/shield/round_m_f.dae</mesh>
@@ -9,5 +10,5 @@
       <texture>props/shield/mace_round_f.png</texture>
     </variant>
   </group>
-  <material>player_trans.xml</material>
+  <material>playercolor_spec.xml</material>
 </actor>

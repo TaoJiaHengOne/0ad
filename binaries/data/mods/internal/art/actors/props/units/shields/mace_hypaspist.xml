@@ -16,5 +16,5 @@
       <texture>props/shield/mace_round_b1.png</texture>
     </variant>
   </group>
-  <material>player_trans.xml</material>
+  <material>playercolor_spec.xml</material>
 </actor>
