@@ -13,6 +13,11 @@
       <MinRange>10.0</MinRange>
     </Ranged>
   </Attack>
+  <Cost>
+    <Resources>
+      <wood>60</wood>
+    </Resources>
+  </Cost>
   <Health>
     <Max>110</Max>
   </Health>

@@ -3,9 +3,8 @@
   <castshadow/>
   <group>
     <variant frequency="100" name="Base">
-      <mesh>props/shield/round_m_b.dae</mesh>
-      <texture>props/shield/hele_round_back.dds</texture>
+      <mesh>props/shield/aspis_sm_b.dae</mesh>
+      <texture>props/shield/mace_round_back_a.png</texture>
     </variant>
   </group>
-  <material>basic_spec.xml</material>
 </actor>

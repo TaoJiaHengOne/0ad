@@ -5,7 +5,7 @@
     <variant frequency="1" name="base">
       <mesh>props/shield/aspis_f.dae</mesh>
       <props>
-        <prop actor="props/units/shields/mace_aspis_back_purple.xml" attachpoint="root"/>
+        <prop actor="props/units/shields/mace_aspis_back_red.xml" attachpoint="root"/>
       </props>
     </variant>
   </group>
@@ -14,5 +14,5 @@
       <texture>props/shield/mace_round_c_silver.png</texture>
     </variant>
   </group>
-  <material>playercolor_spec.xml</material>
+  <material>basic_spec.xml</material>
 </actor>

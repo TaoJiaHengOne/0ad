@@ -7,5 +7,5 @@
       <texture>campaigns/units/mace_soldier.png</texture>
     </variant>
   </group>
-  <material>basic_trans.xml</material>
+  <material>basic_spec.xml</material>
 </actor>
