@@ -35,7 +35,9 @@
   </Sound>
   <TrainingQueue>
     <Entities datatype="tokens">
-      units/athen_champion_
+      units/athen_champion_infantry
+      units/athen_champion_marine
+      units/athen_champion_ranged
     </Entities>
   </TrainingQueue>
   <VisualActor>

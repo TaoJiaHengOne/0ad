@@ -13,6 +13,7 @@
       <MinRange>10.0</MinRange>
     </Ranged>
   </Attack>
+  <Builder disable=""/>
   <Cost>
     <Resources>
       <wood>60</wood>
