@@ -1,7 +1,7 @@
 {
 	"Code":"athen",
 	"Name":"Athenians",
-	"Emblem":"session/portraits/emblems/emblem_athenians.png",
+	"Emblem":"session/portraits/emblems/emblem_athens.png",
 	"History":"The Athenians were famed for their philosophy, democracy, and artistic achievement. They were also good warriors, with a naval tradition, and an energetic populace.",
 	"Music":[
 			{"File":"hellenes_peace_1.ogg", "Type":"peace"},
@@ -29,7 +29,7 @@
 					"History":"The classical phalanx formation was developed about VIII century BC. It was eight men deep and up to eight hundred men wide. The men within overlapped their shields, presenting a formidable shield wall brimming with 8 foot spears.",
 					"Description":"The player gains the ability to order spear troops into Phalanx formation, providing +20% attack and +30% armor if attacked from the front."
 				}
-					],
+			],
 			"Heroes":
 			[
 				{
@@ -44,7 +44,7 @@
 					"Class":"",
 					"Armament":"",
 					"Emblem":"",
-					"History":"Pericles was a prominent and influential statesman, orator, and general of Athens during the city's Golden Age—specifically, the time between the Persian and Peloponnesian wars. He was descended, through his mother, from the powerful and historically influential Alcmaeonid family. He had such a profound influence on Athenian society that Thucydides, his contemporary historian, acclaimed him as the First Citizen of Athens. Pericles turned the Delian League into an Athenian empire and led his countrymen during the first two years of the Peloponnesian War. The period during which he led Athens, roughly from 461 to 429 BC, is sometimes known as the Age of Pericles, though the period thus denoted can include times as early as the Persian Wars, or as late as the next century."
+					"History":"Pericles was the foremost Athenian politician of the 5th Century."
 				},
 				{
 					"Name":"Xenophon",
