@@ -4,14 +4,14 @@
     <BuildTime>22</BuildTime>
   </Cost>
   <Footprint>
-    <Square width="25.0" depth="6.5"/>
+    <Square width="26.0" depth="7.0"/>
     <Height>9.0</Height>
   </Footprint>
   <Health>
     <Max>3300</Max>
   </Health>
   <Identity>
-    <Civ>mace</Civ>
+    <Civ>hele</Civ>
     <SpecificName>Teîkhos</SpecificName>
     <History>All Hellenic cities were surrounded by stone walls for protection against enemy raids. Some of these fortifications, like the Athenian Long Walls, for example, were massive structures.</History>
   </Identity>
@@ -19,6 +19,6 @@
     <Static width="24.0" depth="6.0"/>
   </Obstruction>
   <VisualActor>
-    <Actor>structures/hellenes/wall_long.xml</Actor>
+    <Actor>structures/hellenes/wall_medium.xml</Actor>
   </VisualActor>
 </Entity>

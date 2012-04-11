@@ -4,21 +4,21 @@
     <BuildTime>27</BuildTime>
   </Cost>
   <Footprint>
-    <Square width="7.5" depth="7.5"/>
+    <Square width="9.0" depth="9.0"/>
     <Height>15.0</Height>
   </Footprint>
   <Health>
     <Max>4400</Max>
   </Health>
   <Identity>
-    <Civ>mace</Civ>
+    <Civ>athen</Civ>
     <SpecificName>Pýrgos</SpecificName>
     <History>Towers were an important part of city fortifications. The defending troops shot arrows at the enemy and poured boiling oil over the assailants.</History>
   </Identity>
   <Obstruction>
-    <Static width="7.0" depth="7.0"/>
+    <Static width="7.5" depth="7.5"/>
   </Obstruction>
   <VisualActor>
-    <Actor>structures/hellenes/wall_tower.xml</Actor>
+    <Actor>structures/athenians/wall_tower.xml</Actor>
   </VisualActor>
 </Entity>
