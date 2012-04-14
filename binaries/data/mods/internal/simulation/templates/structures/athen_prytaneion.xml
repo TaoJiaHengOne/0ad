@@ -36,8 +36,9 @@
   </Sound>
   <TrainingQueue>
     <Entities datatype="tokens">
-      units/hele_hero_themistocles
-      units/hele_hero_xenophon
+      units/athen_hero_themistocles
+      units/athen_hero_pericles
+      units/athen_hero_xenophon
     </Entities>
   </TrainingQueue>
   <VisualActor>

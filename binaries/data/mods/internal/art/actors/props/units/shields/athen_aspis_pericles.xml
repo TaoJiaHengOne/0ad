@@ -11,7 +11,7 @@
   </group>
   <group>
     <variant>
-      <texture>props/shield/hele_round_l.dds</texture>
+      <texture>props/shield/hele_round_ae.dds</texture>
     </variant>
   </group>
   <material>playercolor_spec.xml</material>
