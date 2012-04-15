@@ -19,6 +19,6 @@
     <Static width="38.0" depth="6.5"/>
   </Obstruction>
   <VisualActor>
-    <Actor>structures/athenians/wall_gate.xml</Actor>
+    <Actor>structures/hellenes/wall_gate.xml</Actor>
   </VisualActor>
 </Entity>

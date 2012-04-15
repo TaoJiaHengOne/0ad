@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_structure_defense_wall_tower">
   <Cost>
-    <BuildTime>27</BuildTime>
+    <BuildTime>44</BuildTime>
   </Cost>
   <Footprint>
     <Square width="9.0" depth="9.0"/>
@@ -19,6 +19,6 @@
     <Static width="7.5" depth="7.5"/>
   </Obstruction>
   <VisualActor>
-    <Actor>structures/athenians/wall_tower.xml</Actor>
+    <Actor>structures/hellenes/wall_tower.xml</Actor>
   </VisualActor>
 </Entity>

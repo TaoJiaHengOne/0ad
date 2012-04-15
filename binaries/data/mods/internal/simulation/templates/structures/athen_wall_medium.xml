@@ -8,7 +8,7 @@
     <Height>9.0</Height>
   </Footprint>
   <Health>
-    <Max>2210</Max>
+    <Max>2200</Max>
   </Health>
   <Identity>
     <Civ>athen</Civ>
@@ -19,6 +19,6 @@
     <Static width="24.0" depth="6.0"/>
   </Obstruction>
   <VisualActor>
-    <Actor>structures/athenians/wall_medium.xml</Actor>
+    <Actor>structures/hellenes/wall_medium.xml</Actor>
   </VisualActor>
 </Entity>
