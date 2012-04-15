@@ -17,7 +17,7 @@
     <SpecificName>Epilektos</SpecificName>
     <Tooltip>Mercenary Champion Spearman.</Tooltip>
     <History>.</History>
-    <Icon>units/hele_champion_infantry_polis.png</Icon>
+    <Icon>units/athen_champion_infantry.png</Icon>
   </Identity>
   <UnitMotion>
     <WalkSpeed>8.5</WalkSpeed>
