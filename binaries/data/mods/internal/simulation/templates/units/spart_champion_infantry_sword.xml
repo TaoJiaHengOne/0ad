@@ -57,7 +57,7 @@
   <Cost>
     <BuildTime>12</BuildTime>
     <Resources>
-      <metal>60</metal>
+      <metal>70</metal>
     </Resources>
   </Cost>
   <Health>
@@ -83,9 +83,6 @@ Counters Support Units, Spear units, and Ranged Units (if they can catch them). 
       <Speed>20.0</Speed>
     </Run>
   </UnitMotion>
-  <Vision>
-    <Range>66</Range>
-  </Vision>
   <VisualActor>
     <Actor>units/spartans/champion_infantry_sword.xml</Actor>
   </VisualActor>

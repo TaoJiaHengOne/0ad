@@ -92,9 +92,6 @@ Counters Melee units. Countered by Ranged units. Small Bonus vs. All Non-Greek U
       <Speed>18.0</Speed>
     </Run>
   </UnitMotion>
-  <Vision>
-    <Range>66</Range>
-  </Vision>
   <VisualActor>
     <Actor>units/spartans/champion_infantry.xml</Actor>
   </VisualActor>
