@@ -18,9 +18,7 @@
   <Promotion>
     <Entity>units/mace_cavalry_javelinist_a</Entity>
   </Promotion>
-  <Vision>
-    <Range>77</Range>
-  </Vision>
+  <Looter disable=""/>
   <VisualActor>
     <Actor>units/macedonians/cavalry_javelinist_b.xml</Actor>
   </VisualActor>

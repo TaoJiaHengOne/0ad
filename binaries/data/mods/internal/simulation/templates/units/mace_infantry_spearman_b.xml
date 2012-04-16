@@ -33,9 +33,6 @@
       <Speed>13.0</Speed>
     </Run>
   </UnitMotion>
-  <Vision>
-    <Range>66</Range>
-  </Vision>
   <VisualActor>
     <Actor>units/macedonians/infantry_spearman_b.xml</Actor>
   </VisualActor>
