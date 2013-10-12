@@ -3,17 +3,17 @@
   <castshadow/>
   <group>
     <variant frequency="100" name="Ptolemaic Fortress">
-      <mesh>structural/ptol_fortress.dae</mesh>
+      <mesh>structural/ptol_temple.dae</mesh>
       <props>
-        <prop actor="props/structures/ptolemies/fortress_paintings.xml" attachpoint="root"/>
-        <prop actor="props/structures/decals/dirt_5x5.xml" attachpoint="root"/>
-        <prop actor="props/units/weapons/arrow_front.xml" attachpoint="projectile"/>
+        <prop actor="props/structures/ptolemies/temple_paintings.xml" attachpoint="root"/>
+		<prop actor="props/structures/ptolemies/temple_statue.xml" attachpoint="root"/>
+        <prop actor="props/structures/decals/dirt_3x3.xml" attachpoint="root"/>
       </props>
       <textures>
         <texture file="structural/ptol_struct.png" name="baseTex"/>
 		<texture file="structural/ptol_struct_norm.png" name="normTex"/>
         <texture file="structural/ptol_struct_spec.png" name="specTex"/>
-		<texture file="structural/ao/ptol_fortress.png" name="aoTex"/>
+		<texture file="structural/ao/ptol_temple.png" name="aoTex"/>
       </textures>
     </variant>
   </group>
@@ -21,7 +21,7 @@
     <variant frequency="100" name="Idle"/>
     <variant name="garrisoned">
       <props>
-        <prop actor="props/special/common/garrison_flag_hele.xml" attachpoint="garrisoned"/>
+        <prop actor="props/special/common/garrison_flag_ptol.xml" attachpoint="garrisoned"/>
       </props>
     </variant>
     <variant name="death">
@@ -30,8 +30,9 @@
         <prop actor="particle/destruction_smoke_large.xml" attachpoint="root"/>
         <prop actor="particle/destruction_dust_large.xml" attachpoint="root"/>
         <prop actor="particle/destruction_dust_large_gray.xml" attachpoint="root"/>
-        <prop actor="props/structures/hellenes/fortress_paintings.xml" attachpoint="root"/>
-        <prop actor="props/structures/decals/dirt_5x5.xml" attachpoint="root"/>
+        <prop actor="props/structures/ptolemies/temple_paintings.xml" attachpoint="root"/>
+		<prop actor="props/structures/ptolemies/temple_centre_statue.xml" attachpoint="root"/>
+        <prop actor="props/structures/decals/dirt_3x3.xml" attachpoint="root"/>
       </props>
     </variant>
   </group>
