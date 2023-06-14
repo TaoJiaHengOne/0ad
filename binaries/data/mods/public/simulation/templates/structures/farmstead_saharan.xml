@@ -5,14 +5,14 @@
     <Height>10.0</Height>
   </Footprint>
   <Identity>
-    <Civ>ptol</Civ>
+    <Civ>kush</Civ>
     <Lang>napatan</Lang>
     <SpecificName>snwt</SpecificName>
   </Identity>
   <Obstruction>
-    <Static width="20.0" depth="17.0"/>
+    <Static width="18.0" depth="16.0"/>
   </Obstruction>
   <VisualActor>
-    <Actor>structures/ptolemies/farmstead.xml</Actor>
+    <Actor>structures/kushites/farmstead.xml</Actor>
   </VisualActor>
 </Entity>
