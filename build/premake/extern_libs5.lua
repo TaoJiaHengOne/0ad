@@ -7,7 +7,7 @@
 
 -- directory in which OS-specific library subdirectories reside.
 if os.istarget("macosx") then
-	libraries_dir = rootdir.."/libraries/osx/"
+	libraries_dir = rootdir.."/libraries/macos/"
 elseif os.istarget("windows") then
 	libraries_dir = rootdir.."/libraries/win32/"
 else

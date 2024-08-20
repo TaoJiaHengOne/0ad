@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script for acquiring and building OS X dependencies for 0 A.D.
+# Script for acquiring and building macOS dependencies for 0 A.D.
 #
 # The script checks whether a source tarball exists for each
 # dependency, if not it will download the correct version from
@@ -54,7 +54,9 @@ MOLTENVK_VERSION="1.2.2"
 # * SpiderMonkey
 # * NVTT
 # * FCollada
-
+# --------------------------------------------------------------
+source_svnrev="28083"
+# --------------------------------------------------------------
 # Provided by OS X:
 # * OpenAL
 # * OpenGL
@@ -143,9 +145,9 @@ already_built()
   echo -e "Skipping - already built (use --force-rebuild to override)"
 }
 
-# Check that we're actually on OS X
+# Check that we're actually on macOS
 if [ "`uname -s`" != "Darwin" ]; then
-  die "This script is intended for OS X only"
+  die "This script is intended for macOS only"
 fi
 
 # Parse command-line options:
@@ -159,8 +161,10 @@ do
   esac
 done
 
-cd "$(dirname $0)"
-# Now in libraries/osx/ (where we assume this script resides)
+cd "$(dirname $0)" # Now in libraries/ (where we assume this script resides)
+mkdir -p macos
+cd macos
+
 
 # Create a location to create copies of dependencies' *.pc files, so they can be found by pkg-config
 PC_PATH="$(pwd)/pkgconfig/"
@@ -192,7 +196,7 @@ then
   pushd $LIB_DIRECTORY
 
   # patch zlib's configure script to use our CFLAGS and LDFLAGS
-  (patch -Np0 -i ../../patches/zlib_flags.diff \
+  (patch -Np0 -i ../../../macos-patches/zlib_flags.diff \
     && CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
       ./configure --prefix="$ZLIB_DIR" \
          --static \
@@ -758,7 +762,7 @@ then
 
   # Patch GNUTLS for a linking issue with isdigit
   # Patch by Ross Nicholson: https://gitlab.com/gnutls/gnutls/-/issues/1033#note_379529145
-  (patch -Np1 -i ../../patches/03-undo-libtasn1-cisdigit.patch \
+  (patch -Np1 -i ../../../macos-patches/03-undo-libtasn1-cisdigit.patch \
     && ./configure CFLAGS="$CFLAGS" \
           CXXFLAGS="$CXXFLAGS" \
           LDFLAGS="$LDFLAGS" \
@@ -1020,7 +1024,7 @@ then
   pushd $LIB_DIRECTORY
 
   # It appears that older versions of Clang require constexpr statements to have a user-set constructor.
-  patch -Np1 -i ../../patches/fmt_constexpr.diff
+  patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff
 
   mkdir -p build
   pushd build
@@ -1071,7 +1075,17 @@ popd > /dev/null
 # --------------------------------------------------------------------
 # The following libraries are shared on different OSes and may
 # be customized, so we build and install them from bundled sources
+# (served over SVN)
 # --------------------------------------------------------------------
+
+if [ -e ../source/.svn ]; then
+  pushd ../source > /dev/null
+  svn cleanup && svn up -r $source_svnrev
+  popd > /dev/null
+else
+  svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk ../source
+fi
+
 # SpiderMonkey - bundled, no download
 pushd ../source/spidermonkey/ > /dev/null
 
@@ -1082,6 +1096,7 @@ fi
 
 # Use the regular build script for SM.
 JOBS="$JOBS" ZLIB_DIR="$ZLIB_DIR" ARCH="$ARCH" ./build.sh || die "Error building spidermonkey"
+cp bin/* ../../../binaries/system/
 
 popd > /dev/null
 
@@ -1095,6 +1110,7 @@ then
 fi
 
 CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CMAKE_FLAGS=$CMAKE_FLAGS JOBS="$JOBS" ./build.sh || die "Error building NVTT"
+cp bin/* ../../../binaries/system/
 
 popd > /dev/null
 
@@ -1108,5 +1124,6 @@ then
 fi
 
 CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" JOBS="$JOBS" ./build.sh || die "Error building FCollada"
+cp bin/* ../../../binaries/system/
 
 popd > /dev/null

@@ -14,9 +14,7 @@ build/workspaces/vc2015
 build/workspaces/vs2017
 
 # Libraries
-libraries/osx/*
-!libraries/osx/patches
-!libraries/osx/build-osx-libs.sh
+libraries/macos
 libraries/source
 libraries/win32
 

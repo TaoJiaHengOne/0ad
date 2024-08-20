@@ -11,7 +11,7 @@ die()
 source_svnrev="28083"
 
 if [ "`uname -s`" = "Darwin" ]; then
- echo 'This script should not be used on macOS: use build-osx-libs.sh instead.'
+ echo 'This script should not be used on macOS: use build-macos-libs.sh instead.'
  exit 1
 fi
 

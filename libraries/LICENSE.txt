@@ -1,7 +1,7 @@
 This directory holds libraries that are used by the game.
 Libraries are downloaded by running the correct script for your platform.
 
-osx/ contains a script for download and building required libraries on OS X.
+build-macos-libs.sh downloads and builds required libraries on macOS.
 
 build-source-libs.sh downloads and builds a checkout of source libraries
     that we bundle, when the game requires a specific library version
@@ -10,10 +10,10 @@ build-source-libs.sh downloads and builds a checkout of source libraries
 get-windows-libs.bat downloads a checkout of headers and precompiled
     libraries that we bundle for Windows builds.
 
-  osx/build-osx-libs.sh
+  build-macos-libs.sh
     MIT
 
-  osx/patches
+  macos-patches
     see license of applicable library
 
   source/cxxtest-4.4

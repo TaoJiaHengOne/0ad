@@ -38,7 +38,7 @@ if [ "$enable_atlas" = "true" ]; then
   premake_args="${premake_args} --atlas"
   if [ "$(uname -s)" = "Darwin" ]; then
     # Provide path to wx-config on OS X (as wxwidgets doesn't support pkgconfig)
-    export WX_CONFIG="${WX_CONFIG:="$(pwd)/../../libraries/osx/wxwidgets/bin/wx-config"}"
+    export WX_CONFIG="${WX_CONFIG:="$(pwd)/../../libraries/macos/wxwidgets/bin/wx-config"}"
   else
     export WX_CONFIG="${WX_CONFIG:="wx-config"}"
   fi
