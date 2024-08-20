@@ -1,4 +1,4 @@
-FROM build-base:latest
+FROM buster-base:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DEBCONF_NOWARNINGS="yes"

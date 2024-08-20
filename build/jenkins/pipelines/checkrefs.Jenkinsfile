@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -15,40 +15,31 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This pipeline is used to build the design document.
+// This pipeline runs source/tools/entity/checkrefs.py to identify
+// mistakes and oversights in references to game content (assets,
+// templates, etc).
 
 pipeline {
 	agent {
-		node {
-			label 'LinuxSlave'
+		dockerfile {
+			label 'LinuxAgent'
+			customWorkspace 'workspace/checkrefs'
+			dir 'build/jenkins/dockerfiles'
+			filename 'tools.Dockerfile'
 		}
 	}
+
 	stages {
-		stage("Checkout") {
+		stage("Asset download") {
 			steps {
-				ws("/zpool0/design-docs"){
-					git "https://code.wildfiregames.com/source/design.git"
-				}
+				sh "git lfs pull -I binaries/data/mods/public/maps"
 			}
 		}
-		stage("Generate") {
+
+		stage("Data checks") {
 			steps {
-				ws("/zpool0/design-docs"){
-					sh "mkdocs build"
-				}
+				sh "cd source/tools/entity/ && python3 checkrefs.py -tax"
 			}
-		}
-		stage("Upload") {
-			steps {
-				ws("/zpool0/design-docs"){
-					sh "rsync -rti --delete-after --progress site/ docs.wildfiregames.com:~/www/design/"
-				}
-			}
-		}
-	}
-	post {
-		always {
-			step([$class: 'PhabricatorNotifier'])
 		}
 	}
 }

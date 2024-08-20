@@ -1,6 +1,4 @@
-FROM build-base:latest
-
-# Obviously clang8 is not available but 13 is ^^"
+FROM buster-base:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DEBCONF_NOWARNINGS="yes"

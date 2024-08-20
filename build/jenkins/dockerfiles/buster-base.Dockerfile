@@ -1,10 +1,11 @@
-FROM debian:buster
+FROM debian:buster-slim
 
 RUN useradd -ms /bin/bash --uid 1006 builder
+
 # 0 A.D. dependencies.
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DEBCONF_NOWARNINGS="yes"
-RUN apt-get -qqy update && apt-get install -qqy \
+RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends \
       cmake \
       curl \
       libboost-dev \
@@ -18,7 +19,6 @@ RUN apt-get -qqy update && apt-get install -qqy \
       libgtk-3-dev \
       libicu-dev \
       libidn11-dev \
-      libjson-perl \
       libminiupnpc-dev \
       libogg-dev \
       libopenal-dev \
@@ -27,14 +27,21 @@ RUN apt-get -qqy update && apt-get install -qqy \
       libsodium-dev \
       libvorbis-dev \
       libwxgtk3.0-dev \
-      libxcursor-dev \
-      libxml-simple-perl \
       libxml2-dev \
+      make \
       m4 \
+      patch \
       python3-dev \
       python3-pip \
+      subversion \
+      xz-utils \
       zlib1g-dev \
  && apt-get clean
+
+# Install git-lfs
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends git-lfs
+RUN git lfs install --system --skip-smudge
 
 # Install rust and Cargo via rustup
 USER builder
