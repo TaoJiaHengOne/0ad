@@ -8,7 +8,7 @@ die()
 
 # SVN revision to checkout for source-libs
 # Update this line when you commit an update to source-libs
-source_svnrev="28083"
+source_svnrev="28207"
 
 if [ "`uname -s`" = "Darwin" ]; then
  echo 'This script should not be used on macOS: use build-macos-libs.sh instead.'

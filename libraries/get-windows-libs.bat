@@ -2,7 +2,7 @@ rem **Download sources and binaries of libraries**
 
 rem **SVN revision to checkout for source-libs and windows-libs**
 rem **Update this line when you commit an update to source-libs or windows-libs**
-set "svnrev=28083"
+set "svnrev=28207"
 
 if exist source\.svn (
   cd source && svn cleanup && svn up -r %svnrev% && cd ..
