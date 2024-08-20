@@ -1,9 +1,12 @@
-This directory contains libraries that are used by the game:
+This directory holds libraries that are used by the game.
+Libraries are downloaded by running the correct script for your platform.
 
 osx/ contains a script for download and building required libraries on OS X.
 source/ contains bundled source, when the game requires a specific library
     version that may not be available in package managers.
-win32/ contains headers and precompiled static libs for Windows builds.
+
+get-windows-libs.bat downloads a checkout of headers and precompiled
+    libraries that we bundle for Windows builds.
 
   osx/build-osx-libs.sh
     MIT
