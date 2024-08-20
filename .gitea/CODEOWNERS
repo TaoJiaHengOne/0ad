@@ -1,0 +1,37 @@
+## Gitea configuration
+\\.gitea/.* @Stan @Itms
+
+## == Build & Libraries
+(build|libraries)/.* @Itms @Stan
+
+## == Engine
+## GUI
+#source/gui/
+## Rendering
+source/(collada|graphics|renderer)/.* @vladislavbelov
+## Multiplayer
+#source/(lobby|network)/.*
+## Simulation
+source/simulation2/.* @wraitii @Itms
+
+## == Tools
+## Atlas
+source/tools/atlas/.* @vladislavbelov @trompetin17
+## Lobby
+source/tools/XpartaMuPP/.* @Dunedan @user1
+
+## == Scripts
+## GUI
+binaries/data/mods/public/gui/.* @Imarok @s0600204 @wraitii @marder
+## AI
+binaries/data/mods/public/simulation/ai/.* @Freagarach
+## Balancing
+binaries/data/mods/public/simulation/(data|templates)/.* @0ad/Balancers
+
+## == Assets
+## Art
+binaries/data/mods/public/art/.* @wowgetoffyourcellphone @wackyserious @Stan
+## Sound
+binaries/data/mods/public/audio/.* @Samulis @Stan
+## Maps
+binaries/data/mods/public/maps/.* @smiley @marder
