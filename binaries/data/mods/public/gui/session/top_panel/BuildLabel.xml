@@ -6,7 +6,7 @@
 		<translatableAttribute id="caption">Alpha XXVII: Agni</translatableAttribute>
 	</object>
 
-	<!-- Displays build date and revision number-->
+	<!-- Displays build date and build version-->
 	<object
 		name="buildTimeLabel"
 		type="text"

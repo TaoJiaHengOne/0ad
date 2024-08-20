@@ -73,7 +73,7 @@ def report_performance(request):
             'cpu_identifier': json['cpu_identifier'],
             'device': report.gl_device_identifier(),
             'build_debug': json['build_debug'],
-            'build_revision': json['build_revision'],
+            'build_version': json['build_version'],
             'build_datetime': json['build_datetime'],
             'gfx_res': (json['video_xres'], json['video_yres']),
         }

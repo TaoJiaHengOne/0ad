@@ -7,9 +7,6 @@ GZIP7ZOPTS="-mx=9"
 BUNDLE_VERSION=${BUNDLE_VERSION:="0.0.xxx"}
 PREFIX="0ad-${BUNDLE_VERSION}-alpha"
 
-SVN_REV=${SVN_REV:=$(svnversion -n .)}
-echo "L\"${SVN_REV}-release\"" > build/svn_revision/svn_revision.txt
-
 # Collect the relevant files
 tar cf $PREFIX-unix-build.tar \
 	--exclude='*.bat' --exclude='*.dll' --exclude='*.exe' --exclude='*.lib' \
@@ -40,7 +37,6 @@ fi
 # This needs nsisbi for files > 2GB
 makensis -V4 -nocd \
 	-dcheckoutpath="." \
-	-drevision=${SVN_REV} \
 	-dversion=${BUNDLE_VERSION} \
 	-dprefix=${PREFIX} \
 	-darchive_path="archives/" \

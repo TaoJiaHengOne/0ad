@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include "Pyrogenesis.h"
 
 #include "lib/sysdep/sysdep.h"
-#include "lib/svn_revision.h"
+#include "lib/build_version.h"
 
 const char* engine_version = "0.0.27";
 const char* main_window_name = "0 A.D.";
@@ -56,7 +56,7 @@ static void AppendAsciiFile(FILE* out, const OsPath& pathname)
 // for user convenience, bundle all logs into this file:
 void psBundleLogs(FILE* f)
 {
-	fwprintf(f, L"SVN Revision: %ls\n\n", svn_revision);
+	fwprintf(f, L"Build Version: %ls\n\n", build_version);
 	fwprintf(f, L"Engine Version: %hs\n\n", engine_version);
 
 	fwprintf(f, L"System info:\n\n");

@@ -277,9 +277,9 @@ function hideRemaining(parentName, start = 0)
 
 function getBuildString()
 {
-	return sprintf(translate("Build: %(buildDate)s (%(revision)s)"), {
+	return sprintf(translate("Build: %(buildDate)s (%(version)s)"), {
 		"buildDate": Engine.GetBuildDate(),
-		"revision": Engine.GetBuildRevision()
+		"version": Engine.GetBuildVersion()
 	});
 }
 

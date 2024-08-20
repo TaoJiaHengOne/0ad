@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 #include "precompiled.h"
 
-#include "lib/svn_revision.h"
+#include "lib/build_version.h"
 #include "lib/external_libraries/libsdl.h"
 #include "lib/posix/posix_utsname.h"
 #include "lib/timer.h"
@@ -328,7 +328,7 @@ void RunHardwareDetection(bool writeSystemInfoBeforeDetection, Renderer::Backend
 	Script::SetProperty(rq, settings, "build_opengles", CONFIG2_GLES);
 
 	Script::SetProperty(rq, settings, "build_datetime", std::string(__DATE__ " " __TIME__));
-	Script::SetProperty(rq, settings, "build_revision", std::wstring(svn_revision));
+	Script::SetProperty(rq, settings, "build_version", std::wstring(build_version));
 
 	Script::SetProperty(rq, settings, "build_msc", (int)MSC_VERSION);
 	Script::SetProperty(rq, settings, "build_icc", (int)ICC_VERSION);
