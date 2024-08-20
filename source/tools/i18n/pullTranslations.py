@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2023 Wildfire Games.
+# Copyright (C) 2024 Wildfire Games.
 # This file is part of 0 A.D.
 #
 # 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ def main():
                     path = os.path.join(root, folder)
                     os.chdir(path)
                     print(f"INFO: Starting to pull translations in {path}...")
-                    subprocess.run(["tx", "pull", "-f"])
+                    subprocess.run(["tx", "pull", "-a", "-f"])
 
 
 if __name__ == "__main__":

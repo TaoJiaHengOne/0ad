@@ -37,7 +37,10 @@ function init()
 		let json = Engine.ReadJSONFile("gui/credits/texts/" + category + ".json");
 		if (!json || !json.Content)
 		{
-			error("Could not load credits for " + category + "!");
+			if (category == "translators")
+				warn("Translators credits are not present, pull translations from the nightly build to get them.")
+			else
+				error("Could not load credits for " + category + "!");
 			continue;
 		}
 		translateObjectKeys(json, ["Title", "Subtitle", "LangName"]);

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2021 Wildfire Games.
+# Copyright (C) 2024 Wildfire Games.
 # This file is part of 0 A.D.
 #
 # 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,9 +29,9 @@ def get_diff():
 
     diff_process = subprocess.run(["svn", "diff", "binaries"], capture_output=True)
     if diff_process.returncode != 0:
-        print(f"Error running svn diff: {diff_process.stderr.decode()}. Exiting.")
+        print(f"Error running svn diff: {diff_process.stderr.decode('utf-8')}. Exiting.")
         return
-    return io.StringIO(diff_process.stdout.decode())
+    return io.StringIO(diff_process.stdout.decode('utf-8'))
 
 def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
     """Run through a diff of .po files and check that some of the changes
@@ -45,10 +45,10 @@ def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
     l = diff.readline()
     while l:
         if l.startswith("Index: binaries"):
-            if not l.endswith(".pot\n") and not l.endswith(".po\n"):
+            if not l.strip().endswith(".pot") and not l.strip().endswith(".po"):
                 curfile = None
             else:
-                curfile = l[7:-1]
+                curfile = l[7:].strip()
                 files.add(curfile)
             # skip patch header
             diff.readline()
@@ -60,7 +60,7 @@ def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
         if l[0] != '-' and l[0] != '+':
             l = diff.readline()
             continue
-        if l[1] == '\n' or (l[1] == '#' and l[2] == ":"):
+        if l[1:].strip() == "" or (l[1] == '#' and l[2] == ':'):
             l = diff.readline()
             continue
         if "# Copyright (C)" in l or "POT-Creation-Date:" in l or "PO-Revision-Date" in l or "Last-Translator" in l:
@@ -78,7 +78,7 @@ def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
 def revert_files(files: List[str], verbose = False):
     revert_process = subprocess.run(["svn", "revert"] + files, capture_output=True)
     if revert_process.returncode != 0:
-        print(f"Warning: Some files could not be reverted. Error: {revert_process.stderr.decode()}")
+        print(f"Warning: Some files could not be reverted. Error: {revert_process.stderr.decode('utf-8')}")
     if verbose:
         for file in files:
             print(f"Reverted {file}")
@@ -96,9 +96,9 @@ def add_untracked(verbose = False):
             continue
         # Ignore non PO files. This is important so that the translator credits
         # correctly be updated, note however the script assumes a pristine SVN otherwise.
-        if not line.endswith(".po") and not line.endswith(".pot"):
-            continue
         file = line[1:].strip()
+        if not file.endswith(".po") and not file.endswith(".pot"):
+            continue
         add_process = subprocess.run(["svn", "add", file, "--parents"], capture_output=True)
         if add_process.stderr != b'':
             print(f"Warning: file {file} could not be added.")

@@ -64,7 +64,8 @@ test_*.cpp
 stub_*.cpp
 !test_setup.cpp
 
-# Binary files generated in nightly builds
+# Translation files
+binaries/data/mods/public/gui/credits/texts/translators.json
 *.po
 *.pot
 
@@ -85,6 +86,9 @@ stub_*.cpp
 # Art unsupported by the engine
 binaries/data/mods/**/*.bmp
 binaries/data/mods/**/*.jpg
+
+# Vulkan SPIR-V shaders
+binaries/data/mods/*/shaders/spirv
 
 # Windows specific data
 desktop.ini

@@ -43,7 +43,7 @@ def main():
                     for file in files:
                         usernames = []
                         reached = False
-                        for line in fileinput.input(file.replace("\\", "/"), inplace=True):
+                        for line in fileinput.input(file.replace("\\", "/"), inplace=True, encoding="utf-8"):
                             if reached:
                                 if line == "# \n":
                                     line = ""
