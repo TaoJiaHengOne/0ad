@@ -2,8 +2,10 @@ This directory holds libraries that are used by the game.
 Libraries are downloaded by running the correct script for your platform.
 
 osx/ contains a script for download and building required libraries on OS X.
-source/ contains bundled source, when the game requires a specific library
-    version that may not be available in package managers.
+
+build-source-libs.sh downloads and builds a checkout of source libraries
+    that we bundle, when the game requires a specific library version
+    that may not be available in package managers.
 
 get-windows-libs.bat downloads a checkout of headers and precompiled
     libraries that we bundle for Windows builds.

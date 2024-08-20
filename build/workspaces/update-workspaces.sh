@@ -11,46 +11,21 @@ die()
   exit 1
 }
 
-# Check for whitespace in absolute path; this will cause problems in the
-# SpiderMonkey build (https://bugzilla.mozilla.org/show_bug.cgi?id=459089)
-# and maybe elsewhere, so we just forbid it
-# Use perl as an alternative to readlink -f, which isn't available on BSD or OS X
-SCRIPTPATH=`perl -MCwd -e 'print Cwd::abs_path shift' "$0"`
-case "$SCRIPTPATH" in
-  *\ * )
-    die "Absolute path contains whitespace, which will break the build - move the game to a path without spaces" ;;
-esac
-
-JOBS=${JOBS:="-j2"}
-
-# Some of our makefiles depend on GNU make, so we set some sane defaults if MAKE
-# is not set.
-case "`uname -s`" in
-  "FreeBSD" | "OpenBSD" )
-    MAKE=${MAKE:="gmake"}
-    ;;
-  * )
-    MAKE=${MAKE:="make"}
-    ;;
-esac
+cd "$(dirname $0)"
+# Now in build/workspaces/ (where we assume this script resides)
 
 # Parse command-line options:
-
 premake_args=""
 
 with_system_premake5=false
-without_nvtt=false
-with_system_nvtt=false
-with_system_mozjs=false
 enable_atlas=true
+
+JOBS=${JOBS:="-j2"}
 
 for i in "$@"
 do
   case $i in
     --with-system-premake5 ) with_system_premake5=true ;;
-    --without-nvtt ) without_nvtt=true; premake_args="${premake_args} --without-nvtt" ;;
-    --with-system-nvtt ) with_system_nvtt=true; premake_args="${premake_args} --with-system-nvtt" ;;
-    --with-system-mozjs ) with_system_mozjs=true; premake_args="${premake_args} --with-system-mozjs" ;;
     --enable-atlas ) enable_atlas=true ;;
     --disable-atlas ) enable_atlas=false ;;
     -j* ) JOBS=$i ;;
@@ -75,31 +50,9 @@ if [ "$enable_atlas" = "true" ]; then
   fi
 fi
 
-cd "$(dirname $0)"
-# Now in build/workspaces/ (where we assume this script resides)
-
 if [ "`uname -s`" = "Darwin" ]; then
   # Set minimal SDK version
   export MIN_OSX_VERSION=${MIN_OSX_VERSION:="10.12"}
-fi
-
-# Don't want to build bundled libs on OS X
-# (build-osx-libs.sh is used instead)
-if [ "`uname -s`" != "Darwin" ]; then
-  echo "Updating bundled third-party dependencies..."
-  echo
-
-  # Build/update bundled external libraries
-  (cd ../../libraries/source/fcollada && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "FCollada build failed"
-  echo
-  if [ "$with_system_mozjs" = "false" ]; then
-    (cd ../../libraries/source/spidermonkey && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "SpiderMonkey build failed"
-  fi
-  echo
-  if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
-    (cd ../../libraries/source/nvtt && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "NVTT build failed"
-  fi
-  echo
 fi
 
 # Now build Premake or use system's.
