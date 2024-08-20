@@ -1,0 +1,96 @@
+# Built and prebuilt binaries
+binaries/system/*
+!binaries/system/Atlas.bat
+!binaries/system/Quickstart.bat
+!binaries/system/readme.txt
+
+# Workspaces
+build/workspaces/codeblocks/
+build/workspaces/gcc/
+build/workspaces/xcode3/
+build/workspaces/xcode4/
+build/workspaces/vc2013
+build/workspaces/vc2015
+build/workspaces/vs2017
+
+# Libraries
+libraries/osx/*
+!libraries/osx/patches
+!libraries/osx/build-osx-libs.sh
+libraries/source
+libraries/win32
+
+# premake5 build files, adapted from upstream
+build/premake/premake5/**/.gitignore
+build/premake/premake5/**/.travis.yml
+build/premake/premake5/.editorconfig
+build/premake/premake5/.github/
+build/premake/premake5/Bootstrap.*
+build/premake/premake5/CONTRIBUTING.md
+build/premake/premake5/FUNDING.yml
+build/premake/premake5/appveyor.yml
+build/premake/premake5/bin/release/premake5
+build/premake/premake5/build/*/obj/
+build/premake/premake5/build/codelite*
+build/premake/premake5/build/gmake2.windows/
+build/premake/premake5/build/vs200*/
+build/premake/premake5/build/vs201[0-5]/
+build/premake/premake5/build/xcode4/
+build/premake/premake5/packages/
+build/premake/.gccmachine.tmp
+build/premake/.gccver.tmp
+
+# Build files (cpp)
+*.a
+*.dylib
+*.dSYM
+*.exp
+*.ilk
+*.lib
+*.pdb
+*.so
+*.so.*
+
+# Build files (tools)
+*.pyc
+*.pyo
+__pycache__/
+
+# Build files (libs)
+*.o
+*.lo
+*.la
+
+# Test .cpp files (generated during the build)
+test_*.cpp
+stub_*.cpp
+!test_setup.cpp
+
+# Binary files generated in nightly builds
+*.po
+*.pot
+
+# Packaged mods and tarballs
+*.pyromod
+*.zip
+*.tar
+*.tar.bz2
+*.tar.gz
+*.tar.xz
+
+# Art source files
+*.blend
+*.obj
+*.psd
+*.raw
+
+# Art unsupported by the engine
+binaries/data/mods/**/*.bmp
+binaries/data/mods/**/*.jpg
+
+# Windows specific data
+desktop.ini
+Thumbs.db
+
+# macOS specific data
+.DS_Store
