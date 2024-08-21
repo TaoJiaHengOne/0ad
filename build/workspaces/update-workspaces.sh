@@ -11,6 +11,19 @@ die()
   exit 1
 }
 
+OS=${OS:="$(uname -s)"}
+
+# Some of our makefiles depend on GNU make, so we set some sane defaults if MAKE
+# is not set.
+case "$OS" in
+  "FreeBSD" | "OpenBSD" )
+    MAKE=${MAKE:="gmake"}
+    ;;
+  * )
+    MAKE=${MAKE:="make"}
+    ;;
+esac
+
 cd "$(dirname $0)"
 # Now in build/workspaces/ (where we assume this script resides)
 
@@ -36,7 +49,7 @@ done
 
 if [ "$enable_atlas" = "true" ]; then
   premake_args="${premake_args} --atlas"
-  if [ "$(uname -s)" = "Darwin" ]; then
+  if [ "$OS" = "Darwin" ]; then
     # Provide path to wx-config on OS X (as wxwidgets doesn't support pkgconfig)
     export WX_CONFIG="${WX_CONFIG:="$(pwd)/../../libraries/macos/wxwidgets/bin/wx-config"}"
   else
@@ -50,7 +63,7 @@ if [ "$enable_atlas" = "true" ]; then
   fi
 fi
 
-if [ "`uname -s`" = "Darwin" ]; then
+if [ "$OS" = "Darwin" ]; then
   # Set minimal SDK version
   export MIN_OSX_VERSION=${MIN_OSX_VERSION:="10.12"}
 fi
@@ -73,7 +86,7 @@ echo
 export HOSTTYPE="$HOSTTYPE"
 # Now run Premake to create the makefiles
 echo "Premake args: ${premake_args}"
-if [ "`uname -s`" != "Darwin" ]; then
+if [ "$OS" != "Darwin" ]; then
   ${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" ${premake_args} gmake || die "Premake failed"
 else
   ${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" --macosx-version-min="${MIN_OSX_VERSION}" ${premake_args} gmake || die "Premake failed"
