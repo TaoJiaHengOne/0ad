@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * Copyright (C) 2013-2016 SuperTuxKart-Team.
  * This file is part of 0 A.D.
  *
@@ -183,12 +183,13 @@ bool ReceiveStunResponse(ENetHost& transactionHost, std::vector<u8>& buffer)
 	ENetAddress sender = m_StunServer;
 	int len = enet_socket_receive(transactionHost.socket, &sender, &enetBuffer, 1);
 
-	int delay = 200;
+	int delay = 10;
 	CFG_GET_VAL("lobby.stun.delay", delay);
+	int maxTries = 100;
+	CFG_GET_VAL("lobby.stun.max_tries", maxTries);
 
 	// Wait to receive the message because enet sockets are non-blocking
-	const int max_tries = 5;
-	for (int count = 0; len <= 0 && (count < max_tries || max_tries == -1); ++count)
+	for (int count = 0; len <= 0 && (count < maxTries || maxTries == -1); ++count)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		len = enet_socket_receive(transactionHost.socket, &sender, &enetBuffer, 1);
@@ -359,10 +360,12 @@ void SendHolePunchingMessages(ENetHost& enetClient, const std::string& serverAdd
 	enet_address_set_host(&addr, serverAddress.c_str());
 
 	int delay = 200;
-	CFG_GET_VAL("lobby.stun.delay", delay);
+	CFG_GET_VAL("lobby.fw_punch.delay", delay);
+	int numMsg = 3;
+	CFG_GET_VAL("lobby.fw_punch.num_msg", numMsg);
 
 	// Send an UDP message from enet host to ip:port
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < numMsg || numMsg == -1; ++i)
 	{
 		SendStunRequest(enetClient, addr);
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
