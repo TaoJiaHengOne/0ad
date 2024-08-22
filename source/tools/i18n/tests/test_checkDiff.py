@@ -1,11 +1,9 @@
 import io
 import pytest
 from checkDiff import check_diff
-from unittest import mock
-from types import SimpleNamespace
 
 PATCHES = [
-"""
+    """
 Index: binaries/data/l10n/en_GB.engine.po
 ===================================================================
 --- binaries/data/l10n/en_GB.engine.po
@@ -21,7 +19,7 @@ Index: binaries/data/l10n/en_GB.engine.po
  msgid "The incoming stream version is unsupported"
 
 """,
-"""
+    """
 Index: binaries/data/l10n/en_GB.engine.po
 ===================================================================
 --- binaries/data/l10n/en_GB.engine.po
@@ -33,7 +31,7 @@ Index: binaries/data/l10n/en_GB.engine.po
  msgid "Stream error"
  msgstr "Stream error"
 """,
-"""
+    """
 Index: binaries/data/l10n/en_GB.engine.po
 ===================================================================
 --- binaries/data/l10n/en_GB.engine.po
@@ -65,7 +63,7 @@ Index: binaries/data/l10n/en_GB_3.engine.po
  msgid "Stream error"
  msgstr "Stream error"
 """,
-"""
+    """
 Index: binaries/data/l10n/bar.engine.po
 ===================================================================
 --- binaries/data/l10n/bar.engine.po
@@ -86,15 +84,16 @@ Index: binaries/data/l10n/bar.engine.po
  "Language-Team: Bavarian (http://www.transifex.com/wildfire-games/0ad/language/bar/)\n"
  "MIME-Version: 1.0\n"
  "Content-Type: text/plain; charset=UTF-8\n"
-"""
+""",
 ]
 
 PATCHES_EXPECT_REVERT = [
     set(),
     {"binaries/data/l10n/en_GB.engine.po"},
     {"binaries/data/l10n/en_GB.engine.po", "binaries/data/l10n/en_GB_3.engine.po"},
-    {"binaries/data/l10n/bar.engine.po"}
+    {"binaries/data/l10n/bar.engine.po"},
 ]
+
 
 @pytest.fixture(params=zip(PATCHES, PATCHES_EXPECT_REVERT))
 def patch(request):

@@ -16,7 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os, re, multiprocessing
+import sys
+import os
+import re
+import multiprocessing
 
 from i18n_helper import l10nFolderName, projectRootDirectory
 from i18n_helper.catalog import Catalog
@@ -27,14 +30,17 @@ VERBOSE = 0
 
 class MessageChecker:
     """Checks all messages in a catalog against a regex."""
+
     def __init__(self, human_name, regex):
         self.regex = re.compile(regex, re.IGNORECASE)
         self.human_name = human_name
 
     def check(self, inputFilePath, templateMessage, translatedCatalogs):
-        patterns = set(self.regex.findall(
-            templateMessage.id[0] if templateMessage.pluralizable else templateMessage.id
-        ))
+        patterns = set(
+            self.regex.findall(
+                templateMessage.id[0] if templateMessage.pluralizable else templateMessage.id
+            )
+        )
 
         # As a sanity check, verify that the template message is coherent.
         # Note that these tend to be false positives.
@@ -42,23 +48,32 @@ class MessageChecker:
         if templateMessage.pluralizable:
             pluralUrls = set(self.regex.findall(templateMessage.id[1]))
             if pluralUrls.difference(patterns):
-                print(f"{inputFilePath} - Different {self.human_name} in singular and plural source strings "
-                      f"for '{templateMessage}' in '{inputFilePath}'")
+                print(
+                    f"{inputFilePath} - Different {self.human_name} in singular and plural source strings "
+                    f"for '{templateMessage}' in '{inputFilePath}'"
+                )
 
         for translationCatalog in translatedCatalogs:
             translationMessage = translationCatalog.get(
-                templateMessage.id, templateMessage.context)
+                templateMessage.id, templateMessage.context
+            )
             if not translationMessage:
                 continue
 
-            translatedPatterns = set(self.regex.findall(
-                translationMessage.string[0] if translationMessage.pluralizable else translationMessage.string
-            ))
+            translatedPatterns = set(
+                self.regex.findall(
+                    translationMessage.string[0]
+                    if translationMessage.pluralizable
+                    else translationMessage.string
+                )
+            )
             unknown_patterns = translatedPatterns.difference(patterns)
             if unknown_patterns:
-                print(f'{inputFilePath} - {translationCatalog.locale}: '
-                      f'Found unknown {self.human_name} {", ".join(["`" + x + "`" for x in unknown_patterns])} in the translation '
-                      f'which do not match any of the URLs in the template: {", ".join(["`" + x + "`" for x in patterns])}')
+                print(
+                    f'{inputFilePath} - {translationCatalog.locale}: '
+                    f'Found unknown {self.human_name} {", ".join(["`" + x + "`" for x in unknown_patterns])} in the translation '
+                    f'which do not match any of the URLs in the template: {", ".join(["`" + x + "`" for x in patterns])}'
+                )
 
             if templateMessage.pluralizable and translationMessage.pluralizable:
                 for indx, val in enumerate(translationMessage.string):
@@ -67,9 +82,12 @@ class MessageChecker:
                     translatedPatternsMulti = set(self.regex.findall(val))
                     unknown_patterns_multi = translatedPatternsMulti.difference(pluralUrls)
                     if unknown_patterns_multi:
-                        print(f'{inputFilePath} - {translationCatalog.locale}: '
-                              f'Found unknown {self.human_name} {", ".join(["`" + x + "`" for x in unknown_patterns_multi])} in the pluralised translation '
-                              f'which do not match any of the URLs in the template: {", ".join(["`" + x + "`" for x in pluralUrls])}')
+                        print(
+                            f'{inputFilePath} - {translationCatalog.locale}: '
+                            f'Found unknown {self.human_name} {", ".join(["`" + x + "`" for x in unknown_patterns_multi])} in the pluralised translation '
+                            f'which do not match any of the URLs in the template: {", ".join(["`" + x + "`" for x in pluralUrls])}'
+                        )
+
 
 def check_translations(inputFilePath):
     if VERBOSE:
@@ -100,23 +118,29 @@ def check_translations(inputFilePath):
 
 
 def main():
-    print("\n\tWARNING: Remember to regenerate the POT files with “updateTemplates.py” "
-          "before you run this script.\n\tPOT files are not in the repository.\n")
+    print(
+        "\n\tWARNING: Remember to regenerate the POT files with “updateTemplates.py” "
+        "before you run this script.\n\tPOT files are not in the repository.\n"
+    )
     foundPots = 0
     for root, folders, filenames in os.walk(projectRootDirectory):
         for filename in filenames:
-            if len(filename) > 4 and filename[-4:] == ".pot" and os.path.basename(root) == l10nFolderName:
+            if (
+                len(filename) > 4
+                and filename[-4:] == ".pot"
+                and os.path.basename(root) == l10nFolderName
+            ):
                 foundPots += 1
                 multiprocessing.Process(
-                    target=check_translations,
-                    args=(os.path.join(root, filename), )
+                    target=check_translations, args=(os.path.join(root, filename),)
                 ).start()
     if foundPots == 0:
         print(
             "This script did not work because no '.pot' files were found. "
             "Please run 'updateTemplates.py' to generate the '.pot' files, "
             "and run 'pullTranslations.py' to pull the latest translations from Transifex. "
-            "Then you can run this script to check for spam in translations.")
+            "Then you can run this script to check for spam in translations."
+        )
 
 
 if __name__ == "__main__":

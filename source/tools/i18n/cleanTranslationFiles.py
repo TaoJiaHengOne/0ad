@@ -26,9 +26,14 @@ However that needs to be fixed on the transifex side, see rP25896. For now
 strip the e-mails using this script.
 """
 
-import sys, os, glob, re, fileinput
+import sys
+import os
+import glob
+import re
+import fileinput
 
 from i18n_helper import l10nFolderName, transifexClientFolder, projectRootDirectory
+
 
 def main():
     translatorMatch = re.compile(r"^(#\s+[^,<]*)\s+<.*>(.*)")
@@ -43,7 +48,9 @@ def main():
                     for file in files:
                         usernames = []
                         reached = False
-                        for line in fileinput.input(file.replace("\\", "/"), inplace=True, encoding="utf-8"):
+                        for line in fileinput.input(
+                            file.replace("\\", "/"), inplace=True, encoding="utf-8"
+                        ):
                             if reached:
                                 if line == "# \n":
                                     line = ""
@@ -60,6 +67,7 @@ def main():
                             elif line.strip() == "# Translators:":
                                 reached = True
                             sys.stdout.write(line)
+
 
 if __name__ == "__main__":
     main()

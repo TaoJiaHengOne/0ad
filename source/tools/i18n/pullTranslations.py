@@ -21,6 +21,7 @@ import subprocess
 
 from i18n_helper import l10nFolderName, transifexClientFolder, projectRootDirectory
 
+
 def main():
     for root, folders, _ in os.walk(projectRootDirectory):
         for folder in folders:

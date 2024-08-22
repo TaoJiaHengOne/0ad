@@ -20,14 +20,17 @@
 # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import codecs, re, os, sys
+import codecs
+import re
+import os
+import sys
 import json as jsonParser
 
-from tokenize import generate_tokens, COMMENT, NAME, OP, STRING
 from textwrap import dedent
 
+
 def pathmatch(mask, path):
-    """ Matches paths to a mask, where the mask supports * and **.
+    """Matches paths to a mask, where the mask supports * and **.
 
     Paths use / as the separator
     * matches a sequence of characters without /.
@@ -45,13 +48,11 @@ def pathmatch(mask, path):
         else:
             p = p + re.escape(s[i])
     p = p + "$"
-    return re.match(p, path) != None
+    return re.match(p, path) is not None
 
 
 class Extractor(object):
-
     def __init__(self, directoryPath, filemasks, options):
-
         self.directoryPath = directoryPath
         self.options = options
 
@@ -62,9 +63,8 @@ class Extractor(object):
             self.includeMasks = filemasks
             self.excludeMasks = []
 
-
     def run(self):
-        """ Extracts messages.
+        """Extracts messages.
 
         :return:    An iterator over ``(message, plural, context, (location, pos), comment)`` tuples.
         :rtype:     ``iterator``
@@ -73,12 +73,14 @@ class Extractor(object):
         directoryAbsolutePath = os.path.abspath(self.directoryPath)
         for root, folders, filenames in os.walk(directoryAbsolutePath):
             for subdir in folders:
-                if subdir.startswith('.') or subdir.startswith('_'):
+                if subdir.startswith(".") or subdir.startswith("_"):
                     folders.remove(subdir)
             folders.sort()
             filenames.sort()
             for filename in filenames:
-                filename = os.path.relpath(os.path.join(root, filename), self.directoryPath).replace(os.sep, '/')
+                filename = os.path.relpath(
+                    os.path.join(root, filename), self.directoryPath
+                ).replace(os.sep, "/")
                 for filemask in self.excludeMasks:
                     if pathmatch(filemask, filename):
                         break
@@ -86,7 +88,13 @@ class Extractor(object):
                     for filemask in self.includeMasks:
                         if pathmatch(filemask, filename):
                             filepath = os.path.join(directoryAbsolutePath, filename)
-                            for message, plural, context, position, comments in self.extractFromFile(filepath):
+                            for (
+                                message,
+                                plural,
+                                context,
+                                position,
+                                comments,
+                            ) in self.extractFromFile(filepath):
                                 if empty_string_pattern.match(message):
                                     continue
 
@@ -94,9 +102,8 @@ class Extractor(object):
                                     filename = "\u2068" + filename + "\u2069"
                                 yield message, plural, context, (filename, position), comments
 
-
     def extractFromFile(self, filepath):
-        """ Extracts messages from a specific file.
+        """Extracts messages from a specific file.
 
         :return:    An iterator over ``(message, plural, context, position, comments)`` tuples.
         :rtype:     ``iterator``
@@ -104,17 +111,17 @@ class Extractor(object):
         pass
 
 
-
 class javascript(Extractor):
-    """ Extract messages from JavaScript source code.
-    """
+    """Extract messages from JavaScript source code."""
 
-    empty_msgid_warning = ( '%s: warning: Empty msgid.  It is reserved by GNU gettext: gettext("") '
-                            'returns the header entry with meta information, not the empty string.' )
+    empty_msgid_warning = (
+        '%s: warning: Empty msgid.  It is reserved by GNU gettext: gettext("") '
+        "returns the header entry with meta information, not the empty string."
+    )
 
     def extractJavascriptFromFile(self, fileObject):
-
         from babel.messages.jslexer import tokenize, unquote_string
+
         funcname = message_lineno = None
         messages = []
         last_argument = None
@@ -122,21 +129,21 @@ class javascript(Extractor):
         concatenate_next = False
         last_token = None
         call_stack = -1
-        comment_tags = self.options.get('commentTags', [])
-        keywords = self.options.get('keywords', {}).keys()
+        comment_tags = self.options.get("commentTags", [])
+        keywords = self.options.get("keywords", {}).keys()
 
         for token in tokenize(fileObject.read(), dotted=False):
-            if token.type == 'operator' and \
-                (token.value == '(' or (call_stack != -1 and \
-                (token.value == '[' or token.value == '{'))):
+            if token.type == "operator" and (
+                token.value == "("
+                or (call_stack != -1 and (token.value == "[" or token.value == "{"))
+            ):
                 if funcname:
                     message_lineno = token.lineno
                     call_stack += 1
 
-            elif call_stack == -1 and token.type == 'linecomment':
+            elif call_stack == -1 and token.type == "linecomment":
                 value = token.value[2:].strip()
-                if translator_comments and \
-                translator_comments[-1][0] == token.lineno - 1:
+                if translator_comments and translator_comments[-1][0] == token.lineno - 1:
                     translator_comments.append((token.lineno, value))
                     continue
 
@@ -145,7 +152,7 @@ class javascript(Extractor):
                         translator_comments.append((token.lineno, value.strip()))
                         break
 
-            elif token.type == 'multilinecomment':
+            elif token.type == "multilinecomment":
                 # only one multi-line comment may preceed a translation
                 translator_comments = []
                 value = token.value[2:-2].strip()
@@ -154,14 +161,13 @@ class javascript(Extractor):
                         lines = value.splitlines()
                         if lines:
                             lines[0] = lines[0].strip()
-                            lines[1:] = dedent('\n'.join(lines[1:])).splitlines()
+                            lines[1:] = dedent("\n".join(lines[1:])).splitlines()
                             for offset, line in enumerate(lines):
-                                translator_comments.append((token.lineno + offset,
-                                                            line))
+                                translator_comments.append((token.lineno + offset, line))
                         break
 
             elif funcname and call_stack == 0:
-                if token.type == 'operator' and token.value == ')':
+                if token.type == "operator" and token.value == ")":
                     if last_argument is not None:
                         messages.append(last_argument)
                     if len(messages) > 1:
@@ -173,13 +179,16 @@ class javascript(Extractor):
 
                     # Comments don't apply unless they immediately precede the
                     # message
-                    if translator_comments and \
-                    translator_comments[-1][0] < message_lineno - 1:
+                    if translator_comments and translator_comments[-1][0] < message_lineno - 1:
                         translator_comments = []
 
                     if messages is not None:
-                        yield (message_lineno, funcname, messages,
-                            [comment[1] for comment in translator_comments])
+                        yield (
+                            message_lineno,
+                            funcname,
+                            messages,
+                            [comment[1] for comment in translator_comments],
+                        )
 
                     funcname = message_lineno = last_argument = None
                     concatenate_next = False
@@ -187,47 +196,54 @@ class javascript(Extractor):
                     messages = []
                     call_stack = -1
 
-                elif token.type == 'string':
+                elif token.type == "string":
                     new_value = unquote_string(token.value)
                     if concatenate_next:
-                        last_argument = (last_argument or '') + new_value
+                        last_argument = (last_argument or "") + new_value
                         concatenate_next = False
                     else:
                         last_argument = new_value
 
-                elif token.type == 'operator':
-                    if token.value == ',':
+                elif token.type == "operator":
+                    if token.value == ",":
                         if last_argument is not None:
                             messages.append(last_argument)
                             last_argument = None
                         else:
                             messages.append(None)
                         concatenate_next = False
-                    elif token.value == '+':
+                    elif token.value == "+":
                         concatenate_next = True
 
-            elif call_stack > 0 and token.type == 'operator' and \
-                (token.value == ')' or token.value == ']' or token.value == '}'):
+            elif (
+                call_stack > 0
+                and token.type == "operator"
+                and (token.value == ")" or token.value == "]" or token.value == "}")
+            ):
                 call_stack -= 1
 
             elif funcname and call_stack == -1:
                 funcname = None
 
-            elif call_stack == -1 and token.type == 'name' and \
-                token.value in keywords and \
-                (last_token is None or last_token.type != 'name' or
-                last_token.value != 'function'):
+            elif (
+                call_stack == -1
+                and token.type == "name"
+                and token.value in keywords
+                and (
+                    last_token is None
+                    or last_token.type != "name"
+                    or last_token.value != "function"
+                )
+            ):
                 funcname = token.value
 
             last_token = token
 
-
     def extractFromFile(self, filepath):
-
-        with codecs.open(filepath, 'r', encoding='utf-8-sig') as fileObject:
+        with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
             for lineno, funcname, messages, comments in self.extractJavascriptFromFile(fileObject):
                 if funcname:
-                    spec = self.options.get('keywords', {})[funcname] or (1,)
+                    spec = self.options.get("keywords", {})[funcname] or (1,)
                 else:
                     spec = (1,)
                 if not isinstance(messages, (list, tuple)):
@@ -265,8 +281,10 @@ class javascript(Extractor):
                     first_msg_index = spec[0] - 1
                 if not messages[first_msg_index]:
                     # An empty string msgid isn't valid, emit a warning
-                    where = '%s:%i' % (hasattr(fileObject, 'name') and \
-                                        fileObject.name or '(unknown)', lineno)
+                    where = "%s:%i" % (
+                        hasattr(fileObject, "name") and fileObject.name or "(unknown)",
+                        lineno,
+                    )
                     print(self.empty_msgid_warning % where, file=sys.stderr)
                     continue
 
@@ -279,20 +297,17 @@ class javascript(Extractor):
                 yield message, plural, context, lineno, comments
 
 
-
 class cpp(javascript):
-    """ Extract messages from C++ source code.
-    """
+    """Extract messages from C++ source code."""
+
     pass
 
 
-
 class txt(Extractor):
-    """ Extract messages from plain text files.
-    """
+    """Extract messages from plain text files."""
 
     def extractFromFile(self, filepath):
-        with codecs.open(filepath, "r", encoding='utf-8-sig') as fileObject:
+        with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
             lineno = 0
             for line in [line.strip("\n\r") for line in fileObject.readlines()]:
                 lineno += 1
@@ -300,10 +315,8 @@ class txt(Extractor):
                     yield line, None, None, lineno, []
 
 
-
 class json(Extractor):
-    """ Extract messages from JSON files.
-    """
+    """Extract messages from JSON files."""
 
     def __init__(self, directoryPath=None, filemasks=[], options={}):
         super(json, self).__init__(directoryPath, filemasks, options)
@@ -318,7 +331,7 @@ class json(Extractor):
         self.comments = self.options.get("comments", [])
 
     def extractFromFile(self, filepath):
-        with codecs.open(filepath, "r", 'utf-8') as fileObject:
+        with codecs.open(filepath, "r", "utf-8") as fileObject:
             for message, context in self.extractFromString(fileObject.read()):
                 yield message, None, context, None, self.comments
 
@@ -326,14 +339,16 @@ class json(Extractor):
         jsonDocument = jsonParser.loads(string)
         if isinstance(jsonDocument, list):
             for message, context in self.parseList(jsonDocument):
-                if message: # Skip empty strings.
+                if message:  # Skip empty strings.
                     yield message, context
         elif isinstance(jsonDocument, dict):
             for message, context in self.parseDictionary(jsonDocument):
-                if message: # Skip empty strings.
+                if message:  # Skip empty strings.
                     yield message, context
         else:
-            raise Exception("Unexpected JSON document parent structure (not a list or a dictionary). You must extend the JSON extractor to support it.")
+            raise Exception(
+                "Unexpected JSON document parent structure (not a list or a dictionary). You must extend the JSON extractor to support it."
+            )
 
     def parseList(self, itemsList):
         index = 0
@@ -356,8 +371,13 @@ class json(Extractor):
                         yield message, context
                 elif isinstance(dictionary[keyword], dict):
                     extract = None
-                    if "extractFromInnerKeys" in self.keywords[keyword] and self.keywords[keyword]["extractFromInnerKeys"]:
-                        for message, context in self.extractDictionaryInnerKeys(dictionary[keyword], keyword):
+                    if (
+                        "extractFromInnerKeys" in self.keywords[keyword]
+                        and self.keywords[keyword]["extractFromInnerKeys"]
+                    ):
+                        for message, context in self.extractDictionaryInnerKeys(
+                            dictionary[keyword], keyword
+                        ):
                             yield message, context
                     else:
                         extract = self.extractDictionary(dictionary[keyword], keyword)
@@ -386,7 +406,7 @@ class json(Extractor):
             if isinstance(listItem, str):
                 yield self.extractString(listItem, keyword)
             elif isinstance(listItem, dict):
-                extract = self.extractDictionary(dictionary[keyword], keyword)
+                extract = self.extractDictionary(listItem[keyword], keyword)
                 if extract:
                     yield extract
             index += 1
@@ -420,8 +440,7 @@ class json(Extractor):
 
 
 class xml(Extractor):
-    """ Extract messages from XML files.
-    """
+    """Extract messages from XML files."""
 
     def __init__(self, directoryPath, filemasks, options):
         super(xml, self).__init__(directoryPath, filemasks, options)
@@ -435,7 +454,8 @@ class xml(Extractor):
 
     def extractFromFile(self, filepath):
         from lxml import etree
-        with codecs.open(filepath, "r", encoding='utf-8-sig') as fileObject:
+
+        with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
             xmlDocument = etree.parse(fileObject)
             for keyword in self.keywords:
                 for element in xmlDocument.iter(keyword):
@@ -457,7 +477,9 @@ class xml(Extractor):
                                 context = self.keywords[keyword]["customContext"]
                             if "comment" in element.attrib:
                                 comment = element.get("comment")
-                                comment = u" ".join(comment.split()) # Remove tabs, line breaks and unecessary spaces.
+                                comment = " ".join(
+                                    comment.split()
+                                )  # Remove tabs, line breaks and unecessary spaces.
                                 comments.append(comment)
                             if "splitOnWhitespace" in self.keywords[keyword]:
                                 for splitText in element.text.split():
@@ -470,21 +492,22 @@ class xml(Extractor):
 
 # Hack from http://stackoverflow.com/a/2819788
 class FakeSectionHeader(object):
-
     def __init__(self, fp):
         self.fp = fp
-        self.sechead = '[root]\n'
+        self.sechead = "[root]\n"
 
     def readline(self):
         if self.sechead:
-            try: return self.sechead
-            finally: self.sechead = None
-        else: return self.fp.readline()
+            try:
+                return self.sechead
+            finally:
+                self.sechead = None
+        else:
+            return self.fp.readline()
 
 
 class ini(Extractor):
-    """ Extract messages from INI files.
-    """
+    """Extract messages from INI files."""
 
     def __init__(self, directoryPath, filemasks, options):
         super(ini, self).__init__(directoryPath, filemasks, options)
@@ -492,6 +515,7 @@ class ini(Extractor):
 
     def extractFromFile(self, filepath):
         import ConfigParser
+
         config = ConfigParser.RawConfigParser()
         config.readfp(FakeSectionHeader(open(filepath)))
         for keyword in self.keywords:

@@ -7,6 +7,7 @@ import math
 import FontLoader
 import Packer
 
+
 # Representation of a rendered glyph
 class Glyph(object):
     def __init__(self, ctx, renderstyle, char, idx, face, size):
@@ -30,7 +31,7 @@ class Glyph(object):
         bb = [inf, inf, -inf, -inf]
 
         if "stroke" in self.renderstyle:
-            for (c, w) in self.renderstyle["stroke"]:
+            for c, w in self.renderstyle["stroke"]:
                 ctx.set_line_width(w)
                 ctx.glyph_path([self.glyph])
                 e = ctx.stroke_extents()
@@ -52,8 +53,8 @@ class Glyph(object):
 
         # Force multiple of 4, to avoid leakage across S3TC blocks
         # (TODO: is this useful?)
-        #self.w += (4 - (self.w % 4)) % 4
-        #self.h += (4 - (self.h % 4)) % 4
+        # self.w += (4 - (self.w % 4)) % 4
+        # self.h += (4 - (self.h % 4)) % 4
 
     def pack(self, packer):
         self.pos = packer.Pack(self.w, self.h)
@@ -69,19 +70,20 @@ class Glyph(object):
         # Render each stroke, and then each fill on top of it
 
         if "stroke" in self.renderstyle:
-            for ((r, g, b, a), w) in self.renderstyle["stroke"]:
+            for (r, g, b, a), w in self.renderstyle["stroke"]:
                 ctx.set_line_width(w)
                 ctx.set_source_rgba(r, g, b, a)
                 ctx.glyph_path([self.glyph])
                 ctx.stroke()
 
         if "fill" in self.renderstyle:
-            for (r, g, b, a) in self.renderstyle["fill"]:
+            for r, g, b, a in self.renderstyle["fill"]:
                 ctx.set_source_rgba(r, g, b, a)
                 ctx.glyph_path([self.glyph])
                 ctx.fill()
 
         ctx.restore()
+
 
 # Load the set of characters contained in the given text file
 def load_char_list(filename):
@@ -90,22 +92,25 @@ def load_char_list(filename):
     f.close()
     return set(chars)
 
+
 # Construct a Cairo context and surface for rendering text with the given parameters
 def setup_context(width, height, renderstyle):
-    format = (cairo.FORMAT_ARGB32 if "colour" in renderstyle else cairo.FORMAT_A8)
+    format = cairo.FORMAT_ARGB32 if "colour" in renderstyle else cairo.FORMAT_A8
     surface = cairo.ImageSurface(format, width, height)
     ctx = cairo.Context(surface)
     ctx.set_line_join(cairo.LINE_JOIN_ROUND)
     return ctx, surface
 
-def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
 
+def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
     faceList = []
     indexList = []
     for i in range(len(ttfNames)):
-        (face, indices) = FontLoader.create_cairo_font_face_for_file("../../../binaries/data/tools/fontbuilder/fonts/%s" % ttfNames[i], 0, loadopts)
+        (face, indices) = FontLoader.create_cairo_font_face_for_file(
+            "../../../binaries/data/tools/fontbuilder/fonts/%s" % ttfNames[i], 0, loadopts
+        )
         faceList.append(face)
-        if not ttfNames[i] in dsizes:
+        if ttfNames[i] not in dsizes:
             dsizes[ttfNames[i]] = 0
         indexList.append(indices)
 
@@ -123,32 +128,36 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
     # Translate all the characters into glyphs
     # (This is inefficient if multiple characters have the same glyph)
     glyphs = []
-    #for c in chars:
+    # for c in chars:
     for c in range(0x20, 0xFFFE):
         for i in range(len(indexList)):
             idx = indexList[i](chr(c))
-            if c == 0xFFFD and idx == 0: # use "?" if the missing-glyph glyph is missing
+            if c == 0xFFFD and idx == 0:  # use "?" if the missing-glyph glyph is missing
                 idx = indexList[i]("?")
             if idx:
-                glyphs.append(Glyph(ctx, renderstyle, chr(c), idx, faceList[i], size + dsizes[ttfNames[i]]))
+                glyphs.append(
+                    Glyph(ctx, renderstyle, chr(c), idx, faceList[i], size + dsizes[ttfNames[i]])
+                )
                 break
 
     # Sort by decreasing height (tie-break on decreasing width)
-    glyphs.sort(key = lambda g: (-g.h, -g.w))
+    glyphs.sort(key=lambda g: (-g.h, -g.w))
 
     # Try various sizes to pack the glyphs into
     sizes = []
     for h in [32, 64, 128, 256, 512, 1024, 2048, 4096]:
         sizes.append((h, h))
-        sizes.append((h*2, h))
-    sizes.sort(key = lambda w_h: (w_h[0]*w_h[1], max(w_h[0], w_h[1]))) # prefer smaller and squarer
+        sizes.append((h * 2, h))
+    sizes.sort(
+        key=lambda w_h: (w_h[0] * w_h[1], max(w_h[0], w_h[1]))
+    )  # prefer smaller and squarer
 
     for w, h in sizes:
         try:
             # Using the dump pacher usually creates bigger textures, but runs faster
             # In practice the size difference is so small it always ends up in the same size
             packer = Packer.DumbRectanglePacker(w, h)
-            #packer = Packer.CygonRectanglePacker(w, h)
+            # packer = Packer.CygonRectanglePacker(w, h)
             for g in glyphs:
                 g.pack(packer)
         except Packer.OutOfSpaceError:
@@ -168,7 +177,7 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
         fnt.write("%d\n" % linespacing)
         fnt.write("%d\n" % charheight)
         # sorting unneeded, as glyphs are added in increasing order
-        #glyphs.sort(key = lambda g: ord(g.char))
+        # glyphs.sort(key = lambda g: ord(g.char))
         for g in glyphs:
             x0 = g.x0
             y0 = g.y0
@@ -179,31 +188,39 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
             # glyph by an arbitrary amount to make it roughly the right
             # place when used after an a-macron glyph.
             if ord(g.char) == 0x0301:
-                y0 += charheight/3
+                y0 += charheight / 3
 
-            fnt.write("%d %d %d %d %d %d %d %d\n" % (ord(g.char), g.pos.x, h-g.pos.y, g.w, g.h, -x0, y0, g.xadvance))
+            fnt.write(
+                "%d %d %d %d %d %d %d %d\n"
+                % (ord(g.char), g.pos.x, h - g.pos.y, g.w, g.h, -x0, y0, g.xadvance)
+            )
 
         fnt.close()
 
         return
     print("Failed to fit glyphs in texture")
 
-filled = { "fill": [(1, 1, 1, 1)] }
-stroked1 = { "colour": True, "stroke": [((0, 0, 0, 1), 2.0), ((0, 0, 0, 1), 2.0)], "fill": [(1, 1, 1, 1)] }
-stroked2 = { "colour": True, "stroke": [((0, 0, 0, 1), 2.0)], "fill": [(1, 1, 1, 1), (1, 1, 1, 1)] }
-stroked3 = { "colour": True, "stroke": [((0, 0, 0, 1), 2.5)], "fill": [(1, 1, 1, 1), (1, 1, 1, 1)] }
+
+filled = {"fill": [(1, 1, 1, 1)]}
+stroked1 = {
+    "colour": True,
+    "stroke": [((0, 0, 0, 1), 2.0), ((0, 0, 0, 1), 2.0)],
+    "fill": [(1, 1, 1, 1)],
+}
+stroked2 = {"colour": True, "stroke": [((0, 0, 0, 1), 2.0)], "fill": [(1, 1, 1, 1), (1, 1, 1, 1)]}
+stroked3 = {"colour": True, "stroke": [((0, 0, 0, 1), 2.5)], "fill": [(1, 1, 1, 1), (1, 1, 1, 1)]}
 
 # For extra glyph support, add your preferred font to the font array
-Sans = (["LinBiolinum_Rah.ttf","FreeSans.ttf"], FontLoader.FT_LOAD_DEFAULT)
-Sans_Bold = (["LinBiolinum_RBah.ttf","FreeSansBold.ttf"], FontLoader.FT_LOAD_DEFAULT)
-Sans_Italic = (["LinBiolinum_RIah.ttf","FreeSansOblique.ttf"], FontLoader.FT_LOAD_DEFAULT)
-SansMono = (["DejaVuSansMono.ttf","FreeMono.ttf"], FontLoader.FT_LOAD_DEFAULT)
-Serif = (["texgyrepagella-regular.otf","FreeSerif.ttf"], FontLoader.FT_LOAD_NO_HINTING)
-Serif_Bold = (["texgyrepagella-bold.otf","FreeSerifBold.ttf"], FontLoader.FT_LOAD_NO_HINTING)
+Sans = (["LinBiolinum_Rah.ttf", "FreeSans.ttf"], FontLoader.FT_LOAD_DEFAULT)
+Sans_Bold = (["LinBiolinum_RBah.ttf", "FreeSansBold.ttf"], FontLoader.FT_LOAD_DEFAULT)
+Sans_Italic = (["LinBiolinum_RIah.ttf", "FreeSansOblique.ttf"], FontLoader.FT_LOAD_DEFAULT)
+SansMono = (["DejaVuSansMono.ttf", "FreeMono.ttf"], FontLoader.FT_LOAD_DEFAULT)
+Serif = (["texgyrepagella-regular.otf", "FreeSerif.ttf"], FontLoader.FT_LOAD_NO_HINTING)
+Serif_Bold = (["texgyrepagella-bold.otf", "FreeSerifBold.ttf"], FontLoader.FT_LOAD_NO_HINTING)
 
 # Define the size differences used to render different fallback fonts
 # I.e. when adding a fallback font has smaller glyphs than the original, you can bump it
-dsizes = {'HanaMinA.ttf': 2} # make the glyphs for the (chinese font 2 pts bigger)
+dsizes = {"HanaMinA.ttf": 2}  # make the glyphs for the (chinese font 2 pts bigger)
 
 fonts = (
     ("mono-10", SansMono, 10, filled),
@@ -231,6 +248,8 @@ fonts = (
     ("sans-stroke-16", Sans, 16, stroked2),
 )
 
-for (name, (fontnames, loadopts), size, style) in fonts:
+for name, (fontnames, loadopts), size, style in fonts:
     print("%s..." % name)
-    generate_font("../../../binaries/data/mods/mod/fonts/%s" % name, fontnames, loadopts, size, style, dsizes)
+    generate_font(
+        "../../../binaries/data/mods/mod/fonts/%s" % name, fontnames, loadopts, size, style, dsizes
+    )

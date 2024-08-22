@@ -29,7 +29,9 @@ Translatable strings will be extracted from the generated file, so this should b
 once before updateTemplates.py.
 """
 
-import json, os, re
+import json
+import os
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -44,13 +46,23 @@ for root, folders, filenames in os.walk(projectRootDirectory):
             if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
                 poLocations.append(os.path.join(root, folder))
 
-creditsLocation = os.path.join(projectRootDirectory, 'binaries', 'data', 'mods', 'public', 'gui', 'credits', 'texts', 'translators.json')
+creditsLocation = os.path.join(
+    projectRootDirectory,
+    "binaries",
+    "data",
+    "mods",
+    "public",
+    "gui",
+    "credits",
+    "texts",
+    "translators.json",
+)
 
 # This dictionary will hold creditors lists for each language, indexed by code
 langsLists = defaultdict(list)
 
 # Create the new JSON data
-newJSONData = {'Title': 'Translators', 'Content': []}
+newJSONData = {"Title": "Translators", "Content": []}
 
 # Now go through the list of languages and search the .po files for people
 
@@ -60,7 +72,7 @@ deletedUsernameMatch = re.compile(r"[0-9a-f]{32}(_[0-9a-f]{7})?")
 
 # Search
 for location in poLocations:
-    files = Path(location).glob('*.po')
+    files = Path(location).glob("*.po")
 
     for file in files:
         lang = file.stem.split(".")[0]
@@ -69,7 +81,7 @@ for location in poLocations:
         if lang == "debug" or lang == "long":
             continue
 
-        with file.open(encoding='utf-8') as poFile:
+        with file.open(encoding="utf-8") as poFile:
             reached = False
             for line in poFile:
                 if reached:
@@ -80,7 +92,7 @@ for location in poLocations:
                     username = m.group(1)
                     if not deletedUsernameMatch.fullmatch(username):
                         langsLists[lang].append(username)
-                if line.strip() == '# Translators:':
+                if line.strip() == "# Translators:":
                     reached = True
 
 # Sort translator names and remove duplicates
@@ -100,18 +112,18 @@ for langCode, langList in sorted(langsLists.items()):
     try:
         lang_name = Locale.parse(langCode).english_name
     except UnknownLocaleError:
-        lang_name = Locale.parse('en').languages.get(langCode)
+        lang_name = Locale.parse("en").languages.get(langCode)
 
         if not lang_name:
             raise
 
-    translators = [{'name': name} for name in langList]
-    newJSONData['Content'].append({'LangName': lang_name, 'List': translators})
+    translators = [{"name": name} for name in langList]
+    newJSONData["Content"].append({"LangName": lang_name, "List": translators})
 
 # Sort languages by their English names
-newJSONData['Content'] = sorted(newJSONData['Content'], key=lambda x: x['LangName'])
+newJSONData["Content"] = sorted(newJSONData["Content"], key=lambda x: x["LangName"])
 
 # Save the JSON data to the credits file
-creditsFile = open(creditsLocation, 'w', encoding='utf-8')
+creditsFile = open(creditsLocation, "w", encoding="utf-8")
 json.dump(newJSONData, creditsFile, indent=4)
 creditsFile.close()

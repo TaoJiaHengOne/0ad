@@ -16,12 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
+# ruff: noqa: E741
+
 import io
 import os
 import subprocess
 from typing import List
 
 from i18n_helper import projectRootDirectory
+
 
 def get_diff():
     """Return a diff using svn diff"""
@@ -31,9 +34,10 @@ def get_diff():
     if diff_process.returncode != 0:
         print(f"Error running svn diff: {diff_process.stderr.decode('utf-8')}. Exiting.")
         return
-    return io.StringIO(diff_process.stdout.decode('utf-8'))
+    return io.StringIO(diff_process.stdout.decode("utf-8"))
 
-def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
+
+def check_diff(diff: io.StringIO, verbose=False) -> List[str]:
     """Run through a diff of .po files and check that some of the changes
     are real translations changes and not just noise (line changes....).
     The algorithm isn't extremely clever, but it is quite fast."""
@@ -57,13 +61,18 @@ def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
             diff.readline()
             l = diff.readline()
             continue
-        if l[0] != '-' and l[0] != '+':
+        if l[0] != "-" and l[0] != "+":
             l = diff.readline()
             continue
-        if l[1:].strip() == "" or (l[1] == '#' and l[2] == ':'):
+        if l[1:].strip() == "" or (l[1] == "#" and l[2] == ":"):
             l = diff.readline()
             continue
-        if "# Copyright (C)" in l or "POT-Creation-Date:" in l or "PO-Revision-Date" in l or "Last-Translator" in l:
+        if (
+            "# Copyright (C)" in l
+            or "POT-Creation-Date:" in l
+            or "PO-Revision-Date" in l
+            or "Last-Translator" in l
+        ):
             l = diff.readline()
             continue
         # We've hit a real line
@@ -75,23 +84,25 @@ def check_diff(diff : io.StringIO, verbose = False) -> List[str]:
     return list(files.difference(keep))
 
 
-def revert_files(files: List[str], verbose = False):
+def revert_files(files: List[str], verbose=False):
     revert_process = subprocess.run(["svn", "revert"] + files, capture_output=True)
     if revert_process.returncode != 0:
-        print(f"Warning: Some files could not be reverted. Error: {revert_process.stderr.decode('utf-8')}")
+        print(
+            f"Warning: Some files could not be reverted. Error: {revert_process.stderr.decode('utf-8')}"
+        )
     if verbose:
         for file in files:
             print(f"Reverted {file}")
 
 
-def add_untracked(verbose = False):
+def add_untracked(verbose=False):
     """Add untracked .po files to svn"""
     diff_process = subprocess.run(["svn", "st", "binaries"], capture_output=True)
-    if diff_process.stderr != b'':
+    if diff_process.stderr != b"":
         print(f"Error running svn st: {diff_process.stderr.decode('utf-8')}. Exiting.")
         return
 
-    for line in diff_process.stdout.decode('utf-8').split('\n'):
+    for line in diff_process.stdout.decode("utf-8").split("\n"):
         if not line.startswith("?"):
             continue
         # Ignore non PO files. This is important so that the translator credits
@@ -100,16 +111,17 @@ def add_untracked(verbose = False):
         if not file.endswith(".po") and not file.endswith(".pot"):
             continue
         add_process = subprocess.run(["svn", "add", file, "--parents"], capture_output=True)
-        if add_process.stderr != b'':
+        if add_process.stderr != b"":
             print(f"Warning: file {file} could not be added.")
         if verbose:
             print(f"Added {file}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--verbose", help="Print reverted files.", action='store_true')
+    parser.add_argument("--verbose", help="Print reverted files.", action="store_true")
     args = parser.parse_args()
     need_revert = check_diff(get_diff(), args.verbose)
     revert_files(need_revert, args.verbose)
