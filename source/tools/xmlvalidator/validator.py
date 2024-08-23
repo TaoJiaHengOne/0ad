@@ -111,6 +111,7 @@ class Validator:
         errorch.setFormatter(Formatter('%(levelname)s - %(message)s'))
         logger.addHandler(errorch)
         self.logger = logger
+        self.inError = False
 
     def get_mod_path(self, mod_name, vfs_path):
         return os.path.join(mod_name, vfs_path)
@@ -178,6 +179,7 @@ class Validator:
                     self.get_mod_path(actor.mod_name, actor.vfs_path),
                     actor.material
                 ))
+                self.inError = True
             if actor.material not in self.materials:
                 continue
             material = self.materials[actor.material]
@@ -189,6 +191,7 @@ class Validator:
                     missing_textures,
                     material.name
                 ))
+                self.inError = True
 
             extra_textures = ', '.join(set([extra_texture for extra_texture in actor.textures if extra_texture not in material.required_textures]))
             if len(extra_textures) > 0:
@@ -197,6 +200,9 @@ class Validator:
                     extra_textures,
                     material.name
                 ))
+                self.inError = True
+
+        return self.inError
 
 if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -206,4 +212,5 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--mods', action='store', dest='mods', default='mod,public')
     args = parser.parse_args()
     validator = Validator(args.root, args.mods.split(','))
-    validator.run()
+    if not validator.run():
+        sys.exit(1)

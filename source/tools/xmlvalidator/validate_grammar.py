@@ -47,6 +47,7 @@ class RelaxNGValidator:
         errorch.setFormatter(Formatter('%(levelname)s - %(message)s'))
         logger.addHandler(errorch)
         self.logger = logger
+        self.inError = False
 
     def run (self):
         self.validate_actors()
@@ -59,13 +60,14 @@ class RelaxNGValidator:
         self.validate_soundgroups()
         self.validate_terrains()
         self.validate_textures()
+        return self.inError
 
     def main(self):
         """ Program entry point, parses command line arguments and launches the validation """
         # ordered uniq mods (dict maintains ordered keys from python 3.6)
         self.logger.info(f"Checking {'|'.join(self.mods)}'s integrity.")
         self.logger.info(f"The following mods will be loaded: {'|'.join(self.mods)}.")
-        self.run()
+        return self.run()
 
     def find_files(self, vfs_root, mods, vfs_path, *ext_list):
         """
@@ -177,6 +179,7 @@ class RelaxNGValidator:
             self.logger.info(f"{error_count} {name} validation errors")
         elif error_count > 0:
             self.logger.error(f"{error_count} {name} validation errors")
+            self.inError = True
 
 
 def get_mod_dependencies(vfs_root, *mods):
@@ -204,4 +207,5 @@ if __name__ == '__main__':
     args = ap.parse_args()
     mods = list(dict.fromkeys([*args.mods, *get_mod_dependencies(args.root, *args.mods), 'mod']).keys())
     relax_ng_validator = RelaxNGValidator(args.root, mods=mods, verbose=args.verbose)
-    relax_ng_validator.main()
+    if not relax_ng_validator.main():
+        sys.exit(1)

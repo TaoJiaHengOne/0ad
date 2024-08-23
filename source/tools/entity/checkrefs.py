@@ -37,6 +37,7 @@ class CheckRefs:
         self.supportedAudioFormats = ('ogg')
         self.mods = []
         self.__init_logger
+        self.inError = False
 
     @property
     def __init_logger(self):
@@ -103,12 +104,16 @@ class CheckRefs:
             sys.path.append("../xmlvalidator/")
             from validate_grammar import RelaxNGValidator
             validate = RelaxNGValidator(self.vfs_root, self.mods)
-            validate.run()
+            if not validate.run():
+                self.inError = True
         if args.validate_actors:
             sys.path.append("../xmlvalidator/")
             from validator import Validator
             validator = Validator(self.vfs_root, self.mods)
-            validator.run()
+            if not validator.run():
+                self.inError = True
+
+        return self.inError
 
     def get_mod_dependencies(self, *mods):
         modjsondeps = []
@@ -171,7 +176,8 @@ class CheckRefs:
             # ignore terrains.xml
             if name != 'terrains':
                 if name in terrains:
-                    self.logger.warning(f"Duplicate terrain name '{name}' (from '{terrains[name]}' and '{ffp}')")
+                    self.inError = True
+                    self.logger.error(f"Duplicate terrain name '{name}' (from '{terrains[name]}' and '{ffp}')")
                 terrains[name] = str(fp)
         mapfiles = self.find_files('maps/scenarios', 'pmp')
         mapfiles.extend(self.find_files('maps/skirmishes', 'pmp'))
@@ -411,7 +417,7 @@ class CheckRefs:
             material_elem = ElementTree.parse(ffp).getroot()
             for alternative in material_elem.findall('alternative'):
                 material = alternative.get('material')
-                if material:
+                if material is not None:
                     self.deps.append((str(fp), f'art/materials/{material}'))
 
     def add_particles(self):
@@ -642,7 +648,8 @@ class CheckRefs:
                 continue
 
             callers = [str(self.vfs_to_relative_to_mods(ref)) for ref in reverse_deps[dep]]
-            self.logger.warning(f"Missing file '{dep}' referenced by: {', '.join(sorted(callers))}")
+            self.logger.error(f"Missing file '{dep}' referenced by: {', '.join(sorted(callers))}")
+            self.inError = True
             if dep.lower() in lower_case_files:
                 self.logger.warning(f"### Case-insensitive match (found '{lower_case_files[dep.lower()]}')")
 
@@ -684,4 +691,5 @@ class CheckRefs:
 
 if __name__ == '__main__':
     check_ref = CheckRefs()
-    check_ref.main()
+    if not check_ref.main():
+        sys.exit(1)
