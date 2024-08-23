@@ -43,11 +43,23 @@ pipeline {
 			}
 		}
 
+		stage("Debug Build") {
+			steps {
+				bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug ${buildOptions}")
+				timeout(time: 15) {
+					bat "cd binaries\\system && test_dbg.exe > cxxtest-debug.xml"
+				}
+			}
+			post {
+				always {
+					junit 'binaries/system/cxxtest-debug.xml'
+				}
+			}
+		}
+
 		stage ("Release Build") {
 			steps {
-				dir('build\\workspaces\\vs2017'){
-					bat("${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}")
-				}
+				bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}")
 				timeout(time: 5) {
 					bat "cd binaries\\system && test.exe > cxxtest-release.xml"
 				}
