@@ -1,0 +1,10 @@
+line-length = 99
+
+[lint.isort]
+lines-after-imports = 2
+
+[lint.pycodestyle]
+max-doc-length = 72
+
+[lint.pydocstyle]
+convention = "pep257"
