@@ -234,8 +234,8 @@ class CheckRefs:
                     self.deps.append((str(fp), str(simul_templates_path / (parent + '.xml'))))
             if not str(fp).startswith('template_'):
                 self.roots.append(str(fp))
-                if entity and entity.find('VisualActor') is not None and entity.find('VisualActor').find('Actor') is not None:
-                    if entity.find('Identity'):
+                if entity.find('VisualActor') is not None and entity.find('VisualActor').find('Actor') is not None:
+                    if entity.find('Identity') is not None:
                         phenotype_tag = entity.find('Identity').find('Phenotype')
                         phenotypes = split(r'\s', phenotype_tag.text if phenotype_tag is not None and phenotype_tag.text else 'default')
                         actor = entity.find('VisualActor').find('Actor')
@@ -248,24 +248,25 @@ class CheckRefs:
                             actor_path = actor.text
                             self.deps.append((str(fp), f'art/actors/{actor_path}'))
                         foundation_actor = entity.find('VisualActor').find('FoundationActor')
-                        if foundation_actor:
+                        if foundation_actor is not None:
                             self.deps.append((str(fp), f'art/actors/{foundation_actor.text}'))
-                if entity.find('Sound'):
+                if entity.find('Sound') is not None:
                     phenotype_tag = entity.find('Identity').find('Phenotype')
                     phenotypes = split(r'\s', phenotype_tag.text if phenotype_tag is not None and phenotype_tag.text else 'default')
                     lang_tag = entity.find('Identity').find('Lang')
                     lang = lang_tag.text if lang_tag is not None and lang_tag.text else 'greek'
                     sound_groups = entity.find('Sound').find('SoundGroups')
-                    for sound_group in sound_groups:
-                        if sound_group.text and sound_group.text.strip():
-                            if '{phenotype}' in sound_group.text:
-                                for phenotype in phenotypes:
-                                    # see simulation/components/Sound.js and Identity.js for explanation
-                                    sound_path = sound_group.text.replace('{phenotype}', phenotype).replace('{lang}', lang)
+                    if sound_groups is not None and len(sound_groups) > 0:
+                        for sound_group in sound_groups:
+                            if sound_group.text and sound_group.text.strip():
+                                if '{phenotype}' in sound_group.text:
+                                    for phenotype in phenotypes:
+                                        # see simulation/components/Sound.js and Identity.js for explanation
+                                        sound_path = sound_group.text.replace('{phenotype}', phenotype).replace('{lang}', lang)
+                                        self.deps.append((str(fp), f'audio/{sound_path}'))
+                                else:
+                                    sound_path = sound_group.text.replace('{lang}', lang)
                                     self.deps.append((str(fp), f'audio/{sound_path}'))
-                            else:
-                                sound_path = sound_group.text.replace('{lang}', lang)
-                                self.deps.append((str(fp), f'audio/{sound_path}'))
                 if entity.find('Identity') is not None:
                     icon = entity.find('Identity').find('Icon')
                     if icon is not None and icon.text:
@@ -420,7 +421,7 @@ class CheckRefs:
             self.roots.append(str(fp))
             particle = ElementTree.parse(ffp).getroot()
             texture = particle.find('texture')
-            if texture:
+            if texture is not None:
                 self.deps.append((str(fp), texture.text))
 
     def add_soundgroups(self):
