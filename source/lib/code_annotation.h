@@ -30,6 +30,8 @@
 #include "lib/sysdep/compiler.h"
 #include "lib/sysdep/arch.h"	// ARCH_AMD64
 
+#include <cstddef>
+
 /**
  * mark a function parameter as unused and avoid
  * the corresponding compiler warning.

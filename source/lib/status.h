@@ -161,6 +161,10 @@ To summarize: +/-1SHHCC (S=subsystem, HH=header, CC=code number)
 #ifndef INCLUDED_STATUS
 #define INCLUDED_STATUS
 
+#include "lib/types.h"
+
+#include <cstddef>
+
 // an integral type allows defining error codes in separate headers,
 // but is not as type-safe as an enum. use Lint's 'strong type' checking
 // to catch errors such as Status Func() { return 1; }.

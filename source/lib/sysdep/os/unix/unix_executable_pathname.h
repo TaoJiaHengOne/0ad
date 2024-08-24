@@ -23,6 +23,8 @@
 #ifndef INCLUDED_UNIX_EXECUTABLE_PATHNAME
 #define INCLUDED_UNIX_EXECUTABLE_PATHNAME
 
+#include "lib/os_path.h"
+
 OsPath unix_ExecutablePathname();
 
 #endif  // INCLUDED_UNIX_EXECUTABLE_PATHNAME

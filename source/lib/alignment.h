@@ -26,6 +26,8 @@
 #include "lib/sysdep/compiler.h"	// MSC_VERSION
 #include "lib/sysdep/arch.h"	// ARCH_AMD64
 
+#include <cstdint>
+
 template<typename T>
 inline bool IsAligned(T t, uintptr_t multiple)
 {
