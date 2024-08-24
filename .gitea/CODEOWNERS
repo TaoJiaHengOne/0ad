@@ -1,5 +1,8 @@
+## == Project configuration
 ## Gitea configuration
 \\.gitea/.* @Stan @Itms
+## Linting
+\\.pre-commit-config\\.yaml @Dunedan
 
 ## == Build & Libraries
 (build|libraries)/.* @Itms @Stan
@@ -15,10 +18,9 @@ source/(collada|graphics|renderer)/.* @vladislavbelov
 source/simulation2/.* @wraitii @Itms
 
 ## == Tools
+source/tools/.*\\.py @Dunedan
 ## Atlas
 source/tools/atlas/.* @vladislavbelov @trompetin17
-## Lobby
-source/tools/XpartaMuPP/.* @Dunedan @user1
 
 ## == Scripts
 ## GUI
