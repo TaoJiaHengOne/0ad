@@ -13,3 +13,14 @@ repos:
           - --target-version
           - py311
         exclude: ^source/tools/webservices/
+  - repo: local
+    hooks:
+      - id: non-breaking-space-in-0ad
+        name: check for non-breaking space in "0 A.D."
+        description: |
+          Verify a non-breaking spaces is used in the project name ("0 A.D").
+        entry: '0(?!(\xc2\xa0|\\xa0)A\.D\.)\s?(?<!\\xa0)(A|a)\.(D|d)\.?'
+        language: pygrep
+        types: [text]
+        files: ^binaries/
+        exclude: (^binaries/data/mods/(mod|public)/art/.*\.xml|\.dae$)
