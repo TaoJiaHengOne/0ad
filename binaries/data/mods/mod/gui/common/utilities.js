@@ -19,17 +19,16 @@ function distributeButtonsHorizontally(button, captions)
 	}
 }
 
-function setButtonCaptionsAndVisibitily(button, captions, cancelHotkey, name)
+function setButtonCaptionsAndVisibility(buttons, captions, cancelHotkey, name)
 {
-	captions.forEach((caption, i) => {
-		button[i] = Engine.GetGUIObjectByName(name + (i + 1));
-		button[i].caption = caption;
-		button[i].hidden = false;
-		button[i].onPress = () => {
-			Engine.PopGuiPage(i);
-		};
+	return new Promise(resolve => {
+		captions.forEach((caption, i) => {
+			buttons[i] = Engine.GetGUIObjectByName(name + (i + 1));
+			buttons[i].caption = caption;
+			buttons[i].hidden = false;
+			buttons[i].onPress = resolve.bind(null, i);
 
-		if (i == 0)
-			cancelHotkey.onPress = button[i].onPress;
+		});
+		cancelHotkey.onPress = buttons[0].onPress;
 	});
 }

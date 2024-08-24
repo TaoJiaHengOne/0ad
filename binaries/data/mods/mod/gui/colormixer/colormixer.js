@@ -16,10 +16,10 @@ class ColorMixer
 		this.sliders = [];
 		this.valuesText = [];
 
-		this.setup(color);
+		this.run(color);
 	}
 
-	setup(color)
+	async run(color)
 	{
 		Engine.GetGUIObjectByName("titleBar").caption = translate("Color");
 		Engine.GetGUIObjectByName("infoLabel").caption = translate("Move the sliders to change the Red, Green and Blue components of the Color");
@@ -31,7 +31,8 @@ class ColorMixer
 		this.panel.size = "50%-" + lRDiff + " 50%-" + uDDiff + " 50%+" + lRDiff + " 50%+" + uDDiff;
 
 		const button = [];
-		setButtonCaptionsAndVisibitily(button, this.captions, cancelHotkey, "cmButton");
+		const closePromise =
+			setButtonCaptionsAndVisibility(button, this.captions, cancelHotkey, "cmButton");
 		distributeButtonsHorizontally(button, this.captions);
 
 		const c = color.split(" ");
@@ -67,9 +68,7 @@ class ColorMixer
 		// Update return color on cancel to prevent malformed values from initial input.
 		color = this.color.join(" ");
 
-		cancelHotkey.onPress = () => { Engine.PopGuiPage(color); };
-		button[0].onPress = () => { Engine.PopGuiPage(color); };
-		button[1].onPress = () => { Engine.PopGuiPage(this.color.join(" ")); };
+		Engine.PopGuiPage(await closePromise === 0 ? color : this.color.join(" "));
 	}
 
 	updateFromSlider(index)

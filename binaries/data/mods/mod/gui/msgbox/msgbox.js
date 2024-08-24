@@ -2,7 +2,7 @@
  * Currently limited to at most 3 buttons per message box.
  * The convention is to have "cancel" appear first.
  */
-function init(data)
+async function init(data)
 {
 	// Set title
 	Engine.GetGUIObjectByName("mbTitleBar").caption = data.title;
@@ -15,7 +15,6 @@ function init(data)
 
 	// Default behaviour
 	let mbCancelHotkey = Engine.GetGUIObjectByName("mbCancelHotkey");
-	mbCancelHotkey.onPress = Engine.PopGuiPage;
 
 	// Calculate size
 	let mbLRDiff = data.width / 2;
@@ -25,6 +24,8 @@ function init(data)
 	let captions = data.buttonCaptions || [translate("OK")];
 
 	let mbButton = [];
-	setButtonCaptionsAndVisibitily(mbButton, captions, mbCancelHotkey, "mbButton");
+	const closePromise = setButtonCaptionsAndVisibility(mbButton, captions, mbCancelHotkey, "mbButton");
 	distributeButtonsHorizontally(mbButton, captions);
+
+	Engine.PopGuiPage(await closePromise);
 }

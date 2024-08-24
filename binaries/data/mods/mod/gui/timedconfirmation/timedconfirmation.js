@@ -23,7 +23,7 @@ class TimedConfirmation
 		this.setup(data);
 	}
 
-	setup(data)
+	async setup(data)
 	{
 		Engine.GetGUIObjectByName("tmcTitleBar").caption = data.title;
 
@@ -46,8 +46,11 @@ class TimedConfirmation
 		const captions = data.buttonCaptions || [translate("OK")];
 
 		const button = [];
-		setButtonCaptionsAndVisibitily(button, captions, cancelHotkey, "tmcButton");
+		const closePromise =
+			setButtonCaptionsAndVisibility(button, captions, cancelHotkey, "tmcButton");
 		distributeButtonsHorizontally(button, captions);
+
+		Engine.PopGuiPage(await closePromise);
 	}
 
 	onTick()
