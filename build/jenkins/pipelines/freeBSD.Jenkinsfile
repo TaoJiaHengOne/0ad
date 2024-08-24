@@ -19,6 +19,9 @@
 // Due to a compilation bug with SpiderMonkey, the game is only built with the release configuration.
 
 pipeline {
+	// Stop previous build in pull requests, but not in branches
+	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
+
 	agent {
 		node {
 			label 'FreeBSDAgent'

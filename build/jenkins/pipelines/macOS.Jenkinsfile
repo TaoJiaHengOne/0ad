@@ -18,6 +18,9 @@
 // This pipeline builds the game on macOS (which uses the clang-10 compiler) and runs tests.
 
 pipeline {
+	// Stop previous build in pull requests, but not in branches
+	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
+
 	agent {
 		node {
 			label 'macOSAgent'

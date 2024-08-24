@@ -18,6 +18,9 @@
 // This pipeline builds the game on Linux (with min and max supported versions of GCC and clang) and runs tests.
 
 pipeline {
+	// Stop previous build in pull requests, but not in branches
+	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
+
 	agent none
 	stages {
 		stage("Setup") {

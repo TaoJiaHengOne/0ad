@@ -21,6 +21,9 @@ def visualStudioPath = "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017
 def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test /m:2 /nologo -clp:NoSummary"
 
 pipeline {
+	// Stop previous build in pull requests, but not in branches
+	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
+
 	agent {
 		node {
 			label 'WindowsAgent'
