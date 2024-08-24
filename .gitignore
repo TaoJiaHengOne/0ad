@@ -35,6 +35,7 @@ build/premake/premake5/build/vs200*/
 build/premake/premake5/build/vs201[0-5]/
 build/premake/premake5/build/xcode4/
 build/premake/premake5/packages/
+build/premake/.already-built
 build/premake/.gccmachine.tmp
 build/premake/.gccver.tmp
 
