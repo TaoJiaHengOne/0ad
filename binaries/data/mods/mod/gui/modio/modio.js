@@ -131,17 +131,19 @@ var g_ModIOState = {
 	}
 };
 
-function init(data)
+async function init(data)
 {
-	progressDialog(
+	const promise = progressDialog(
 		translate("Initializing mod.io interface."),
 		translate("Initializing"),
 		false,
-		translate("Cancel"),
-		closePage);
+		translate("Cancel"));
 
 	g_Failure = false;
 	Engine.ModIoStartGetGameId();
+
+	await promise;
+	closePage();
 }
 
 function onTick()
@@ -242,44 +244,48 @@ function cancelModListUpdate()
 	Engine.GetGUIObjectByName('refreshButton').enabled = true;
 }
 
-function updateModList()
+async function updateModList()
 {
 	clearModList();
 	Engine.GetGUIObjectByName("refreshButton").enabled = false;
 
-	progressDialog(
+	const promise = progressDialog(
 		translate("Fetching and updating list of available mods."),
 		translate("Updating"),
 		false,
-		translate("Cancel Update"),
-		cancelModListUpdate);
+		translate("Cancel Update"));
 
 	g_Failure = false;
 	g_RequestCancelled = false;
 	Engine.ModIoStartListMods();
+
+	await promise;
+	cancelModListUpdate();
 }
 
-function downloadMod()
+async function downloadMod()
 {
 	let selected = selectedModIndex();
 
 	if (isSelectedModInvalid(selected))
 		return;
 
-	progressDialog(
+	const promise = progressDialog(
 		sprintf(translate("Downloading “%(modname)s”"), {
 			"modname": g_ModsAvailableOnline[selected].name
 		}),
 		translate("Downloading"),
 		true,
-		translate("Cancel Download"),
-		() => { Engine.GetGUIObjectByName("downloadButton").enabled = true; });
+		translate("Cancel Download"));
 
 	Engine.GetGUIObjectByName("downloadButton").enabled = false;
 
 	g_Failure = false;
 	g_RequestCancelled = false;
 	Engine.ModIoStartDownloadMod(selected);
+
+	await promise;
+	Engine.GetGUIObjectByName("downloadButton").enabled = true;
 }
 
 function cancelRequest()
@@ -304,7 +310,7 @@ function showErrorMessageBox(caption, title, buttonCaptions)
 	return messageBox(500, 250, caption, title, buttonCaptions);
 }
 
-function progressDialog(dialogCaption, dialogTitle, showProgressBar, buttonCaption, buttonAction)
+async function progressDialog(dialogCaption, dialogTitle, showProgressBar, buttonCaption)
 {
 	Engine.GetGUIObjectByName("downloadDialog_title").caption = dialogTitle;
 
@@ -318,13 +324,16 @@ function progressDialog(dialogCaption, dialogTitle, showProgressBar, buttonCapti
 	Engine.GetGUIObjectByName("downloadDialog_progress").hidden = !showProgressBar;
 	Engine.GetGUIObjectByName("downloadDialog_status").hidden = !showProgressBar;
 
-	let downloadDialog_button = Engine.GetGUIObjectByName("downloadDialog_button");
-	downloadDialog_button.caption = buttonCaption;
-	downloadDialog_button.onPress = () => { cancelRequest(); buttonAction(); };
-
 	Engine.GetGUIObjectByName("downloadDialog").hidden = false;
 
 	g_RequestStartTime = Date.now();
+
+	const downloadDialog_button = Engine.GetGUIObjectByName("downloadDialog_button");
+	downloadDialog_button.caption = buttonCaption;
+	await new Promise(resolve => {
+		downloadDialog_button.onPress = resolve;
+	});
+	cancelRequest();
 }
 
 /*
