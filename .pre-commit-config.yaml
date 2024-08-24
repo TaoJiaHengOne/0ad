@@ -1,5 +1,26 @@
 ---
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+        exclude: ^build/premake/premake5
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+        exclude: ^build/premake/premake5
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-xml
+        exclude: |
+          (?x)(
+            ^binaries/data/mods/_test.xero/a/b/test1.xml|
+            ^binaries/data/mods/_test.xero/test1.xml|
+            ^binaries/data/mods/_test.sim/simulation/templates.illformed.xml|
+            ^binaries/data/mods/public/maps/.*\.xml
+          )
+      - id: check-yaml
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.1
     hooks:
