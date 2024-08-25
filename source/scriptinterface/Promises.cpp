@@ -85,7 +85,7 @@ bool JobQueue::empty() const
 
 js::UniquePtr<JS::JobQueue::SavedJobQueue> JobQueue::saveJobQueue(JSContext*)
 {
-	class SavedJobQueue : public JS::JobQueue::SavedJobQueue
+	class SavedJobQueue final : public JS::JobQueue::SavedJobQueue
 	{
 	public:
 		SavedJobQueue(QueueType& queue) :

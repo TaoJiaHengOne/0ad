@@ -35,7 +35,7 @@ namespace Script
 void UnhandledRejectedPromise(JSContext* cx, bool, JS::HandleObject promise,
 	JS::PromiseRejectionHandlingState state, void*);
 
-class JobQueue : public JS::JobQueue
+class JobQueue final : public JS::JobQueue
 {
 public:
 	~JobQueue() final = default;
