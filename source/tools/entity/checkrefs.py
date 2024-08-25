@@ -6,7 +6,7 @@ from json import load, loads
 from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
 from os.path import basename, exists, sep
 from pathlib import Path
-from re import match, split
+from re import match
 from struct import calcsize, unpack
 from xml.etree import ElementTree as ET
 
@@ -304,11 +304,10 @@ class CheckRefs:
                 ):
                     if entity.find("Identity") is not None:
                         phenotype_tag = entity.find("Identity").find("Phenotype")
-                        phenotypes = split(
-                            r"\s",
-                            phenotype_tag.text
-                            if phenotype_tag is not None and phenotype_tag.text
-                            else "default",
+                        phenotypes = (
+                            phenotype_tag.text.split()
+                            if (phenotype_tag is not None and phenotype_tag.text)
+                            else ["default"]
                         )
                         actor = entity.find("VisualActor").find("Actor")
                         if "{phenotype}" in actor.text:
@@ -325,11 +324,10 @@ class CheckRefs:
                             self.deps.append((str(fp), f"art/actors/{foundation_actor.text}"))
                 if entity.find("Sound") is not None:
                     phenotype_tag = entity.find("Identity").find("Phenotype")
-                    phenotypes = split(
-                        r"\s",
-                        phenotype_tag.text
-                        if phenotype_tag is not None and phenotype_tag.text
-                        else "default",
+                    phenotypes = (
+                        phenotype_tag.text.split()
+                        if (phenotype_tag is not None and phenotype_tag.text)
+                        else ["default"]
                     )
                     lang_tag = entity.find("Identity").find("Lang")
                     lang = lang_tag.text if lang_tag is not None and lang_tag.text else "greek"
@@ -386,7 +384,7 @@ class CheckRefs:
                 cmp_auras = entity.find("Auras")
                 if cmp_auras is not None:
                     auraString = cmp_auras.text
-                    for aura in split(r"\s+", auraString):
+                    for aura in auraString.split():
                         if not aura:
                             continue
                         if aura.startswith("-"):
@@ -421,7 +419,7 @@ class CheckRefs:
                 if cmp_researcher is not None:
                     techString = cmp_researcher.find("Technologies")
                     if techString is not None:
-                        for tech in split(r"\s+", techString.text):
+                        for tech in techString.text.split():
                             if not tech:
                                 continue
                             if tech.startswith("-"):
