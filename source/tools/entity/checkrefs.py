@@ -152,6 +152,7 @@ class CheckRefs:
         for mod in mods:
             mod_json_path = self.vfs_root / mod / "mod.json"
             if not exists(mod_json_path):
+                self.logger.warning('Failed to find the mod.json for "%s"', mod)
                 continue
 
             with open(mod_json_path, encoding="utf-8") as f:
