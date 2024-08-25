@@ -1,0 +1,14 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.sh]
+indent_style = tab
+function_next_line = true
+switch_case_indent = true
+
+[build/premake/premake5/**]
+ignore = true
