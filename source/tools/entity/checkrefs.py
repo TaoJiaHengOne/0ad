@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 import sys
 from argparse import ArgumentParser
 from io import BytesIO
@@ -6,7 +7,6 @@ from json import load, loads
 from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
 from os.path import basename, exists, sep
 from pathlib import Path
-from re import match
 from struct import calcsize, unpack
 from xml.etree import ElementTree as ET
 
@@ -615,10 +615,11 @@ class CheckRefs:
 
     def add_gui_xml(self):
         self.logger.info("Loading GUI XML...")
+        gui_page_regex = re.compile(r".*[\\\/]page(_[^.\/\\]+)?\.xml$")
         for fp, ffp in sorted(self.find_files("gui", "xml")):
             self.files.append(str(fp))
             # GUI page definitions are assumed to be named page_[something].xml and alone in that.
-            if match(r".*[\\\/]page(_[^.\/\\]+)?\.xml$", str(fp)):
+            if gui_page_regex.match(str(fp)):
                 self.roots.append(str(fp))
                 root_xml = ET.parse(ffp).getroot()
                 for include in root_xml.findall("include"):
