@@ -45,3 +45,12 @@ repos:
         types: [text]
         files: ^binaries/
         exclude: (^binaries/data/mods/(mod|public)/art/.*\.xml|\.dae$)
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.9.0-1
+    hooks:
+      - id: shfmt
+        args:
+          - --diff
+          - --simplify
+        stages: [pre-commit]
+        exclude: ^build/premake/premake5/
