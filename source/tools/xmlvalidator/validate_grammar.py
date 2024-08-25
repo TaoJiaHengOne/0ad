@@ -63,7 +63,7 @@ class RelaxNGValidator:
         self.validate_soundgroups()
         self.validate_terrains()
         self.validate_textures()
-        return self.inError
+        return not self.inError
 
     def main(self):
         """Program entry point, parses command line arguments and launches the validation"""

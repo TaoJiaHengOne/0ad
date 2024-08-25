@@ -220,7 +220,7 @@ class Validator:
                 )
                 self.inError = True
 
-        return self.inError
+        return not self.inError
 
 
 if __name__ == "__main__":

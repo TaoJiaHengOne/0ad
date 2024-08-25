@@ -145,7 +145,7 @@ class CheckRefs:
             if not validator.run():
                 self.inError = True
 
-        return self.inError
+        return not self.inError
 
     def get_mod_dependencies(self, *mods):
         modjsondeps = []
