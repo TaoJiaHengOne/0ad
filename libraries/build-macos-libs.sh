@@ -24,23 +24,23 @@ ZLIB_VERSION="zlib-1.2.11"
 CURL_VERSION="curl-7.71.0"
 ICONV_VERSION="libiconv-1.16"
 XML2_VERSION="libxml2-2.9.10"
-SDL2_VERSION="SDL2-2.0.18"
+SDL2_VERSION="SDL2-2.24.0"
 # NOTE: remember to also update LIB_URL below when changing version
-BOOST_VERSION="boost_1_76_0"
+BOOST_VERSION="boost_1_81_0"
 # NOTE: remember to also update LIB_URL below when changing version
 WXWIDGETS_VERSION="wxWidgets-3.1.4"
 # libpng was included as part of X11 but that's removed from Mountain Lion
 # (also the Snow Leopard version was ancient 1.2)
 PNG_VERSION="libpng-1.6.36"
 FREETYPE_VERSION="freetype-2.10.4"
-OGG_VERSION="libogg-1.3.3"
+OGG_VERSION="libogg-1.3.5"
 VORBIS_VERSION="libvorbis-1.3.7"
 # gloox requires GnuTLS, GnuTLS requires Nettle and GMP
 GMP_VERSION="gmp-6.2.1"
 NETTLE_VERSION="nettle-3.9"
 # NOTE: remember to also update LIB_URL below when changing version
 GLOOX_VERSION="gloox-1.0.24"
-GNUTLS_VERSION="gnutls-3.8.0"
+GNUTLS_VERSION="gnutls-3.8.3"
 # OS X only includes part of ICU, and only the dylib
 # NOTE: remember to also update LIB_URL below when changing version
 ICU_VERSION="icu4c-69_1"
@@ -409,7 +409,7 @@ echo "Building Boost..."
 	LIB_VERSION="${BOOST_VERSION}"
 	LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
 	LIB_DIRECTORY="$LIB_VERSION"
-	LIB_URL="https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/"
+	LIB_URL="https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/"
 
 	mkdir -p boost
 	cd boost
@@ -620,16 +620,16 @@ OGG_DIR="$(pwd)/libogg"
 		rm -rf $LIB_DIRECTORY include lib share
 		tar -xf $LIB_ARCHIVE
 
-		(
-			cd $LIB_DIRECTORY
-			./configure \
-				CFLAGS="$CFLAGS" \
-				LDFLAGS="$LDFLAGS" \
-				--prefix="$OGG_DIR" \
-				--enable-shared=no
-			make "${JOBS}"
-			make install
-		) || die "libogg build failed"
+		# shellcheck disable=SC2086
+		cmake -B libogg \
+			-S $LIB_DIRECTORY \
+			-G "Unix Makefiles" \
+			-DCMAKE_INSTALL_PREFIX="$OGG_DIR" \
+			-DBUILD_SHARED_LIBS=OFF \
+			-DINSTALL_DOCS=OFF \
+			-DCMAKE_C_FLAGS="$CFLAGS" \
+			$CMAKE_FLAGS
+		cmake --build libogg "${JOBS}" --target install
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
 		echo "$LIB_VERSION" >.already-built
@@ -659,17 +659,17 @@ echo "Building libvorbis..."
 		rm -rf $LIB_DIRECTORY include lib share
 		tar -xf $LIB_ARCHIVE
 
-		(
-			cd $LIB_DIRECTORY
-			./configure \
-				CFLAGS="$CFLAGS" \
-				LDFLAGS="$LDFLAGS" \
-				--prefix="$INSTALL_DIR" \
-				--enable-shared=no \
-				--with-ogg="$OGG_DIR"
-			make "${JOBS}"
-			make install
-		) || die "libvorbis build failed"
+		# shellcheck disable=SC2086
+		cmake -B libvorbis \
+			-S $LIB_DIRECTORY \
+			-G "Unix Makefiles" \
+			-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+			-DCMAKE_PREFIX_PATH="$OGG_DIR" \
+			-DBUILD_SHARED_LIBS=OFF \
+			-DINSTALL_DOCS=OFF \
+			-DCMAKE_C_FLAGS="$CFLAGS" \
+			$CMAKE_FLAGS
+		cmake --build libvorbis "${JOBS}" --target install
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
 		echo "$LIB_VERSION" >.already-built
@@ -1067,21 +1067,17 @@ echo "Building fmt..."
 		rm -rf $LIB_DIRECTORY include lib
 		tar -xf $LIB_ARCHIVE
 
-		(
-			cd $LIB_DIRECTORY
-			# It appears that older versions of Clang require constexpr statements to have a user-set constructor.
-			patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff
-			mkdir -p build
-			cd build
-			# shellcheck disable=SC2086
-			cmake .. \
-				-DFMT_TEST=False \
-				-DFMT_DOC=False \
-				-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-				$CMAKE_FLAGS
-			make fmt "${JOBS}"
-			make install
-		) || die "fmt build failed"
+		# It appears that older versions of Clang require constexpr statements to have a user-set constructor.
+		patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff
+		# shellcheck disable=SC2086
+		cmake -B libfmt \
+			-S $LIB_DIRECTORY \
+			-DFMT_TEST=False \
+			-DFMT_DOC=False \
+			-DCMAKE_C_FLAGS="$CFLAGS" \
+			-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+			$CMAKE_FLAGS
+		cmake --build libfmt "${JOBS}" --target install
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
 		echo "$FMT_VERSION" >.already-built
@@ -1102,7 +1098,7 @@ echo "Building Molten VK..."
 	cd "molten-vk"
 
 	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$MOLTENVK_VERSION" ] || [ ! -e ../../../binaries/system/libMoltenVK.dylib ]; then
-		INSTALL_DIR="../../../../binaries/system/"
+		INSTALL_DIR="../../../binaries/system/"
 
 		rm -f .already-built
 		download_lib $LIB_URL $LIB_ARCHIVE
