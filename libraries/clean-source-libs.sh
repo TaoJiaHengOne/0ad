@@ -12,9 +12,9 @@ cd "$(dirname $0)"
 echo "Cleaning bundled third-party dependencies..."
 
 if [ -e source/.svn ]; then
-    (cd source && svn revert -R . && svn st --no-ignore | cut -c 9- | xargs rm -rf)
+	(cd source && svn revert -R . && svn st --no-ignore | cut -c 9- | xargs rm -rf)
 else
-    rm -rf source
+	rm -rf source
 fi
 
 echo

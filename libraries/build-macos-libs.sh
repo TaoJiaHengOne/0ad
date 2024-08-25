@@ -75,15 +75,15 @@ export ARCH=${ARCH:=""}
 
 # Check if SYSROOT is set and not empty
 if [[ $SYSROOT && ${SYSROOT-_} ]]; then
-  C_FLAGS="-isysroot $SYSROOT"
-  LDFLAGS="$LDFLAGS -Wl,-syslibroot,$SYSROOT"
+	C_FLAGS="-isysroot $SYSROOT"
+	LDFLAGS="$LDFLAGS -Wl,-syslibroot,$SYSROOT"
 fi
 # Check if MIN_OSX_VERSION is set and not empty
 if [[ $MIN_OSX_VERSION && ${MIN_OSX_VERSION-_} ]]; then
-  C_FLAGS="$C_FLAGS -mmacosx-version-min=$MIN_OSX_VERSION"
-  # clang and llvm-gcc look at mmacosx-version-min to determine link target
-  # and CRT version, and use it to set the macosx_version_min linker flag
-  LDFLAGS="$LDFLAGS -mmacosx-version-min=$MIN_OSX_VERSION"
+	C_FLAGS="$C_FLAGS -mmacosx-version-min=$MIN_OSX_VERSION"
+	# clang and llvm-gcc look at mmacosx-version-min to determine link target
+	# and CRT version, and use it to set the macosx_version_min linker flag
+	LDFLAGS="$LDFLAGS -mmacosx-version-min=$MIN_OSX_VERSION"
 fi
 
 CFLAGS="$CFLAGS $C_FLAGS -fvisibility=hidden"
@@ -100,15 +100,15 @@ ARCHLESS_LDFLAGS="$LDFLAGS -stdlib=libc++"
 
 # If ARCH isn't set, select either x86_64 or arm64
 if [ -z "${ARCH}" ]; then
-  ARCH=`uname -m`
+	ARCH=$(uname -m)
 fi
 if [ $ARCH == "arm64" ]; then
-  # Some libs want this passed to configure for cross compilation.
-  HOST_PLATFORM="--host=aarch64-apple-darwin"
+	# Some libs want this passed to configure for cross compilation.
+	HOST_PLATFORM="--host=aarch64-apple-darwin"
 else
-  CXXFLAGS="$CXXFLAGS -msse4.1"
-  # Some libs want this passed to configure for cross compilation.
-  HOST_PLATFORM="--host=x86_64-apple-darwin"
+	CXXFLAGS="$CXXFLAGS -msse4.1"
+	# Some libs want this passed to configure for cross compilation.
+	HOST_PLATFORM="--host=x86_64-apple-darwin"
 fi
 
 CFLAGS="$CFLAGS -arch $ARCH"
@@ -125,51 +125,49 @@ set -e
 
 die()
 {
-  echo ERROR: $*
-  exit 1
+	echo ERROR: $*
+	exit 1
 }
 
 download_lib()
 {
-  local url=$1
-  local filename=$2
+	local url=$1
+	local filename=$2
 
-  if [ ! -e $filename ]; then
-    echo "Downloading $filename"
-    curl -fLo ${filename} ${url}${filename} || die "Download of $url$filename failed"
-  fi
+	if [ ! -e $filename ]; then
+		echo "Downloading $filename"
+		curl -fLo ${filename} ${url}${filename} || die "Download of $url$filename failed"
+	fi
 }
 
 already_built()
 {
-  echo -e "Skipping - already built (use --force-rebuild to override)"
+	echo -e "Skipping - already built (use --force-rebuild to override)"
 }
 
 # Check that we're actually on macOS
-if [ "`uname -s`" != "Darwin" ]; then
-  die "This script is intended for macOS only"
+if [ "$(uname -s)" != "Darwin" ]; then
+	die "This script is intended for macOS only"
 fi
 
 # Parse command-line options:
 force_rebuild=false
 
-for i in "$@"
-do
-  case $i in
-    --force-rebuild ) force_rebuild=true;;
-    -j* ) JOBS=$i ;;
-  esac
+for i in "$@"; do
+	case $i in
+		--force-rebuild) force_rebuild=true ;;
+		-j*) JOBS=$i ;;
+	esac
 done
 
 cd "$(dirname $0)" # Now in libraries/ (where we assume this script resides)
 mkdir -p macos
 cd macos
 
-
 # Create a location to create copies of dependencies' *.pc files, so they can be found by pkg-config
 PC_PATH="$(pwd)/pkgconfig/"
-if [[ "$force_rebuild" = "true" ]]; then
-  rm -rf $PC_PATH
+if [[ $force_rebuild == "true" ]]; then
+	rm -rf $PC_PATH
 fi
 mkdir -p $PC_PATH
 
@@ -182,33 +180,32 @@ LIB_DIRECTORY=$LIB_VERSION
 LIB_URL="https://zlib.net/fossils/"
 
 mkdir -p zlib
-pushd zlib > /dev/null
+pushd zlib >/dev/null
 
 ZLIB_DIR="$(pwd)"
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # patch zlib's configure script to use our CFLAGS and LDFLAGS
-  (patch -Np0 -i ../../../macos-patches/zlib_flags.diff \
-    && CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
-      ./configure --prefix="$ZLIB_DIR" \
-         --static \
-    && make ${JOBS} && make install) || die "zlib build failed"
+	# patch zlib's configure script to use our CFLAGS and LDFLAGS
+	(patch -Np0 -i ../../../macos-patches/zlib_flags.diff &&
+		CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
+			./configure --prefix="$ZLIB_DIR" \
+			--static &&
+		make ${JOBS} && make install) || die "zlib build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building libcurl..."
@@ -219,55 +216,54 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://curl.haxx.se/download/"
 
 mkdir -p libcurl
-pushd libcurl > /dev/null
+pushd libcurl >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix="$INSTALL_DIR" \
-      --enable-ipv6 \
-      --with-darwinssl \
-      --without-gssapi \
-      --without-libmetalink \
-      --without-libpsl \
-      --without-librtmp \
-      --without-libssh2 \
-      --without-nghttp2 \
-      --without-nss \
-      --without-polarssl \
-      --without-ssl \
-      --without-gnutls \
-      --without-brotli \
-      --without-cyassl \
-      --without-winssl \
-      --without-mbedtls \
-      --without-wolfssl \
-      --without-spnego \
-      --disable-ares \
-      --disable-ldap \
-      --disable-ldaps \
-      --without-libidn2 \
-      --with-zlib="${ZLIB_DIR}" \
-      --enable-shared=no \
-    && make ${JOBS} && make install) || die "libcurl build failed"
+	(./configure CFLAGS="$CFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--prefix="$INSTALL_DIR" \
+		--enable-ipv6 \
+		--with-darwinssl \
+		--without-gssapi \
+		--without-libmetalink \
+		--without-libpsl \
+		--without-librtmp \
+		--without-libssh2 \
+		--without-nghttp2 \
+		--without-nss \
+		--without-polarssl \
+		--without-ssl \
+		--without-gnutls \
+		--without-brotli \
+		--without-cyassl \
+		--without-winssl \
+		--without-mbedtls \
+		--without-wolfssl \
+		--without-spnego \
+		--disable-ares \
+		--disable-ldap \
+		--disable-ldaps \
+		--without-libidn2 \
+		--with-zlib="${ZLIB_DIR}" \
+		--enable-shared=no &&
+		make ${JOBS} && make install) || die "libcurl build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building libiconv..."
@@ -278,33 +274,32 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://ftp.gnu.org/pub/gnu/libiconv/"
 
 mkdir -p iconv
-pushd iconv > /dev/null
+pushd iconv >/dev/null
 
 ICONV_DIR="$(pwd)"
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix="$ICONV_DIR" \
-      --without-libiconv-prefix \
-      --without-libintl-prefix \
-      --disable-nls \
-      --enable-shared=no \
-    && make ${JOBS} && make install) || die "libiconv build failed"
-  popd
-  echo "$LIB_VERSION" > .already-built
+	(./configure CFLAGS="$CFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--prefix="$ICONV_DIR" \
+		--without-libiconv-prefix \
+		--without-libintl-prefix \
+		--disable-nls \
+		--enable-shared=no &&
+		make ${JOBS} && make install) || die "libiconv build failed"
+	popd
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building libxml2..."
@@ -315,36 +310,35 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="ftp://xmlsoft.org/libxml2/"
 
 mkdir -p libxml2
-pushd libxml2 > /dev/null
+pushd libxml2 >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix="$INSTALL_DIR" \
-      --without-lzma \
-      --without-python \
-      --with-iconv="${ICONV_DIR}" \
-      --with-zlib="${ZLIB_DIR}" \
-      --enable-shared=no \
-    && make ${JOBS} && make install) || die "libxml2 build failed"
+	(./configure CFLAGS="$CFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--prefix="$INSTALL_DIR" \
+		--without-lzma \
+		--without-python \
+		--with-iconv="${ICONV_DIR}" \
+		--with-zlib="${ZLIB_DIR}" \
+		--enable-shared=no &&
+		make ${JOBS} && make install) || die "libxml2 build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 
@@ -356,39 +350,38 @@ LIB_DIRECTORY=$LIB_VERSION
 LIB_URL="https://libsdl.org/release/"
 
 mkdir -p sdl2
-pushd sdl2 > /dev/null
+pushd sdl2 >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # We don't want SDL2 to pull in system iconv, force it to detect ours with flags.
-  # Don't use X11 - we don't need it and Mountain Lion removed it
-  (./configure CPPFLAGS="-I${ICONV_DIR}/include" \
-      CFLAGS="$CFLAGS" \
-      CXXFLAGS="$CXXFLAGS" \
-      LDFLAGS="$LDFLAGS -L${ICONV_DIR}/lib" \
-      --prefix="$INSTALL_DIR" \
-      --disable-video-x11 \
-      --without-x \
-      --enable-video-cocoa \
-      --enable-shared=no \
-    && make $JOBS && make install) || die "SDL2 build failed"
+	# We don't want SDL2 to pull in system iconv, force it to detect ours with flags.
+	# Don't use X11 - we don't need it and Mountain Lion removed it
+	(./configure CPPFLAGS="-I${ICONV_DIR}/include" \
+		CFLAGS="$CFLAGS" \
+		CXXFLAGS="$CXXFLAGS" \
+		LDFLAGS="$LDFLAGS -L${ICONV_DIR}/lib" \
+		--prefix="$INSTALL_DIR" \
+		--disable-video-x11 \
+		--without-x \
+		--enable-video-cocoa \
+		--enable-shared=no &&
+		make $JOBS && make install) || die "SDL2 build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building Boost..."
@@ -399,40 +392,40 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/"
 
 mkdir -p boost
-pushd boost > /dev/null
+pushd boost >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # Can't use macosx-version, see above comment.
-  (./bootstrap.sh --with-libraries=filesystem,system \
-      --prefix=$INSTALL_DIR \
-    && ./b2 cflags="$CFLAGS" \
-          toolset=clang \
-          cxxflags="$CXXFLAGS" \
-          linkflags="$LDFLAGS" ${JOBS} \
-          -d2 \
-          --layout=system \
-          --debug-configuration \
-          link=static \
-          threading=multi \
-          variant=release install \
-    ) || die "Boost build failed"
+	# Can't use macosx-version, see above comment.
+	(
+		./bootstrap.sh --with-libraries=filesystem,system \
+			--prefix=$INSTALL_DIR &&
+			./b2 cflags="$CFLAGS" \
+				toolset=clang \
+				cxxflags="$CXXFLAGS" \
+				linkflags="$LDFLAGS" ${JOBS} \
+				-d2 \
+				--layout=system \
+				--debug-configuration \
+				link=static \
+				threading=multi \
+				variant=release install
+	) || die "Boost build failed"
 
-  popd
-  echo "$LIB_VERSION" > .already-built
+	popd
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 # TODO: This build takes ages, anything we can exclude?
@@ -444,23 +437,22 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/"
 
 mkdir -p wxwidgets
-pushd wxwidgets > /dev/null
+pushd wxwidgets >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  mkdir -p build-release
-  pushd build-release
+	mkdir -p build-release
+	pushd build-release
 
-  CONF_OPTS="--prefix=$INSTALL_DIR
+	CONF_OPTS="--prefix=$INSTALL_DIR
     --disable-shared
     --enable-unicode
     --with-cocoa
@@ -478,23 +470,23 @@ then
     --disable-webviewwebkit
     --disable-webviewie
     --without-libjpeg"
-  # wxWidgets configure now defaults to targeting 10.5, if not specified,
-  # but that conflicts with our flags
-  if [[ $MIN_OSX_VERSION && ${MIN_OSX_VERSION-_} ]]; then
-    CONF_OPTS="$CONF_OPTS --with-macosx-version-min=$MIN_OSX_VERSION"
-  fi
-  (../configure CFLAGS="$ARCHLESS_CFLAGS" \
-      CXXFLAGS="$ARCHLESS_CXXFLAGS" \
-      CPPFLAGS="-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=1" \
-      LDFLAGS="$ARCHLESS_LDFLAGS" $CONF_OPTS \
-    && make ${JOBS} && make install) || die "wxWidgets build failed"
-  popd
-  popd
-  echo "$LIB_VERSION" > .already-built
+	# wxWidgets configure now defaults to targeting 10.5, if not specified,
+	# but that conflicts with our flags
+	if [[ $MIN_OSX_VERSION && ${MIN_OSX_VERSION-_} ]]; then
+		CONF_OPTS="$CONF_OPTS --with-macosx-version-min=$MIN_OSX_VERSION"
+	fi
+	(../configure CFLAGS="$ARCHLESS_CFLAGS" \
+		CXXFLAGS="$ARCHLESS_CXXFLAGS" \
+		CPPFLAGS="-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=1" \
+		LDFLAGS="$ARCHLESS_LDFLAGS" $CONF_OPTS &&
+		make ${JOBS} && make install) || die "wxWidgets build failed"
+	popd
+	popd
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building libpng..."
@@ -505,33 +497,32 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://download.sourceforge.net/libpng/"
 
 mkdir -p libpng
-pushd libpng > /dev/null
+pushd libpng >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # libpng has no flags for zlib but the 10.12 version is too old, so link our own.
-  (./configure CFLAGS="$CFLAGS" CPPFLAGS=" -I $ZLIB_DIR/include "\
-      LDFLAGS="$LDFLAGS -L$ZLIB_DIR/lib" \
-      --prefix=$INSTALL_DIR \
-      --enable-shared=no \
-    && make ${JOBS} && make install) || die "libpng build failed"
+	# libpng has no flags for zlib but the 10.12 version is too old, so link our own.
+	(./configure CFLAGS="$CFLAGS" CPPFLAGS=" -I $ZLIB_DIR/include " \
+		LDFLAGS="$LDFLAGS -L$ZLIB_DIR/lib" \
+		--prefix=$INSTALL_DIR \
+		--enable-shared=no &&
+		make ${JOBS} && make install) || die "libpng build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building freetype..."
@@ -542,34 +533,33 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="https://download.savannah.gnu.org/releases/freetype/"
 
 mkdir -p freetype
-pushd freetype > /dev/null
+pushd freetype >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
-      --prefix=$INSTALL_DIR \
-      "$HOST_PLATFORM" \
-      --enable-shared=no \
-       --with-harfbuzz=no \
-       --with-bzip2=no \
-       --with-brotli=no \
-    && make ${JOBS} && make install) || die "freetype build failed"
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	(./configure CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
+		--prefix=$INSTALL_DIR \
+		"$HOST_PLATFORM" \
+		--enable-shared=no \
+		--with-harfbuzz=no \
+		--with-bzip2=no \
+		--with-brotli=no &&
+		make ${JOBS} && make install) || die "freetype build failed"
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 # Dependency of vorbis
@@ -581,31 +571,30 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://downloads.xiph.org/releases/ogg/"
 
 mkdir -p libogg
-pushd libogg > /dev/null
+pushd libogg >/dev/null
 OGG_DIR="$(pwd)"
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix=$OGG_DIR \
-      --enable-shared=no \
-    && make ${JOBS} && make install) || die "libogg build failed"
+	(./configure CFLAGS="$CFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--prefix=$OGG_DIR \
+		--enable-shared=no &&
+		make ${JOBS} && make install) || die "libogg build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building libvorbis..."
@@ -616,33 +605,32 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://downloads.xiph.org/releases/vorbis/"
 
 mkdir -p vorbis
-pushd vorbis > /dev/null
+pushd vorbis >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix="$INSTALL_DIR" \
-      --enable-shared=no \
-      --with-ogg="$OGG_DIR" \
-    && make ${JOBS} && make install) || die "libvorbis build failed"
+	(./configure CFLAGS="$CFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--prefix="$INSTALL_DIR" \
+		--enable-shared=no \
+		--with-ogg="$OGG_DIR" &&
+		make ${JOBS} && make install) || die "libvorbis build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building GMP..."
@@ -653,40 +641,39 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="https://gmplib.org/download/gmp/"
 
 mkdir -p gmp
-pushd gmp > /dev/null
+pushd gmp >/dev/null
 
 GMP_DIR="$(pwd)"
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # NOTE: enable-fat in this case allows building and running on different CPUS.
-  # Otherwise CPU-specific instructions will be used with no fallback for older CPUs.
-  (./configure CFLAGS="$CFLAGS" \
-      CXXFLAGS="$CXXFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      "$HOST_PLATFORM" \
-      --prefix="$INSTALL_DIR" \
-      --enable-fat \
-      --disable-shared \
-      --with-pic \
-    && make ${JOBS} && make install) || die "GMP build failed"
+	# NOTE: enable-fat in this case allows building and running on different CPUS.
+	# Otherwise CPU-specific instructions will be used with no fallback for older CPUs.
+	(./configure CFLAGS="$CFLAGS" \
+		CXXFLAGS="$CXXFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		"$HOST_PLATFORM" \
+		--prefix="$INSTALL_DIR" \
+		--enable-fat \
+		--disable-shared \
+		--with-pic &&
+		make ${JOBS} && make install) || die "GMP build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building Nettle..."
@@ -698,43 +685,42 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="https://ftp.gnu.org/gnu/nettle/"
 
 mkdir -p nettle
-pushd nettle > /dev/null
+pushd nettle >/dev/null
 
 NETTLE_DIR="$(pwd)"
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # NOTE: enable-fat in this case allows building and running on different CPUS.
-  # Otherwise CPU-specific instructions will be used with no fallback for older CPUs.
-  (./configure CFLAGS="$CFLAGS" \
-      CXXFLAGS="$CXXFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --with-include-path="${GMP_DIR}/include" \
-      --with-lib-path="${GMP_DIR}/lib" \
-      --prefix="$INSTALL_DIR" \
-      --enable-fat \
-      --disable-shared \
-      --disable-documentation \
-      --disable-openssl \
-      --disable-assembler \
-    && make ${JOBS} && make install) || die "Nettle build failed"
+	# NOTE: enable-fat in this case allows building and running on different CPUS.
+	# Otherwise CPU-specific instructions will be used with no fallback for older CPUs.
+	(./configure CFLAGS="$CFLAGS" \
+		CXXFLAGS="$CXXFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--with-include-path="${GMP_DIR}/include" \
+		--with-lib-path="${GMP_DIR}/lib" \
+		--prefix="$INSTALL_DIR" \
+		--enable-fat \
+		--disable-shared \
+		--disable-documentation \
+		--disable-openssl \
+		--disable-assembler &&
+		make ${JOBS} && make install) || die "Nettle build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building GnuTLS..."
@@ -745,55 +731,54 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/"
 
 mkdir -p gnutls
-pushd gnutls > /dev/null
+pushd gnutls >/dev/null
 
 GNUTLS_DIR="$(pwd)"
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # Patch GNUTLS for a linking issue with isdigit
-  # Patch by Ross Nicholson: https://gitlab.com/gnutls/gnutls/-/issues/1033#note_379529145
-  (patch -Np1 -i ../../../macos-patches/03-undo-libtasn1-cisdigit.patch \
-    && ./configure CFLAGS="$CFLAGS" \
-          CXXFLAGS="$CXXFLAGS" \
-          LDFLAGS="$LDFLAGS" \
-          LIBS="-L${GMP_DIR}/lib -lgmp" \
-          NETTLE_CFLAGS="-I${NETTLE_DIR}/include" \
-          NETTLE_LIBS="-L${NETTLE_DIR}/lib -lnettle" \
-          HOGWEED_CFLAGS="-I${NETTLE_DIR}/include" \
-          HOGWEED_LIBS="-L${NETTLE_DIR}/lib -lhogweed" \
-          GMP_CFLAGS="-I${GMP_DIR}/include" \
-          GMP_LIBS="-L${GMP_DIR}/lib -lgmp" \
-          --prefix="$INSTALL_DIR" \
-          --enable-shared=no \
-          --without-idn \
-          --with-included-unistring \
-          --with-included-libtasn1 \
-          --without-p11-kit \
-          --without-brotli \
-          --disable-tests \
-          --disable-guile \
-          --disable-doc \
-          --disable-tools \
-          --disable-nls \
-    && make ${JOBS} LDFLAGS= install) || die "GnuTLS build failed"
+	# Patch GNUTLS for a linking issue with isdigit
+	# Patch by Ross Nicholson: https://gitlab.com/gnutls/gnutls/-/issues/1033#note_379529145
+	(patch -Np1 -i ../../../macos-patches/03-undo-libtasn1-cisdigit.patch &&
+		./configure CFLAGS="$CFLAGS" \
+			CXXFLAGS="$CXXFLAGS" \
+			LDFLAGS="$LDFLAGS" \
+			LIBS="-L${GMP_DIR}/lib -lgmp" \
+			NETTLE_CFLAGS="-I${NETTLE_DIR}/include" \
+			NETTLE_LIBS="-L${NETTLE_DIR}/lib -lnettle" \
+			HOGWEED_CFLAGS="-I${NETTLE_DIR}/include" \
+			HOGWEED_LIBS="-L${NETTLE_DIR}/lib -lhogweed" \
+			GMP_CFLAGS="-I${GMP_DIR}/include" \
+			GMP_LIBS="-L${GMP_DIR}/lib -lgmp" \
+			--prefix="$INSTALL_DIR" \
+			--enable-shared=no \
+			--without-idn \
+			--with-included-unistring \
+			--with-included-libtasn1 \
+			--without-p11-kit \
+			--without-brotli \
+			--disable-tests \
+			--disable-guile \
+			--disable-doc \
+			--disable-tools \
+			--disable-nls &&
+		make ${JOBS} LDFLAGS= install) || die "GnuTLS build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building gloox..."
@@ -804,44 +789,43 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://camaya.net/download/"
 
 mkdir -p gloox
-pushd gloox > /dev/null
+pushd gloox >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # TODO: pulls in libresolv dependency from /usr/lib
-  (./configure CFLAGS="$CFLAGS" \
-      CXXFLAGS="$CXXFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      "$HOST_PLATFORM" \
-      --prefix="$INSTALL_DIR" \
-      GNUTLS_CFLAGS="-I${GNUTLS_DIR}/include" \
-      GNUTLS_LIBS="-L${GNUTLS_DIR}/lib -lgnutls" \
-      --enable-shared=no \
-      --with-zlib="${ZLIB_DIR}" \
-      --without-libidn \
-      --with-gnutls="yes" \
-      --without-openssl \
-      --without-tests \
-      --without-examples \
-      --disable-getaddrinfo \
-    && make ${JOBS} && make install) || die "gloox build failed"
+	# TODO: pulls in libresolv dependency from /usr/lib
+	(./configure CFLAGS="$CFLAGS" \
+		CXXFLAGS="$CXXFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		"$HOST_PLATFORM" \
+		--prefix="$INSTALL_DIR" \
+		GNUTLS_CFLAGS="-I${GNUTLS_DIR}/include" \
+		GNUTLS_LIBS="-L${GNUTLS_DIR}/lib -lgnutls" \
+		--enable-shared=no \
+		--with-zlib="${ZLIB_DIR}" \
+		--without-libidn \
+		--with-gnutls="yes" \
+		--without-openssl \
+		--without-tests \
+		--without-examples \
+		--disable-getaddrinfo &&
+		make ${JOBS} && make install) || die "gloox build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building ICU..."
@@ -852,42 +836,41 @@ LIB_DIRECTORY="icu"
 LIB_URL="https://github.com/unicode-org/icu/releases/download/release-69-1/"
 
 mkdir -p icu
-pushd icu > /dev/null
+pushd icu >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib sbin share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib sbin share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  mkdir -p source/build
-  pushd source/build
+	mkdir -p source/build
+	pushd source/build
 
-  (CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
-    ../runConfigureICU MacOSX \
-        "$HOST_PLATFORM" \
-        --prefix=$INSTALL_DIR \
-        --disable-shared \
-        --enable-static \
-        --disable-samples \
-        --enable-extras \
-        --enable-icuio \
-        --enable-tools \
-    && make ${JOBS} && make install) || die "ICU build failed"
+	(CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
+		../runConfigureICU MacOSX \
+		"$HOST_PLATFORM" \
+		--prefix=$INSTALL_DIR \
+		--disable-shared \
+		--enable-static \
+		--disable-samples \
+		--enable-extras \
+		--enable-icuio \
+		--enable-tools &&
+		make ${JOBS} && make install) || die "ICU build failed"
 
-  popd
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building ENet..."
@@ -898,32 +881,31 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://enet.bespin.org/download/"
 
 mkdir -p enet
-pushd enet > /dev/null
+pushd enet >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib sbin share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib sbin share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix=${INSTALL_DIR} \
-      --enable-shared=no \
-    && make clean && make ${JOBS} && make install) || die "ENet build failed"
+	(./configure CFLAGS="$CFLAGS" \
+		LDFLAGS="$LDFLAGS" \
+		--prefix=${INSTALL_DIR} \
+		--enable-shared=no &&
+		make clean && make ${JOBS} && make install) || die "ENet build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building MiniUPnPc..."
@@ -934,33 +916,33 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="http://miniupnp.tuxfamily.org/files/download.php?file="
 
 mkdir -p miniupnpc
-pushd miniupnpc > /dev/null
+pushd miniupnpc >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY bin include lib share
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY bin include lib share
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (make clean \
-    && CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make ${JOBS} \
-    && INSTALLPREFIX="$INSTALL_DIR" make install \
-  ) || die "MiniUPnPc build failed"
+	(
+		make clean &&
+			CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make ${JOBS} &&
+			INSTALLPREFIX="$INSTALL_DIR" make install
+	) || die "MiniUPnPc build failed"
 
-  popd
-  # TODO: how can we not build the dylibs?
-  rm -f lib/*.dylib
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	# TODO: how can we not build the dylibs?
+	rm -f lib/*.dylib
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building libsodium..."
@@ -971,36 +953,36 @@ LIB_DIRECTORY="$LIB_VERSION"
 LIB_URL="https://download.libsodium.org/libsodium/releases/"
 
 mkdir -p libsodium
-pushd libsodium > /dev/null
+pushd libsodium >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
 
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  (./configure CFLAGS="$CFLAGS" \
-      LDFLAGS="$LDFLAGS" \
-      --prefix=${INSTALL_DIR} \
-      --enable-shared=no \
-    && make clean \
-    && CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make ${JOBS} \
-    && make check \
-    && INSTALLPREFIX="$INSTALL_DIR" make install \
-  ) || die "libsodium build failed"
+	(
+		./configure CFLAGS="$CFLAGS" \
+			LDFLAGS="$LDFLAGS" \
+			--prefix=${INSTALL_DIR} \
+			--enable-shared=no &&
+			make clean &&
+			CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make ${JOBS} &&
+			make check &&
+			INSTALLPREFIX="$INSTALL_DIR" make install
+	) || die "libsodium build failed"
 
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$LIB_VERSION" > .already-built
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$LIB_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building fmt..."
@@ -1010,40 +992,39 @@ LIB_ARCHIVE="$FMT_VERSION.tar.gz"
 LIB_URL="https://github.com/fmtlib/fmt/archive/"
 
 mkdir -p fmt
-pushd fmt > /dev/null
+pushd fmt >/dev/null
 
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$FMT_VERSION" ]]
-then
-  INSTALL_DIR="$(pwd)"
-  rm -f .already-built
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$FMT_VERSION" ]]; then
+	INSTALL_DIR="$(pwd)"
+	rm -f .already-built
 
-  download_lib $LIB_URL $LIB_ARCHIVE
+	download_lib $LIB_URL $LIB_ARCHIVE
 
-  rm -rf $LIB_DIRECTORY include lib
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
+	rm -rf $LIB_DIRECTORY include lib
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
 
-  # It appears that older versions of Clang require constexpr statements to have a user-set constructor.
-  patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff
+	# It appears that older versions of Clang require constexpr statements to have a user-set constructor.
+	patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff
 
-  mkdir -p build
-  pushd build
+	mkdir -p build
+	pushd build
 
-  (cmake .. \
-      -DFMT_TEST=False \
-      -DFMT_DOC=False \
-      -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-      $CMAKE_FLAGS \
-    && make fmt ${JOBS} && make install) || die "fmt build failed"
+	(cmake .. \
+		-DFMT_TEST=False \
+		-DFMT_DOC=False \
+		-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+		$CMAKE_FLAGS &&
+		make fmt ${JOBS} && make install) || die "fmt build failed"
 
-  popd
-  popd
-  cp -f lib/pkgconfig/* $PC_PATH
-  echo "$FMT_VERSION" > .already-built
+	popd
+	popd
+	cp -f lib/pkgconfig/* $PC_PATH
+	echo "$FMT_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 echo -e "Building Molten VK..."
@@ -1052,25 +1033,24 @@ LIB_ARCHIVE="MoltenVK-$MOLTENVK_VERSION.tar.gz"
 LIB_URL="https://releases.wildfiregames.com/libs/"
 
 mkdir -p "molten-vk"
-pushd "molten-vk" > /dev/null
-if [[ "$force_rebuild" = "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$MOLTENVK_VERSION" ]] || [[ ! -e ../../../binaries/system/libMoltenVK.dylib ]]
-then
-  INSTALL_DIR="../../../../binaries/system/"
-  rm -f .already-built
-  download_lib $LIB_URL $LIB_ARCHIVE
-  rm -rf "$LIB_DIRECTORY"
-  tar -xf $LIB_ARCHIVE
-  pushd $LIB_DIRECTORY
-  # The CI cannot build MoltenVK so we provide prebuild binaries instead.
-  # Use mv instead of copy to preserve binary signature integrity. See:
-  # https://developer.apple.com/forums/thread/130313?answerId=410541022#410541022
-  mv dylib/libMoltenVK.dylib $INSTALL_DIR
-  popd > /dev/null
-  echo "$MOLTENVK_VERSION" > .already-built
+pushd "molten-vk" >/dev/null
+if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$MOLTENVK_VERSION" ]] || [[ ! -e ../../../binaries/system/libMoltenVK.dylib ]]; then
+	INSTALL_DIR="../../../../binaries/system/"
+	rm -f .already-built
+	download_lib $LIB_URL $LIB_ARCHIVE
+	rm -rf "$LIB_DIRECTORY"
+	tar -xf $LIB_ARCHIVE
+	pushd $LIB_DIRECTORY
+	# The CI cannot build MoltenVK so we provide prebuild binaries instead.
+	# Use mv instead of copy to preserve binary signature integrity. See:
+	# https://developer.apple.com/forums/thread/130313?answerId=410541022#410541022
+	mv dylib/libMoltenVK.dylib $INSTALL_DIR
+	popd >/dev/null
+	echo "$MOLTENVK_VERSION" >.already-built
 else
-  already_built
+	already_built
 fi
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------------
 # The following libraries are shared on different OSes and may
@@ -1079,51 +1059,48 @@ popd > /dev/null
 # --------------------------------------------------------------------
 
 if [ -e ../source/.svn ]; then
-  pushd ../source > /dev/null
-  svn cleanup && svn up -r $source_svnrev
-  popd > /dev/null
+	pushd ../source >/dev/null
+	svn cleanup && svn up -r $source_svnrev
+	popd >/dev/null
 else
-  svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk ../source
+	svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk ../source
 fi
 
 # SpiderMonkey - bundled, no download
-pushd ../source/spidermonkey/ > /dev/null
+pushd ../source/spidermonkey/ >/dev/null
 
-if [[ "$force_rebuild" = "true" ]]
-then
-  rm -f .already-built
+if [[ $force_rebuild == "true" ]]; then
+	rm -f .already-built
 fi
 
 # Use the regular build script for SM.
 JOBS="$JOBS" ZLIB_DIR="$ZLIB_DIR" ARCH="$ARCH" ./build.sh || die "Error building spidermonkey"
 cp bin/* ../../../binaries/system/
 
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 # NVTT - bundled, no download
-pushd ../source/nvtt > /dev/null
+pushd ../source/nvtt >/dev/null
 
-if [[ "$force_rebuild" = "true" ]]
-then
-  rm -f .already-built
+if [[ $force_rebuild == "true" ]]; then
+	rm -f .already-built
 fi
 
 CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CMAKE_FLAGS=$CMAKE_FLAGS JOBS="$JOBS" ./build.sh || die "Error building NVTT"
 cp bin/* ../../../binaries/system/
 
-popd > /dev/null
+popd >/dev/null
 
 # --------------------------------------------------------------
 # FCollada - bundled, no download
-pushd ../source/fcollada/ > /dev/null
+pushd ../source/fcollada/ >/dev/null
 
-if [[ "$force_rebuild" = "true" ]]
-then
-  rm -f .already-built
+if [[ $force_rebuild == "true" ]]; then
+	rm -f .already-built
 fi
 
 CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" JOBS="$JOBS" ./build.sh || die "Error building FCollada"
 cp bin/* ../../../binaries/system/
 
-popd > /dev/null
+popd >/dev/null

@@ -13,18 +13,18 @@ export CC=${CC:="clang"} CXX=${CXX:="clang++"}
 
 die()
 {
-  echo ERROR: $*
-  exit 1
+	echo ERROR: $*
+	exit 1
 }
 
 # Check that we're actually on OS X
-if [ "`uname -s`" != "Darwin" ]; then
-  die "This script is intended for OS X only"
+if [ "$(uname -s)" != "Darwin" ]; then
+	die "This script is intended for OS X only"
 fi
 
 # Check SDK exists
 if [ ! -d "${SYSROOT}" ]; then
-  die "${SYSROOT} does not exist! You probably need to install Xcode"
+	die "${SYSROOT} does not exist! You probably need to install Xcode"
 fi
 
 cd "build/workspaces/"
@@ -46,10 +46,10 @@ fi
 
 # Build libraries against SDK
 echo "\nBuilding libraries\n"
-pushd ../../libraries/osx > /dev/null
+pushd ../../libraries/osx >/dev/null
 SYSROOT="${SYSROOT}" MIN_OSX_VERSION="${MIN_OSX_VERSION}" \
 	./build-osx-libs.sh $JOBS "${BUILD_LIBS_ARGS}" || die "Libraries build script failed"
-popd > /dev/null
+popd >/dev/null
 
 # Update workspaces
 echo "\nGenerating workspaces\n"
@@ -58,13 +58,13 @@ echo "\nGenerating workspaces\n"
 (SYSROOT="${SYSROOT}" MIN_OSX_VERSION="${MIN_OSX_VERSION}" \
 	./update-workspaces.sh --sysroot="${SYSROOT}" --macosx-version-min="${MIN_OSX_VERSION}") || die "update-workspaces.sh failed!"
 
-pushd gcc > /dev/null
+pushd gcc >/dev/null
 echo "\nBuilding game\n"
 (make clean && CC="$CC -arch $ARCH" CXX="$CXX -arch $ARCH" make ${JOBS}) || die "Game build failed!"
-popd > /dev/null
+popd >/dev/null
 
 # Run test to confirm all is OK
-pushd ../../binaries/system > /dev/null
+pushd ../../binaries/system >/dev/null
 echo "\nRunning tests\n"
 ./test || die "Post-build testing failed!"
-popd > /dev/null
+popd >/dev/null

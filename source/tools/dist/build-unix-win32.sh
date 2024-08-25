@@ -19,9 +19,9 @@ tar cf $PREFIX-unix-build.tar \
 
 tar cf $PREFIX-unix-data.tar \
 	--exclude='binaries/data/config/dev.cfg' \
-	 -s "|archives|$PREFIX/binaries/data/mods|" \
-	 -s "|binaries|$PREFIX/binaries|" \
-	 binaries/data/{config,tools} archives/
+	-s "|archives|$PREFIX/binaries/data/mods|" \
+	-s "|binaries|$PREFIX/binaries|" \
+	binaries/data/{config,tools} archives/
 # TODO: ought to include generated docs in here, perhaps?
 
 # Compress

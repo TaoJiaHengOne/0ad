@@ -13,11 +13,10 @@ export TLDIR="$(dirname $(realpath $0))"
 
 # Use semicolons to separate values on Windows.
 # If that produces bogus output, you can try with commas instead.
-if [ "${OS}" = "Windows_NT" ]
-then
-  export TLLOG="Default;IonCompiler"
-  export TLOPTIONS="EnableMainThread;EnableOffThread;EnableGraph"
+if [ "${OS}" = "Windows_NT" ]; then
+	export TLLOG="Default;IonCompiler"
+	export TLOPTIONS="EnableMainThread;EnableOffThread;EnableGraph"
 else
-  export TLLOG=Default,IonCompiler
-  export TLOPTIONS=EnableMainThread,EnableOffThread,EnableGraph
+	export TLLOG=Default,IonCompiler
+	export TLOPTIONS=EnableMainThread,EnableOffThread,EnableGraph
 fi

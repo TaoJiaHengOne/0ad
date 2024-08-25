@@ -8,20 +8,23 @@
 rm -f app.info
 
 for APPDIR in ../workspaces/gcc/obj/*; do
-  lcov -d "$APPDIR" --zerocounters
-  lcov -d "$APPDIR" -b ../workspaces/gcc --capture --initial -o temp.info
-  if [ -e app.info ]; then
-    lcov -a app.info -a temp.info -o app.info
-  else
-    mv temp.info app.info
-  fi
+	lcov -d "$APPDIR" --zerocounters
+	lcov -d "$APPDIR" -b ../workspaces/gcc --capture --initial -o temp.info
+	if [ -e app.info ]; then
+		lcov -a app.info -a temp.info -o app.info
+	else
+		mv temp.info app.info
+	fi
 done
 
-(cd ../../binaries/system/; ./test_dbg)
+(
+	cd ../../binaries/system/
+	./test_dbg
+)
 
 for APPDIR in ../workspaces/gcc/obj/*; do
-  lcov -d "$APPDIR" -b ../workspaces/gcc --capture -o temp.info &&
-    lcov -a app.info -a temp.info -o app.info
+	lcov -d "$APPDIR" -b ../workspaces/gcc --capture -o temp.info &&
+		lcov -a app.info -a temp.info -o app.info
 done
 
 lcov -r app.info '/usr/*' -o app.info
@@ -30,4 +33,7 @@ lcov -r app.info '*/third_party/*' -o app.info
 
 rm -rf output
 mkdir output
-(cd output; genhtml ../app.info)
+(
+	cd output
+	genhtml ../app.info
+)
