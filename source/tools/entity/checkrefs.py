@@ -204,7 +204,7 @@ class CheckRefs:
                     self.deps.append((str(fp), f"simulation/templates/{template}.xml"))
             # Map previews
             settings = loads(et_map.find("ScriptSettings").text)
-            if settings.get("Preview", None):
+            if settings.get("Preview"):
                 self.deps.append(
                     (str(fp), f'art/textures/ui/session/icons/mappreview/{settings["Preview"]}')
                 )
@@ -260,7 +260,7 @@ class CheckRefs:
         for _, ffp in sorted(self.find_files("simulation/data/civs", "json")):
             with open(ffp, encoding="utf-8") as f:
                 civ = load(f)
-                code = civ.get("Code", None)
+                code = civ.get("Code")
                 if code is not None:
                     existing_civs.add(code)
 
@@ -739,10 +739,10 @@ class CheckRefs:
             with open(ffp, encoding="utf-8") as f:
                 randmap = load(f)
             settings = randmap.get("settings", {})
-            if settings.get("Script", None):
+            if settings.get("Script"):
                 self.deps.append((str(fp), f"maps/random/{settings['Script']}"))
             # Map previews
-            if settings.get("Preview", None):
+            if settings.get("Preview"):
                 self.deps.append(
                     (str(fp), f'art/textures/ui/session/icons/mappreview/{settings["Preview"]}')
                 )
@@ -753,19 +753,19 @@ class CheckRefs:
             self.files.append(str(fp))
             with open(ffp, encoding="utf-8") as f:
                 tech = load(f)
-            if tech.get("autoResearch", None):
+            if tech.get("autoResearch"):
                 self.roots.append(str(fp))
-            if tech.get("icon", None):
+            if tech.get("icon"):
                 self.deps.append(
                     (str(fp), f"art/textures/ui/session/portraits/technologies/{tech['icon']}")
                 )
-            if tech.get("supersedes", None):
+            if tech.get("supersedes"):
                 self.deps.append(
                     (str(fp), f"simulation/data/technologies/{tech['supersedes']}.json")
                 )
-            if tech.get("top", None):
+            if tech.get("top"):
                 self.deps.append((str(fp), f"simulation/data/technologies/{tech['top']}.json"))
-            if tech.get("bottom", None):
+            if tech.get("bottom"):
                 self.deps.append((str(fp), f"simulation/data/technologies/{tech['bottom']}.json"))
 
     def add_terrains(self):
@@ -790,11 +790,11 @@ class CheckRefs:
             self.files.append(str(fp))
             with open(ffp, encoding="utf-8") as f:
                 aura = load(f)
-            if aura.get("overlayIcon", None):
+            if aura.get("overlayIcon"):
                 self.deps.append((str(fp), aura["overlayIcon"]))
             range_overlay = aura.get("rangeOverlay", {})
             for prop in ("lineTexture", "lineTextureMask"):
-                if range_overlay.get(prop, None):
+                if range_overlay.get(prop):
                     self.deps.append((str(fp), f"art/textures/selection/{range_overlay[prop]}"))
 
     def check_deps(self):
