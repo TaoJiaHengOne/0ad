@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import argparse
 import logging
-from pathlib import Path
 import shutil
-from subprocess import run, CalledProcessError
 import sys
+from pathlib import Path
+from subprocess import CalledProcessError, run
 from typing import Sequence
-
-from xml.etree import ElementTree
+from xml.etree import ElementTree as ET
 
 from scriptlib import SimulTemplateEntity, find_files
+
 
 SIMUL_TEMPLATES_PATH = Path("simulation/templates")
 ENTITY_RELAXNG_FNAME = "entity.rng"
@@ -30,8 +32,7 @@ class SingleLevelFilter(logging.Filter):
     def filter(self, record):
         if self.reject:
             return record.levelno != self.passlevel
-        else:
-            return record.levelno == self.passlevel
+        return record.levelno == self.passlevel
 
 
 logger = logging.getLogger(__name__)
@@ -96,18 +97,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             continue
 
         path = fp.as_posix()
-        if path.startswith(f"{SIMUL_TEMPLATES_PATH.as_posix()}/mixins/") or path.startswith(
-            f"{SIMUL_TEMPLATES_PATH.as_posix()}/special/"
+        if path.startswith(
+            (
+                f"{SIMUL_TEMPLATES_PATH.as_posix()}/mixins/",
+                f"{SIMUL_TEMPLATES_PATH.as_posix()}/special/",
+            )
         ):
             continue
 
         if args.verbose:
-            logger.info(f"Parsing {fp}...")
+            logger.info("Parsing %s...", fp)
         count += 1
         entity = simul_template_entity.load_inherited(
             SIMUL_TEMPLATES_PATH, str(fp.relative_to(SIMUL_TEMPLATES_PATH)), [args.mod_name]
         )
-        xmlcontent = ElementTree.tostring(entity, encoding="unicode")
+        xmlcontent = ET.tostring(entity, encoding="unicode")
         try:
             run(
                 ["xmllint", "--relaxng", str(args.relaxng_schema.resolve()), "-"],
@@ -120,11 +124,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         except CalledProcessError as e:
             failed += 1
             if e.stderr:
-                logger.error(e.stderr)
+                logger.exception(e.stderr)
             if e.stdout:
                 logger.info(e.stdout)
 
-    logger.info(f"Total: {count}; failed: {failed}")
+    logger.info("Total: %s; failed: %s", count, failed)
 
     return 0
 

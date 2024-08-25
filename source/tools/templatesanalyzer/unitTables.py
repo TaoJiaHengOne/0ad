@@ -21,15 +21,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import glob
+import os
 import sys
-
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import os
-import glob
+
 
 sys.path.append("../entity")
-from scriptlib import SimulTemplateEntity  # noqa: E402
+from scriptlib import SimulTemplateEntity
 
 
 AttackTypes = ["Hack", "Pierce", "Crush", "Poison", "Fire"]
@@ -299,15 +299,15 @@ def CalcUnit(UnitName, existingUnit=None):
 def WriteUnit(Name, UnitDict):
     ret = "<tr>"
     ret += '<td class="Sub">' + Name + "</td>"
-    ret += "<td>" + str("%.0f" % float(UnitDict["HP"])) + "</td>"
-    ret += "<td>" + str("%.0f" % float(UnitDict["BuildTime"])) + "</td>"
-    ret += "<td>" + str("%.1f" % float(UnitDict["WalkSpeed"])) + "</td>"
+    ret += "<td>" + str("{:.0f}".format(float(UnitDict["HP"]))) + "</td>"
+    ret += "<td>" + str("{:.0f}".format(float(UnitDict["BuildTime"]))) + "</td>"
+    ret += "<td>" + str("{:.1f}".format(float(UnitDict["WalkSpeed"]))) + "</td>"
 
     for atype in AttackTypes:
         PercentValue = 1.0 - (0.9 ** float(UnitDict["Resistance"][atype]))
         ret += (
             "<td>"
-            + str("%.0f" % float(UnitDict["Resistance"][atype]))
+            + str("{:.0f}".format(float(UnitDict["Resistance"][atype])))
             + " / "
             + str("%.0f" % (PercentValue * 100.0))
             + "%</td>"
@@ -325,28 +325,28 @@ def WriteUnit(Name, UnitDict):
 
         ret += "<td>" + str("%.1f" % (float(UnitDict["RepeatRate"][attType]) / 1000.0)) + "</td>"
     else:
-        for atype in AttackTypes:
+        for _ in AttackTypes:
             ret += "<td> - </td>"
         ret += "<td> - </td>"
 
     if UnitDict["Ranged"] is True and UnitDict["Range"] > 0:
-        ret += "<td>" + str("%.1f" % float(UnitDict["Range"])) + "</td>"
+        ret += "<td>" + str("{:.1f}".format(float(UnitDict["Range"]))) + "</td>"
         spread = float(UnitDict["Spread"])
-        ret += "<td>" + str("%.1f" % spread) + "</td>"
+        ret += "<td>" + str(f"{spread:.1f}") + "</td>"
     else:
         ret += "<td> - </td><td> - </td>"
 
     for rtype in Resources:
-        ret += "<td>" + str("%.0f" % float(UnitDict["Cost"][rtype])) + "</td>"
+        ret += "<td>" + str("{:.0f}".format(float(UnitDict["Cost"][rtype]))) + "</td>"
 
-    ret += "<td>" + str("%.0f" % float(UnitDict["Cost"]["population"])) + "</td>"
+    ret += "<td>" + str("{:.0f}".format(float(UnitDict["Cost"]["population"]))) + "</td>"
 
     ret += '<td style="text-align:left;">'
     for Bonus in UnitDict["AttackBonuses"]:
         ret += "["
         for classe in UnitDict["AttackBonuses"][Bonus]["Classes"]:
             ret += classe + " "
-        ret += ": %s]  " % UnitDict["AttackBonuses"][Bonus]["Multiplier"]
+        ret += ": {}]  ".format(UnitDict["AttackBonuses"][Bonus]["Multiplier"])
     ret += "</td>"
 
     ret += "</tr>\n"
@@ -370,7 +370,7 @@ def SortFn(A):
 
 
 def WriteColouredDiff(file, diff, isChanged):
-    """helper to write coloured text.
+    """Helper to write coloured text.
     diff value must always be computed as a unit_spec - unit_generic.
     A positive imaginary part represents advantageous trait.
     """
@@ -378,8 +378,7 @@ def WriteColouredDiff(file, diff, isChanged):
     def cleverParse(diff):
         if float(diff) - int(diff) < 0.001:
             return str(int(diff))
-        else:
-            return str("%.1f" % float(diff))
+        return str(f"{float(diff):.1f}")
 
     isAdvantageous = diff.imag > 0
     diff = diff.real
@@ -392,16 +391,14 @@ def WriteColouredDiff(file, diff, isChanged):
 
     if diff == 0:
         rgb_str = "200,200,200"
-    elif isAdvantageous and diff > 0:
-        rgb_str = "180,0,0"
-    elif (not isAdvantageous) and diff < 0:
+    elif isAdvantageous and diff > 0 or (not isAdvantageous) and diff < 0:
         rgb_str = "180,0,0"
     else:
         rgb_str = "0,150,0"
 
     file.write(
-        """<td><span style="color:rgb({});">{}</span></td>
-        """.format(rgb_str, cleverParse(diff))
+        f"""<td><span style="color:rgb({rgb_str});">{cleverParse(diff)}</span></td>
+        """
     )
     return isChanged
 
@@ -743,7 +740,8 @@ differences between the two.
                     isChanged = WriteColouredDiff(ff, +1j + (mySpread - parentSpread), isChanged)
                 else:
                     ff.write(
-                        "<td><span style='color:rgb(200,200,200);'>-</span></td><td><span style='color:rgb(200,200,200);'>-</span></td>"
+                        "<td><span style='color:rgb(200,200,200);'>-</span></td><td>"
+                        "<span style='color:rgb(200,200,200);'>-</span></td>"
                     )
             else:
                 ff.write("<td></td><td></td><td></td><td></td><td></td><td></td>")
@@ -769,9 +767,7 @@ differences between the two.
             ff.write("</tr>\n")
 
             ff.close()  # to actually write into the file
-            with open(
-                os.path.realpath(__file__).replace("unitTables.py", "") + ".cache", "r"
-            ) as ff:
+            with open(os.path.realpath(__file__).replace("unitTables.py", "") + ".cache") as ff:
                 unitStr = ff.read()
 
             if showChangedOnly:
@@ -832,7 +828,7 @@ each loaded generic template.
     )
     for civ in Civs:
         count = 0
-        for units in CivTemplates[civ]:
+        for _units in CivTemplates[civ]:
             count += 1
         f.write('<td style="text-align:center;">' + str(count) + "</td>\n")
 

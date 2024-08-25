@@ -23,7 +23,7 @@ class OutOfSpaceError(Exception):
     pass
 
 
-class Point(object):
+class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -33,7 +33,7 @@ class Point(object):
         return self.x - other.x
 
 
-class RectanglePacker(object):
+class RectanglePacker:
     """Base class for rectangle packing algorithms
 
     By uniting all rectangle packers under this common base class, you can
@@ -41,13 +41,15 @@ class RectanglePacker(object):
     performant one for a given job.
 
     An almost exhaustive list of packing algorithms can be found here:
-    http://www.csc.liv.ac.uk/~epa/surveyhtml.html"""
+    http://www.csc.liv.ac.uk/~epa/surveyhtml.html
+    """
 
     def __init__(self, packingAreaWidth, packingAreaHeight):
         """Initializes a new rectangle packer
 
         packingAreaWidth: Maximum width of the packing area
-        packingAreaHeight: Maximum height of the packing area"""
+        packingAreaHeight: Maximum height of the packing area
+        """
         self.packingAreaWidth = packingAreaWidth
         self.packingAreaHeight = packingAreaHeight
 
@@ -57,7 +59,8 @@ class RectanglePacker(object):
         rectangleWidth: Width of the rectangle to allocate
         rectangleHeight: Height of the rectangle to allocate
 
-        Returns the location at which the rectangle has been placed"""
+        Returns the location at which the rectangle has been placed
+        """
         point = self.TryPack(rectangleWidth, rectangleHeight)
 
         if not point:
@@ -72,7 +75,8 @@ class RectanglePacker(object):
         rectangleHeight: Height of the rectangle to allocate
 
         Returns a Point instance if space for the rectangle could be allocated
-        be found, otherwise returns None"""
+        be found, otherwise returns None
+        """
         raise NotImplementedError
 
 
@@ -112,13 +116,15 @@ class CygonRectanglePacker(RectanglePacker):
     To quickly discover these locations, the packer uses a sophisticated
     data structure that stores the upper silhouette of the packing area. When
     a new rectangle needs to be added, only the silouette edges need to be
-    analyzed to find the position where the rectangle would achieve the lowest"""
+    analyzed to find the position where the rectangle would achieve the lowest
+    """
 
     def __init__(self, packingAreaWidth, packingAreaHeight):
         """Initializes a new rectangle packer
 
         packingAreaWidth: Maximum width of the packing area
-        packingAreaHeight: Maximum height of the packing area"""
+        packingAreaHeight: Maximum height of the packing area
+        """
         RectanglePacker.__init__(self, packingAreaWidth, packingAreaHeight)
 
         # Stores the height silhouette of the rectangles
@@ -134,7 +140,8 @@ class CygonRectanglePacker(RectanglePacker):
         rectangleHeight: Height of the rectangle to allocate
 
         Returns a Point instance if space for the rectangle could be allocated
-        be found, otherwise returns None"""
+        be found, otherwise returns None
+        """
         placement = None
 
         # If the rectangle is larger than the packing area in any dimension,
@@ -159,7 +166,8 @@ class CygonRectanglePacker(RectanglePacker):
         rectangleHeight: Height of the rectangle to find a position for
 
         Returns a Point instance if a valid placement for the rectangle could
-        be found, otherwise returns None"""
+        be found, otherwise returns None
+        """
         # Slice index, vertical position and score of the best placement we
         # could find
         bestSliceIndex = -1  # Slice index where the best placement was found
@@ -181,8 +189,7 @@ class CygonRectanglePacker(RectanglePacker):
             # any lower than this without overlapping the other rectangles.
             highest = self.heightSlices[leftSliceIndex].y
             for index in range(leftSliceIndex + 1, rightSliceIndex):
-                if self.heightSlices[index].y > highest:
-                    highest = self.heightSlices[index].y
+                highest = max(self.heightSlices[index].y, highest)
 
             # Only process this position if it doesn't leave the packing area
             if highest + rectangleHeight < self.packingAreaHeight:
@@ -224,15 +231,15 @@ class CygonRectanglePacker(RectanglePacker):
         # could be found.
         if bestSliceIndex == -1:
             return None
-        else:
-            return Point(self.heightSlices[bestSliceIndex].x, bestSliceY)
+        return Point(self.heightSlices[bestSliceIndex].x, bestSliceY)
 
     def integrateRectangle(self, left, width, bottom):
         """Integrates a new rectangle into the height slice table
 
         left: Position of the rectangle's left side
         width: Width of the rectangle
-        bottom: Position of the rectangle's lower side"""
+        bottom: Position of the rectangle's lower side
+        """
         # Find the first slice that is touched by the rectangle
         startSlice = bisect_left(self.heightSlices, Point(left, 0))
 

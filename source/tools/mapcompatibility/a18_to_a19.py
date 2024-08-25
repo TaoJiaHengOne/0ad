@@ -27,14 +27,17 @@ import os
 import struct
 import sys
 
+
 parser = argparse.ArgumentParser(
-    description="Convert maps compatible with 0 A.D. version Alpha XVIII (A18) to maps compatible with version Alpha XIX (A19), or the other way around."
+    description="Convert maps compatible with 0 A.D. version Alpha XVIII (A18) to maps compatible "
+    "with version Alpha XIX (A19), or the other way around."
 )
 
 parser.add_argument(
     "--reverse",
     action="store_true",
-    help="Make an A19 map compatible with A18 (note that conversion will fail if mountains are too high)",
+    help="Make an A19 map compatible with A18 (note that conversion will fail "
+    "if mountains are too high)",
 )
 parser.add_argument(
     "--no-version-bump", action="store_true", help="Don't change the version number of the map"
@@ -50,7 +53,6 @@ parser.add_argument(
     "files", nargs="+", help="XML file to process (use wildcards '*' to select multiple files)"
 )
 args = parser.parse_args()
-
 
 HEIGHTMAP_BIT_SHIFT = 3
 
@@ -68,25 +70,22 @@ for xmlFile in args.files:
             version = struct.unpack("<I", f1.read(4))[0]
             if args.no_version_bump:
                 f2.write(struct.pack("<I", version))
+            elif args.reverse:
+                if version != 6:
+                    print(
+                        f"Warning: File {pmpFile} was not at version 6, while a negative version "
+                        f"bump was requested.\nABORTING ..."
+                    )
+                    continue
+                f2.write(struct.pack("<I", version - 1))
             else:
-                if args.reverse:
-                    if version != 6:
-                        print(
-                            "Warning: File "
-                            + pmpFile
-                            + " was not at version 6, while a negative version bump was requested.\nABORTING ..."
-                        )
-                        continue
-                    f2.write(struct.pack("<I", version - 1))
-                else:
-                    if version != 5:
-                        print(
-                            "Warning: File "
-                            + pmpFile
-                            + " was not at version 5, while a version bump was requested.\nABORTING ..."
-                        )
-                        continue
-                    f2.write(struct.pack("<I", version + 1))
+                if version != 5:
+                    print(
+                        f"Warning: File {pmpFile} was not at version 5, while a version bump was "
+                        f"requested.\nABORTING ..."
+                    )
+                    continue
+                f2.write(struct.pack("<I", version + 1))
 
             # 4 bytes a for file size (which shouldn't change)
             f2.write(f1.read(4))
@@ -100,17 +99,16 @@ for xmlFile in args.files:
 
                 def height_transform(h):
                     return h
+            elif args.reverse:
+
+                def height_transform(h):
+                    return h << HEIGHTMAP_BIT_SHIFT
             else:
-                if args.reverse:
 
-                    def height_transform(h):
-                        return h << HEIGHTMAP_BIT_SHIFT
-                else:
+                def height_transform(h):
+                    return h >> HEIGHTMAP_BIT_SHIFT
 
-                    def height_transform(h):
-                        return h >> HEIGHTMAP_BIT_SHIFT
-
-            for i in range(0, (map_size * 16 + 1) * (map_size * 16 + 1)):
+            for _i in range((map_size * 16 + 1) * (map_size * 16 + 1)):
                 height = struct.unpack("<H", f1.read(2))[0]
                 f2.write(struct.pack("<H", height_transform(height)))
 
@@ -128,7 +126,7 @@ for xmlFile in args.files:
         os.rename(pmpFile + "~", pmpFile)
 
     if os.path.isfile(xmlFile):
-        with open(xmlFile, "r") as f1, open(xmlFile + "~", "w") as f2:
+        with open(xmlFile) as f1, open(xmlFile + "~", "w") as f2:
             data = f1.read()
 
             # bump version number (rely on how Atlas formats the XML)
@@ -136,23 +134,20 @@ for xmlFile in args.files:
                 if args.reverse:
                     if data.find('<Scenario version="6">') == -1:
                         print(
-                            "Warning: File "
-                            + xmlFile
-                            + " was not at version 6, while a negative version bump was requested.\nABORTING ..."
+                            f"Warning: File {xmlFile} was not at version 6, while a negative "
+                            f"version bump was requested.\nABORTING ..."
                         )
                         sys.exit()
                     else:
                         data = data.replace('<Scenario version="6">', '<Scenario version="5">')
+                elif data.find('<Scenario version="5">') == -1:
+                    print(
+                        f"Warning: File {xmlFile} was not at version 5, while a version bump "
+                        f"was requested.\nABORTING ..."
+                    )
+                    sys.exit()
                 else:
-                    if data.find('<Scenario version="5">') == -1:
-                        print(
-                            "Warning: File "
-                            + xmlFile
-                            + " was not at version 5, while a version bump was requested.\nABORTING ..."
-                        )
-                        sys.exit()
-                    else:
-                        data = data.replace('<Scenario version="5">', '<Scenario version="6">')
+                    data = data.replace('<Scenario version="5">', '<Scenario version="6">')
 
             # transform the color keys
             if not args.no_color_spelling:

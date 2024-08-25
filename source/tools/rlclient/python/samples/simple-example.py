@@ -1,17 +1,17 @@
 # This script provides an overview of the zero_ad wrapper for 0 AD
-from os import path
-import zero_ad
-
 # First, we will define some helper functions we will use later.
 import math
+from os import path
+
+import zero_ad
 
 
 def dist(p1, p2):
-    return math.sqrt(sum((math.pow(x2 - x1, 2) for (x1, x2) in zip(p1, p2))))
+    return math.sqrt(sum(math.pow(x2 - x1, 2) for (x1, x2) in zip(p1, p2)))
 
 
 def center(units):
-    sum_position = map(sum, zip(*map(lambda u: u.position(), units)))
+    sum_position = map(sum, zip(*(u.position() for u in units)))
     return [x / len(units) for x in sum_position]
 
 
@@ -33,7 +33,7 @@ game = zero_ad.ZeroAD("http://localhost:6000")
 # Load the Arcadia map
 samples_dir = path.dirname(path.realpath(__file__))
 scenario_config_path = path.join(samples_dir, "arcadia.json")
-with open(scenario_config_path, "r") as f:
+with open(scenario_config_path, encoding="utf8") as f:
     arcadia_config = f.read()
 
 state = game.reset(arcadia_config)

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
+import sys
 from argparse import ArgumentParser
 from io import BytesIO
 from json import load, loads
+from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
+from os.path import basename, exists, sep
 from pathlib import Path
-from re import split, match
-from struct import unpack, calcsize
-from os.path import sep, exists, basename
-from xml.etree import ElementTree
-import sys
+from re import match, split
+from struct import calcsize, unpack
+from xml.etree import ElementTree as ET
+
 from scriptlib import SimulTemplateEntity, find_files
-from logging import WARNING, getLogger, StreamHandler, INFO, Formatter, Filter
 
 
 class SingleLevelFilter(Filter):
@@ -20,8 +21,7 @@ class SingleLevelFilter(Filter):
     def filter(self, record):
         if self.reject:
             return record.levelno != self.passlevel
-        else:
-            return record.levelno == self.passlevel
+        return record.levelno == self.passlevel
 
 
 class CheckRefs:
@@ -80,14 +80,15 @@ class CheckRefs:
             "-a",
             "--validate-actors",
             action="store_true",
-            help="run the validator.py script to check if the actors files have extra or missing textures."
-            " This currently only works for the public mod.",
+            help="run the validator.py script to check if the actors files have extra or missing "
+            "textures. This currently only works for the public mod.",
         )
         ap.add_argument(
             "-t",
             "--validate-templates",
             action="store_true",
-            help="run the validator.py script to check if the xml files match their (.rng) grammar file.",
+            help="run the validator.py script to check if the xml files match their (.rng) "
+            "grammar file.",
         )
         ap.add_argument(
             "-m",
@@ -105,8 +106,8 @@ class CheckRefs:
         self.mods = list(
             dict.fromkeys([*args.mods, *self.get_mod_dependencies(*args.mods), "mod"]).keys()
         )
-        self.logger.info(f"Checking {'|'.join(args.mods)}'s integrity.")
-        self.logger.info(f"The following mods will be loaded: {'|'.join(self.mods)}.")
+        self.logger.info("Checking %s's integrity.", "|".join(args.mods))
+        self.logger.info("The following mods will be loaded: %s.", "|".join(self.mods))
         if args.check_map_xml:
             self.add_maps_xml()
         self.add_maps_pmp()
@@ -185,7 +186,7 @@ class CheckRefs:
         for fp, ffp in sorted(mapfiles):
             self.files.append(str(fp))
             self.roots.append(str(fp))
-            et_map = ElementTree.parse(ffp).getroot()
+            et_map = ET.parse(ffp).getroot()
             entities = et_map.find("Entities")
             used = (
                 {entity.find("Template").text.strip() for entity in entities.findall("Entity")}
@@ -211,7 +212,7 @@ class CheckRefs:
     def add_maps_pmp(self):
         self.logger.info("Loading maps PMP...")
         # Need to generate terrain texture filename=>relative path lookup first
-        terrains = dict()
+        terrains = {}
         for fp, ffp in self.find_files("art/terrains", "xml"):
             name = fp.stem
             # ignore terrains.xml
@@ -219,7 +220,10 @@ class CheckRefs:
                 if name in terrains:
                     self.inError = True
                     self.logger.error(
-                        f"Duplicate terrain name '{name}' (from '{terrains[name]}' and '{ffp}')"
+                        "Duplicate terrain name '%s' (from '%s' and '%s')",
+                        name,
+                        terrains[name],
+                        ffp,
                     )
                 terrains[name] = str(fp)
         mapfiles = self.find_files("maps/scenarios", "pmp")
@@ -241,7 +245,7 @@ class CheckRefs:
                 (mapsize,) = unpack(int_fmt, f.read(int_len))
                 f.seek(2 * (mapsize * 16 + 1) * (mapsize * 16 + 1), 1)  # skip heightmap
                 (numtexs,) = unpack(int_fmt, f.read(int_len))
-                for i in range(numtexs):
+                for _i in range(numtexs):
                     (length,) = unpack(int_fmt, f.read(int_len))
                     terrain_name = f.read(length).decode("ascii")  # suppose ascii encoding
                     self.deps.append(
@@ -279,7 +283,8 @@ class CheckRefs:
     def add_entities(self):
         self.logger.info("Loading entities...")
         simul_templates_path = Path("simulation/templates")
-        # TODO: We might want to get computed templates through the RL interface instead of computing the values ourselves.
+        # TODO: We might want to get computed templates through the RL interface instead of
+        #       computing the values ourselves.
         simul_template_entity = SimulTemplateEntity(self.vfs_root, self.logger)
         custom_phase_techs = self.get_custom_phase_techs()
         for fp, _ in sorted(self.find_files(simul_templates_path, "xml")):
@@ -307,7 +312,8 @@ class CheckRefs:
                         actor = entity.find("VisualActor").find("Actor")
                         if "{phenotype}" in actor.text:
                             for phenotype in phenotypes:
-                                # See simulation2/components/CCmpVisualActor.cpp and Identity.js for explanation.
+                                # See simulation2/components/CCmpVisualActor.cpp and Identity.js
+                                # for explanation.
                                 actor_path = actor.text.replace("{phenotype}", phenotype)
                                 self.deps.append((str(fp), f"art/actors/{actor_path}"))
                         else:
@@ -332,7 +338,8 @@ class CheckRefs:
                             if sound_group.text and sound_group.text.strip():
                                 if "{phenotype}" in sound_group.text:
                                     for phenotype in phenotypes:
-                                        # see simulation/components/Sound.js and Identity.js for explanation
+                                        # see simulation/components/Sound.js and Identity.js
+                                        # for explanation
                                         sound_path = sound_group.text.replace(
                                             "{phenotype}", phenotype
                                         ).replace("{lang}", lang)
@@ -483,7 +490,7 @@ class CheckRefs:
         for fp, ffp in sorted(self.find_files("art/actors", "xml")):
             self.files.append(str(fp))
             self.roots.append(str(fp))
-            root = ElementTree.parse(ffp).getroot()
+            root = ET.parse(ffp).getroot()
             if root.tag == "actor":
                 self.append_actor_dependencies(root, fp)
 
@@ -500,7 +507,7 @@ class CheckRefs:
         for fp, ffp in sorted(self.find_files("art/variants", "xml")):
             self.files.append(str(fp))
             self.roots.append(str(fp))
-            variant = ElementTree.parse(ffp).getroot()
+            variant = ET.parse(ffp).getroot()
             self.append_variant_dependencies(variant, fp)
 
     def add_art(self):
@@ -543,7 +550,7 @@ class CheckRefs:
         self.logger.info("Loading materials...")
         for fp, ffp in sorted(self.find_files("art/materials", "xml")):
             self.files.append(str(fp))
-            material_elem = ElementTree.parse(ffp).getroot()
+            material_elem = ET.parse(ffp).getroot()
             for alternative in material_elem.findall("alternative"):
                 material = alternative.get("material")
                 if material is not None:
@@ -554,7 +561,7 @@ class CheckRefs:
         for fp, ffp in sorted(self.find_files("art/particles", "xml")):
             self.files.append(str(fp))
             self.roots.append(str(fp))
-            particle = ElementTree.parse(ffp).getroot()
+            particle = ET.parse(ffp).getroot()
             texture = particle.find("texture")
             if texture is not None:
                 self.deps.append((str(fp), texture.text))
@@ -564,7 +571,7 @@ class CheckRefs:
         for fp, ffp in sorted(self.find_files("audio", "xml")):
             self.files.append(str(fp))
             self.roots.append(str(fp))
-            sound_group = ElementTree.parse(ffp).getroot()
+            sound_group = ET.parse(ffp).getroot()
             path = sound_group.find("Path").text.rstrip("/")
             for sound in sound_group.findall("Sound"):
                 self.deps.append((str(fp), f"{path}/{sound.text}"))
@@ -614,7 +621,7 @@ class CheckRefs:
             # GUI page definitions are assumed to be named page_[something].xml and alone in that.
             if match(r".*[\\\/]page(_[^.\/\\]+)?\.xml$", str(fp)):
                 self.roots.append(str(fp))
-                root_xml = ElementTree.parse(ffp).getroot()
+                root_xml = ET.parse(ffp).getroot()
                 for include in root_xml.findall("include"):
                     # If including an entire directory, find all the *.xml files
                     if include.text.endswith("/"):
@@ -629,7 +636,7 @@ class CheckRefs:
                     else:
                         self.deps.append((str(fp), f"gui/{include.text}"))
             else:
-                xml = ElementTree.parse(ffp)
+                xml = ET.parse(ffp)
                 root_xml = xml.getroot()
                 name = root_xml.tag
                 self.roots.append(str(fp))
@@ -662,7 +669,6 @@ class CheckRefs:
                         if style.get("sound_disabled"):
                             self.deps.append((str(fp), f"{style.get('sound_disabled')}"))
                     # TODO: look at sprites, styles, etc
-                    pass
                 elif name == "sprites":
                     for sprite in root_xml.findall("sprite"):
                         for image in sprite.findall("image"):
@@ -711,7 +717,7 @@ class CheckRefs:
 
     def add_tips(self):
         self.logger.info("Loading tips...")
-        for fp, ffp in sorted(self.find_files("gui/text/tips", "txt")):
+        for fp, _ffp in sorted(self.find_files("gui/text/tips", "txt")):
             relative_path = str(fp)
             self.files.append(relative_path)
             self.roots.append(relative_path)
@@ -770,7 +776,7 @@ class CheckRefs:
                 continue
             self.files.append(str(fp))
             self.roots.append(str(fp))
-            terrain = ElementTree.parse(ffp).getroot()
+            terrain = ET.parse(ffp).getroot()
             for texture in terrain.find("textures").findall("texture"):
                 if texture.get("file"):
                     self.deps.append((str(fp), f"art/textures/terrain/{texture.get('file')}"))
@@ -796,7 +802,7 @@ class CheckRefs:
         uniq_files = set(self.files)
         uniq_files = [r.replace(sep, "/") for r in uniq_files]
         lower_case_files = {f.lower(): f for f in uniq_files}
-        reverse_deps = dict()
+        reverse_deps = {}
         for parent, dep in self.deps:
             if sep != "/":
                 parent = parent.replace(sep, "/")
@@ -817,16 +823,18 @@ class CheckRefs:
                 continue
 
             callers = [str(self.vfs_to_relative_to_mods(ref)) for ref in reverse_deps[dep]]
-            self.logger.error(f"Missing file '{dep}' referenced by: {', '.join(sorted(callers))}")
+            self.logger.error(
+                "Missing file '%s' referenced by: %s", dep, ", ".join(sorted(callers))
+            )
             self.inError = True
             if dep.lower() in lower_case_files:
                 self.logger.warning(
-                    f"### Case-insensitive match (found '{lower_case_files[dep.lower()]}')"
+                    "### Case-insensitive match (found '%s')", lower_case_files[dep.lower()]
                 )
 
     def check_unused(self):
         self.logger.info("Looking for unused files...")
-        deps = dict()
+        deps = {}
         for parent, dep in self.deps:
             if sep != "/":
                 parent = parent.replace(sep, "/")
@@ -859,7 +867,7 @@ class CheckRefs:
                 )
             ):
                 continue
-            self.logger.warning(f"Unused file '{str(self.vfs_to_relative_to_mods(f))}'")
+            self.logger.warning("Unused file '%s'", str(self.vfs_to_relative_to_mods(f)))
 
 
 if __name__ == "__main__":

@@ -4,7 +4,8 @@ from pathlib import Path
 from re import split
 from subprocess import run
 from sys import exit
-from scriptlib import warn, SimulTemplateEntity, find_files
+
+from scriptlib import SimulTemplateEntity, find_files, warn
 
 
 def find_entities(vfs_root):
@@ -56,8 +57,12 @@ def main():
                         warn(f"Invalid TrainingQueue reference: {f} -> {training_queue}")
                     dot_f.write(f'"{f}" -> "{training_queue}" [color=blue];\n')
         dot_f.write("}\n")
-    if run(["dot", "-V"], capture_output=True).returncode == 0:
-        exit(run(["dot", "-Tpng", "creation.dot", "-o", "creation.png"], text=True).returncode)
+    if run(["dot", "-V"], capture_output=True, check=False).returncode == 0:
+        exit(
+            run(
+                ["dot", "-Tpng", "creation.dot", "-o", "creation.png"], text=True, check=False
+            ).returncode
+        )
 
 
 if __name__ == "__main__":

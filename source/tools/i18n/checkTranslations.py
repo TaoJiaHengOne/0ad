@@ -16,14 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import multiprocessing
 import os
 import re
-import multiprocessing
+import sys
 
 from i18n_helper import l10nFolderName, projectRootDirectory
 from i18n_helper.catalog import Catalog
 from i18n_helper.globber import getCatalogs
+
 
 VERBOSE = 0
 
@@ -49,7 +50,8 @@ class MessageChecker:
             pluralUrls = set(self.regex.findall(templateMessage.id[1]))
             if pluralUrls.difference(patterns):
                 print(
-                    f"{inputFilePath} - Different {self.human_name} in singular and plural source strings "
+                    f"{inputFilePath} - Different {self.human_name} in "
+                    f"singular and plural source strings "
                     f"for '{templateMessage}' in '{inputFilePath}'"
                 )
 
@@ -71,8 +73,10 @@ class MessageChecker:
             if unknown_patterns:
                 print(
                     f'{inputFilePath} - {translationCatalog.locale}: '
-                    f'Found unknown {self.human_name} {", ".join(["`" + x + "`" for x in unknown_patterns])} in the translation '
-                    f'which do not match any of the URLs in the template: {", ".join(["`" + x + "`" for x in patterns])}'
+                    f'Found unknown {self.human_name} '
+                    f'{", ".join(["`" + x + "`" for x in unknown_patterns])} '
+                    f'in the translation which do not match any of the URLs '
+                    f'in the template: {", ".join(["`" + x + "`" for x in patterns])}'
                 )
 
             if templateMessage.pluralizable and translationMessage.pluralizable:
@@ -84,8 +88,11 @@ class MessageChecker:
                     if unknown_patterns_multi:
                         print(
                             f'{inputFilePath} - {translationCatalog.locale}: '
-                            f'Found unknown {self.human_name} {", ".join(["`" + x + "`" for x in unknown_patterns_multi])} in the pluralised translation '
-                            f'which do not match any of the URLs in the template: {", ".join(["`" + x + "`" for x in pluralUrls])}'
+                            f'Found unknown {self.human_name} '
+                            f'{", ".join(["`" + x + "`" for x in unknown_patterns_multi])} '
+                            f'in the pluralised translation which do not '
+                            f'match any of the URLs in the template: '
+                            f'{", ".join(["`" + x + "`" for x in pluralUrls])}'
                         )
 
 
@@ -123,7 +130,7 @@ def main():
         "before you run this script.\n\tPOT files are not in the repository.\n"
     )
     foundPots = 0
-    for root, folders, filenames in os.walk(projectRootDirectory):
+    for root, _folders, filenames in os.walk(projectRootDirectory):
         for filename in filenames:
             if (
                 len(filename) > 4

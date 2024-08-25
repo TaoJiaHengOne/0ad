@@ -28,9 +28,9 @@ import json
 import os
 import subprocess
 import sys
-import yaml
-
 import xml.etree.ElementTree as ET
+
+import yaml
 
 
 def execute(command):
@@ -81,9 +81,8 @@ def resolve_if(defines, expression):
                     if define["value"] != "1":
                         return True
                     found_define = True
-                else:
-                    if define["value"] == "1":
-                        return True
+                elif define["value"] == "1":
+                    return True
         if invert and not found_define:
             return True
     return False
@@ -124,12 +123,11 @@ def compile_and_reflect(
     command.append("-DSTAGE_{}={}".format(stage.upper(), "1"))
     command += ["-o", output_path]
     # Compile the shader with debug information to see names in reflection.
-    ret, out, err = execute(command + ["-g"])
+    ret, out, err = execute([*command, "-g"])
     if ret:
         sys.stderr.write(
-            "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\nError: {}\n".format(
-                ret, " ".join(command), input_path, output_path, err
-            )
+            "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\n"
+            "Error: {}\n".format(ret, " ".join(command), input_path, output_path, err)
         )
         preprocessor_output_path = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "preprocessed_file.glsl")
@@ -139,24 +137,23 @@ def compile_and_reflect(
     ret, out, err = execute(["spirv-reflect", "-y", "-v", "1", output_path])
     if ret:
         sys.stderr.write(
-            "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\nError: {}\n".format(
-                ret, " ".join(command), input_path, output_path, err
-            )
+            "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\n"
+            "Error: {}\n".format(ret, " ".join(command), input_path, output_path, err)
         )
         raise ValueError(err)
     # Reflect the result SPIRV.
     data = yaml.safe_load(out)
     module = data["module"]
     interface_variables = []
-    if "all_interface_variables" in data and data["all_interface_variables"]:
+    if data.get("all_interface_variables"):
         interface_variables = data["all_interface_variables"]
     push_constants = []
     vertex_attributes = []
-    if "push_constants" in module and module["push_constants"]:
+    if module.get("push_constants"):
         assert len(module["push_constants"]) == 1
 
         def add_push_constants(node, push_constants):
-            if ("members" in node) and node["members"]:
+            if node.get("members"):
                 for member in node["members"]:
                     add_push_constants(member, push_constants)
             else:
@@ -173,7 +170,7 @@ def compile_and_reflect(
         assert module["push_constants"][0]["size"] <= 128
         add_push_constants(module["push_constants"][0], push_constants)
     descriptor_sets = []
-    if "descriptor_sets" in module and module["descriptor_sets"]:
+    if module.get("descriptor_sets"):
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER = 1
         VK_DESCRIPTOR_TYPE_STORAGE_IMAGE = 3
         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER = 6
@@ -232,43 +229,39 @@ def compile_and_reflect(
                             "name": binding["name"],
                         }
                     )
-            else:
-                if use_descriptor_indexing:
-                    if descriptor_set["set"] == 0:
-                        assert descriptor_set["binding_count"] >= 1
-                        for binding in descriptor_set["bindings"]:
-                            assert (
-                                binding["descriptor_type"]
-                                == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-                            )
-                            assert binding["array"]["dims"][0] == 16384
-                            if binding["binding"] == 0:
-                                assert binding["name"] == "textures2D"
-                            elif binding["binding"] == 1:
-                                assert binding["name"] == "texturesCube"
-                            elif binding["binding"] == 2:
-                                assert binding["name"] == "texturesShadow"
-                    else:
-                        assert False
-                else:
-                    assert descriptor_set["binding_count"] > 0
+            elif use_descriptor_indexing:
+                if descriptor_set["set"] == 0:
+                    assert descriptor_set["binding_count"] >= 1
                     for binding in descriptor_set["bindings"]:
                         assert (
                             binding["descriptor_type"] == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
                         )
-                        assert binding["image"]["sampled"] == 1
-                        assert binding["image"]["arrayed"] == 0
-                        assert binding["image"]["ms"] == 0
-                        sampler_type = "sampler{}D".format(binding["image"]["dim"] + 1)
-                        if binding["image"]["dim"] == 3:
-                            sampler_type = "samplerCube"
-                        bindings.append(
-                            {
-                                "binding": binding["binding"],
-                                "type": sampler_type,
-                                "name": binding["name"],
-                            }
-                        )
+                        assert binding["array"]["dims"][0] == 16384
+                        if binding["binding"] == 0:
+                            assert binding["name"] == "textures2D"
+                        elif binding["binding"] == 1:
+                            assert binding["name"] == "texturesCube"
+                        elif binding["binding"] == 2:
+                            assert binding["name"] == "texturesShadow"
+                else:
+                    raise AssertionError
+            else:
+                assert descriptor_set["binding_count"] > 0
+                for binding in descriptor_set["bindings"]:
+                    assert binding["descriptor_type"] == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+                    assert binding["image"]["sampled"] == 1
+                    assert binding["image"]["arrayed"] == 0
+                    assert binding["image"]["ms"] == 0
+                    sampler_type = "sampler{}D".format(binding["image"]["dim"] + 1)
+                    if binding["image"]["dim"] == 3:
+                        sampler_type = "samplerCube"
+                    bindings.append(
+                        {
+                            "binding": binding["binding"],
+                            "type": sampler_type,
+                            "name": binding["name"],
+                        }
+                    )
             descriptor_sets.append(
                 {
                     "set": descriptor_set["set"],
@@ -290,9 +283,8 @@ def compile_and_reflect(
         ret, out, err = execute(command)
         if ret:
             sys.stderr.write(
-                "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\nError: {}\n".format(
-                    ret, " ".join(command), input_path, output_path, err
-                )
+                "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\n"
+                "Error: {}\n".format(ret, " ".join(command), input_path, output_path, err)
             )
             raise ValueError(err)
     return {
@@ -304,30 +296,28 @@ def compile_and_reflect(
 
 def output_xml_tree(tree, path):
     """We use a simple custom printer to have the same output for all platforms."""
-    with open(path, "wt") as handle:
+    with open(path, "w") as handle:
         handle.write('<?xml version="1.0" encoding="utf-8"?>\n')
-        handle.write(
-            "<!-- DO NOT EDIT: GENERATED BY SCRIPT {} -->\n".format(os.path.basename(__file__))
-        )
+        handle.write(f"<!-- DO NOT EDIT: GENERATED BY SCRIPT {os.path.basename(__file__)} -->\n")
 
         def output_xml_node(node, handle, depth):
             indent = "\t" * depth
             attributes = ""
             for attribute_name in sorted(node.attrib.keys()):
-                attributes += ' {}="{}"'.format(attribute_name, node.attrib[attribute_name])
+                attributes += f' {attribute_name}="{node.attrib[attribute_name]}"'
             if len(node) > 0:
-                handle.write("{}<{}{}>\n".format(indent, node.tag, attributes))
+                handle.write(f"{indent}<{node.tag}{attributes}>\n")
                 for child in node:
                     output_xml_node(child, handle, depth + 1)
-                handle.write("{}</{}>\n".format(indent, node.tag))
+                handle.write(f"{indent}</{node.tag}>\n")
             else:
-                handle.write("{}<{}{}/>\n".format(indent, node.tag, attributes))
+                handle.write(f"{indent}<{node.tag}{attributes}/>\n")
 
         output_xml_node(tree.getroot(), handle, 0)
 
 
 def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
-    sys.stdout.write('Program "{}"\n'.format(program_name))
+    sys.stdout.write(f'Program "{program_name}"\n')
     if rules and program_name not in rules:
         sys.stdout.write("  Skip.\n")
         return
@@ -392,7 +382,7 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
                 }
             )
         else:
-            raise ValueError('Unsupported element tag: "{}"'.format(element_tag))
+            raise ValueError(f'Unsupported element tag: "{element_tag}"')
 
     stage_extension = {
         "vertex": ".vs",
@@ -525,9 +515,9 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
                             member_element.set("name", member["name"])
                             member_element.set("size", member["size"])
                             member_element.set("offset", member["offset"])
-                    elif binding["type"].startswith("sampler"):
-                        binding_element.set("name", binding["name"])
-                    elif binding["type"].startswith("storage"):
+                    elif binding["type"].startswith("sampler") or binding["type"].startswith(
+                        "storage"
+                    ):
                         binding_element.set("name", binding["name"])
         program_tree = ET.ElementTree(program_root)
         output_xml_tree(program_tree, os.path.join(output_mod_path, "shaders", program_path))
@@ -540,18 +530,21 @@ def run():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "input_mod_path",
-        help="a path to a directory with input mod with GLSL shaders like binaries/data/mods/public",
+        help="a path to a directory with input mod with GLSL shaders "
+        "like binaries/data/mods/public",
     )
     parser.add_argument("rules_path", help="a path to JSON with rules")
     parser.add_argument(
         "output_mod_path",
-        help="a path to a directory with mod to store SPIR-V shaders like binaries/data/mods/spirv",
+        help="a path to a directory with mod to store SPIR-V shaders "
+        "like binaries/data/mods/spirv",
     )
     parser.add_argument(
         "-d",
         "--dependency",
         action="append",
-        help="a path to a directory with a dependency mod (at least modmod should present as dependency)",
+        help="a path to a directory with a dependency mod (at least "
+        "modmod should present as dependency)",
         required=True,
     )
     parser.add_argument(
@@ -563,26 +556,26 @@ def run():
     args = parser.parse_args()
 
     if not os.path.isfile(args.rules_path):
-        sys.stderr.write('Rules "{}" are not found\n'.format(args.rules_path))
+        sys.stderr.write(f'Rules "{args.rules_path}" are not found\n')
         return
-    with open(args.rules_path, "rt") as handle:
+    with open(args.rules_path) as handle:
         rules = json.load(handle)
 
     if not os.path.isdir(args.input_mod_path):
-        sys.stderr.write('Input mod path "{}" is not a directory\n'.format(args.input_mod_path))
+        sys.stderr.write(f'Input mod path "{args.input_mod_path}" is not a directory\n')
         return
 
     if not os.path.isdir(args.output_mod_path):
-        sys.stderr.write('Output mod path "{}" is not a directory\n'.format(args.output_mod_path))
+        sys.stderr.write(f'Output mod path "{args.output_mod_path}" is not a directory\n')
         return
 
     mod_shaders_path = os.path.join(args.input_mod_path, "shaders", "glsl")
     if not os.path.isdir(mod_shaders_path):
-        sys.stderr.write('Directory "{}" was not found\n'.format(mod_shaders_path))
+        sys.stderr.write(f'Directory "{mod_shaders_path}" was not found\n')
         return
 
     mod_name = os.path.basename(os.path.normpath(args.input_mod_path))
-    sys.stdout.write('Building SPIRV for "{}"\n'.format(mod_name))
+    sys.stdout.write(f'Building SPIRV for "{mod_name}"\n')
     if not args.program_name:
         for file_name in os.listdir(mod_shaders_path):
             name, ext = os.path.splitext(file_name)

@@ -26,13 +26,13 @@ However that needs to be fixed on the transifex side, see rP25896. For now
 strip the e-mails using this script.
 """
 
-import sys
-import os
-import glob
-import re
 import fileinput
+import glob
+import os
+import re
+import sys
 
-from i18n_helper import l10nFolderName, transifexClientFolder, projectRootDirectory
+from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFolder
 
 
 def main():

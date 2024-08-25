@@ -41,7 +41,7 @@ class Catalog(BabelCatalog):
             }:
                 headers.append((name, value))
 
-        return [("Project-Id-Version", self._project)] + headers
+        return [("Project-Id-Version", self._project), *headers]
 
     @staticmethod
     def readFrom(file_path, locale=None):

@@ -36,11 +36,11 @@ from collections import defaultdict
 from pathlib import Path
 
 from babel import Locale, UnknownLocaleError
+from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFolder
 
-from i18n_helper import l10nFolderName, transifexClientFolder, projectRootDirectory
 
 poLocations = []
-for root, folders, filenames in os.walk(projectRootDirectory):
+for root, folders, _filenames in os.walk(projectRootDirectory):
     for folder in folders:
         if folder == l10nFolderName:
             if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
@@ -78,7 +78,7 @@ for location in poLocations:
         lang = file.stem.split(".")[0]
 
         # Skip debug translations
-        if lang == "debug" or lang == "long":
+        if lang in ("debug", "long"):
             continue
 
         with file.open(encoding="utf-8") as poFile:
@@ -98,12 +98,10 @@ for location in poLocations:
 # Sort translator names and remove duplicates
 # Sorting should ignore case, but prefer versions of names starting
 # with an upper case letter to have a neat credits list.
-for lang in langsLists.keys():
+for lang in langsLists:
     translators = {}
     for name in sorted(langsLists[lang], reverse=True):
-        if name.lower() not in translators.keys():
-            translators[name.lower()] = name
-        elif name.istitle():
+        if name.lower() not in translators or name.istitle():
             translators[name.lower()] = name
     langsLists[lang] = sorted(translators.values(), key=lambda s: s.lower())
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import argparse
 import os
-import sys
 import re
-import xml.etree.ElementTree
-from logging import getLogger, StreamHandler, INFO, WARNING, Formatter, Filter
+import sys
+from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
+from xml.etree import ElementTree as ET
 
 
 class SingleLevelFilter(Filter):
@@ -15,8 +15,7 @@ class SingleLevelFilter(Filter):
     def filter(self, record):
         if self.reject:
             return record.levelno != self.passlevel
-        else:
-            return record.levelno == self.passlevel
+        return record.levelno == self.passlevel
 
 
 class Actor:
@@ -30,9 +29,9 @@ class Actor:
 
     def read(self, physical_path):
         try:
-            tree = xml.etree.ElementTree.parse(physical_path)
-        except xml.etree.ElementTree.ParseError as err:
-            self.logger.error('"%s": %s' % (physical_path, err.msg))
+            tree = ET.parse(physical_path)
+        except ET.ParseError:
+            self.logger.exception(physical_path)
             return False
         root = tree.getroot()
         # Special case: particles don't need a diffuse texture.
@@ -52,10 +51,10 @@ class Actor:
     def read_variant(self, actor_physical_path, relative_path):
         physical_path = actor_physical_path.replace(self.vfs_path, relative_path)
         try:
-            tree = xml.etree.ElementTree.parse(physical_path)
-        except xml.etree.ElementTree.ParseError as err:
-            self.logger.error('"%s": %s' % (physical_path, err.msg))
-            return False
+            tree = ET.parse(physical_path)
+        except ET.ParseError:
+            self.logger.exception(physical_path)
+            return
 
         root = tree.getroot()
         file = root.get("file")
@@ -75,9 +74,9 @@ class Material:
 
     def read(self, physical_path):
         try:
-            root = xml.etree.ElementTree.parse(physical_path).getroot()
-        except xml.etree.ElementTree.ParseError as err:
-            self.logger.error('"%s": %s' % (physical_path, err.msg))
+            root = ET.parse(physical_path).getroot()
+        except ET.ParseError:
+            self.logger.exception(physical_path)
             return False
         for element in root.findall(".//required_texture"):
             texture_name = element.get("name")
@@ -127,7 +126,7 @@ class Validator:
         if not os.path.isdir(physical_path):
             return result
         for file_name in os.listdir(physical_path):
-            if file_name == ".git" or file_name == ".svn":
+            if file_name in (".git", ".svn"):
                 continue
             vfs_file_path = os.path.join(vfs_path, file_name)
             physical_file_path = os.path.join(physical_path, file_name)
@@ -180,8 +179,9 @@ class Validator:
                 and actor.material not in self.invalid_materials
             ):
                 self.logger.error(
-                    '"%s": unknown material "%s"'
-                    % (self.get_mod_path(actor.mod_name, actor.vfs_path), actor.material)
+                    '"%s": unknown material "%s"',
+                    self.get_mod_path(actor.mod_name, actor.vfs_path),
+                    actor.material,
                 )
                 self.inError = True
             if actor.material not in self.materials:
@@ -189,42 +189,34 @@ class Validator:
             material = self.materials[actor.material]
 
             missing_textures = ", ".join(
-                set(
-                    [
-                        required_texture
-                        for required_texture in material.required_textures
-                        if required_texture not in actor.textures
-                    ]
-                )
+                {
+                    required_texture
+                    for required_texture in material.required_textures
+                    if required_texture not in actor.textures
+                }
             )
             if len(missing_textures) > 0:
                 self.logger.error(
-                    '"%s": actor does not contain required texture(s) "%s" from "%s"'
-                    % (
-                        self.get_mod_path(actor.mod_name, actor.vfs_path),
-                        missing_textures,
-                        material.name,
-                    )
+                    '"%s": actor does not contain required texture(s) "%s" from "%s"',
+                    self.get_mod_path(actor.mod_name, actor.vfs_path),
+                    missing_textures,
+                    material.name,
                 )
                 self.inError = True
 
             extra_textures = ", ".join(
-                set(
-                    [
-                        extra_texture
-                        for extra_texture in actor.textures
-                        if extra_texture not in material.required_textures
-                    ]
-                )
+                {
+                    extra_texture
+                    for extra_texture in actor.textures
+                    if extra_texture not in material.required_textures
+                }
             )
             if len(extra_textures) > 0:
                 self.logger.warning(
-                    '"%s": actor contains unnecessary texture(s) "%s" from "%s"'
-                    % (
-                        self.get_mod_path(actor.mod_name, actor.vfs_path),
-                        extra_textures,
-                        material.name,
-                    )
+                    '"%s": actor contains unnecessary texture(s) "%s" from "%s"',
+                    self.get_mod_path(actor.mod_name, actor.vfs_path),
+                    extra_textures,
+                    material.name,
                 )
                 self.inError = True
 

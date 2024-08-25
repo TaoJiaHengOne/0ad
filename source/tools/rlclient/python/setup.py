@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 setup(
     name="zero_ad",
     version="0.0.1",

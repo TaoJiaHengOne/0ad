@@ -1,8 +1,8 @@
 from collections import Counter
 from decimal import Decimal
-from re import split
-from xml.etree import ElementTree
 from os.path import exists
+from re import split
+from xml.etree import ElementTree as ET
 
 
 class SimulTemplateEntity:
@@ -77,7 +77,7 @@ class SimulTemplateEntity:
                     base_tag.remove(base_child)
                     base_child = None
                 if base_child is None:
-                    base_child = ElementTree.Element(child.tag)
+                    base_child = ET.Element(child.tag)
                     base_tag.append(base_child)
                 self.apply_layer(base_child, child)
                 if "replace" in base_child.attrib:
@@ -95,28 +95,27 @@ class SimulTemplateEntity:
         if "|" in vfs_path:
             paths = vfs_path.split("|", 1)
             base = self._load_inherited(base_path, paths[1], mods, base)
-            base = self._load_inherited(base_path, paths[0], mods, base)
-            return base
+            return self._load_inherited(base_path, paths[0], mods, base)
 
         main_mod = self.get_main_mod(base_path, vfs_path, mods)
         fp = self.get_file(base_path, vfs_path, main_mod)
-        layer = ElementTree.parse(fp).getroot()
+        layer = ET.parse(fp).getroot()
         for el in layer.iter():
             children = [x.tag for x in el]
             duplicates = [x for x, c in Counter(children).items() if c > 1]
             if duplicates:
                 for dup in duplicates:
-                    self.logger.warning(f"Duplicate child node '{dup}' in tag {el.tag} of {fp}")
+                    self.logger.warning(
+                        "Duplicate child node '%s' in tag %s of %s", dup, el.tag, fp
+                    )
         if layer.get("parent"):
             parent = self._load_inherited(base_path, layer.get("parent"), mods, base)
             self.apply_layer(parent, layer)
             return parent
-        else:
-            if not base:
-                return layer
-            else:
-                self.apply_layer(base, layer)
-                return base
+        if not base:
+            return layer
+        self.apply_layer(base, layer)
+        return base
 
 
 def find_files(vfs_root, mods, vfs_path, *ext_list):
@@ -130,7 +129,7 @@ def find_files(vfs_root, mods, vfs_path, *ext_list):
     def find_recursive(dp, base):
         """(relative Path, full Path) generator"""
         if dp.is_dir():
-            if dp.name != ".svn" and dp.name != ".git" and not dp.name.endswith("~"):
+            if dp.name not in (".svn", ".git") and not dp.name.endswith("~"):
                 for fp in dp.iterdir():
                     yield from find_recursive(fp, base)
         elif dp.suffix in full_exts:

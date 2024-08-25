@@ -30,18 +30,18 @@ def get_diff():
     """Return a diff using svn diff"""
     os.chdir(projectRootDirectory)
 
-    diff_process = subprocess.run(["svn", "diff", "binaries"], capture_output=True)
+    diff_process = subprocess.run(["svn", "diff", "binaries"], capture_output=True, check=False)
     if diff_process.returncode != 0:
         print(f"Error running svn diff: {diff_process.stderr.decode('utf-8')}. Exiting.")
-        return
+        return None
     return io.StringIO(diff_process.stdout.decode("utf-8"))
 
 
 def check_diff(diff: io.StringIO, verbose=False) -> List[str]:
     """Run through a diff of .po files and check that some of the changes
     are real translations changes and not just noise (line changes....).
-    The algorithm isn't extremely clever, but it is quite fast."""
-
+    The algorithm isn't extremely clever, but it is quite fast.
+    """
     keep = set()
     files = set()
 
@@ -85,10 +85,11 @@ def check_diff(diff: io.StringIO, verbose=False) -> List[str]:
 
 
 def revert_files(files: List[str], verbose=False):
-    revert_process = subprocess.run(["svn", "revert"] + files, capture_output=True)
+    revert_process = subprocess.run(["svn", "revert", *files], capture_output=True, check=False)
     if revert_process.returncode != 0:
         print(
-            f"Warning: Some files could not be reverted. Error: {revert_process.stderr.decode('utf-8')}"
+            "Warning: Some files could not be reverted. "
+            f"Error: {revert_process.stderr.decode('utf-8')}"
         )
     if verbose:
         for file in files:
@@ -97,7 +98,7 @@ def revert_files(files: List[str], verbose=False):
 
 def add_untracked(verbose=False):
     """Add untracked .po files to svn"""
-    diff_process = subprocess.run(["svn", "st", "binaries"], capture_output=True)
+    diff_process = subprocess.run(["svn", "st", "binaries"], capture_output=True, check=False)
     if diff_process.stderr != b"":
         print(f"Error running svn st: {diff_process.stderr.decode('utf-8')}. Exiting.")
         return
@@ -110,7 +111,9 @@ def add_untracked(verbose=False):
         file = line[1:].strip()
         if not file.endswith(".po") and not file.endswith(".pot"):
             continue
-        add_process = subprocess.run(["svn", "add", file, "--parents"], capture_output=True)
+        add_process = subprocess.run(
+            ["svn", "add", file, "--parents"], capture_output=True, check=False
+        )
         if add_process.stderr != b"":
             print(f"Warning: file {file} could not be added.")
         if verbose:

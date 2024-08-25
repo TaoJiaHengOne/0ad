@@ -1,5 +1,6 @@
 import os
 
+
 l10nFolderName = "l10n"
 transifexClientFolder = ".tx"
 l10nToolsDirectory = os.path.dirname(os.path.realpath(__file__))

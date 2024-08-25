@@ -2,9 +2,10 @@
 
 # ruff: noqa: F403, F405
 
-from ctypes import *
 import os
 import xml.etree.ElementTree as ET
+from ctypes import *
+
 
 binaries = "../../../binaries"
 
@@ -16,20 +17,20 @@ dll_filename = {
 
 # The DLL may need other DLLs which are in its directory, so set the path to that
 # (Don't care about clobbering the old PATH - it doesn't have anything important)
-os.environ["PATH"] = "%s/system/" % binaries
+os.environ["PATH"] = f"{binaries}/system/"
 
 # Load the actual library
-library = cdll.LoadLibrary("%s/system/%s" % (binaries, dll_filename))
+library = cdll.LoadLibrary(f"{binaries}/system/{dll_filename}")
 
 
 def log(severity, message):
-    print("[%s] %s" % (("INFO", "WARNING", "ERROR")[severity], message))
+    print("[{}] {}".format(("INFO", "WARNING", "ERROR")[severity], message))
 
 
 clog = CFUNCTYPE(None, c_int, c_char_p)(log)
 # (the CFUNCTYPE must not be GC'd, so try to keep a reference)
 library.set_logger(clog)
-skeleton_definitions = open("%s/data/tests/collada/skeletons.xml" % binaries).read()
+skeleton_definitions = open(f"{binaries}/data/tests/collada/skeletons.xml").read()
 library.set_skeleton_definitions(skeleton_definitions, len(skeleton_definitions))
 
 
@@ -115,15 +116,16 @@ clean_dir(test_mod + "/art/meshes")
 clean_dir(test_mod + "/art/actors")
 clean_dir(test_mod + "/art/animation")
 
-# for test_file in ['cube', 'jav2', 'jav2b', 'teapot_basic', 'teapot_skin', 'plane_skin', 'dude_skin', 'mergenonbone', 'densemesh']:
+# for test_file in ['cube', 'jav2', 'jav2b', 'teapot_basic', 'teapot_skin', 'plane_skin',
+#                   'dude_skin', 'mergenonbone', 'densemesh']:
 # for test_file in ['teapot_basic', 'jav2b', 'jav2d']:
 for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     # for test_file in ['xsitest3']:
     # for test_file in []:
-    print("* Converting PMD %s" % (test_file))
+    print(f"* Converting PMD {test_file}")
 
-    input_filename = "%s/%s.dae" % (test_data, test_file)
-    output_filename = "%s/art/meshes/%s.pmd" % (test_mod, test_file)
+    input_filename = f"{test_data}/{test_file}.dae"
+    output_filename = f"{test_mod}/art/meshes/{test_file}.pmd"
 
     input = open(input_filename).read()
     output = convert_dae_to_pmd(input)
@@ -140,18 +142,18 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
         ],
         [("helmet", "teapot_basic_static")],
     )
-    open("%s/art/actors/%s.xml" % (test_mod, test_file), "w").write(xml)
+    open(f"{test_mod}/art/actors/{test_file}.xml", "w").write(xml)
 
     xml = create_actor_static(test_file, "male")
-    open("%s/art/actors/%s_static.xml" % (test_mod, test_file), "w").write(xml)
+    open(f"{test_mod}/art/actors/{test_file}_static.xml", "w").write(xml)
 
 # for test_file in ['jav2','jav2b', 'jav2d']:
 for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     # for test_file in []:
-    print("* Converting PSA %s" % (test_file))
+    print(f"* Converting PSA {test_file}")
 
-    input_filename = "%s/%s.dae" % (test_data, test_file)
-    output_filename = "%s/art/animation/%s.psa" % (test_mod, test_file)
+    input_filename = f"{test_data}/{test_file}.dae"
+    output_filename = f"{test_mod}/art/animation/{test_file}.psa"
 
     input = open(input_filename).read()
     output = convert_dae_to_psa(input)

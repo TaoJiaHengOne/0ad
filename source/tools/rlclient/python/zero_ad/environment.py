@@ -1,7 +1,8 @@
-from .api import RLAPI
 import json
-from xml.etree import ElementTree
 from itertools import cycle
+from xml.etree import ElementTree as ET
+
+from .api import RLAPI
 
 
 class ZeroAD:
@@ -11,7 +12,9 @@ class ZeroAD:
         self.cache = {}
         self.player_id = 1
 
-    def step(self, actions=[], player=None):
+    def step(self, actions=None, player=None):
+        if actions is None:
+            actions = []
         player_ids = cycle([self.player_id]) if player is None else cycle(player)
 
         cmds = zip(player_ids, actions)
@@ -35,8 +38,10 @@ class ZeroAD:
         templates = self.api.get_templates(names)
         return [(name, EntityTemplate(content)) for (name, content) in templates]
 
-    def update_templates(self, types=[]):
-        all_types = list(set([unit.type() for unit in self.current_state.units()]))
+    def update_templates(self, types=None):
+        if types is None:
+            types = []
+        all_types = list({unit.type() for unit in self.current_state.units()})
         all_types += types
         template_pairs = self.get_templates(all_types)
 
@@ -106,7 +111,7 @@ class Entity:
 
 class EntityTemplate:
     def __init__(self, xml):
-        self.data = ElementTree.fromstring(f"<Entity>{xml}</Entity>")
+        self.data = ET.fromstring(f"<Entity>{xml}</Entity>")
 
     def get(self, path):
         node = self.data.find(path)
@@ -120,4 +125,4 @@ class EntityTemplate:
         return node is not None
 
     def __str__(self):
-        return ElementTree.tostring(self.data).decode("utf-8")
+        return ET.tostring(self.data).decode("utf-8")

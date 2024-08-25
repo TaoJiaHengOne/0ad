@@ -1,5 +1,5 @@
-from urllib import request
 import json
+from urllib import request
 
 
 class RLAPI:
@@ -11,7 +11,7 @@ class RLAPI:
         return response.read()
 
     def step(self, commands):
-        post_data = "\n".join((f"{player};{json.dumps(action)}" for (player, action) in commands))
+        post_data = "\n".join(f"{player};{json.dumps(action)}" for (player, action) in commands)
         return self.post("step", post_data)
 
     def reset(self, scenario_config, player_id, save_replay):

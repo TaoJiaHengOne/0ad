@@ -17,13 +17,13 @@
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
-import os
 import multiprocessing
+import os
 from importlib import import_module
-
 
 from i18n_helper import l10nFolderName, projectRootDirectory
 from i18n_helper.catalog import Catalog
+
 
 messagesFilename = "messages.json"
 
@@ -38,32 +38,25 @@ def warnAboutUntouchedMods():
         if modFolder[0] != "_" and modFolder[0] != ".":
             if not os.path.exists(os.path.join(modsRootFolder, modFolder, l10nFolderName)):
                 untouchedMods[modFolder] = (
-                    "There is no '{folderName}' folder in the root folder of this mod.".format(
-                        folderName=l10nFolderName
-                    )
+                    f"There is no '{l10nFolderName}' folder in the root folder of this mod."
                 )
             elif not os.path.exists(
                 os.path.join(modsRootFolder, modFolder, l10nFolderName, messagesFilename)
             ):
                 untouchedMods[modFolder] = (
-                    "There is no '{filename}' file within the '{folderName}' folder in the root folder of this mod.".format(
-                        folderName=l10nFolderName, filename=messagesFilename
-                    )
+                    f"There is no '{messagesFilename}' file within the '{l10nFolderName}' folder "
+                    f"in the root folder of this mod."
                 )
     if untouchedMods:
         print("" "Warning: No messages were extracted from the following mods:" "")
         for mod in untouchedMods:
-            print(
-                "• {modName}: {warningMessage}".format(
-                    modName=mod, warningMessage=untouchedMods[mod]
-                )
-            )
+            print(f"• {mod}: {untouchedMods[mod]}")
         print(
             ""
-            f"For this script to extract messages from a mod folder, this mod folder must contain a '{l10nFolderName}' "
-            f"folder, and this folder must contain a '{messagesFilename}' file that describes how to extract messages for the "
-            f"mod. See the folder of the main mod ('public') for an example, and see the documentation for more "
-            f"information."
+            f"For this script to extract messages from a mod folder, this mod folder must contain "
+            f"a '{l10nFolderName}' folder, and this folder must contain a '{messagesFilename}' "
+            f"file that describes how to extract messages for the mod. See the folder of the main "
+            f"mod ('public') for an example, and see the documentation for more information."
         )
 
 
@@ -108,7 +101,7 @@ def generatePOT(templateSettings, rootPath):
 
 
 def generateTemplatesForMessagesFile(messagesFilePath):
-    with open(messagesFilePath, "r") as fileObject:
+    with open(messagesFilePath) as fileObject:
         settings = json.load(fileObject)
 
     for templateSettings in settings:
@@ -127,7 +120,7 @@ def main():
         "Type '.' for current working directory",
     )
     args = parser.parse_args()
-    for root, folders, filenames in os.walk(args.scandir or projectRootDirectory):
+    for root, folders, _filenames in os.walk(args.scandir or projectRootDirectory):
         for folder in folders:
             if folder == l10nFolderName:
                 messagesFilePath = os.path.join(root, folder, messagesFilename)

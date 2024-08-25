@@ -1,12 +1,12 @@
 """Utils to list .po"""
 
 import os
-from typing import List
+from typing import List, Optional
 
 from i18n_helper.catalog import Catalog
 
 
-def getCatalogs(inputFilePath, filters: List[str] = None) -> List[Catalog]:
+def getCatalogs(inputFilePath, filters: Optional[List[str]] = None) -> List[Catalog]:
     """Returns a list of "real" catalogs (.po) in the given folder."""
     existingTranslationCatalogs = []
     l10nFolderPath = os.path.dirname(inputFilePath)

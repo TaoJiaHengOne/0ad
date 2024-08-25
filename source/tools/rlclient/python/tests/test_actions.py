@@ -1,19 +1,21 @@
-import zero_ad
 import math
 from os import path
 
+import zero_ad
+
+
 game = zero_ad.ZeroAD("http://localhost:6000")
 scriptdir = path.dirname(path.realpath(__file__))
-with open(path.join(scriptdir, "..", "samples", "arcadia.json"), "r") as f:
+with open(path.join(scriptdir, "..", "samples", "arcadia.json"), encoding="utf8") as f:
     config = f.read()
 
 
 def dist(p1, p2):
-    return math.sqrt(sum((math.pow(x2 - x1, 2) for (x1, x2) in zip(p1, p2))))
+    return math.sqrt(sum(math.pow(x2 - x1, 2) for (x1, x2) in zip(p1, p2)))
 
 
 def center(units):
-    sum_position = map(sum, zip(*map(lambda u: u.position(), units)))
+    sum_position = map(sum, zip(*(u.position() for u in units)))
     return [x / len(units) for x in sum_position]
 
 

@@ -1,8 +1,10 @@
 # Adapted from http://cairographics.org/freetypepython/
 
 import ctypes
-import cairo
 import sys
+
+import cairo
+
 
 CAIRO_STATUS_SUCCESS = 0
 FT_Err_Ok = 0
@@ -58,11 +60,11 @@ def create_cairo_font_face_for_file(filename, faceindex=0, loadoptions=0):
 
     # create cairo font face for freetype face
     cr_face = _cairo_so.cairo_ft_font_face_create_for_ft_face(ft_face, loadoptions)
-    if CAIRO_STATUS_SUCCESS != _cairo_so.cairo_font_face_status(cr_face):
+    if _cairo_so.cairo_font_face_status(cr_face) != CAIRO_STATUS_SUCCESS:
         raise Exception("Error creating cairo font face for " + filename)
 
     _cairo_so.cairo_set_font_face(cairo_t, cr_face)
-    if CAIRO_STATUS_SUCCESS != _cairo_so.cairo_status(cairo_t):
+    if _cairo_so.cairo_status(cairo_t) != CAIRO_STATUS_SUCCESS:
         raise Exception("Error creating cairo font face for " + filename)
 
     face = cairo_ctx.get_font_face()

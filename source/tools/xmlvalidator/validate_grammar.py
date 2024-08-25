@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-from argparse import ArgumentParser
-from pathlib import Path
-from os.path import join, realpath, exists, dirname
-from json import load
-from re import match
-from logging import getLogger, StreamHandler, INFO, WARNING, Filter, Formatter
-import lxml.etree
 import sys
+from argparse import ArgumentParser
+from json import load
+from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
+from os.path import dirname, exists, join, realpath
+from pathlib import Path
+from re import match
+
+import lxml.etree
 
 
 class SingleLevelFilter(Filter):
@@ -17,8 +18,7 @@ class SingleLevelFilter(Filter):
     def filter(self, record):
         if self.reject:
             return record.levelno != self.passlevel
-        else:
-            return record.levelno == self.passlevel
+        return record.levelno == self.passlevel
 
 
 class VFS_File:
@@ -68,8 +68,8 @@ class RelaxNGValidator:
     def main(self):
         """Program entry point, parses command line arguments and launches the validation"""
         # ordered uniq mods (dict maintains ordered keys from python 3.6)
-        self.logger.info(f"Checking {'|'.join(self.mods)}'s integrity.")
-        self.logger.info(f"The following mods will be loaded: {'|'.join(self.mods)}.")
+        self.logger.info("Checking %s's integrity.", "|".join(self.mods))
+        self.logger.info("The following mods will be loaded: %s.", "|".join(self.mods))
         return self.run()
 
     def find_files(self, vfs_root, mods, vfs_path, *ext_list):
@@ -83,7 +83,7 @@ class RelaxNGValidator:
         def find_recursive(dp, base):
             """(relative Path, full Path) generator"""
             if dp.is_dir():
-                if dp.name != ".svn" and dp.name != ".git" and not dp.name.endswith("~"):
+                if dp.name not in (".svn", ".git") and not dp.name.endswith("~"):
                     for fp in dp.iterdir():
                         yield from find_recursive(fp, base)
             elif dp.suffix in full_exts:
@@ -191,7 +191,7 @@ class RelaxNGValidator:
     def validate_files(self, name, files, schemapath):
         relax_ng_path = self.get_relaxng_file(schemapath)
         if relax_ng_path == "":
-            self.logger.warning(f"Could not find {schemapath}")
+            self.logger.warning("Could not find %s", schemapath)
             return
 
         data = lxml.etree.parse(relax_ng_path)
@@ -201,14 +201,14 @@ class RelaxNGValidator:
             try:
                 doc = lxml.etree.parse(str(file[1]))
                 relaxng.assertValid(doc)
-            except Exception as e:
+            except Exception:
                 error_count = error_count + 1
-                self.logger.error(f"{file[1]}: " + str(e))
+                self.logger.exception(file[1])
 
         if self.verbose:
-            self.logger.info(f"{error_count} {name} validation errors")
+            self.logger.info("%d %s validation errors", error_count, name)
         elif error_count > 0:
-            self.logger.error(f"{error_count} {name} validation errors")
+            self.logger.error("%d %s validation errors", error_count, name)
             self.inError = True
 
 

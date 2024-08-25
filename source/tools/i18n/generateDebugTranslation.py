@@ -17,9 +17,9 @@
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import multiprocessing
 import os
 import sys
-import multiprocessing
 
 from i18n_helper import l10nFolderName, projectRootDirectory
 from i18n_helper.catalog import Catalog
@@ -179,9 +179,10 @@ def main():
 
     if found_pot_files == 0:
         print(
-            "This script did not work because no ‘.pot’ files were found. "
-            "Please, run ‘updateTemplates.py’ to generate the ‘.pot’ files, and run ‘pullTranslations.py’ to pull the latest translations from Transifex. "
-            "Then you can run this script to generate ‘.po’ files with obvious debug strings."
+            "This script did not work because no '.pot' files were found. "
+            "Please, run 'updateTemplates.py' to generate the '.pot' files, and run "
+            "'pullTranslations.py' to pull the latest translations from Transifex. "
+            "Then you can run this script to generate '.po' files with obvious debug strings."
         )
 
 

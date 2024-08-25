@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-import cairo
 import codecs
 import math
 
+import cairo
 import FontLoader
 import Packer
 
 
 # Representation of a rendered glyph
-class Glyph(object):
+class Glyph:
     def __init__(self, ctx, renderstyle, char, idx, face, size):
         self.renderstyle = renderstyle
         self.char = char
@@ -18,7 +18,7 @@ class Glyph(object):
         self.size = size
         self.glyph = (idx, 0, 0)
 
-        if not ctx.get_font_face() == self.face:
+        if ctx.get_font_face() != self.face:
             ctx.set_font_face(self.face)
             ctx.set_font_size(self.size)
         extents = ctx.glyph_extents([self.glyph])
@@ -31,7 +31,7 @@ class Glyph(object):
         bb = [inf, inf, -inf, -inf]
 
         if "stroke" in self.renderstyle:
-            for c, w in self.renderstyle["stroke"]:
+            for _c, w in self.renderstyle["stroke"]:
                 ctx.set_line_width(w)
                 ctx.glyph_path([self.glyph])
                 e = ctx.stroke_extents()
@@ -60,7 +60,7 @@ class Glyph(object):
         self.pos = packer.Pack(self.w, self.h)
 
     def render(self, ctx):
-        if not ctx.get_font_face() == self.face:
+        if ctx.get_font_face() != self.face:
             ctx.set_font_face(self.face)
             ctx.set_font_size(self.size)
         ctx.save()
@@ -107,7 +107,7 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
     indexList = []
     for i in range(len(ttfNames)):
         (face, indices) = FontLoader.create_cairo_font_face_for_file(
-            "../../../binaries/data/tools/fontbuilder/fonts/%s" % ttfNames[i], 0, loadopts
+            f"../../../binaries/data/tools/fontbuilder/fonts/{ttfNames[i]}", 0, loadopts
         )
         faceList.append(face)
         if ttfNames[i] not in dsizes:
@@ -166,10 +166,10 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
         ctx, surface = setup_context(w, h, renderstyle)
         for g in glyphs:
             g.render(ctx)
-        surface.write_to_png("%s.png" % outname)
+        surface.write_to_png(f"{outname}.png")
 
         # Output the .fnt file with all the glyph positions etc
-        fnt = open("%s.fnt" % outname, "w")
+        fnt = open(f"{outname}.fnt", "w")
         fnt.write("101\n")
         fnt.write("%d %d\n" % (w, h))
         fnt.write("%s\n" % ("rgba" if "colour" in renderstyle else "a"))
@@ -249,7 +249,7 @@ fonts = (
 )
 
 for name, (fontnames, loadopts), size, style in fonts:
-    print("%s..." % name)
+    print(f"{name}...")
     generate_font(
-        "../../../binaries/data/mods/mod/fonts/%s" % name, fontnames, loadopts, size, style, dsizes
+        f"../../../binaries/data/mods/mod/fonts/{name}", fontnames, loadopts, size, style, dsizes
     )

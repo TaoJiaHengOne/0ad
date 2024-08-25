@@ -19,7 +19,7 @@
 import os
 import subprocess
 
-from i18n_helper import l10nFolderName, transifexClientFolder, projectRootDirectory
+from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFolder
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
                     path = os.path.join(root, folder)
                     os.chdir(path)
                     print(f"INFO: Starting to pull translations in {path}...")
-                    subprocess.run(["tx", "pull", "-a", "-f"])
+                    subprocess.run(["tx", "pull", "-a", "-f"], check=False)
 
 
 if __name__ == "__main__":

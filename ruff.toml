@@ -1,5 +1,58 @@
 line-length = 99
 
+[format]
+line-ending = "lf"
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "A",
+    "ARG",
+    "ANN",
+    "B018",
+    "B023",
+    "C90",
+    "COM812",
+    "D",
+    "DTZ005",
+    "EM",
+    "ERA",
+    "FA",
+    "FIX",
+    "FBT",
+    "ISC001",
+    "N",
+    "PERF203",
+    "PERF401",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "PLR1704",
+    "PLR2004",
+    "PLW2901",
+    "PT",
+    "PTH",
+    "RUF012",
+    "S101",
+    "S310",
+    "S314",
+    "S324",
+    "S320",
+    "S603",
+    "S607",
+    "SIM102",
+    "SIM105",
+    "SIM113",
+    "SIM115",
+    "T20",
+    "TD",
+    "TRY002",
+    "TRY003",
+    "TRY004",
+    "UP038",
+    "W505"
+]
+
 [lint.isort]
 lines-after-imports = 2
 

@@ -3,29 +3,33 @@
 # Copyright (C) 2024 Wildfire Games.
 # All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-# following conditions are met:
 #
-#   Redistributions of source code must retain the above copyright notice, this list of conditions and the following
-#   disclaimer.
-#   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
-#   disclaimer in the documentation and/or other materials provided with the distribution.
-#   The name of the author may not be used to endorse or promote products derived from this software without specific
-#   prior written permission.
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# * Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+# * The name of the author may not be used to endorse or promote products
+#   derived from this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE AUTHOR “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-# AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR “AS IS” AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import codecs
-import re
-import os
-import sys
 import json as jsonParser
-
+import os
+import re
+import sys
 from textwrap import dedent
 
 
@@ -51,7 +55,7 @@ def pathmatch(mask, path):
     return re.match(p, path) is not None
 
 
-class Extractor(object):
+class Extractor:
     def __init__(self, directoryPath, filemasks, options):
         self.directoryPath = directoryPath
         self.options = options
@@ -66,14 +70,15 @@ class Extractor(object):
     def run(self):
         """Extracts messages.
 
-        :return:    An iterator over ``(message, plural, context, (location, pos), comment)`` tuples.
+        :return:    An iterator over ``(message, plural, context, (location, pos), comment)``
+                    tuples.
         :rtype:     ``iterator``
         """
         empty_string_pattern = re.compile(r"^\s*$")
         directoryAbsolutePath = os.path.abspath(self.directoryPath)
         for root, folders, filenames in os.walk(directoryAbsolutePath):
             for subdir in folders:
-                if subdir.startswith(".") or subdir.startswith("_"):
+                if subdir.startswith((".", "_")):
                     folders.remove(subdir)
             folders.sort()
             filenames.sort()
@@ -108,7 +113,6 @@ class Extractor(object):
         :return:    An iterator over ``(message, plural, context, position, comments)`` tuples.
         :rtype:     ``iterator``
         """
-        pass
 
 
 class javascript(Extractor):
@@ -134,8 +138,7 @@ class javascript(Extractor):
 
         for token in tokenize(fileObject.read(), dotted=False):
             if token.type == "operator" and (
-                token.value == "("
-                or (call_stack != -1 and (token.value == "[" or token.value == "{"))
+                token.value == "(" or (call_stack != -1 and (token.value in ("[", "{")))
             ):
                 if funcname:
                     message_lineno = token.lineno
@@ -215,11 +218,7 @@ class javascript(Extractor):
                     elif token.value == "+":
                         concatenate_next = True
 
-            elif (
-                call_stack > 0
-                and token.type == "operator"
-                and (token.value == ")" or token.value == "]" or token.value == "}")
-            ):
+            elif call_stack > 0 and token.type == "operator" and (token.value in (")", "]", "}")):
                 call_stack -= 1
 
             elif funcname and call_stack == -1:
@@ -242,10 +241,7 @@ class javascript(Extractor):
     def extractFromFile(self, filepath):
         with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
             for lineno, funcname, messages, comments in self.extractJavascriptFromFile(fileObject):
-                if funcname:
-                    spec = self.options.get("keywords", {})[funcname] or (1,)
-                else:
-                    spec = (1,)
+                spec = self.options.get("keywords", {})[funcname] or (1,) if funcname else (1,)
                 if not isinstance(messages, (list, tuple)):
                     messages = [messages]
                 if not messages:
@@ -300,8 +296,6 @@ class javascript(Extractor):
 class cpp(javascript):
     """Extract messages from C++ source code."""
 
-    pass
-
 
 class txt(Extractor):
     """Extract messages from plain text files."""
@@ -318,8 +312,12 @@ class txt(Extractor):
 class json(Extractor):
     """Extract messages from JSON files."""
 
-    def __init__(self, directoryPath=None, filemasks=[], options={}):
-        super(json, self).__init__(directoryPath, filemasks, options)
+    def __init__(self, directoryPath=None, filemasks=None, options=None):
+        if options is None:
+            options = {}
+        if filemasks is None:
+            filemasks = []
+        super().__init__(directoryPath, filemasks, options)
         self.keywords = self.options.get("keywords", {})
         self.context = self.options.get("context", None)
         self.comments = self.options.get("comments", [])
@@ -347,7 +345,8 @@ class json(Extractor):
                     yield message, context
         else:
             raise Exception(
-                "Unexpected JSON document parent structure (not a list or a dictionary). You must extend the JSON extractor to support it."
+                "Unexpected JSON document parent structure (not a list or a dictionary). "
+                "You must extend the JSON extractor to support it."
             )
 
     def parseList(self, itemsList):
@@ -431,8 +430,7 @@ class json(Extractor):
             if isinstance(dictionary[innerKeyword], str):
                 yield self.extractString(dictionary[innerKeyword], keyword)
             elif isinstance(dictionary[innerKeyword], list):
-                for message, context in self.extractList(dictionary[innerKeyword], keyword):
-                    yield message, context
+                yield from self.extractList(dictionary[innerKeyword], keyword)
             elif isinstance(dictionary[innerKeyword], dict):
                 extract = self.extractDictionary(dictionary[innerKeyword], keyword)
                 if extract:
@@ -443,7 +441,7 @@ class xml(Extractor):
     """Extract messages from XML files."""
 
     def __init__(self, directoryPath, filemasks, options):
-        super(xml, self).__init__(directoryPath, filemasks, options)
+        super().__init__(directoryPath, filemasks, options)
         self.keywords = self.options.get("keywords", {})
         self.jsonExtractor = None
 
@@ -483,7 +481,9 @@ class xml(Extractor):
                                 comments.append(comment)
                             if "splitOnWhitespace" in self.keywords[keyword]:
                                 for splitText in element.text.split():
-                                    # split on whitespace is used for token lists, there, a leading '-' means the token has to be removed, so it's not to be processed here either
+                                    # split on whitespace is used for token lists, there, a
+                                    # leading '-' means the token has to be removed, so it's not
+                                    # to be processed here either
                                     if splitText[0] != "-":
                                         yield str(splitText), None, context, lineno, comments
                             else:
@@ -491,7 +491,7 @@ class xml(Extractor):
 
 
 # Hack from http://stackoverflow.com/a/2819788
-class FakeSectionHeader(object):
+class FakeSectionHeader:
     def __init__(self, fp):
         self.fp = fp
         self.sechead = "[root]\n"
@@ -510,7 +510,7 @@ class ini(Extractor):
     """Extract messages from INI files."""
 
     def __init__(self, directoryPath, filemasks, options):
-        super(ini, self).__init__(directoryPath, filemasks, options)
+        super().__init__(directoryPath, filemasks, options)
         self.keywords = self.options.get("keywords", [])
 
     def extractFromFile(self, filepath):

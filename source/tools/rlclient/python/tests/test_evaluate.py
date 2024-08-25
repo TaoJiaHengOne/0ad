@@ -1,12 +1,14 @@
-import zero_ad
 from os import path
+
+import zero_ad
+
 
 game = zero_ad.ZeroAD("http://localhost:6000")
 scriptdir = path.dirname(path.realpath(__file__))
-with open(path.join(scriptdir, "..", "samples", "arcadia.json"), "r") as f:
+with open(path.join(scriptdir, "..", "samples", "arcadia.json")) as f:
     config = f.read()
 
-with open(path.join(scriptdir, "fastactions.js"), "r") as f:
+with open(path.join(scriptdir, "fastactions.js")) as f:
     fastactions = f.read()
 
 

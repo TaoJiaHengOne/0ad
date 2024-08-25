@@ -1,6 +1,8 @@
 import io
+
 import pytest
 from checkDiff import check_diff
+
 
 PATCHES = [
     """
