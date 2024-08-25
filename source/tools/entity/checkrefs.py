@@ -5,9 +5,9 @@ from argparse import ArgumentParser
 from io import BytesIO
 from json import load, loads
 from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
-from os.path import basename, exists, sep
 from pathlib import Path
 from struct import calcsize, unpack
+from typing import List, Tuple
 from xml.etree import ElementTree as ET
 
 from scriptlib import SimulTemplateEntity, find_files
@@ -26,12 +26,9 @@ class SingleLevelFilter(Filter):
 
 class CheckRefs:
     def __init__(self):
-        # list of relative root file:str
-        self.files = []
-        # list of relative file:str
-        self.roots = []
-        # list of tuple (parent_file:str, dep_file:str)
-        self.deps = []
+        self.files: List[Path] = []
+        self.roots: List[Path] = []
+        self.deps: List[Tuple[Path, Path]] = []
         self.vfs_root = Path(__file__).resolve().parents[3] / "binaries" / "data" / "mods"
         self.supportedTextureFormats = ("dds", "png")
         self.supportedMeshesFormats = ("pmd", "dae")
@@ -151,7 +148,7 @@ class CheckRefs:
         modjsondeps = []
         for mod in mods:
             mod_json_path = self.vfs_root / mod / "mod.json"
-            if not exists(mod_json_path):
+            if not mod_json_path.exists():
                 self.logger.warning('Failed to find the mod.json for "%s"', mod)
                 continue
 
@@ -185,8 +182,8 @@ class CheckRefs:
         actor_prefix = "actor|"
         resource_prefix = "resource|"
         for fp, ffp in sorted(mapfiles):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             et_map = ET.parse(ffp).getroot()
             entities = et_map.find("Entities")
             used = (
@@ -196,18 +193,18 @@ class CheckRefs:
             )
             for template in used:
                 if template.startswith(actor_prefix):
-                    self.deps.append((str(fp), f"art/actors/{template[len(actor_prefix):]}"))
+                    self.deps.append((fp, Path(f"art/actors/{template[len(actor_prefix) :]}")))
                 elif template.startswith(resource_prefix):
                     self.deps.append(
-                        (str(fp), f"simulation/templates/{template[len(resource_prefix):]}.xml")
+                        (fp, Path(f"simulation/templates/{template[len(resource_prefix):]}.xml"))
                     )
                 else:
-                    self.deps.append((str(fp), f"simulation/templates/{template}.xml"))
+                    self.deps.append((fp, Path(f"simulation/templates/{template}.xml")))
             # Map previews
             settings = loads(et_map.find("ScriptSettings").text)
             if settings.get("Preview"):
                 self.deps.append(
-                    (str(fp), f'art/textures/ui/session/icons/mappreview/{settings["Preview"]}')
+                    (fp, Path(f"art/textures/ui/session/icons/mappreview/{settings['Preview']}"))
                 )
 
     def add_maps_pmp(self):
@@ -230,8 +227,8 @@ class CheckRefs:
         mapfiles = self.find_files("maps/scenarios", "pmp")
         mapfiles.extend(self.find_files("maps/skirmishes", "pmp"))
         for fp, ffp in sorted(mapfiles):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             with open(ffp, "rb") as f:
                 expected_header = b"PSMP"
                 header = f.read(len(expected_header))
@@ -251,8 +248,12 @@ class CheckRefs:
                     terrain_name = f.read(length).decode("ascii")  # suppose ascii encoding
                     self.deps.append(
                         (
-                            str(fp),
-                            terrains.get(terrain_name, f"art/terrains/(unknown)/{terrain_name}"),
+                            fp,
+                            Path(
+                                terrains.get(
+                                    terrain_name, f"art/terrains/(unknown)/{terrain_name}"
+                                )
+                            ),
                         )
                     )
 
@@ -274,9 +275,9 @@ class CheckRefs:
             path_str = str(fp)
             if "phase" in path_str:
                 # Get the last part of the phase tech name.
-                if basename(path_str).split("_")[-1].split(".")[0] in existing_civs:
+                if Path(path_str).stem.split("_")[-1] in existing_civs:
                     custom_phase_techs.append(
-                        str(fp.relative_to("simulation/data/technologies")).replace(sep, "/")
+                        fp.relative_to("simulation/data/technologies").as_posix()
                     )
 
         return custom_phase_techs
@@ -289,15 +290,15 @@ class CheckRefs:
         simul_template_entity = SimulTemplateEntity(self.vfs_root, self.logger)
         custom_phase_techs = self.get_custom_phase_techs()
         for fp, _ in sorted(self.find_files(simul_templates_path, "xml")):
-            self.files.append(str(fp))
+            self.files.append(fp)
             entity = simul_template_entity.load_inherited(
                 simul_templates_path, str(fp.relative_to(simul_templates_path)), self.mods
             )
             if entity.get("parent"):
                 for parent in entity.get("parent").split("|"):
-                    self.deps.append((str(fp), str(simul_templates_path / (parent + ".xml"))))
+                    self.deps.append((fp, simul_templates_path / (parent + ".xml")))
             if not str(fp).startswith("template_"):
-                self.roots.append(str(fp))
+                self.roots.append(fp)
                 if (
                     entity.find("VisualActor") is not None
                     and entity.find("VisualActor").find("Actor") is not None
@@ -315,13 +316,13 @@ class CheckRefs:
                                 # See simulation2/components/CCmpVisualActor.cpp and Identity.js
                                 # for explanation.
                                 actor_path = actor.text.replace("{phenotype}", phenotype)
-                                self.deps.append((str(fp), f"art/actors/{actor_path}"))
+                                self.deps.append((fp, Path(f"art/actors/{actor_path}")))
                         else:
                             actor_path = actor.text
-                            self.deps.append((str(fp), f"art/actors/{actor_path}"))
+                            self.deps.append((fp, Path(f"art/actors/{actor_path}")))
                         foundation_actor = entity.find("VisualActor").find("FoundationActor")
                         if foundation_actor is not None:
-                            self.deps.append((str(fp), f"art/actors/{foundation_actor.text}"))
+                            self.deps.append((fp, Path(f"art/actors/{foundation_actor.text}")))
                 if entity.find("Sound") is not None:
                     phenotype_tag = entity.find("Identity").find("Phenotype")
                     phenotypes = (
@@ -342,20 +343,20 @@ class CheckRefs:
                                         sound_path = sound_group.text.replace(
                                             "{phenotype}", phenotype
                                         ).replace("{lang}", lang)
-                                        self.deps.append((str(fp), f"audio/{sound_path}"))
+                                        self.deps.append((fp, Path(f"audio/{sound_path}")))
                                 else:
                                     sound_path = sound_group.text.replace("{lang}", lang)
-                                    self.deps.append((str(fp), f"audio/{sound_path}"))
+                                    self.deps.append((fp, Path(f"audio/{sound_path}")))
                 if entity.find("Identity") is not None:
                     icon = entity.find("Identity").find("Icon")
                     if icon is not None and icon.text:
                         if entity.find("Formation") is not None:
                             self.deps.append(
-                                (str(fp), f"art/textures/ui/session/icons/{icon.text}")
+                                (fp, Path(f"art/textures/ui/session/icons/{icon.text}"))
                             )
                         else:
                             self.deps.append(
-                                (str(fp), f"art/textures/ui/session/portraits/{icon.text}")
+                                (fp, Path(f"art/textures/ui/session/portraits/{icon.text}"))
                             )
                 if (
                     entity.find("Heal") is not None
@@ -365,7 +366,7 @@ class CheckRefs:
                     for tag in ("LineTexture", "LineTextureMask"):
                         elem = range_overlay.find(tag)
                         if elem is not None and elem.text:
-                            self.deps.append((str(fp), f"art/textures/selection/{elem.text}"))
+                            self.deps.append((fp, Path(f"art/textures/selection/{elem.text}")))
                 if (
                     entity.find("Selectable") is not None
                     and entity.find("Selectable").find("Overlay") is not None
@@ -375,11 +376,11 @@ class CheckRefs:
                     for tag in ("MainTexture", "MainTextureMask"):
                         elem = texture.find(tag)
                         if elem is not None and elem.text:
-                            self.deps.append((str(fp), f"art/textures/selection/{elem.text}"))
+                            self.deps.append((fp, Path(f"art/textures/selection/{elem.text}")))
                 if entity.find("Formation") is not None:
                     icon = entity.find("Formation").find("Icon")
                     if icon is not None and icon.text:
-                        self.deps.append((str(fp), f"art/textures/ui/session/icons/{icon.text}"))
+                        self.deps.append((fp, Path(f"art/textures/ui/session/icons/{icon.text}")))
 
                 cmp_auras = entity.find("Auras")
                 if cmp_auras is not None:
@@ -389,7 +390,7 @@ class CheckRefs:
                             continue
                         if aura.startswith("-"):
                             continue
-                        self.deps.append((str(fp), f"simulation/data/auras/{aura}.json"))
+                        self.deps.append((fp, Path(f"simulation/data/auras/{aura}.json")))
 
                 cmp_identity = entity.find("Identity")
                 if cmp_identity is not None:
@@ -401,7 +402,7 @@ class CheckRefs:
                             if techsTag is not None:
                                 for techTag in techsTag.text.split():
                                     self.deps.append(
-                                        (str(fp), f"simulation/data/technologies/{techTag}.json")
+                                        (fp, Path(f"simulation/data/technologies/{techTag}.json"))
                                     )
 
                             if recursionDepth > 0:
@@ -441,7 +442,7 @@ class CheckRefs:
                                     civ = "generic"
                                 tech = tech.replace("{civ}", civ)
                             self.deps.append(
-                                (str(fp), f"simulation/data/technologies/{tech}.json")
+                                (fp, Path(f"simulation/data/technologies/{tech}.json"))
                             )
 
     def append_variant_dependencies(self, variant, fp):
@@ -464,17 +465,17 @@ class CheckRefs:
             else []
         )
         if variant_file:
-            self.deps.append((str(fp), f"art/variants/{variant_file}"))
+            self.deps.append((fp, Path(f"art/variants/{variant_file}")))
         if mesh is not None and mesh.text:
-            self.deps.append((str(fp), f"art/meshes/{mesh.text}"))
+            self.deps.append((fp, Path(f"art/meshes/{mesh.text}")))
         if particles is not None and particles.get("file"):
-            self.deps.append((str(fp), f'art/particles/{particles.get("file")}'))
+            self.deps.append((fp, Path(f"art/particles/{particles.get('file')}")))
         for texture_file in [x for x in texture_files if x]:
-            self.deps.append((str(fp), f"art/textures/skins/{texture_file}"))
+            self.deps.append((fp, Path(f"art/textures/skins/{texture_file}")))
         for prop_actor in [x for x in prop_actors if x]:
-            self.deps.append((str(fp), f"art/actors/{prop_actor}"))
+            self.deps.append((fp, Path(f"art/actors/{prop_actor}")))
         for animation_file in [x for x in animation_files if x]:
-            self.deps.append((str(fp), f"art/animation/{animation_file}"))
+            self.deps.append((fp, Path(f"art/animation/{animation_file}")))
 
     def append_actor_dependencies(self, actor, fp):
         for group in actor.findall("group"):
@@ -482,13 +483,13 @@ class CheckRefs:
                 self.append_variant_dependencies(variant, fp)
         material = actor.find("material")
         if material is not None and material.text:
-            self.deps.append((str(fp), f"art/materials/{material.text}"))
+            self.deps.append((fp, Path(f"art/materials/{material.text}")))
 
     def add_actors(self):
         self.logger.info("Loading actors...")
         for fp, ffp in sorted(self.find_files("art/actors", "xml")):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             root = ET.parse(ffp).getroot()
             if root.tag == "actor":
                 self.append_actor_dependencies(root, fp)
@@ -504,8 +505,8 @@ class CheckRefs:
     def add_variants(self):
         self.logger.info("Loading variants...")
         for fp, ffp in sorted(self.find_files("art/variants", "xml")):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             variant = ET.parse(ffp).getroot()
             self.append_variant_dependencies(variant, fp)
 
@@ -513,7 +514,7 @@ class CheckRefs:
         self.logger.info("Loading art files...")
         self.files.extend(
             [
-                str(fp)
+                fp
                 for (fp, ffp) in self.find_files(
                     "art/textures/particles", *self.supportedTextureFormats
                 )
@@ -521,7 +522,7 @@ class CheckRefs:
         )
         self.files.extend(
             [
-                str(fp)
+                fp
                 for (fp, ffp) in self.find_files(
                     "art/textures/terrain", *self.supportedTextureFormats
                 )
@@ -529,56 +530,53 @@ class CheckRefs:
         )
         self.files.extend(
             [
-                str(fp)
+                fp
                 for (fp, ffp) in self.find_files(
                     "art/textures/skins", *self.supportedTextureFormats
                 )
             ]
         )
         self.files.extend(
-            [str(fp) for (fp, ffp) in self.find_files("art/meshes", *self.supportedMeshesFormats)]
+            [fp for (fp, ffp) in self.find_files("art/meshes", *self.supportedMeshesFormats)]
         )
         self.files.extend(
-            [
-                str(fp)
-                for (fp, ffp) in self.find_files("art/animation", *self.supportedAnimationFormats)
-            ]
+            [fp for (fp, ffp) in self.find_files("art/animation", *self.supportedAnimationFormats)]
         )
 
     def add_materials(self):
         self.logger.info("Loading materials...")
         for fp, ffp in sorted(self.find_files("art/materials", "xml")):
-            self.files.append(str(fp))
+            self.files.append(fp)
             material_elem = ET.parse(ffp).getroot()
             for alternative in material_elem.findall("alternative"):
                 material = alternative.get("material")
                 if material is not None:
-                    self.deps.append((str(fp), f"art/materials/{material}"))
+                    self.deps.append((fp, Path(f"art/materials/{material}")))
 
     def add_particles(self):
         self.logger.info("Loading particles...")
         for fp, ffp in sorted(self.find_files("art/particles", "xml")):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             particle = ET.parse(ffp).getroot()
             texture = particle.find("texture")
             if texture is not None:
-                self.deps.append((str(fp), texture.text))
+                self.deps.append((fp, Path(texture.text)))
 
     def add_soundgroups(self):
         self.logger.info("Loading sound groups...")
         for fp, ffp in sorted(self.find_files("audio", "xml")):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             sound_group = ET.parse(ffp).getroot()
             path = sound_group.find("Path").text.rstrip("/")
             for sound in sound_group.findall("Sound"):
-                self.deps.append((str(fp), f"{path}/{sound.text}"))
+                self.deps.append((fp, Path(f"{path}/{sound.text}")))
 
     def add_audio(self):
         self.logger.info("Loading audio files...")
         self.files.extend(
-            [str(fp) for (fp, ffp) in self.find_files("audio/", self.supportedAudioFormats)]
+            [fp for (fp, ffp) in self.find_files("audio/", self.supportedAudioFormats)]
         )
 
     def add_gui_object_repeat(self, obj, fp):
@@ -596,7 +594,7 @@ class CheckRefs:
         for include in obj.findall("include"):
             included_file = include.get("file")
             if included_file:
-                self.deps.append((str(fp), f"{included_file}"))
+                self.deps.append((fp, Path(included_file)))
 
     def add_gui_object(self, parent, fp):
         if parent is None:
@@ -617,38 +615,38 @@ class CheckRefs:
         self.logger.info("Loading GUI XML...")
         gui_page_regex = re.compile(r".*[\\\/]page(_[^.\/\\]+)?\.xml$")
         for fp, ffp in sorted(self.find_files("gui", "xml")):
-            self.files.append(str(fp))
+            self.files.append(fp)
             # GUI page definitions are assumed to be named page_[something].xml and alone in that.
             if gui_page_regex.match(str(fp)):
-                self.roots.append(str(fp))
+                self.roots.append(fp)
                 root_xml = ET.parse(ffp).getroot()
                 for include in root_xml.findall("include"):
                     # If including an entire directory, find all the *.xml files
                     if include.text.endswith("/"):
                         self.deps.extend(
                             [
-                                (str(fp), str(sub_fp))
+                                (fp, sub_fp)
                                 for (sub_fp, sub_ffp) in self.find_files(
                                     f"gui/{include.text}", "xml"
                                 )
                             ]
                         )
                     else:
-                        self.deps.append((str(fp), f"gui/{include.text}"))
+                        self.deps.append((fp, Path(f"gui/{include.text}")))
             else:
                 xml = ET.parse(ffp)
                 root_xml = xml.getroot()
                 name = root_xml.tag
-                self.roots.append(str(fp))
+                self.roots.append(fp)
                 if name in ("objects", "object"):
                     for script in root_xml.findall("script"):
                         if script.get("file"):
-                            self.deps.append((str(fp), script.get("file")))
+                            self.deps.append((fp, Path(script.get("file"))))
                         if script.get("directory"):
                             # If including an entire directory, find all the *.js files
                             self.deps.extend(
                                 [
-                                    (str(fp), str(sub_fp))
+                                    (fp, sub_fp)
                                     for (sub_fp, sub_ffp) in self.find_files(
                                         script.get("directory"), "js"
                                     )
@@ -661,20 +659,20 @@ class CheckRefs:
                 elif name == "styles":
                     for style in root_xml.findall("style"):
                         if style.get("sound_opened"):
-                            self.deps.append((str(fp), f"{style.get('sound_opened')}"))
+                            self.deps.append((fp, Path(f"{style.get('sound_opened')}")))
                         if style.get("sound_closed"):
-                            self.deps.append((str(fp), f"{style.get('sound_closed')}"))
+                            self.deps.append((fp, Path(f"{style.get('sound_closed')}")))
                         if style.get("sound_selected"):
-                            self.deps.append((str(fp), f"{style.get('sound_selected')}"))
+                            self.deps.append((fp, Path(f"{style.get('sound_selected')}")))
                         if style.get("sound_disabled"):
-                            self.deps.append((str(fp), f"{style.get('sound_disabled')}"))
+                            self.deps.append((fp, Path(f"{style.get('sound_disabled')}")))
                     # TODO: look at sprites, styles, etc
                 elif name == "sprites":
                     for sprite in root_xml.findall("sprite"):
                         for image in sprite.findall("image"):
                             if image.get("texture"):
                                 self.deps.append(
-                                    (str(fp), f"art/textures/ui/{image.get('texture')}")
+                                    (fp, Path(f"art/textures/ui/{image.get('texture')}"))
                                 )
                 else:
                     bio = BytesIO()
@@ -686,19 +684,16 @@ class CheckRefs:
 
     def add_gui_data(self):
         self.logger.info("Loading GUI data...")
-        self.files.extend([str(fp) for (fp, ffp) in self.find_files("gui", "js")])
-        self.files.extend([str(fp) for (fp, ffp) in self.find_files("gamesettings", "js")])
-        self.files.extend([str(fp) for (fp, ffp) in self.find_files("autostart", "js")])
-        self.roots.extend([str(fp) for (fp, ffp) in self.find_files("autostart", "js")])
+        self.files.extend([fp for (fp, ffp) in self.find_files("gui", "js")])
+        self.files.extend([fp for (fp, ffp) in self.find_files("gamesettings", "js")])
+        self.files.extend([fp for (fp, ffp) in self.find_files("autostart", "js")])
+        self.roots.extend([fp for (fp, ffp) in self.find_files("autostart", "js")])
         self.files.extend(
-            [
-                str(fp)
-                for (fp, ffp) in self.find_files("art/textures/ui", *self.supportedTextureFormats)
-            ]
+            [fp for (fp, ffp) in self.find_files("art/textures/ui", *self.supportedTextureFormats)]
         )
         self.files.extend(
             [
-                str(fp)
+                fp
                 for (fp, ffp) in self.find_files(
                     "art/textures/selection", *self.supportedTextureFormats
                 )
@@ -708,65 +703,59 @@ class CheckRefs:
     def add_civs(self):
         self.logger.info("Loading civs...")
         for fp, ffp in sorted(self.find_files("simulation/data/civs", "json")):
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             with open(ffp, encoding="utf-8") as f:
                 civ = load(f)
             for music in civ.get("Music", []):
-                self.deps.append((str(fp), f"audio/music/{music['File']}"))
+                self.deps.append((fp, Path(f"audio/music/{music['File']}")))
 
     def add_tips(self):
         self.logger.info("Loading tips...")
         for fp, _ffp in sorted(self.find_files("gui/text/tips", "txt")):
-            relative_path = str(fp)
-            self.files.append(relative_path)
-            self.roots.append(relative_path)
-            self.deps.append(
-                (
-                    relative_path,
-                    f"art/textures/ui/loading/tips/{basename(relative_path).split('.')[0]}.png",
-                )
-            )
+            self.files.append(fp)
+            self.roots.append(fp)
+            self.deps.append((fp, Path(f"art/textures/ui/loading/tips/{fp.stem}.png")))
 
     def add_rms(self):
         self.logger.info("Loading random maps...")
-        self.files.extend([str(fp) for (fp, ffp) in self.find_files("maps/random", "js")])
+        self.files.extend([fp for (fp, ffp) in self.find_files("maps/random", "js")])
         for fp, ffp in sorted(self.find_files("maps/random", "json")):
             if str(fp).startswith("maps/random/rmbiome"):
                 continue
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             with open(ffp, encoding="utf-8") as f:
                 randmap = load(f)
             settings = randmap.get("settings", {})
             if settings.get("Script"):
-                self.deps.append((str(fp), f"maps/random/{settings['Script']}"))
+                self.deps.append((fp, Path(f"maps/random/{settings['Script']}")))
             # Map previews
             if settings.get("Preview"):
                 self.deps.append(
-                    (str(fp), f'art/textures/ui/session/icons/mappreview/{settings["Preview"]}')
+                    (fp, Path(f"art/textures/ui/session/icons/mappreview/{settings['Preview']}"))
                 )
 
     def add_techs(self):
         self.logger.info("Loading techs...")
         for fp, ffp in sorted(self.find_files("simulation/data/technologies", "json")):
-            self.files.append(str(fp))
+            self.files.append(fp)
             with open(ffp, encoding="utf-8") as f:
                 tech = load(f)
             if tech.get("autoResearch"):
-                self.roots.append(str(fp))
+                self.roots.append(fp)
             if tech.get("icon"):
                 self.deps.append(
-                    (str(fp), f"art/textures/ui/session/portraits/technologies/{tech['icon']}")
+                    (fp, Path(f"art/textures/ui/session/portraits/technologies/{tech['icon']}"))
                 )
             if tech.get("supersedes"):
                 self.deps.append(
-                    (str(fp), f"simulation/data/technologies/{tech['supersedes']}.json")
+                    (fp, Path(f"simulation/data/technologies/{tech['supersedes']}.json"))
                 )
             if tech.get("top"):
-                self.deps.append((str(fp), f"simulation/data/technologies/{tech['top']}.json"))
+                self.deps.append((fp, Path(f"simulation/data/technologies/{tech['top']}.json")))
             if tech.get("bottom"):
-                self.deps.append((str(fp), f"simulation/data/technologies/{tech['bottom']}.json"))
+                self.deps.append((fp, Path(f"simulation/data/technologies/{tech['bottom']}.json")))
 
     def add_terrains(self):
         self.logger.info("Loading terrains...")
@@ -774,43 +763,40 @@ class CheckRefs:
             # ignore terrains.xml
             if str(fp).endswith("terrains.xml"):
                 continue
-            self.files.append(str(fp))
-            self.roots.append(str(fp))
+            self.files.append(fp)
+            self.roots.append(fp)
             terrain = ET.parse(ffp).getroot()
             for texture in terrain.find("textures").findall("texture"):
                 if texture.get("file"):
-                    self.deps.append((str(fp), f"art/textures/terrain/{texture.get('file')}"))
+                    self.deps.append((fp, Path(f"art/textures/terrain/{texture.get('file')}")))
             if terrain.find("material") is not None:
                 material = terrain.find("material").text
-                self.deps.append((str(fp), f"art/materials/{material}"))
+                self.deps.append((fp, Path(f"art/materials/{material}")))
 
     def add_auras(self):
         self.logger.info("Loading auras...")
         for fp, ffp in sorted(self.find_files("simulation/data/auras", "json")):
-            self.files.append(str(fp))
+            self.files.append(fp)
             with open(ffp, encoding="utf-8") as f:
                 aura = load(f)
             if aura.get("overlayIcon"):
-                self.deps.append((str(fp), aura["overlayIcon"]))
+                self.deps.append((fp, Path(aura["overlayIcon"])))
             range_overlay = aura.get("rangeOverlay", {})
             for prop in ("lineTexture", "lineTextureMask"):
                 if range_overlay.get(prop):
-                    self.deps.append((str(fp), f"art/textures/selection/{range_overlay[prop]}"))
+                    self.deps.append((fp, Path(f"art/textures/selection/{range_overlay[prop]}")))
 
     def check_deps(self):
         self.logger.info("Looking for missing files...")
         uniq_files = set(self.files)
-        uniq_files = [r.replace(sep, "/") for r in uniq_files]
+        uniq_files = [r.as_posix() for r in uniq_files]
         lower_case_files = {f.lower(): f for f in uniq_files}
         reverse_deps = {}
         for parent, dep in self.deps:
-            if sep != "/":
-                parent = parent.replace(sep, "/")
-                dep = dep.replace(sep, "/")
             if dep not in reverse_deps:
-                reverse_deps[dep] = {parent}
+                reverse_deps[dep.as_posix()] = {parent.as_posix()}
             else:
-                reverse_deps[dep].add(parent)
+                reverse_deps[dep.as_posix()].add(parent.as_posix())
 
         for dep in sorted(reverse_deps.keys()):
             if "simulation/templates" in dep and (
@@ -836,19 +822,15 @@ class CheckRefs:
         self.logger.info("Looking for unused files...")
         deps = {}
         for parent, dep in self.deps:
-            if sep != "/":
-                parent = parent.replace(sep, "/")
-                dep = dep.replace(sep, "/")
-
             if parent not in deps:
-                deps[parent] = {dep}
+                deps[parent.as_posix()] = {dep.as_posix()}
             else:
-                deps[parent].add(dep)
+                deps[parent.as_posix()].add(dep.as_posix())
 
         uniq_files = set(self.files)
-        uniq_files = [r.replace(sep, "/") for r in uniq_files]
+        uniq_files = [r.as_posix() for r in uniq_files]
         reachable = list(set(self.roots))
-        reachable = [r.replace(sep, "/") for r in reachable]
+        reachable = [r.as_posix() for r in reachable]
         while True:
             new_reachable = []
             for r in reachable:
