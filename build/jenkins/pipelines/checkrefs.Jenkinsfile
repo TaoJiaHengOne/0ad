@@ -38,7 +38,7 @@ pipeline {
 
 		stage("Data checks") {
 			steps {
-				sh "cd source/tools/entity/ && python3 checkrefs.py -tax"
+				sh "python3 source/tools/entity/checkrefs.py -tax"
 			}
 		}
 	}
