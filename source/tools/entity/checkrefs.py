@@ -2,12 +2,13 @@
 import re
 import sys
 from argparse import ArgumentParser
+from collections import defaultdict
 from io import BytesIO
 from json import load, loads
 from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
 from pathlib import Path
 from struct import calcsize, unpack
-from typing import List, Tuple
+from typing import Dict, List, Set, Tuple
 from xml.etree import ElementTree as ET
 
 from scriptlib import SimulTemplateEntity, find_files
@@ -788,49 +789,45 @@ class CheckRefs:
 
     def check_deps(self):
         self.logger.info("Looking for missing files...")
-        uniq_files = set(self.files)
-        uniq_files = [r.as_posix() for r in uniq_files]
+        uniq_files = {r.as_posix() for r in self.files}
         lower_case_files = {f.lower(): f for f in uniq_files}
-        reverse_deps = {}
-        for parent, dep in self.deps:
-            if dep not in reverse_deps:
-                reverse_deps[dep.as_posix()] = {parent.as_posix()}
-            else:
-                reverse_deps[dep.as_posix()].add(parent.as_posix())
 
-        for dep in sorted(reverse_deps.keys()):
-            if "simulation/templates" in dep and (
-                dep.replace("templates/", "template/special/filter/") in uniq_files
-                or dep.replace("templates/", "template/mixins/") in uniq_files
+        missing_files: Dict[str, Set[str]] = defaultdict(set)
+
+        for parent, dep in self.deps:
+            dep_str = dep.as_posix()
+            if "simulation/templates" in dep_str and (
+                dep_str.replace("templates/", "template/special/filter/") in uniq_files
+                or dep_str.replace("templates/", "template/mixins/") in uniq_files
             ):
                 continue
 
-            if dep in uniq_files:
+            if dep_str in uniq_files:
                 continue
 
-            callers = [str(self.vfs_to_relative_to_mods(ref)) for ref in reverse_deps[dep]]
+            missing_files[dep_str].add(parent.as_posix())
+
+        for dep, parents in sorted(missing_files.items()):
+            callers = [str(self.vfs_to_relative_to_mods(ref)) for ref in parents]
             self.logger.error(
                 "Missing file '%s' referenced by: %s", dep, ", ".join(sorted(callers))
             )
-            self.inError = True
+
             if dep.lower() in lower_case_files:
                 self.logger.warning(
                     "### Case-insensitive match (found '%s')", lower_case_files[dep.lower()]
                 )
 
+            self.inError = True
+
     def check_unused(self):
         self.logger.info("Looking for unused files...")
-        deps = {}
+        deps = defaultdict(set)
         for parent, dep in self.deps:
-            if parent not in deps:
-                deps[parent.as_posix()] = {dep.as_posix()}
-            else:
-                deps[parent.as_posix()].add(dep.as_posix())
+            deps[parent.as_posix()].add(dep.as_posix())
 
-        uniq_files = set(self.files)
-        uniq_files = [r.as_posix() for r in uniq_files]
-        reachable = list(set(self.roots))
-        reachable = [r.as_posix() for r in reachable]
+        uniq_files = {r.as_posix() for r in self.files}
+        reachable = [r.as_posix() for r in set(self.roots)]
         while True:
             new_reachable = []
             for r in reachable:
@@ -841,13 +838,7 @@ class CheckRefs:
                 break
 
         for f in sorted(uniq_files):
-            if any(
-                (
-                    f in reachable,
-                    "art/terrains/" in f,
-                    "maps/random/" in f,
-                )
-            ):
+            if f in reachable or f.startswith(("art/terrains/", "maps/random/")):
                 continue
             self.logger.warning("Unused file '%s'", str(self.vfs_to_relative_to_mods(f)))
 
