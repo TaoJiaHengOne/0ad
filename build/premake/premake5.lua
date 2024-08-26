@@ -1070,6 +1070,7 @@ function setup_main_exe ()
 	if os.istarget("windows") then
 
 		files { source_root.."lib/sysdep/os/win/icon.rc" }
+		files { source_root.."lib/sysdep/os/win/pyrogenesis.rc" }
 		-- from "lowlevel" static lib; must be added here to be linked in
 		files { source_root.."lib/sysdep/os/win/error_dialog.rc" }
 
