@@ -26,6 +26,7 @@ All details about each step are documented in [ReleaseProcess](wiki/ReleaseProce
 **All the following issues must be fixed in `main` (which closes the issue) and then cherry-picked to the release branch (after that, you can tick the checkbox below).**
 
 Here are the Release Blocking issues currently delaying the release:
+
 - [x] None currently
 
 ## Progress Tracking
@@ -56,6 +57,7 @@ Here are the Release Blocking issues currently delaying the release:
 ---
 
 Before moving on with Full Freeze, make sure that:
+
 - [ ] At least 10 days have passed since the string freeze announcement
 - [ ] Only this ticket remains in the Milestone
 - [ ] All previous checkboxes are ticked
