@@ -6,7 +6,7 @@
 # will still be there, etc. This is mostly just to quickly fix problems in the
 # bundled dependencies.)
 
-cd "$(dirname $0)"
+cd "$(dirname "$0")" || exit 1
 # Now in libraries/ (where we assume this script resides)
 
 echo "Cleaning bundled third-party dependencies..."

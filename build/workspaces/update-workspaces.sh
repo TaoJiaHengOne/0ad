@@ -7,7 +7,7 @@ fi
 
 die()
 {
-	echo ERROR: $*
+	echo ERROR: "$*"
 	exit 1
 }
 
@@ -24,7 +24,7 @@ case "$OS" in
 		;;
 esac
 
-cd "$(dirname $0)"
+cd "$(dirname "$0")" || die
 # Now in build/workspaces/ (where we assume this script resides)
 
 # Parse command-line options:
@@ -55,7 +55,7 @@ if [ "$enable_atlas" = "true" ]; then
 		export WX_CONFIG="${WX_CONFIG:="wx-config"}"
 	fi
 
-	if [ ! -x "$(command -v $WX_CONFIG)" ]; then
+	if [ ! -x "$(command -v "$WX_CONFIG")" ]; then
 		echo 'WX_CONFIG must be set and valid or wx-config must be present when --atlas is passed as argument.'
 		exit 1
 	fi
@@ -63,12 +63,12 @@ fi
 
 if [ "$OS" = "Darwin" ]; then
 	# Set minimal SDK version
-	export MIN_OSX_VERSION=${MIN_OSX_VERSION:="10.12"}
+	export MIN_OSX_VERSION="${MIN_OSX_VERSION:="10.12"}"
 fi
 
 # Now build Premake or use system's.
 
-cd ../premake
+cd ../premake || die
 premake_command="premake5"
 
 if [ "$with_system_premake5" = "false" ]; then
@@ -85,10 +85,13 @@ export HOSTTYPE="$HOSTTYPE"
 # Now run Premake to create the makefiles
 echo "Premake args: ${premake_args}"
 if [ "$OS" != "Darwin" ]; then
+	# shellcheck disable=SC2086
 	${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" ${premake_args} gmake || die "Premake failed"
 else
+	# shellcheck disable=SC2086
 	${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" --macosx-version-min="${MIN_OSX_VERSION}" ${premake_args} gmake || die "Premake failed"
 	# Also generate xcode workspaces if on OS X
+	# shellcheck disable=SC2086
 	${premake_command} --file="premake5.lua" --outpath="../workspaces/xcode4" --macosx-version-min="${MIN_OSX_VERSION}" ${premake_args} xcode4 || die "Premake failed"
 fi
 

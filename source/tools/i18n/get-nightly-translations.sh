@@ -4,7 +4,7 @@ set -ev
 # Download translations from the latest nightly build
 # This will overwrite any uncommitted changes to messages.json files
 
-cd "$(dirname $0)"
+cd "$(dirname "$0")"
 
 svn export --force --depth files https://svn.wildfiregames.com/nightly-build/trunk/binaries/data/l10n ../../../binaries/data/l10n
 

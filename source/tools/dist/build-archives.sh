@@ -3,7 +3,7 @@ set -e
 
 die()
 {
-	echo ERROR: $*
+	echo ERROR: "$*"
 	exit 1
 }
 
@@ -20,7 +20,7 @@ echo "Filtering languages"
 LANGS=("ast" "ca" "cs" "de" "el" "en_GB" "es" "eu" "fi" "fr" "gd" "hu" "id" "it" "nl" "pl" "pt_BR" "ru" "sk" "sv" "tr" "uk")
 
 REGEX=$(printf "\|%s" "${LANGS[@]}")
-REGEX=".*/\("${REGEX:2}"\)\.[-A-Za-z0-9_.]\+\.po"
+REGEX=".*/\(${REGEX:2}\)\.[-A-Za-z0-9_.]\+\.po"
 
 find binaries/ -name "*.po" | grep -v "$REGEX" | xargs rm -v || die "Error filtering languages."
 

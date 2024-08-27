@@ -9,7 +9,8 @@
 # The last tested version of the tool is 1c67e97e794b5039d0cae95f72ea0c76e4aa4696,
 # it can be used if more recent versions cause trouble.
 
-export TLDIR="$(dirname $(realpath $0))"
+TLDIR="$(dirname "$(realpath "$0")")"
+export TLDIR
 
 # Use semicolons to separate values on Windows.
 # If that produces bogus output, you can try with commas instead.

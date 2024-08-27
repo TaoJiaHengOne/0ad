@@ -63,20 +63,20 @@ popd
 
 if [ "$build_toolchain" = "true" ]; then
 
-	rm -r $TOOLCHAIN || true
-	$NDK/build/tools/make-standalone-toolchain.sh --platform=android-14 --toolchain=arm-linux-androideabi-4.6 --install-dir=$TOOLCHAIN --system=linux-x86_64
+	rm -r "$TOOLCHAIN" || true
+	"$NDK"/build/tools/make-standalone-toolchain.sh --platform=android-14 --toolchain=arm-linux-androideabi-4.6 --install-dir="$TOOLCHAIN" --system=linux-x86_64
 
-	mkdir -p $SYSROOT/usr/local
+	mkdir -p "$SYSROOT"/usr/local
 
 	# Set up some symlinks to make the SpiderMonkey build system happy
-	ln -sfT ../platforms $NDK/build/platforms
-	for f in $TOOLCHAIN/bin/arm-linux-androideabi-*; do
-		ln -sf $f ${f/arm-linux-androideabi-/arm-eabi-}
+	ln -sfT ../platforms "$NDK"/build/platforms
+	for f in "$TOOLCHAIN"/bin/arm-linux-androideabi-*; do
+		ln -sf "$f" "${f/arm-linux-androideabi-/arm-eabi-}"
 	done
 
 	# Set up some symlinks for the typical autoconf-based build systems
-	for f in $TOOLCHAIN/bin/arm-linux-androideabi-*; do
-		ln -sf $f ${f/arm-linux-androideabi-/arm-linux-eabi-}
+	for f in "$TOOLCHAIN"/bin/arm-linux-androideabi-*; do
+		ln -sf "$f" "${f/arm-linux-androideabi-/arm-linux-eabi-}"
 	done
 
 fi
@@ -89,8 +89,8 @@ if [ "$build_boost" = "true" ]; then
 	cp files/boost_1_45_0.tar.bz2 temp/MysticTreeGames-Boost-for-Android-70838fc/
 	patch temp/MysticTreeGames-Boost-for-Android-70838fc/build-android.sh <boost-android-build.patch
 	pushd temp/MysticTreeGames-Boost-for-Android-70838fc
-	./build-android.sh $TOOLCHAIN
-	cp -rv build/{include,lib} $SYSROOT/usr/local/
+	./build-android.sh "$TOOLCHAIN"
+	cp -rv build/{include,lib} "$SYSROOT"/usr/local/
 	popd
 fi
 
@@ -98,7 +98,7 @@ if [ "$build_curl" = "true" ]; then
 	rm -rf temp/curl-7.33.0
 	tar xvf files/curl-7.33.0.tar.bz2 -C temp/
 	pushd temp/curl-7.33.0
-	./configure --host=arm-linux-androideabi --with-sysroot=$SYSROOT --prefix=$SYSROOT/usr/local CFLAGS="$CFLAGS" LDFLAGS="-lm" --disable-shared
+	./configure --host=arm-linux-androideabi --with-sysroot="$SYSROOT" --prefix="$SYSROOT"/usr/local CFLAGS="$CFLAGS" LDFLAGS="-lm" --disable-shared
 	make -j3
 	make install
 	popd
@@ -108,8 +108,8 @@ if [ "$build_libpng" = "true" ]; then
 	rm -rf temp/libpng-1.5.8
 	tar xvf files/libpng-1.5.8.tar.xz -C temp/
 	pushd temp/libpng-1.5.8
-	./configure --host=arm-linux-eabi --with-sysroot=$SYSROOT --prefix=$SYSROOT/usr/local CFLAGS="$CFLAGS"
-	make $JOBS
+	./configure --host=arm-linux-eabi --with-sysroot="$SYSROOT" --prefix="$SYSROOT"/usr/local CFLAGS="$CFLAGS"
+	make "$JOBS"
 	make install
 	popd
 fi
@@ -118,8 +118,8 @@ if [ "$build_libjpeg" = "true" ]; then
 	rm -rf temp/libjpeg-turbo-1.3.0
 	tar xvf files/libjpeg-turbo-1.3.0.tar.gz -C temp/
 	pushd temp/libjpeg-turbo-1.3.0
-	./configure --host=arm-linux-eabi --with-sysroot=$SYSROOT --prefix=$SYSROOT/usr/local CFLAGS="$CFLAGS" LDFLAGS="-lm"
-	make $JOBS
+	./configure --host=arm-linux-eabi --with-sysroot="$SYSROOT" --prefix="$SYSROOT"/usr/local CFLAGS="$CFLAGS" LDFLAGS="-lm"
+	make "$JOBS"
 	make install
 	popd
 fi
@@ -129,8 +129,8 @@ if [ "$build_libxml2" = "true" ]; then
 	tar xvf files/libxml2-2.7.8.tar.gz -C temp/
 	patch temp/libxml2-2.7.8/Makefile.in <libxml2-android-build.patch
 	pushd temp/libxml2-2.7.8
-	./configure --host=arm-linux-eabi --with-sysroot=$SYSROOT --prefix=$SYSROOT/usr/local CFLAGS="$CFLAGS"
-	make $JOBS
+	./configure --host=arm-linux-eabi --with-sysroot="$SYSROOT" --prefix="$SYSROOT"/usr/local CFLAGS="$CFLAGS"
+	make "$JOBS"
 	make install
 	popd
 fi
@@ -139,8 +139,8 @@ if [ "$build_enet" = "true" ]; then
 	rm -rf temp/enet-1.3.3
 	tar xvf files/enet-1.3.3.tar.gz -C temp/
 	pushd temp/enet-1.3.3
-	./configure --host=arm-linux-eabi --with-sysroot=$SYSROOT --prefix=$SYSROOT/usr/local CFLAGS="$CFLAGS"
-	make $JOBS
+	./configure --host=arm-linux-eabi --with-sysroot="$SYSROOT" --prefix="$SYSROOT"/usr/local CFLAGS="$CFLAGS"
+	make "$JOBS"
 	make install
 	popd
 fi
@@ -153,17 +153,17 @@ if [ "$build_js185" = "true" ]; then
 	CXXFLAGS="-I $TOOLCHAIN/arm-linux-androideabi/include/c++/4.4.3/arm-linux-androideabi" \
 		HOST_CXXFLAGS="-DFORCE_LITTLE_ENDIAN" \
 		./configure \
-		--prefix=$SYSROOT/usr/local \
+		--prefix="$SYSROOT"/usr/local \
 		--target=arm-android-eabi \
-		--with-android-ndk=$NDK \
-		--with-android-sdk=$SDK \
-		--with-android-toolchain=$TOOLCHAIN \
+		--with-android-ndk="$NDK" \
+		--with-android-sdk="$SDK" \
+		--with-android-toolchain="$TOOLCHAIN" \
 		--with-android-version=9 \
 		--disable-tests \
 		--disable-shared-js \
 		--with-arm-kuser \
 		CFLAGS="$CFLAGS"
-	make $JOBS JS_DISABLE_SHELL=1
+	make "$JOBS" JS_DISABLE_SHELL=1
 	make install JS_DISABLE_SHELL=1
 	popd
 fi

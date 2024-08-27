@@ -102,7 +102,7 @@ ARCHLESS_LDFLAGS="$LDFLAGS -stdlib=libc++"
 if [ -z "${ARCH}" ]; then
 	ARCH=$(uname -m)
 fi
-if [ $ARCH == "arm64" ]; then
+if [ "$ARCH" == "arm64" ]; then
 	# Some libs want this passed to configure for cross compilation.
 	HOST_PLATFORM="--host=aarch64-apple-darwin"
 else
@@ -125,7 +125,7 @@ set -e
 
 die()
 {
-	echo ERROR: $*
+	echo ERROR: "$*"
 	exit 1
 }
 
@@ -134,9 +134,9 @@ download_lib()
 	local url=$1
 	local filename=$2
 
-	if [ ! -e $filename ]; then
+	if [ ! -e "$filename" ]; then
 		echo "Downloading $filename"
-		curl -fLo ${filename} ${url}${filename} || die "Download of $url$filename failed"
+		curl -fLo "${filename}" "${url}${filename}" || die "Download of $url$filename failed"
 	fi
 }
 
@@ -160,16 +160,16 @@ for i in "$@"; do
 	esac
 done
 
-cd "$(dirname $0)" # Now in libraries/ (where we assume this script resides)
+cd "$(dirname "$0")" # Now in libraries/ (where we assume this script resides)
 mkdir -p macos
 cd macos
 
 # Create a location to create copies of dependencies' *.pc files, so they can be found by pkg-config
 PC_PATH="$(pwd)/pkgconfig/"
 if [[ $force_rebuild == "true" ]]; then
-	rm -rf $PC_PATH
+	rm -rf "$PC_PATH"
 fi
-mkdir -p $PC_PATH
+mkdir -p "$PC_PATH"
 
 # --------------------------------------------------------------
 echo -e "Building zlib..."
@@ -197,10 +197,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
 			./configure --prefix="$ZLIB_DIR" \
 			--static &&
-		make ${JOBS} && make install) || die "zlib build failed"
+		make "${JOBS}" && make install) || die "zlib build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -255,10 +255,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--without-libidn2 \
 		--with-zlib="${ZLIB_DIR}" \
 		--enable-shared=no &&
-		make ${JOBS} && make install) || die "libcurl build failed"
+		make "${JOBS}" && make install) || die "libcurl build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -293,7 +293,7 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--without-libintl-prefix \
 		--disable-nls \
 		--enable-shared=no &&
-		make ${JOBS} && make install) || die "libiconv build failed"
+		make "${JOBS}" && make install) || die "libiconv build failed"
 	popd
 	echo "$LIB_VERSION" >.already-built
 else
@@ -330,10 +330,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--with-iconv="${ICONV_DIR}" \
 		--with-zlib="${ZLIB_DIR}" \
 		--enable-shared=no &&
-		make ${JOBS} && make install) || die "libxml2 build failed"
+		make "${JOBS}" && make install) || die "libxml2 build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -373,10 +373,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--without-x \
 		--enable-video-cocoa \
 		--enable-shared=no &&
-		make $JOBS && make install) || die "SDL2 build failed"
+		make "$JOBS" && make install) || die "SDL2 build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -407,11 +407,11 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	# Can't use macosx-version, see above comment.
 	(
 		./bootstrap.sh --with-libraries=filesystem,system \
-			--prefix=$INSTALL_DIR &&
+			--prefix="$INSTALL_DIR" &&
 			./b2 cflags="$CFLAGS" \
 				toolset=clang \
 				cxxflags="$CXXFLAGS" \
-				linkflags="$LDFLAGS" ${JOBS} \
+				linkflags="$LDFLAGS" "${JOBS}" \
 				-d2 \
 				--layout=system \
 				--debug-configuration \
@@ -475,11 +475,12 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	if [[ $MIN_OSX_VERSION && ${MIN_OSX_VERSION-_} ]]; then
 		CONF_OPTS="$CONF_OPTS --with-macosx-version-min=$MIN_OSX_VERSION"
 	fi
+	# shellcheck disable=SC2086
 	(../configure CFLAGS="$ARCHLESS_CFLAGS" \
 		CXXFLAGS="$ARCHLESS_CXXFLAGS" \
 		CPPFLAGS="-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=1" \
 		LDFLAGS="$ARCHLESS_LDFLAGS" $CONF_OPTS &&
-		make ${JOBS} && make install) || die "wxWidgets build failed"
+		make "${JOBS}" && make install) || die "wxWidgets build failed"
 	popd
 	popd
 	echo "$LIB_VERSION" >.already-built
@@ -512,12 +513,12 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	# libpng has no flags for zlib but the 10.12 version is too old, so link our own.
 	(./configure CFLAGS="$CFLAGS" CPPFLAGS=" -I $ZLIB_DIR/include " \
 		LDFLAGS="$LDFLAGS -L$ZLIB_DIR/lib" \
-		--prefix=$INSTALL_DIR \
+		--prefix="$INSTALL_DIR" \
 		--enable-shared=no &&
-		make ${JOBS} && make install) || die "libpng build failed"
+		make "${JOBS}" && make install) || die "libpng build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -546,15 +547,15 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	pushd $LIB_DIRECTORY
 
 	(./configure CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
-		--prefix=$INSTALL_DIR \
+		--prefix="$INSTALL_DIR" \
 		"$HOST_PLATFORM" \
 		--enable-shared=no \
 		--with-harfbuzz=no \
 		--with-bzip2=no \
 		--with-brotli=no &&
-		make ${JOBS} && make install) || die "freetype build failed"
+		make "${JOBS}" && make install) || die "freetype build failed"
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -584,12 +585,12 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 
 	(./configure CFLAGS="$CFLAGS" \
 		LDFLAGS="$LDFLAGS" \
-		--prefix=$OGG_DIR \
+		--prefix="$OGG_DIR" \
 		--enable-shared=no &&
-		make ${JOBS} && make install) || die "libogg build failed"
+		make "${JOBS}" && make install) || die "libogg build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -622,10 +623,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--prefix="$INSTALL_DIR" \
 		--enable-shared=no \
 		--with-ogg="$OGG_DIR" &&
-		make ${JOBS} && make install) || die "libvorbis build failed"
+		make "${JOBS}" && make install) || die "libvorbis build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -665,10 +666,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--enable-fat \
 		--disable-shared \
 		--with-pic &&
-		make ${JOBS} && make install) || die "GMP build failed"
+		make "${JOBS}" && make install) || die "GMP build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -712,10 +713,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--disable-documentation \
 		--disable-openssl \
 		--disable-assembler &&
-		make ${JOBS} && make install) || die "Nettle build failed"
+		make "${JOBS}" && make install) || die "Nettle build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -770,10 +771,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 			--disable-doc \
 			--disable-tools \
 			--disable-nls &&
-		make ${JOBS} LDFLAGS= install) || die "GnuTLS build failed"
+		make "${JOBS}" LDFLAGS= install) || die "GnuTLS build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -817,10 +818,10 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 		--without-tests \
 		--without-examples \
 		--disable-getaddrinfo &&
-		make ${JOBS} && make install) || die "gloox build failed"
+		make "${JOBS}" && make install) || die "gloox build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -854,18 +855,18 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	(CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
 		../runConfigureICU MacOSX \
 		"$HOST_PLATFORM" \
-		--prefix=$INSTALL_DIR \
+		--prefix="$INSTALL_DIR" \
 		--disable-shared \
 		--enable-static \
 		--disable-samples \
 		--enable-extras \
 		--enable-icuio \
 		--enable-tools &&
-		make ${JOBS} && make install) || die "ICU build failed"
+		make "${JOBS}" && make install) || die "ICU build failed"
 
 	popd
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -895,12 +896,12 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 
 	(./configure CFLAGS="$CFLAGS" \
 		LDFLAGS="$LDFLAGS" \
-		--prefix=${INSTALL_DIR} \
+		--prefix="${INSTALL_DIR}" \
 		--enable-shared=no &&
-		make clean && make ${JOBS} && make install) || die "ENet build failed"
+		make clean && make "${JOBS}" && make install) || die "ENet build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -922,7 +923,7 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
-	download_lib $LIB_URL $LIB_ARCHIVE
+	download_lib "$LIB_URL" $LIB_ARCHIVE
 
 	rm -rf $LIB_DIRECTORY bin include lib share
 	tar -xf $LIB_ARCHIVE
@@ -930,14 +931,14 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 
 	(
 		make clean &&
-			CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make ${JOBS} &&
+			CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make "${JOBS}" &&
 			INSTALLPREFIX="$INSTALL_DIR" make install
 	) || die "MiniUPnPc build failed"
 
 	popd
 	# TODO: how can we not build the dylibs?
 	rm -f lib/*.dylib
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -968,16 +969,16 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	(
 		./configure CFLAGS="$CFLAGS" \
 			LDFLAGS="$LDFLAGS" \
-			--prefix=${INSTALL_DIR} \
+			--prefix="${INSTALL_DIR}" \
 			--enable-shared=no &&
 			make clean &&
-			CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make ${JOBS} &&
+			CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS make "${JOBS}" &&
 			make check &&
 			INSTALLPREFIX="$INSTALL_DIR" make install
 	) || die "libsodium build failed"
 
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$LIB_VERSION" >.already-built
 else
 	already_built
@@ -1010,16 +1011,17 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
 	mkdir -p build
 	pushd build
 
+	# shellcheck disable=SC2086
 	(cmake .. \
 		-DFMT_TEST=False \
 		-DFMT_DOC=False \
 		-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
 		$CMAKE_FLAGS &&
-		make fmt ${JOBS} && make install) || die "fmt build failed"
+		make fmt "${JOBS}" && make install) || die "fmt build failed"
 
 	popd
 	popd
-	cp -f lib/pkgconfig/* $PC_PATH
+	cp -f lib/pkgconfig/* "$PC_PATH"
 	echo "$FMT_VERSION" >.already-built
 else
 	already_built

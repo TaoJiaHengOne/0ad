@@ -18,9 +18,9 @@ for APPDIR in ../workspaces/gcc/obj/*; do
 done
 
 (
-	cd ../../binaries/system/
+	cd ../../binaries/system/ || exit 1
 	./test_dbg
-)
+) || exit 1
 
 for APPDIR in ../workspaces/gcc/obj/*; do
 	lcov -d "$APPDIR" -b ../workspaces/gcc --capture -o temp.info &&
@@ -34,6 +34,6 @@ lcov -r app.info '*/third_party/*' -o app.info
 rm -rf output
 mkdir output
 (
-	cd output
+	cd output || exit 1
 	genhtml ../app.info
-)
+) || exit 1
