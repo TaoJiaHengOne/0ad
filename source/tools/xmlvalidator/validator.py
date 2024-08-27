@@ -94,9 +94,8 @@ class Validator:
         self.materials = {}
         self.invalid_materials = {}
         self.actors = []
-        self.__init_logger
+        self.__init_logger()
 
-    @property
     def __init_logger(self):
         logger = getLogger(__name__)
         logger.setLevel(INFO)

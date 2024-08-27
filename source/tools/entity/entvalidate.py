@@ -20,7 +20,7 @@ Please create the file: {}
 You can do that by running 'pyrogenesis -dumpSchema' in the 'system' directory
 """
 XMLLINT_ERROR_MSG = (
-    "xmllint not found in your PATH, please install it " "(usually in libxml2 package)"
+    "xmllint not found in your PATH, please install it (usually in libxml2 package)"
 )
 
 

@@ -88,9 +88,7 @@ def resolve_if(defines, expression):
     return False
 
 
-def compile_and_reflect(
-    input_mod_path, output_mod_path, dependencies, stage, path, out_path, defines
-):
+def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, defines):
     keep_debug = False
     input_path = os.path.normpath(path)
     output_path = os.path.normpath(out_path)
@@ -443,7 +441,6 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
 
             reflection = compile_and_reflect(
                 input_mod_path,
-                output_mod_path,
                 dependencies,
                 shader["type"],
                 input_glsl_path,

@@ -192,8 +192,8 @@ def CalcUnit(UnitName, existingUnit=None):
 
     resource_cost = Template.find("./Cost/Resources")
     if resource_cost is not None:
-        for type in list(resource_cost):
-            unit["Cost"][type.tag] = ExtractValue(type)
+        for resource_type in list(resource_cost):
+            unit["Cost"][resource_type.tag] = ExtractValue(resource_type)
 
     if Template.find("./Attack/Melee") is not None:
         unit["RepeatRate"]["Melee"] = ExtractValue(Template.find("./Attack/Melee/RepeatTime"))
@@ -499,7 +499,7 @@ def computeTemplates(LoadTemplatesIfParent):
     return templates
 
 
-def computeCivTemplates(template: dict, Civs: list):
+def computeCivTemplates(Civs: list):
     """Load Civ specific templates"""
     # NOTE: whether a Civ can train a certain unit is not recorded in the unit
     # .xml files, and hence we have to get that info elsewhere, e.g. from the
@@ -524,8 +524,8 @@ def computeCivTemplates(template: dict, Civs: list):
             if os.path.isfile(template):
                 # filter based on FilterOut
                 breakIt = False
-                for filter in FilterOut:
-                    if template.find(filter) != -1:
+                for civ_filter in FilterOut:
+                    if template.find(civ_filter) != -1:
                         breakIt = True
                 if breakIt:
                     continue
@@ -577,7 +577,7 @@ def computeTemplatesByParent(templates: dict, Civs: list, CivTemplates: dict):
 ############################################################
 ## Pre-compute all tables
 templates = computeTemplates(LoadTemplatesIfParent)
-CivTemplates = computeCivTemplates(templates, Civs)
+CivTemplates = computeCivTemplates(Civs)
 TemplatesByParent = computeTemplatesByParent(templates, Civs, CivTemplates)
 
 # Not used; use it for your own custom analysis

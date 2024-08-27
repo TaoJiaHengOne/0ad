@@ -37,8 +37,8 @@ library.set_skeleton_definitions(skeleton_definitions, len(skeleton_definitions)
 def _convert_dae(func, filename, expected_status=0):
     output = []
 
-    def cb(cbdata, str, len):
-        output.append(string_at(str, len))
+    def cb(_, ptr, size):
+        output.append(string_at(ptr, size))
 
     cbtype = CFUNCTYPE(None, POINTER(None), POINTER(c_char), c_uint)
     status = func(filename, cbtype(cb), None)
@@ -127,9 +127,9 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     input_filename = f"{test_data}/{test_file}.dae"
     output_filename = f"{test_mod}/art/meshes/{test_file}.pmd"
 
-    input = open(input_filename).read()
-    output = convert_dae_to_pmd(input)
-    open(output_filename, "wb").write(output)
+    file_input = open(input_filename).read()
+    file_output = convert_dae_to_pmd(file_input)
+    open(output_filename, "wb").write(file_output)
 
     xml = create_actor(
         test_file,
@@ -155,6 +155,6 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     input_filename = f"{test_data}/{test_file}.dae"
     output_filename = f"{test_mod}/art/animation/{test_file}.psa"
 
-    input = open(input_filename).read()
-    output = convert_dae_to_psa(input)
-    open(output_filename, "wb").write(output)
+    file_input = open(input_filename).read()
+    file_output = convert_dae_to_psa(file_input)
+    open(output_filename, "wb").write(file_output)

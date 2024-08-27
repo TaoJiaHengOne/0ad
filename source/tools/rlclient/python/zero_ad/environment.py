@@ -58,18 +58,20 @@ class GameState:
         self.game = game
         self.mapSize = self.data["mapSize"]
 
-    def units(self, owner=None, type=None):
+    def units(self, owner=None, entity_type=None):
         def filter_fn(e):
             return (owner is None or e["owner"] == owner) and (
-                type is None or type in e["template"]
+                entity_type is None or entity_type in e["template"]
             )
 
         return [Entity(e, self.game) for e in self.data["entities"].values() if filter_fn(e)]
 
-    def unit(self, id):
-        id = str(id)
+    def unit(self, entity_id):
+        entity_id = str(entity_id)
         return (
-            Entity(self.data["entities"][id], self.game) if id in self.data["entities"] else None
+            Entity(self.data["entities"][entity_id], self.game)
+            if entity_id in self.data["entities"]
+            else None
         )
 
 

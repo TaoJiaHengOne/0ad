@@ -37,7 +37,7 @@ def get_diff():
     return io.StringIO(diff_process.stdout.decode("utf-8"))
 
 
-def check_diff(diff: io.StringIO, verbose=False) -> List[str]:
+def check_diff(diff: io.StringIO) -> List[str]:
     """Run through a diff of .po files and check that some of the changes
     are real translations changes and not just noise (line changes....).
     The algorithm isn't extremely clever, but it is quite fast.
@@ -126,6 +126,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", help="Print reverted files.", action="store_true")
     args = parser.parse_args()
-    need_revert = check_diff(get_diff(), args.verbose)
+    need_revert = check_diff(get_diff())
     revert_files(need_revert, args.verbose)
     add_untracked(args.verbose)

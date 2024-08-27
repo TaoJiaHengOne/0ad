@@ -31,10 +31,9 @@ class RelaxNGValidator:
     def __init__(self, vfs_root, mods=None, verbose=False):
         self.mods = mods if mods is not None else []
         self.vfs_root = Path(vfs_root)
-        self.__init_logger
+        self.__init_logger()
         self.verbose = verbose
 
-    @property
     def __init_logger(self):
         logger = getLogger(__name__)
         logger.setLevel(INFO)

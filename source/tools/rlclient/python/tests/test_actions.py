@@ -33,23 +33,23 @@ def closest(units, position):
 
 def test_construct():
     state = game.reset(config)
-    female_citizens = state.units(owner=1, type="female_citizen")
+    female_citizens = state.units(owner=1, entity_type="female_citizen")
     house_tpl = "structures/spart/house"
-    house_count = len(state.units(owner=1, type=house_tpl))
+    house_count = len(state.units(owner=1, entity_type=house_tpl))
     x = 680
     z = 640
     build_house = zero_ad.actions.construct(female_citizens, house_tpl, x, z, autocontinue=True)
     # Check that they start building the house
     state = game.step([build_house])
-    while len(state.units(owner=1, type=house_tpl)) == house_count:
+    while len(state.units(owner=1, entity_type=house_tpl)) == house_count:
         state = game.step()
 
 
 def test_gather():
     state = game.reset(config)
-    female_citizen = state.units(owner=1, type="female_citizen")[0]
-    state.units(owner=0, type="tree")
-    nearby_tree = closest(state.units(owner=0, type="tree"), female_citizen.position())
+    female_citizen = state.units(owner=1, entity_type="female_citizen")[0]
+    state.units(owner=0, entity_type="tree")
+    nearby_tree = closest(state.units(owner=0, entity_type="tree"), female_citizen.position())
 
     collect_wood = zero_ad.actions.gather([female_citizen], nearby_tree)
     state = game.step([collect_wood])
@@ -59,19 +59,19 @@ def test_gather():
 
 def test_train():
     state = game.reset(config)
-    civic_centers = state.units(owner=1, type="civil_centre")
+    civic_centers = state.units(owner=1, entity_type="civil_centre")
     spearman_type = "units/spart/infantry_spearman_b"
-    spearman_count = len(state.units(owner=1, type=spearman_type))
+    spearman_count = len(state.units(owner=1, entity_type=spearman_type))
     train_spearmen = zero_ad.actions.train(civic_centers, spearman_type)
 
     state = game.step([train_spearmen])
-    while len(state.units(owner=1, type=spearman_type)) == spearman_count:
+    while len(state.units(owner=1, entity_type=spearman_type)) == spearman_count:
         state = game.step()
 
 
 def test_walk():
     state = game.reset(config)
-    female_citizens = state.units(owner=1, type="female_citizen")
+    female_citizens = state.units(owner=1, entity_type="female_citizen")
     x = 680
     z = 640
     initial_distance = dist(center(female_citizens), [x, z])
@@ -81,14 +81,14 @@ def test_walk():
     distance = initial_distance
     while distance >= initial_distance:
         state = game.step()
-        female_citizens = state.units(owner=1, type="female_citizen")
+        female_citizens = state.units(owner=1, entity_type="female_citizen")
         distance = dist(center(female_citizens), [x, z])
 
 
 def test_attack():
     state = game.reset(config)
-    unit = state.units(owner=1, type="cavalry")[0]
-    target = state.units(owner=2, type="female_citizen")[0]
+    unit = state.units(owner=1, entity_type="cavalry")[0]
+    target = state.units(owner=2, entity_type="female_citizen")[0]
     initial_health_target = target.health()
     initial_health_unit = unit.health()
 

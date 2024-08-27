@@ -36,10 +36,9 @@ class CheckRefs:
         self.supportedAnimationFormats = ("psa", "dae")
         self.supportedAudioFormats = "ogg"
         self.mods = []
-        self.__init_logger
+        self.__init_logger()
         self.inError = False
 
-    @property
     def __init_logger(self):
         logger = getLogger(__name__)
         logger.setLevel(INFO)
@@ -398,7 +397,7 @@ class CheckRefs:
                     reqTag = cmp_identity.find("Requirements")
                     if reqTag is not None:
 
-                        def parse_requirements(req, recursionDepth=1):
+                        def parse_requirements(fp, req, recursionDepth=1):
                             techsTag = req.find("Techs")
                             if techsTag is not None:
                                 for techTag in techsTag.text.split():
@@ -410,12 +409,12 @@ class CheckRefs:
                                 recursionDepth -= 1
                                 allReqTag = req.find("All")
                                 if allReqTag is not None:
-                                    parse_requirements(allReqTag, recursionDepth)
+                                    parse_requirements(fp, allReqTag, recursionDepth)
                                 anyReqTag = req.find("Any")
                                 if anyReqTag is not None:
-                                    parse_requirements(anyReqTag, recursionDepth)
+                                    parse_requirements(fp, anyReqTag, recursionDepth)
 
-                        parse_requirements(reqTag)
+                        parse_requirements(fp, reqTag)
 
                 cmp_researcher = entity.find("Researcher")
                 if cmp_researcher is not None:

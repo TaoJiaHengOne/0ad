@@ -95,8 +95,8 @@ def load_char_list(filename):
 
 # Construct a Cairo context and surface for rendering text with the given parameters
 def setup_context(width, height, renderstyle):
-    format = cairo.FORMAT_ARGB32 if "colour" in renderstyle else cairo.FORMAT_A8
-    surface = cairo.ImageSurface(format, width, height)
+    surface_format = cairo.FORMAT_ARGB32 if "colour" in renderstyle else cairo.FORMAT_A8
+    surface = cairo.ImageSurface(surface_format, width, height)
     ctx = cairo.Context(surface)
     ctx.set_line_join(cairo.LINE_JOIN_ROUND)
     return ctx, surface

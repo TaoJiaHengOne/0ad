@@ -42,14 +42,14 @@ state = game.reset(arcadia_config)
 state = game.step()
 
 # Units can be queried from the game state
-citizen_soldiers = state.units(owner=1, type="infantry")
+citizen_soldiers = state.units(owner=1, entity_type="infantry")
 # (including gaia units like trees or other resources)
-nearby_tree = closest(state.units(owner=0, type="tree"), center(citizen_soldiers))
+nearby_tree = closest(state.units(owner=0, entity_type="tree"), center(citizen_soldiers))
 
 # Action commands can be created using zero_ad.actions
 collect_wood = zero_ad.actions.gather(citizen_soldiers, nearby_tree)
 
-female_citizens = state.units(owner=1, type="female_citizen")
+female_citizens = state.units(owner=1, entity_type="female_citizen")
 house_tpl = "structures/spart/house"
 x = 680
 z = 640
@@ -69,7 +69,7 @@ print("female citizen's max health is", female_citizen.max_health())
 print(female_citizen.data)
 
 # Units can be built using the "train action"
-civic_center = state.units(owner=1, type="civil_centre")[0]
+civic_center = state.units(owner=1, entity_type="civil_centre")[0]
 spearman_type = "units/spart/infantry_spearman_b"
 train_spearmen = zero_ad.actions.train([civic_center], spearman_type)
 
@@ -96,11 +96,11 @@ for _ in range(150):
 # Let's attack with our entire military
 state = game.step([zero_ad.actions.chat("An attack is coming!")])
 
-while len(state.units(owner=2, type="unit")) > 0:
+while len(state.units(owner=2, entity_type="unit")) > 0:
     attack_units = [
-        unit for unit in state.units(owner=1, type="unit") if "female" not in unit.type()
+        unit for unit in state.units(owner=1, entity_type="unit") if "female" not in unit.type()
     ]
-    target = closest(state.units(owner=2, type="unit"), center(attack_units))
+    target = closest(state.units(owner=2, entity_type="unit"), center(attack_units))
     state = game.step([zero_ad.actions.attack(attack_units, target)])
 
     while state.unit(target.id()):

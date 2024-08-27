@@ -48,7 +48,7 @@ def warnAboutUntouchedMods():
                     f"in the root folder of this mod."
                 )
     if untouchedMods:
-        print("" "Warning: No messages were extracted from the following mods:" "")
+        print("Warning: No messages were extracted from the following mods:")
         for mod in untouchedMods:
             print(f"• {mod}: {untouchedMods[mod]}")
         print(
