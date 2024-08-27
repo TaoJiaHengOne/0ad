@@ -32,6 +32,16 @@ pipeline {
 	}
 
 	stages {
+		stage("Cleanup") {
+			when {
+				changelog '.*\\[CLEANBUILD\\].*'
+			}
+			steps {
+				script { env.CLEANBUILD = 'true' }
+				bat "git clean -fdx build/ source/"
+			}
+		}
+
 		stage ("Pre-build") {
 			steps {
 				discoverGitReferenceBuild()
@@ -77,6 +87,11 @@ pipeline {
 
 	post {
 		always {
+			script {
+				if (env.CLEANBUILD == 'true') {
+					bat "git clean -fdx build/ source/"
+				}
+			}
 			recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tool: msBuild()
 		}
 	}

@@ -35,6 +35,16 @@ pipeline {
 		LLVM_OBJDUMP = '/usr/bin/llvm-objdump'
 	}
 	stages {
+		stage("Cleanup") {
+			when {
+				changelog '.*\\[CLEANBUILD\\].*'
+			}
+			steps {
+				script { env.CLEANBUILD = 'true' }
+				sh "git clean -fdx build/ source/"
+			}
+		}
+
 		stage ("Pre-build") {
 			steps {
 				discoverGitReferenceBuild()
@@ -70,6 +80,11 @@ pipeline {
 
 	post {
 		always {
+			script {
+				if (env.CLEANBUILD == 'true') {
+					sh "git clean -fdx build/ source/"
+				}
+			}
 			recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tool: clang()
 		}
 	}

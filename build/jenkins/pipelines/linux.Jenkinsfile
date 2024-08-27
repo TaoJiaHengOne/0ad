@@ -60,12 +60,26 @@ pipeline {
 				}
 
 				stages {
+					stage("Cleanup") {
+						when {
+							allOf {
+								environment name: 'JENKINS_PCH', value: 'pch'
+								changelog '.*\\[CLEANBUILD\\].*'
+							}
+						}
+						steps {
+							script { env.CLEANBUILD = 'true' }
+							sh "git clean -fdx build/ source/"
+						}
+					}
+
 					stage("Pre-build") {
 						steps {
 							sh "git lfs pull -I binaries/data/tests"
 							sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
 							sh "libraries/build-source-libs.sh -j1 2> ${JENKINS_COMPILER}-prebuild-errors.log"
+
 							script {
 								if (env.JENKINS_PCH == "no-pch") {
 									sh "build/workspaces/update-workspaces.sh -j1 --jenkins-tests --without-pch 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
@@ -105,6 +119,16 @@ pipeline {
 						post {
 							always {
 								junit 'binaries/system/cxxtest-release.xml'
+							}
+						}
+					}
+				}
+
+				post {
+					always {
+						script {
+							if (env.CLEANBUILD == 'true' && env.JENKINS_PCH == 'pch') {
+								sh "git clean -fdx build/ source/"
 							}
 						}
 					}
