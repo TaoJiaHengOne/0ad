@@ -418,6 +418,8 @@ function project_create(project_name, target_type)
 
 	filter "action:vs*"
 		buildoptions "/utf-8"
+		-- disable LNK4221 warning, to avoid spending energy ordering projects in linker invocations
+		linkoptions "/ignore:4221"
 	filter {}
 
 	project_set_target(project_name)

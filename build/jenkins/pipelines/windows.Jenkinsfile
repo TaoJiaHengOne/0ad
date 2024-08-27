@@ -18,7 +18,7 @@
 // This pipeline builds the game on Windows (which uses the MSVC 15.0 compiler from Visual Studio 2017) and runs tests.
 
 def visualStudioPath = "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe\""
-def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test /nologo -clp:NoSummary"
+def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test /m:2 /nologo -clp:NoSummary"
 
 pipeline {
 	// Stop previous build in pull requests, but not in branches
