@@ -9,4 +9,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+      - id: restore-pip-cache
+        uses: actions/cache/restore@v4
+        with:
+          key: pip-cache-v1-${{ github.workflow }}
+          path: ~/.cache/pip
       - uses: pre-commit/action@v3.0.1
+      - uses: actions/cache/save@v4
+        if: steps.restore-pip-cache.outcome == 'success'
+        with:
+          key: pip-cache-v1-${{ github.workflow }}
+          path: ~/.cache/pip
