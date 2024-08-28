@@ -34,6 +34,8 @@ public:
 // 		LOGWARNING("New interned string '%s'", data.c_str());
 	}
 
+	CStrInternInternals(const CStrInternInternals& b) = default;
+
 	bool operator==(const CStrInternInternals& b) const
 	{
 		// Compare hash first for quick rejection of inequal strings
