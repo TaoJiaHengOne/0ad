@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 die()
@@ -17,15 +17,16 @@ echo "Filtering languages"
 # CJK languages are excluded, as they are in mods.
 # Note: Needs to be edited manually at each release.
 # Keep in sync with the installer languages in 0ad.nsi.
-LANGS=("ast" "ca" "cs" "de" "el" "en_GB" "es" "eu" "fi" "fr" "gd" "hu" "id" "it" "nl" "pl" "pt_BR" "ru" "sk" "sv" "tr" "uk")
+LANGS="ast ca cs de el en_GB es eu fi fr gd hu id it nl pl pt_BR ru sk sv tr uk"
 
-REGEX=$(printf "\|%s" "${LANGS[@]}")
-REGEX=".*/\(${REGEX:2}\)\.[-A-Za-z0-9_.]\+\.po"
+# shellcheck disable=SC2086
+REGEX=$(printf "\|%s" ${LANGS} | cut -c 2-)
+REGEX=".*/\(${REGEX}\)\.[-A-Za-z0-9_.]\+\.po"
 
 find binaries/ -name "*.po" | grep -v "$REGEX" | xargs rm -v || die "Error filtering languages."
 
 # Build archive(s) - don't archive the _test.* mods
-pushd binaries/data/mods >/dev/null
+cd binaries/data/mods || die
 archives=""
 ONLY_MOD="${ONLY_MOD:=false}"
 if [ "${ONLY_MOD}" = true ]; then
@@ -35,7 +36,7 @@ else
 		archives="${archives} ${modname}"
 	done
 fi
-popd >/dev/null
+cd - || die
 
 BUILD_SHADERS="${BUILD_SHADERS:=true}"
 if [ "${BUILD_SHADERS}" = true ]; then
@@ -47,7 +48,7 @@ if [ "${BUILD_SHADERS}" = true ]; then
 	[ -n "${GLSLC}" ] || die "Error: glslc is not available. Install it with the Vulkan SDK before proceeding."
 	[ -n "${SPIRV_REFLECT}" ] || die "Error: spirv-reflect is not available. Install it with the Vulkan SDK before proceeding."
 
-	pushd "source/tools/spirv" >/dev/null
+	cd source/tools/spirv || die
 
 	ENGINE_VERSION=${ENGINE_VERSION:="0.0.xx"}
 	rulesFile="rules.${ENGINE_VERSION}.json"
@@ -68,7 +69,7 @@ if [ "${BUILD_SHADERS}" = true ]; then
 		echo "Building shader for '${modname}'..."
 		$PYTHON compile.py "$modLocation" "$rulesFile" "$modLocation" --dependency "../../../binaries/data/mods/mod/"
 	done
-	popd >/dev/null
+	cd - || die
 fi
 
 for modname in $archives; do
@@ -79,5 +80,5 @@ for modname in $archives; do
 	mkdir -p "${ARCHIVEBUILD_OUTPUT}"
 
 	(./binaries/system/pyrogenesis -mod=mod -archivebuild="${ARCHIVEBUILD_INPUT}" -archivebuild-output="${ARCHIVEBUILD_OUTPUT}/${modname}.zip") || die "Archive build for '${modname}' failed!"
-	cp "${ARCHIVEBUILD_INPUT}/mod.json" "${ARCHIVEBUILD_OUTPUT}" &>/dev/null || true
+	cp "${ARCHIVEBUILD_INPUT}/mod.json" "${ARCHIVEBUILD_OUTPUT}" >/dev/null 2>&1 || true
 done
