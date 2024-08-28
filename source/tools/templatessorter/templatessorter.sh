@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # check arguments count
 if [ $# -ne 1 ]; then
 	echo usage: "$0" directory
