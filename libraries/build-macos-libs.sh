@@ -62,9 +62,9 @@ source_svnrev="28207"
 # * OpenGL
 # --------------------------------------------------------------
 
-export CC=${CC:="clang"} CXX=${CXX:="clang++"}
-export MIN_OSX_VERSION=${MIN_OSX_VERSION:="10.12"}
-export ARCH=${ARCH:=""}
+export CC="${CC:="clang"}" CXX="${CXX:="clang++"}"
+export MIN_OSX_VERSION="${MIN_OSX_VERSION:="10.12"}"
+export ARCH="${ARCH:=""}"
 
 # The various libs offer inconsistent configure options, some allow
 # setting sysroot and OS X-specific options, others don't. Adding to
@@ -74,12 +74,12 @@ export ARCH=${ARCH:=""}
 # This is why we prefer using (OBJ)CFLAGS, (OBJ)CXXFLAGS, and LDFLAGS.
 
 # Check if SYSROOT is set and not empty
-if [[ $SYSROOT && ${SYSROOT-_} ]]; then
+if [ -n "$SYSROOT" ]; then
 	C_FLAGS="-isysroot $SYSROOT"
 	LDFLAGS="$LDFLAGS -Wl,-syslibroot,$SYSROOT"
 fi
 # Check if MIN_OSX_VERSION is set and not empty
-if [[ $MIN_OSX_VERSION && ${MIN_OSX_VERSION-_} ]]; then
+if [ -n "$MIN_OSX_VERSION" ]; then
 	C_FLAGS="$C_FLAGS -mmacosx-version-min=$MIN_OSX_VERSION"
 	# clang and llvm-gcc look at mmacosx-version-min to determine link target
 	# and CRT version, and use it to set the macosx_version_min linker flag
@@ -102,7 +102,7 @@ ARCHLESS_LDFLAGS="$LDFLAGS -stdlib=libc++"
 if [ -z "${ARCH}" ]; then
 	ARCH=$(uname -m)
 fi
-if [ "$ARCH" == "arm64" ]; then
+if [ "$ARCH" = "arm64" ]; then
 	# Some libs want this passed to configure for cross compilation.
 	HOST_PLATFORM="--host=aarch64-apple-darwin"
 else
@@ -129,20 +129,19 @@ die()
 	exit 1
 }
 
+# $1 base url for download
+# $2 target file name
 download_lib()
 {
-	local url=$1
-	local filename=$2
-
-	if [ ! -e "$filename" ]; then
-		echo "Downloading $filename"
-		curl -fLo "${filename}" "${url}${filename}" || die "Download of $url$filename failed"
+	if [ ! -e "$2" ]; then
+		echo "Downloading $2"
+		curl -fLo "$2" "$1$2" || die "Download of $1$2 failed"
 	fi
 }
 
 already_built()
 {
-	echo -e "Skipping - already built (use --force-rebuild to override)"
+	echo "Skipping - already built (use --force-rebuild to override)"
 }
 
 # Check that we're actually on macOS
@@ -166,13 +165,13 @@ cd macos
 
 # Create a location to create copies of dependencies' *.pc files, so they can be found by pkg-config
 PC_PATH="$(pwd)/pkgconfig/"
-if [[ $force_rebuild == "true" ]]; then
+if [ $force_rebuild = "true" ]; then
 	rm -rf "$PC_PATH"
 fi
 mkdir -p "$PC_PATH"
 
 # --------------------------------------------------------------
-echo -e "Building zlib..."
+echo "Building zlib..."
 
 LIB_VERSION="${ZLIB_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -184,7 +183,7 @@ pushd zlib >/dev/null
 
 ZLIB_DIR="$(pwd)"
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	rm -f .already-built
 	download_lib $LIB_URL $LIB_ARCHIVE
 
@@ -208,7 +207,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building libcurl..."
+echo "Building libcurl..."
 
 LIB_VERSION="${CURL_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
@@ -218,7 +217,7 @@ LIB_URL="http://curl.haxx.se/download/"
 mkdir -p libcurl
 pushd libcurl >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -266,7 +265,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building libiconv..."
+echo "Building libiconv..."
 
 LIB_VERSION="${ICONV_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -278,7 +277,7 @@ pushd iconv >/dev/null
 
 ICONV_DIR="$(pwd)"
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	rm -f .already-built
 	download_lib $LIB_URL $LIB_ARCHIVE
 
@@ -302,7 +301,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building libxml2..."
+echo "Building libxml2..."
 
 LIB_VERSION="${XML2_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -312,7 +311,7 @@ LIB_URL="ftp://xmlsoft.org/libxml2/"
 mkdir -p libxml2
 pushd libxml2 >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -342,7 +341,7 @@ popd >/dev/null
 
 # --------------------------------------------------------------
 
-echo -e "Building SDL2..."
+echo "Building SDL2..."
 
 LIB_VERSION="${SDL2_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -352,7 +351,7 @@ LIB_URL="https://libsdl.org/release/"
 mkdir -p sdl2
 pushd sdl2 >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -384,7 +383,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building Boost..."
+echo "Building Boost..."
 
 LIB_VERSION="${BOOST_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
@@ -394,7 +393,7 @@ LIB_URL="https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/"
 mkdir -p boost
 pushd boost >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -429,7 +428,7 @@ popd >/dev/null
 
 # --------------------------------------------------------------
 # TODO: This build takes ages, anything we can exclude?
-echo -e "Building wxWidgets..."
+echo "Building wxWidgets..."
 
 LIB_VERSION="${WXWIDGETS_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
@@ -439,7 +438,7 @@ LIB_URL="http://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/"
 mkdir -p wxwidgets
 pushd wxwidgets >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -472,7 +471,7 @@ if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.alread
     --without-libjpeg"
 	# wxWidgets configure now defaults to targeting 10.5, if not specified,
 	# but that conflicts with our flags
-	if [[ $MIN_OSX_VERSION && ${MIN_OSX_VERSION-_} ]]; then
+	if [ -n "$MIN_OSX_VERSION" ]; then
 		CONF_OPTS="$CONF_OPTS --with-macosx-version-min=$MIN_OSX_VERSION"
 	fi
 	# shellcheck disable=SC2086
@@ -490,7 +489,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building libpng..."
+echo "Building libpng..."
 
 LIB_VERSION="${PNG_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -500,7 +499,7 @@ LIB_URL="http://download.sourceforge.net/libpng/"
 mkdir -p libpng
 pushd libpng >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -526,7 +525,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building freetype..."
+echo "Building freetype..."
 
 LIB_VERSION="${FREETYPE_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -536,7 +535,7 @@ LIB_URL="https://download.savannah.gnu.org/releases/freetype/"
 mkdir -p freetype
 pushd freetype >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -564,7 +563,7 @@ popd >/dev/null
 
 # --------------------------------------------------------------
 # Dependency of vorbis
-echo -e "Building libogg..."
+echo "Building libogg..."
 
 LIB_VERSION="${OGG_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -575,7 +574,7 @@ mkdir -p libogg
 pushd libogg >/dev/null
 OGG_DIR="$(pwd)"
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	rm -f .already-built
 	download_lib $LIB_URL $LIB_ARCHIVE
 
@@ -598,7 +597,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building libvorbis..."
+echo "Building libvorbis..."
 
 LIB_VERSION="${VORBIS_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -608,7 +607,7 @@ LIB_URL="http://downloads.xiph.org/releases/vorbis/"
 mkdir -p vorbis
 pushd vorbis >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -634,7 +633,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building GMP..."
+echo "Building GMP..."
 
 LIB_VERSION="${GMP_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
@@ -646,7 +645,7 @@ pushd gmp >/dev/null
 
 GMP_DIR="$(pwd)"
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -677,7 +676,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building Nettle..."
+echo "Building Nettle..."
 # Also builds hogweed
 
 LIB_VERSION="${NETTLE_VERSION}"
@@ -690,7 +689,7 @@ pushd nettle >/dev/null
 
 NETTLE_DIR="$(pwd)"
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -724,7 +723,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building GnuTLS..."
+echo "Building GnuTLS..."
 
 LIB_VERSION="${GNUTLS_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.xz"
@@ -736,7 +735,7 @@ pushd gnutls >/dev/null
 
 GNUTLS_DIR="$(pwd)"
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -782,7 +781,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building gloox..."
+echo "Building gloox..."
 
 LIB_VERSION="${GLOOX_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
@@ -792,7 +791,7 @@ LIB_URL="http://camaya.net/download/"
 mkdir -p gloox
 pushd gloox >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -829,7 +828,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building ICU..."
+echo "Building ICU..."
 
 LIB_VERSION="${ICU_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION-src.tgz"
@@ -839,7 +838,7 @@ LIB_URL="https://github.com/unicode-org/icu/releases/download/release-69-1/"
 mkdir -p icu
 pushd icu >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -874,7 +873,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building ENet..."
+echo "Building ENet..."
 
 LIB_VERSION="${ENET_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -884,7 +883,7 @@ LIB_URL="http://enet.bespin.org/download/"
 mkdir -p enet
 pushd enet >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -909,7 +908,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building MiniUPnPc..."
+echo "Building MiniUPnPc..."
 
 LIB_VERSION="${MINIUPNPC_VERSION}"
 LIB_ARCHIVE="$LIB_VERSION.tar.gz"
@@ -919,7 +918,7 @@ LIB_URL="http://miniupnp.tuxfamily.org/files/download.php?file="
 mkdir -p miniupnpc
 pushd miniupnpc >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat <.already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -946,7 +945,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building libsodium..."
+echo "Building libsodium..."
 
 LIB_VERSION="${SODIUM_VERSION}"
 LIB_ARCHIVE="$SODIUM_VERSION.tar.gz"
@@ -956,7 +955,7 @@ LIB_URL="https://download.libsodium.org/libsodium/releases/"
 mkdir -p libsodium
 pushd libsodium >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$LIB_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 
 	rm -f .already-built
@@ -986,7 +985,7 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building fmt..."
+echo "Building fmt..."
 
 LIB_DIRECTORY="fmt-$FMT_VERSION"
 LIB_ARCHIVE="$FMT_VERSION.tar.gz"
@@ -995,7 +994,7 @@ LIB_URL="https://github.com/fmtlib/fmt/archive/"
 mkdir -p fmt
 pushd fmt >/dev/null
 
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$FMT_VERSION" ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$FMT_VERSION" ]; then
 	INSTALL_DIR="$(pwd)"
 	rm -f .already-built
 
@@ -1029,14 +1028,14 @@ fi
 popd >/dev/null
 
 # --------------------------------------------------------------
-echo -e "Building Molten VK..."
+echo "Building Molten VK..."
 LIB_DIRECTORY="MoltenVK-$MOLTENVK_VERSION"
 LIB_ARCHIVE="MoltenVK-$MOLTENVK_VERSION.tar.gz"
 LIB_URL="https://releases.wildfiregames.com/libs/"
 
 mkdir -p "molten-vk"
 pushd "molten-vk" >/dev/null
-if [[ $force_rebuild == "true" ]] || [[ ! -e .already-built ]] || [[ "$(<.already-built)" != "$MOLTENVK_VERSION" ]] || [[ ! -e ../../../binaries/system/libMoltenVK.dylib ]]; then
+if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$MOLTENVK_VERSION" ] || [ ! -e ../../../binaries/system/libMoltenVK.dylib ]; then
 	INSTALL_DIR="../../../../binaries/system/"
 	rm -f .already-built
 	download_lib $LIB_URL $LIB_ARCHIVE
@@ -1071,7 +1070,7 @@ fi
 # SpiderMonkey - bundled, no download
 pushd ../source/spidermonkey/ >/dev/null
 
-if [[ $force_rebuild == "true" ]]; then
+if [ $force_rebuild = "true" ]; then
 	rm -f .already-built
 fi
 
@@ -1085,7 +1084,7 @@ popd >/dev/null
 # NVTT - bundled, no download
 pushd ../source/nvtt >/dev/null
 
-if [[ $force_rebuild == "true" ]]; then
+if [ $force_rebuild = "true" ]; then
 	rm -f .already-built
 fi
 
@@ -1098,7 +1097,7 @@ popd >/dev/null
 # FCollada - bundled, no download
 pushd ../source/fcollada/ >/dev/null
 
-if [[ $force_rebuild == "true" ]]; then
+if [ $force_rebuild = "true" ]; then
 	rm -f .already-built
 fi
 
