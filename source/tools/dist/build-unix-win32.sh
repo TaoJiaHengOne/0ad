@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -ev
 
 XZOPTS="-9 -e"
@@ -15,13 +15,13 @@ tar cf "$PREFIX"-unix-build.tar \
 	--exclude='libraries/source/spidermonkey/lib*' \
 	--exclude='source/test_root.cpp' \
 	-s "|.|$PREFIX/~|" \
-	{source,build,libraries/source,binaries/system/readme.txt,binaries/data/l10n,binaries/data/tests,binaries/data/mods/_test.*,*.txt}
+	source build libraries/source binaries/system/readme.txt binaries/data/l10n binaries/data/tests binaries/data/mods/_test.* ./*.txt
 
 tar cf "$PREFIX"-unix-data.tar \
 	--exclude='binaries/data/config/dev.cfg' \
 	-s "|archives|$PREFIX/binaries/data/mods|" \
 	-s "|binaries|$PREFIX/binaries|" \
-	binaries/data/{config,tools} archives/
+	binaries/data/config binaries/data/tools archives/
 # TODO: ought to include generated docs in here, perhaps?
 
 # Compress
@@ -45,12 +45,18 @@ makensis -V4 -nocd \
 	source/tools/dist/0ad.nsi
 
 # Fix permissions
-chmod -f 644 "${PREFIX}"-{unix-{build,data}.tar.xz,win32.exe}
+chmod -f 644 "${PREFIX}-unix-build.tar.xz"
+chmod -f 644 "${PREFIX}-unix-data.tar.xz"
+chmod -f 644 "${PREFIX}-win32.exe"
 
 # Print digests for copying into wiki page
-shasum -a 1 "${PREFIX}"-{unix-{build,data}.tar.xz,win32.exe}
+shasum -a 1 "${PREFIX}-unix-build.tar.xz"
+shasum -a 1 "${PREFIX}-unix-data.tar.xz"
+shasum -a 1 "${PREFIX}-win32.exe"
 
 if [ "$DO_GZIP" = true ]; then
-	chmod -f 644 "${PREFIX}"-unix-{build,data}.tar.gz
-	shasum -a 1 "${PREFIX}"-unix-{build,data}.tar.gz
+	chmod -f 644 "${PREFIX}-unix-build.tar.gz"
+	chmod -f 644 "${PREFIX}-unix-data.tar.gz"
+	shasum -a 1 "${PREFIX}-unix-build.tar.gz"
+	shasum -a 1 "${PREFIX}-unix-data.tar.gz"
 fi
