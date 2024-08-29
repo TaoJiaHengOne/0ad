@@ -21,6 +21,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# ruff: noqa: SIM115
+
 import glob
 import os
 import sys
@@ -271,9 +273,11 @@ def CalcUnit(UnitName, existingUnit=None):
                 Template.find("./Resistance/Entity/Damage/" + atttype)
             )
 
-    if Template.find("./UnitMotion") is not None:
-        if Template.find("./UnitMotion/WalkSpeed") is not None:
-            unit["WalkSpeed"] = ExtractValue(Template.find("./UnitMotion/WalkSpeed"))
+    if (
+        Template.find("./UnitMotion") is not None
+        and Template.find("./UnitMotion/WalkSpeed") is not None
+    ):
+        unit["WalkSpeed"] = ExtractValue(Template.find("./UnitMotion/WalkSpeed"))
 
     if Template.find("./Identity/VisibleClasses") is not None:
         newClasses = Template.find("./Identity/VisibleClasses").text.split(" ")

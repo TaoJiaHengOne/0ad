@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import codecs
 import math
 
 import cairo
@@ -87,9 +86,8 @@ class Glyph:
 
 # Load the set of characters contained in the given text file
 def load_char_list(filename):
-    f = codecs.open(filename, "r", "utf-8")
-    chars = f.read()
-    f.close()
+    with open(filename) as f:
+        chars = f.read()
     return set(chars)
 
 
@@ -169,33 +167,31 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
         surface.write_to_png(f"{outname}.png")
 
         # Output the .fnt file with all the glyph positions etc
-        fnt = open(f"{outname}.fnt", "w")
-        fnt.write("101\n")
-        fnt.write("%d %d\n" % (w, h))
-        fnt.write("%s\n" % ("rgba" if "colour" in renderstyle else "a"))
-        fnt.write("%d\n" % len(glyphs))
-        fnt.write("%d\n" % linespacing)
-        fnt.write("%d\n" % charheight)
-        # sorting unneeded, as glyphs are added in increasing order
-        # glyphs.sort(key = lambda g: ord(g.char))
-        for g in glyphs:
-            x0 = g.x0
-            y0 = g.y0
-            # UGLY HACK: see http://trac.wildfiregames.com/ticket/1039 ;
-            # to handle a-macron-acute characters without the hassle of
-            # doing proper OpenType GPOS layout (which the  font
-            # doesn't support anyway), we'll just shift the combining acute
-            # glyph by an arbitrary amount to make it roughly the right
-            # place when used after an a-macron glyph.
-            if ord(g.char) == 0x0301:
-                y0 += charheight / 3
+        with open(f"{outname}.fnt", "w") as fnt:
+            fnt.write("101\n")
+            fnt.write("%d %d\n" % (w, h))
+            fnt.write("%s\n" % ("rgba" if "colour" in renderstyle else "a"))
+            fnt.write("%d\n" % len(glyphs))
+            fnt.write("%d\n" % linespacing)
+            fnt.write("%d\n" % charheight)
+            # sorting unneeded, as glyphs are added in increasing order
+            # glyphs.sort(key = lambda g: ord(g.char))
+            for g in glyphs:
+                x0 = g.x0
+                y0 = g.y0
+                # UGLY HACK: see http://trac.wildfiregames.com/ticket/1039 ;
+                # to handle a-macron-acute characters without the hassle of
+                # doing proper OpenType GPOS layout (which the  font
+                # doesn't support anyway), we'll just shift the combining acute
+                # glyph by an arbitrary amount to make it roughly the right
+                # place when used after an a-macron glyph.
+                if ord(g.char) == 0x0301:
+                    y0 += charheight / 3
 
-            fnt.write(
-                "%d %d %d %d %d %d %d %d\n"
-                % (ord(g.char), g.pos.x, h - g.pos.y, g.w, g.h, -x0, y0, g.xadvance)
-            )
-
-        fnt.close()
+                fnt.write(
+                    "%d %d %d %d %d %d %d %d\n"
+                    % (ord(g.char), g.pos.x, h - g.pos.y, g.w, g.h, -x0, y0, g.xadvance)
+                )
 
         return
     print("Failed to fit glyphs in texture")

@@ -42,9 +42,11 @@ from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFol
 poLocations = []
 for root, folders, _filenames in os.walk(projectRootDirectory):
     for folder in folders:
-        if folder == l10nFolderName:
-            if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
-                poLocations.append(os.path.join(root, folder))
+        if folder != l10nFolderName:
+            continue
+
+        if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
+            poLocations.append(os.path.join(root, folder))
 
 creditsLocation = os.path.join(
     projectRootDirectory,
@@ -122,6 +124,5 @@ for langCode, langList in sorted(langsLists.items()):
 newJSONData["Content"] = sorted(newJSONData["Content"], key=lambda x: x["LangName"])
 
 # Save the JSON data to the credits file
-creditsFile = open(creditsLocation, "w", encoding="utf-8")
-json.dump(newJSONData, creditsFile, indent=4)
-creditsFile.close()
+with open(creditsLocation, "w", encoding="utf-8") as creditsFile:
+    json.dump(newJSONData, creditsFile, indent=4)

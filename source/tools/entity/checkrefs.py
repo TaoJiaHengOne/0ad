@@ -273,12 +273,14 @@ class CheckRefs:
         custom_phase_techs = []
         for fp, _ in self.find_files("simulation/data/technologies", "json"):
             path_str = str(fp)
-            if "phase" in path_str:
-                # Get the last part of the phase tech name.
-                if Path(path_str).stem.split("_")[-1] in existing_civs:
-                    custom_phase_techs.append(
-                        fp.relative_to("simulation/data/technologies").as_posix()
-                    )
+            if "phase" not in path_str:
+                continue
+
+            # Get the last part of the phase tech name.
+            if Path(path_str).stem.split("_")[-1] in existing_civs:
+                custom_phase_techs.append(
+                    fp.relative_to("simulation/data/technologies").as_posix()
+                )
 
         return custom_phase_techs
 
@@ -302,27 +304,28 @@ class CheckRefs:
                 if (
                     entity.find("VisualActor") is not None
                     and entity.find("VisualActor").find("Actor") is not None
+                    and entity.find("Identity") is not None
                 ):
-                    if entity.find("Identity") is not None:
-                        phenotype_tag = entity.find("Identity").find("Phenotype")
-                        phenotypes = (
-                            phenotype_tag.text.split()
-                            if (phenotype_tag is not None and phenotype_tag.text)
-                            else ["default"]
-                        )
-                        actor = entity.find("VisualActor").find("Actor")
-                        if "{phenotype}" in actor.text:
-                            for phenotype in phenotypes:
-                                # See simulation2/components/CCmpVisualActor.cpp and Identity.js
-                                # for explanation.
-                                actor_path = actor.text.replace("{phenotype}", phenotype)
-                                self.deps.append((fp, Path(f"art/actors/{actor_path}")))
-                        else:
-                            actor_path = actor.text
+                    phenotype_tag = entity.find("Identity").find("Phenotype")
+                    phenotypes = (
+                        phenotype_tag.text.split()
+                        if (phenotype_tag is not None and phenotype_tag.text)
+                        else ["default"]
+                    )
+                    actor = entity.find("VisualActor").find("Actor")
+                    if "{phenotype}" in actor.text:
+                        for phenotype in phenotypes:
+                            # See simulation2/components/CCmpVisualActor.cpp and Identity.js
+                            # for explanation.
+                            actor_path = actor.text.replace("{phenotype}", phenotype)
                             self.deps.append((fp, Path(f"art/actors/{actor_path}")))
-                        foundation_actor = entity.find("VisualActor").find("FoundationActor")
-                        if foundation_actor is not None:
-                            self.deps.append((fp, Path(f"art/actors/{foundation_actor.text}")))
+                    else:
+                        actor_path = actor.text
+                        self.deps.append((fp, Path(f"art/actors/{actor_path}")))
+                    foundation_actor = entity.find("VisualActor").find("FoundationActor")
+                    if foundation_actor is not None:
+                        self.deps.append((fp, Path(f"art/actors/{foundation_actor.text}")))
+
                 if entity.find("Sound") is not None:
                     phenotype_tag = entity.find("Identity").find("Phenotype")
                     phenotypes = (

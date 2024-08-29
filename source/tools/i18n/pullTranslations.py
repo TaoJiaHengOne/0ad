@@ -25,12 +25,14 @@ from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFol
 def main():
     for root, folders, _ in os.walk(projectRootDirectory):
         for folder in folders:
-            if folder == l10nFolderName:
-                if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
-                    path = os.path.join(root, folder)
-                    os.chdir(path)
-                    print(f"INFO: Starting to pull translations in {path}...")
-                    subprocess.run(["tx", "pull", "-a", "-f"], check=False)
+            if folder != l10nFolderName:
+                continue
+
+            if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
+                path = os.path.join(root, folder)
+                os.chdir(path)
+                print(f"INFO: Starting to pull translations in {path}...")
+                subprocess.run(["tx", "pull", "-a", "-f"], check=False)
 
 
 if __name__ == "__main__":

@@ -41,32 +41,36 @@ def main():
 
     for root, folders, _ in os.walk(projectRootDirectory):
         for folder in folders:
-            if folder == l10nFolderName:
-                if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
-                    path = os.path.join(root, folder, "*.po")
-                    files = glob.glob(path)
-                    for file in files:
-                        usernames = []
-                        reached = False
-                        for line in fileinput.input(
-                            file.replace("\\", "/"), inplace=True, encoding="utf-8"
-                        ):
-                            if reached:
-                                if line == "# \n":
-                                    line = ""
-                                m = translatorMatch.match(line)
-                                if m:
-                                    if m.group(1) in usernames:
-                                        line = ""
-                                    else:
-                                        line = m.group(1) + m.group(2) + "\n"
-                                        usernames.append(m.group(1))
-                                m2 = lastTranslatorMatch.match(line)
-                                if m2:
-                                    line = re.sub(lastTranslatorMatch, r"\1\2", line)
-                            elif line.strip() == "# Translators:":
-                                reached = True
-                            sys.stdout.write(line)
+            if folder != l10nFolderName:
+                continue
+
+            if not os.path.exists(os.path.join(root, folder, transifexClientFolder)):
+                continue
+
+            path = os.path.join(root, folder, "*.po")
+            files = glob.glob(path)
+            for file in files:
+                usernames = []
+                reached = False
+                for line in fileinput.input(
+                    file.replace("\\", "/"), inplace=True, encoding="utf-8"
+                ):
+                    if reached:
+                        if line == "# \n":
+                            line = ""
+                        m = translatorMatch.match(line)
+                        if m:
+                            if m.group(1) in usernames:
+                                line = ""
+                            else:
+                                line = m.group(1) + m.group(2) + "\n"
+                                usernames.append(m.group(1))
+                        m2 = lastTranslatorMatch.match(line)
+                        if m2:
+                            line = re.sub(lastTranslatorMatch, r"\1\2", line)
+                    elif line.strip() == "# Translators:":
+                        reached = True
+                    sys.stdout.write(line)
 
 
 if __name__ == "__main__":

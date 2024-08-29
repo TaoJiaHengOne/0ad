@@ -4,6 +4,7 @@
 
 import os
 import xml.etree.ElementTree as ET
+from contextlib import suppress
 from ctypes import *
 
 
@@ -30,7 +31,8 @@ def log(severity, message):
 clog = CFUNCTYPE(None, c_int, c_char_p)(log)
 # (the CFUNCTYPE must not be GC'd, so try to keep a reference)
 library.set_logger(clog)
-skeleton_definitions = open(f"{binaries}/data/tests/collada/skeletons.xml").read()
+with open(f"{binaries}/data/tests/collada/skeletons.xml") as fd:
+    skeleton_definitions = fd.read()
 library.set_skeleton_definitions(skeleton_definitions, len(skeleton_definitions))
 
 
@@ -63,10 +65,8 @@ def clean_dir(path):
     except OSError:
         pass  # (ignore errors if files are in use)
     # Make sure the directory exists
-    try:
+    with suppress(OSError):
         os.makedirs(path)
-    except OSError:
-        pass  # (ignore errors if it already exists)
 
 
 def create_actor(mesh, texture, anims, props_):
@@ -127,9 +127,10 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     input_filename = f"{test_data}/{test_file}.dae"
     output_filename = f"{test_mod}/art/meshes/{test_file}.pmd"
 
-    file_input = open(input_filename).read()
-    file_output = convert_dae_to_pmd(file_input)
-    open(output_filename, "wb").write(file_output)
+    with open(input_filename) as input_fd, open(output_filename, "wb") as output_fd:
+        file_input = input_fd.read()
+        file_output = convert_dae_to_pmd(file_input)
+        output_fd.write(file_output)
 
     xml = create_actor(
         test_file,
@@ -142,10 +143,12 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
         ],
         [("helmet", "teapot_basic_static")],
     )
-    open(f"{test_mod}/art/actors/{test_file}.xml", "w").write(xml)
+    with open(f"{test_mod}/art/actors/{test_file}.xml", "w") as fd:
+        fd.write(xml)
 
     xml = create_actor_static(test_file, "male")
-    open(f"{test_mod}/art/actors/{test_file}_static.xml", "w").write(xml)
+    with open(f"{test_mod}/art/actors/{test_file}_static.xml", "w") as fd:
+        fd.write(xml)
 
 # for test_file in ['jav2','jav2b', 'jav2d']:
 for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
@@ -155,6 +158,7 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     input_filename = f"{test_data}/{test_file}.dae"
     output_filename = f"{test_mod}/art/animation/{test_file}.psa"
 
-    file_input = open(input_filename).read()
-    file_output = convert_dae_to_psa(file_input)
-    open(output_filename, "wb").write(file_output)
+    with open(input_filename) as input_fd, open(output_filename, "wb") as output_fd:
+        file_input = input_fd.read()
+        file_output = convert_dae_to_psa(file_input)
+        output_fd.write(file_output)

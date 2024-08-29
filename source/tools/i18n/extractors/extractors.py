@@ -300,9 +300,9 @@ class txt(Extractor):
 
     def extractFromFile(self, filepath):
         with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
-            lineno = 0
-            for line in [line.strip("\n\r") for line in fileObject.readlines()]:
-                lineno += 1
+            for lineno, line in enumerate(
+                [line.strip("\n\r") for line in fileObject.readlines()], start=1
+            ):
                 if line:
                     yield line, None, None, lineno, []
 
@@ -348,7 +348,6 @@ class json(Extractor):
             )
 
     def parseList(self, itemsList):
-        index = 0
         for listItem in itemsList:
             if isinstance(listItem, list):
                 for message, context in self.parseList(listItem):
@@ -356,7 +355,6 @@ class json(Extractor):
             elif isinstance(listItem, dict):
                 for message, context in self.parseDictionary(listItem):
                     yield message, context
-            index += 1
 
     def parseDictionary(self, dictionary):
         for keyword in dictionary:
@@ -398,7 +396,6 @@ class json(Extractor):
         return string, context
 
     def extractList(self, itemsList, keyword):
-        index = 0
         for listItem in itemsList:
             if isinstance(listItem, str):
                 yield self.extractString(listItem, keyword)
@@ -406,7 +403,6 @@ class json(Extractor):
                 extract = self.extractDictionary(listItem[keyword], keyword)
                 if extract:
                     yield extract
-            index += 1
 
     def extractDictionary(self, dictionary, keyword):
         message = dictionary.get("_string", None)
@@ -515,7 +511,8 @@ class ini(Extractor):
         import ConfigParser
 
         config = ConfigParser.RawConfigParser()
-        config.readfp(FakeSectionHeader(open(filepath)))
+        with open(filepath) as fd:
+            config.read_file(FakeSectionHeader(fd))
         for keyword in self.keywords:
             message = config.get("root", keyword).strip('"').strip("'")
             context = None
