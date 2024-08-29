@@ -27,9 +27,6 @@ case "$SCRIPTPATH" in
 		;;
 esac
 
-# Parse command-line options (download options and build options):
-source_libs_dir="source"
-
 without_nvtt=false
 with_system_nvtt=false
 with_system_mozjs=false
@@ -38,8 +35,6 @@ JOBS=${JOBS:="-j2"}
 
 for i in "$@"; do
 	case $i in
-		--source-libs-dir=*) source_libs_dir=${1#*=} ;;
-		--source-libs-dir) die "correct syntax is --source-libs-dir=/path/to/dir" ;;
 		--without-nvtt) without_nvtt=true ;;
 		--with-system-nvtt) with_system_nvtt=true ;;
 		--with-system-mozjs) with_system_mozjs=true ;;
@@ -50,10 +45,10 @@ done
 # Download source libs
 echo "Downloading source libs..."
 echo
-if [ -e "${source_libs_dir}"/.svn ]; then
-	(cd "${source_libs_dir}" && svn cleanup && svn up -r $source_svnrev)
+if [ -e source/.svn ]; then
+	(cd source && svn cleanup && svn up -r $source_svnrev)
 else
-	svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk "${source_libs_dir}"
+	svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk source
 fi
 
 # Build/update bundled external libraries
@@ -71,48 +66,25 @@ case "$(uname -s)" in
 		;;
 esac
 
-(cd "${source_libs_dir}"/fcollada && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "FCollada build failed"
+(cd source/fcollada && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "FCollada build failed"
 echo
 if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
-	(cd "${source_libs_dir}"/nvtt && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "NVTT build failed"
+	(cd source/nvtt && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "NVTT build failed"
 fi
 echo
 if [ "$with_system_mozjs" = "false" ]; then
-	(cd "${source_libs_dir}"/spidermonkey && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "SpiderMonkey build failed"
+	(cd source/spidermonkey && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "SpiderMonkey build failed"
 fi
 echo
 
 echo "Copying built files..."
 # Copy built binaries to binaries/system/
-cp "${source_libs_dir}"/fcollada/bin/* ../binaries/system/
+cp source/fcollada/bin/* ../binaries/system/
 if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
-	cp "${source_libs_dir}"/nvtt/bin/* ../binaries/system/
+	cp source/nvtt/bin/* ../binaries/system/
 fi
 if [ "$with_system_mozjs" = "false" ]; then
-	cp "${source_libs_dir}"/spidermonkey/bin/* ../binaries/system/
+	cp source/spidermonkey/bin/* ../binaries/system/
 fi
-# If a custom source-libs dir was used, includes and static libs should be copied to libraries/source/
-# and all other bundled content should be copied.
-if [ "$source_libs_dir" != "source" ]; then
-	rsync -avzq \
-		--exclude fcollada \
-		--exclude nvtt \
-		--exclude spidermonkey \
-		"${source_libs_dir}"/ source
 
-	mkdir -p source/fcollada
-	cp -r "${source_libs_dir}"/fcollada/include source/fcollada/
-	cp -r "${source_libs_dir}"/fcollada/lib source/fcollada/
-	if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
-		mkdir -p source/nvtt
-		cp -r "${source_libs_dir}"/nvtt/include source/nvtt/
-		cp -r "${source_libs_dir}"/nvtt/lib source/nvtt/
-	fi
-	if [ "$with_system_mozjs" = "false" ]; then
-		mkdir -p source/spidermonkey
-		cp -r "${source_libs_dir}"/spidermonkey/include-unix-debug source/spidermonkey/
-		cp -r "${source_libs_dir}"/spidermonkey/include-unix-release source/spidermonkey/
-		cp -r "${source_libs_dir}"/spidermonkey/lib source/spidermonkey/
-	fi
-fi
 echo "Done."
