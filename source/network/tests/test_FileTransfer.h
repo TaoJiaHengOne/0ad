@@ -28,7 +28,7 @@ namespace
 {
 constexpr const char* MESSAGECONTENT{"Some example message content"};
 
-class MessageQueues : public INetSession
+class MessageQueues final : public INetSession
 {
 public:
 	~MessageQueues() final = default;
