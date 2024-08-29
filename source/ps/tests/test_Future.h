@@ -116,7 +116,7 @@ public:
 
 	void test_move_only_function()
 	{
-		Future<void> future;
+		Future<int> future;
 
 		class MoveOnlyType
 		{
@@ -126,8 +126,12 @@ public:
 			MoveOnlyType& operator=(MoveOnlyType&) = delete;
 			MoveOnlyType(MoveOnlyType&&) = default;
 			MoveOnlyType& operator=(MoveOnlyType&&) = default;
+			int fn() const { return 7; }
 		};
 
-		future.Wrap([t = MoveOnlyType{}]{});
+		auto task = future.Wrap([t = MoveOnlyType{}]{ return t.fn(); });
+		task();
+
+		TS_ASSERT_EQUALS(future.Get(), 7);
 	}
 };
