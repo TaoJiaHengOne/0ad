@@ -14,8 +14,14 @@ build/workspaces/vs2017
 
 # Libraries
 libraries/macos
-libraries/source
 libraries/win32
+
+libraries/source/cxxtest-4.4/*
+libraries/source/fcollada/*
+libraries/source/nvtt/*
+libraries/source/spidermonkey/*
+!libraries/source/**/build.sh
+!libraries/source/**/patches/
 
 # premake5 build files, adapted from upstream
 build/premake/premake5/**/.gitignore

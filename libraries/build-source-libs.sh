@@ -6,10 +6,6 @@ die()
 	exit 1
 }
 
-# SVN revision to checkout for source-libs
-# Update this line when you commit an update to source-libs
-source_svnrev="28207"
-
 if [ "$(uname -s)" = "Darwin" ]; then
 	die "This script should not be used on macOS: use build-macos-libs.sh instead."
 fi
@@ -40,19 +36,6 @@ for i in "$@"; do
 	esac
 done
 
-# Download source libs
-echo "Downloading source libs..."
-echo
-if [ -e source/.svn ]; then
-	(cd source && svn cleanup && svn up -r $source_svnrev)
-else
-	svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk source
-fi
-
-# Build/update bundled external libraries
-echo "Building third-party dependencies..."
-echo
-
 # Some of our makefiles depend on GNU make, so we set some sane defaults if MAKE
 # is not set.
 case "$(uname -s)" in
@@ -64,25 +47,25 @@ case "$(uname -s)" in
 		;;
 esac
 
-(cd source/fcollada && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "FCollada build failed"
-echo
-if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
-	(cd source/nvtt && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "NVTT build failed"
-fi
-echo
-if [ "$with_system_mozjs" = "false" ]; then
-	(cd source/spidermonkey && MAKE=${MAKE} JOBS=${JOBS} ./build.sh) || die "SpiderMonkey build failed"
-fi
+export MAKE JOBS
+
+# Build/update bundled external libraries
+echo "Building third-party dependencies..."
 echo
 
-echo "Copying built files..."
-# Copy built binaries to binaries/system/
-cp source/fcollada/bin/* ../binaries/system/
+./source/cxxtest-4.4/build.sh || die "cxxtest build failed"
+echo
+./source/fcollada/build.sh || die "FCollada build failed"
+echo
 if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
+	./source/nvtt/build.sh || die "NVTT build failed"
 	cp source/nvtt/bin/* ../binaries/system/
 fi
+echo
 if [ "$with_system_mozjs" = "false" ]; then
+	./source/spidermonkey/build.sh || die "SpiderMonkey build failed"
 	cp source/spidermonkey/bin/* ../binaries/system/
 fi
+echo
 
 echo "Done."

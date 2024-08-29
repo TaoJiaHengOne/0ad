@@ -55,7 +55,6 @@ MOLTENVK_VERSION="1.2.2"
 # * NVTT
 # * FCollada
 # --------------------------------------------------------------
-source_svnrev="28207"
 # --------------------------------------------------------------
 # Provided by OS X:
 # * OpenAL
@@ -1120,55 +1119,27 @@ echo "Building Molten VK..."
 # --------------------------------------------------------------------
 # The following libraries are shared on different OSes and may
 # be customized, so we build and install them from bundled sources
-# (served over SVN)
+# (served over SVN or other sources)
 # --------------------------------------------------------------------
 
-if [ -e ../source/.svn ]; then
-	(
-		cd ../source
-		svn cleanup
-		svn up -r $source_svnrev
-	) || die "Failed update of source libs"
-else
-	svn co -r $source_svnrev https://svn.wildfiregames.com/public/source-libs/trunk ../source
-fi
-
-# SpiderMonkey - bundled, no download
-(
-	cd ../source/spidermonkey/
-
-	if [ $force_rebuild = "true" ]; then
-		rm -f .already-built
-	fi
-
-	# Use the regular build script for SM.
-	JOBS="$JOBS" ZLIB_DIR="$ZLIB_DIR" ARCH="$ARCH" ./build.sh || die "Error building spidermonkey"
-	cp bin/* ../../../binaries/system/
-
-) || die "Failed to build spidermonkey"
+export ARCH CXXFLAGS CFLAGS LDFLAGS CMAKE_FLAGS JOBS
 
 # --------------------------------------------------------------
-# NVTT - bundled, no download
-(
-	cd ../source/nvtt
+echo "Building cxxtest..."
 
-	if [ $force_rebuild = "true" ]; then
-		rm -f .already-built
-	fi
-
-	CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CMAKE_FLAGS=$CMAKE_FLAGS JOBS="$JOBS" ./build.sh || die "Error building NVTT"
-	cp bin/* ../../../binaries/system/
-) || die "Failed to build nvtt"
+./../source/cxxtest-4.4/build.sh || die "cxxtest build failed"
 
 # --------------------------------------------------------------
-# FCollada - bundled, no download
-(
-	cd ../source/fcollada/
+echo "Building FCollada..."
 
-	if [ $force_rebuild = "true" ]; then
-		rm -f .already-built
-	fi
+./../source/fcollada/build.sh || die "FCollada build failed"
 
-	CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" JOBS="$JOBS" ./build.sh || die "Error building FCollada"
-	cp bin/* ../../../binaries/system/
-) || die "Failed to build fcollada"
+# --------------------------------------------------------------
+echo "Building nvtt..."
+
+./../source/nvtt/build.sh || die "NVTT build failed"
+
+# --------------------------------------------------------------
+echo "Building Spidermonkey..."
+
+./../source/spidermonkey/build.sh || die "SpiderMonkey build failed"
