@@ -720,7 +720,7 @@ void CShaderProgram::BindOutdatedDescriptorSets(
 		descriptortSets.emplace_back(STORAGE_IMAGE_BINDING_SET, m_StorageImageBinding->UpdateAndReturnDescriptorSet());
 	}
 
-	for (const auto [firstSet, descriptorSet] : descriptortSets)
+	for (const auto& [firstSet, descriptorSet] : descriptortSets)
 	{
 		vkCmdBindDescriptorSets(
 			commandContext.GetCommandBuffer(), GetPipelineBindPoint(), GetPipelineLayout(),
