@@ -18,11 +18,9 @@ cd "$(dirname "$0")" || die
 # Now in libraries/ (where we assume this script resides)
 
 # Check for whitespace in absolute path; this will cause problems in the
-# SpiderMonkey build and maybe elsewhere, so we just forbid it
-# Use perl as an alternative to readlink -f, which isn't available on BSD
-SCRIPTPATH=$(perl -MCwd -e 'print Cwd::abs_path shift' "$0")
-case "$SCRIPTPATH" in
-	*\ *)
+# SpiderMonkey build and maybe elsewhere, so we just forbid it.
+case "$(realpath .)" in
+	*[[:space:]]*)
 		die "Absolute path contains whitespace, which will break the build - move the game to a path without spaces"
 		;;
 esac
