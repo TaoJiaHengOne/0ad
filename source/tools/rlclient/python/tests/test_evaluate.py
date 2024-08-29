@@ -5,10 +5,10 @@ import zero_ad
 
 game = zero_ad.ZeroAD("http://localhost:6000")
 scriptdir = path.dirname(path.realpath(__file__))
-with open(path.join(scriptdir, "..", "samples", "arcadia.json")) as f:
+with open(path.join(scriptdir, "..", "samples", "arcadia.json"), encoding="utf-8") as f:
     config = f.read()
 
-with open(path.join(scriptdir, "fastactions.js")) as f:
+with open(path.join(scriptdir, "fastactions.js"), encoding="utf-8") as f:
     fastactions = f.read()
 
 

@@ -31,7 +31,7 @@ def log(severity, message):
 clog = CFUNCTYPE(None, c_int, c_char_p)(log)
 # (the CFUNCTYPE must not be GC'd, so try to keep a reference)
 library.set_logger(clog)
-with open(f"{binaries}/data/tests/collada/skeletons.xml") as fd:
+with open(f"{binaries}/data/tests/collada/skeletons.xml", encoding="utf-8") as fd:
     skeleton_definitions = fd.read()
 library.set_skeleton_definitions(skeleton_definitions, len(skeleton_definitions))
 
@@ -127,7 +127,10 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     input_filename = f"{test_data}/{test_file}.dae"
     output_filename = f"{test_mod}/art/meshes/{test_file}.pmd"
 
-    with open(input_filename) as input_fd, open(output_filename, "wb") as output_fd:
+    with (
+        open(input_filename, encoding="utf-8") as input_fd,
+        open(output_filename, "wb") as output_fd,
+    ):
         file_input = input_fd.read()
         file_output = convert_dae_to_pmd(file_input)
         output_fd.write(file_output)
@@ -143,11 +146,11 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
         ],
         [("helmet", "teapot_basic_static")],
     )
-    with open(f"{test_mod}/art/actors/{test_file}.xml", "w") as fd:
+    with open(f"{test_mod}/art/actors/{test_file}.xml", "w", encoding="utf-8") as fd:
         fd.write(xml)
 
     xml = create_actor_static(test_file, "male")
-    with open(f"{test_mod}/art/actors/{test_file}_static.xml", "w") as fd:
+    with open(f"{test_mod}/art/actors/{test_file}_static.xml", "w", encoding="utf-8") as fd:
         fd.write(xml)
 
 # for test_file in ['jav2','jav2b', 'jav2d']:
@@ -158,7 +161,10 @@ for test_file in ["xsitest3c", "xsitest3e", "jav2d", "jav2d2"]:
     input_filename = f"{test_data}/{test_file}.dae"
     output_filename = f"{test_mod}/art/animation/{test_file}.psa"
 
-    with open(input_filename) as input_fd, open(output_filename, "wb") as output_fd:
+    with (
+        open(input_filename, encoding="utf-8") as input_fd,
+        open(output_filename, "wb") as output_fd,
+    ):
         file_input = input_fd.read()
         file_output = convert_dae_to_psa(file_input)
         output_fd.write(file_output)

@@ -126,7 +126,10 @@ for xmlFile in args.files:
         os.rename(pmpFile + "~", pmpFile)
 
     if os.path.isfile(xmlFile):
-        with open(xmlFile) as f1, open(xmlFile + "~", "w") as f2:
+        with (
+            open(xmlFile, encoding="utf-8") as f1,
+            open(xmlFile + "~", "w", encoding="utf-8") as f2,
+        ):
             data = f1.read()
 
             # bump version number (rely on how Atlas formats the XML)

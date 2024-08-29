@@ -511,7 +511,7 @@ class ini(Extractor):
         import ConfigParser
 
         config = ConfigParser.RawConfigParser()
-        with open(filepath) as fd:
+        with open(filepath, encoding="utf-8") as fd:
             config.read_file(FakeSectionHeader(fd))
         for keyword in self.keywords:
             message = config.get("root", keyword).strip('"').strip("'")

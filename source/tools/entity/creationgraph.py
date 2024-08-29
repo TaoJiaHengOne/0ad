@@ -20,7 +20,7 @@ def main():
     vfs_root = Path(__file__).resolve().parents[3] / "binaries" / "data" / "mods"
     simul_templates_path = Path("simulation/templates")
     simul_template_entity = SimulTemplateEntity(vfs_root)
-    with open("creation.dot", "w") as dot_f:
+    with open("creation.dot", "w", encoding="utf-8") as dot_f:
         dot_f.write("digraph G {\n")
         files = sorted(find_entities(vfs_root))
         for f in files:

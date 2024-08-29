@@ -86,7 +86,7 @@ class Glyph:
 
 # Load the set of characters contained in the given text file
 def load_char_list(filename):
-    with open(filename) as f:
+    with open(filename, encoding="utf-8") as f:
         chars = f.read()
     return set(chars)
 
@@ -167,7 +167,7 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
         surface.write_to_png(f"{outname}.png")
 
         # Output the .fnt file with all the glyph positions etc
-        with open(f"{outname}.fnt", "w") as fnt:
+        with open(f"{outname}.fnt", "w", encoding="utf-8") as fnt:
             fnt.write("101\n")
             fnt.write("%d %d\n" % (w, h))
             fnt.write("%s\n" % ("rgba" if "colour" in renderstyle else "a"))

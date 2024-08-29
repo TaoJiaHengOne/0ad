@@ -33,7 +33,7 @@ game = zero_ad.ZeroAD("http://localhost:6000")
 # Load the Arcadia map
 samples_dir = path.dirname(path.realpath(__file__))
 scenario_config_path = path.join(samples_dir, "arcadia.json")
-with open(scenario_config_path, encoding="utf8") as f:
+with open(scenario_config_path, encoding="utf-8") as f:
     arcadia_config = f.read()
 
 state = game.reset(arcadia_config)

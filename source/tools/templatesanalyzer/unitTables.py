@@ -594,6 +594,7 @@ def writeHTML():
     f = open(
         os.path.realpath(__file__).replace("unitTables.py", "") + "unit_summary_table.html",
         "w",
+        encoding="utf-8",
     )
 
     f.write(
@@ -680,7 +681,11 @@ differences between the two.
         TemplatesByParent[parent].sort(key=lambda x: Civs.index(x[1]["Civ"]))
         for tp in TemplatesByParent[parent]:
             isChanged = False
-            ff = open(os.path.realpath(__file__).replace("unitTables.py", "") + ".cache", "w")
+            ff = open(
+                os.path.realpath(__file__).replace("unitTables.py", "") + ".cache",
+                "w",
+                encoding="utf-8",
+            )
 
             ff.write("<tr>")
             ff.write(
@@ -771,7 +776,10 @@ differences between the two.
             ff.write("</tr>\n")
 
             ff.close()  # to actually write into the file
-            with open(os.path.realpath(__file__).replace("unitTables.py", "") + ".cache") as ff:
+            with open(
+                os.path.realpath(__file__).replace("unitTables.py", "") + ".cache",
+                encoding="utf-8",
+            ) as ff:
                 unitStr = ff.read()
 
             if showChangedOnly:

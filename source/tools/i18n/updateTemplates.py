@@ -101,7 +101,7 @@ def generatePOT(templateSettings, rootPath):
 
 
 def generateTemplatesForMessagesFile(messagesFilePath):
-    with open(messagesFilePath) as fileObject:
+    with open(messagesFilePath, encoding="utf-8") as fileObject:
         settings = json.load(fileObject)
 
     for templateSettings in settings:
