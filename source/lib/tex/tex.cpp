@@ -789,7 +789,7 @@ void Tex::UpdateMIPLevels()
 
 	const u32 dataPadding = (m_Flags & TEX_DXT) != 0 ? 4 : 1;
 	u32 levelWidth = m_Width, levelHeight = m_Height;
-	for (u32 level = 0; ; ++level)
+	for (;;)
 	{
 		const u32 levelDataSize = round_up(levelWidth, dataPadding) * round_up(levelHeight, dataPadding) * m_Bpp / 8;
 		m_MIPLevels.emplace_back();

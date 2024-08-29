@@ -152,13 +152,10 @@ json_spirit::Value BuildJSONNode(AtNode::Ptr p)
 		AtNode::child_maptype::const_iterator lower = p->m_Children.lower_bound("item");
 		AtNode::child_maptype::const_iterator upper = p->m_Children.upper_bound("item");
 
-		unsigned int idx = 0;
 		for (AtNode::child_maptype::const_iterator it = lower; it != upper; ++it)
 		{
 			json_spirit::Value child = BuildJSONNode(it->second);
 			rval.push_back(child);
-
-			++idx;
 		}
 
 		return rval;
