@@ -29,12 +29,12 @@ class Point:
         self.y = y
 
     def __cmp__(self, other):
-        """Compares the starting position of height slices"""
+        """Compare the starting position of height slices."""
         return self.x - other.x
 
 
 class RectanglePacker:
-    """Base class for rectangle packing algorithms
+    """Base class for rectangle packing algorithms.
 
     By uniting all rectangle packers under this common base class, you can
     easily switch between different algorithms to find the most efficient or
@@ -45,7 +45,7 @@ class RectanglePacker:
     """
 
     def __init__(self, packingAreaWidth, packingAreaHeight):
-        """Initializes a new rectangle packer
+        """Initialize a new rectangle packer.
 
         packingAreaWidth: Maximum width of the packing area
         packingAreaHeight: Maximum height of the packing area
@@ -54,7 +54,7 @@ class RectanglePacker:
         self.packingAreaHeight = packingAreaHeight
 
     def Pack(self, rectangleWidth, rectangleHeight):
-        """Allocates space for a rectangle in the packing area
+        """Allocate space for a rectangle in the packing area.
 
         rectangleWidth: Width of the rectangle to allocate
         rectangleHeight: Height of the rectangle to allocate
@@ -69,7 +69,7 @@ class RectanglePacker:
         return point
 
     def TryPack(self, rectangleWidth, rectangleHeight):
-        """Tries to allocate space for a rectangle in the packing area
+        """Try to allocate space for a rectangle in the packing area.
 
         rectangleWidth: Width of the rectangle to allocate
         rectangleHeight: Height of the rectangle to allocate
@@ -102,8 +102,7 @@ class DumbRectanglePacker(RectanglePacker):
 
 
 class CygonRectanglePacker(RectanglePacker):
-    """
-    Packer using a custom algorithm by Markus 'Cygon' Ewald
+    """Packer using a custom algorithm by Markus 'Cygon' Ewald.
 
     Algorithm conceived by Markus Ewald (cygon at nuclex dot org), though
     I'm quite sure I'm not the first one to come up with it :)
@@ -120,7 +119,7 @@ class CygonRectanglePacker(RectanglePacker):
     """
 
     def __init__(self, packingAreaWidth, packingAreaHeight):
-        """Initializes a new rectangle packer
+        """Initialize a new rectangle packer.
 
         packingAreaWidth: Maximum width of the packing area
         packingAreaHeight: Maximum height of the packing area
@@ -134,7 +133,7 @@ class CygonRectanglePacker(RectanglePacker):
         self.heightSlices.append(Point(0, 0))
 
     def TryPack(self, rectangleWidth, rectangleHeight):
-        """Tries to allocate space for a rectangle in the packing area
+        """Try to allocate space for a rectangle in the packing area.
 
         rectangleWidth: Width of the rectangle to allocate
         rectangleHeight: Height of the rectangle to allocate
@@ -160,7 +159,7 @@ class CygonRectanglePacker(RectanglePacker):
         return placement
 
     def tryFindBestPlacement(self, rectangleWidth, rectangleHeight):
-        """Finds the best position for a rectangle of the given dimensions
+        """Find the best position for a rectangle of the given dimensions.
 
         rectangleWidth: Width of the rectangle to find a position for
         rectangleHeight: Height of the rectangle to find a position for
@@ -234,7 +233,7 @@ class CygonRectanglePacker(RectanglePacker):
         return Point(self.heightSlices[bestSliceIndex].x, bestSliceY)
 
     def integrateRectangle(self, left, width, bottom):
-        """Integrates a new rectangle into the height slice table
+        """Integrate a new rectangle into the height slice table.
 
         left: Position of the rectangle's left side
         width: Width of the rectangle

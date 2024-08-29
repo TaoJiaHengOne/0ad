@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
+"""Remove unnecessary personal data of translators.
+
 This file removes unneeded personal data from the translators. Most notably
 the e-mail addresses. We need to translators' nicks for the credits, but no
 more data is required.

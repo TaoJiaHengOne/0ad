@@ -32,7 +32,7 @@ from textwrap import dedent
 
 
 def pathmatch(mask, path):
-    """Matches paths to a mask, where the mask supports * and **.
+    """Match paths to a mask, where the mask supports * and **.
 
     Paths use / as the separator
     * matches a sequence of characters without /.
@@ -66,7 +66,7 @@ class Extractor:
             self.excludeMasks = []
 
     def run(self):
-        """Extracts messages.
+        """Extract messages.
 
         :return:    An iterator over ``(message, plural, context, (location, pos), comment)``
                     tuples.
@@ -106,7 +106,7 @@ class Extractor:
                                 yield message, plural, context, (filename, position), comments
 
     def extractFromFile(self, filepath):
-        """Extracts messages from a specific file.
+        """Extract messages from a specific file.
 
         :return:    An iterator over ``(message, plural, context, position, comments)`` tuples.
         :rtype:     ``iterator``

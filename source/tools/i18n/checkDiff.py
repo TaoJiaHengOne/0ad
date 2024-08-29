@@ -27,7 +27,7 @@ from i18n_helper import projectRootDirectory
 
 
 def get_diff():
-    """Return a diff using svn diff"""
+    """Return a diff using svn diff."""
     os.chdir(projectRootDirectory)
 
     diff_process = subprocess.run(["svn", "diff", "binaries"], capture_output=True, check=False)
@@ -38,7 +38,9 @@ def get_diff():
 
 
 def check_diff(diff: io.StringIO) -> List[str]:
-    """Run through a diff of .po files and check that some of the changes
+    """Check a diff of .po files for meaningful changes.
+
+    Run through a diff of .po files and check that some of the changes
     are real translations changes and not just noise (line changes....).
     The algorithm isn't extremely clever, but it is quite fast.
     """
@@ -97,7 +99,7 @@ def revert_files(files: List[str], verbose=False):
 
 
 def add_untracked(verbose=False):
-    """Add untracked .po files to svn"""
+    """Add untracked .po files to svn."""
     diff_process = subprocess.run(["svn", "st", "binaries"], capture_output=True, check=False)
     if diff_process.stderr != b"":
         print(f"Error running svn st: {diff_process.stderr.decode('utf-8')}. Exiting.")

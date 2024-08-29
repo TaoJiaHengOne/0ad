@@ -50,11 +50,6 @@ class Glyph:
         self.w = bb[2] - bb[0]
         self.h = bb[3] - bb[1]
 
-        # Force multiple of 4, to avoid leakage across S3TC blocks
-        # (TODO: is this useful?)
-        # self.w += (4 - (self.w % 4)) % 4
-        # self.h += (4 - (self.h % 4)) % 4
-
     def pack(self, packer):
         self.pos = packer.Pack(self.w, self.h)
 
@@ -114,7 +109,7 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
 
     (ctx, _) = setup_context(1, 1, renderstyle)
 
-    # TODO this gets the line height from the default font
+    # TODO: this gets the line height from the default font
     # while entire texts can be in the fallback font
     ctx.set_font_face(faceList[0])
     ctx.set_font_size(size + dsizes[ttfNames[0]])
@@ -155,7 +150,6 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
             # Using the dump pacher usually creates bigger textures, but runs faster
             # In practice the size difference is so small it always ends up in the same size
             packer = Packer.DumbRectanglePacker(w, h)
-            # packer = Packer.CygonRectanglePacker(w, h)
             for g in glyphs:
                 g.pack(packer)
         except Packer.OutOfSpaceError:
@@ -174,8 +168,6 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
             fnt.write("%d\n" % len(glyphs))
             fnt.write("%d\n" % linespacing)
             fnt.write("%d\n" % charheight)
-            # sorting unneeded, as glyphs are added in increasing order
-            # glyphs.sort(key = lambda g: ord(g.char))
             for g in glyphs:
                 x0 = g.x0
                 y0 = g.y0

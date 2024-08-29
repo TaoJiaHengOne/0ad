@@ -16,9 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-This file updates the translators credits located in the public mod GUI files, using
-translators names from the .po files.
+"""Update the translator credits.
+
+This file updates the translator credits located in the public mod GUI files, using
+translator names from the .po files.
 
 If translators change their names on Transifex, the script will remove the old names.
 TODO: It should be possible to add people in the list manually, and protect them against

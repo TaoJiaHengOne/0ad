@@ -30,8 +30,8 @@ DEBUG_PREFIX = "X_X "
 
 
 def generate_long_strings(root_path, input_file_name, output_file_name, languages=None):
-    """
-    Generate the 'long strings' debug catalog.
+    """Generate the 'long strings' debug catalog.
+
     This catalog contains the longest singular and plural string,
     found amongst all translated languages or a filtered subset.
     It can be used to check if GUI elements are large enough.
@@ -104,8 +104,8 @@ def generate_long_strings(root_path, input_file_name, output_file_name, language
 
 
 def generate_debug(root_path, input_file_name, output_file_name):
-    """
-    Generate a debug catalog to identify untranslated strings.
+    """Generate a debug catalog to identify untranslated strings.
+
     This prefixes all strings with DEBUG_PREFIX, to easily identify
     untranslated strings while still making the game navigable.
     The catalog is debug.*.po

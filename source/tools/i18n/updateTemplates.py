@@ -29,9 +29,7 @@ messagesFilename = "messages.json"
 
 
 def warnAboutUntouchedMods():
-    """
-    Warn about mods that are not properly configured to get their messages extracted.
-    """
+    """Warn about mods that are not properly configured to get their messages extracted."""
     modsRootFolder = os.path.join(projectRootDirectory, "binaries", "data", "mods")
     untouchedMods = {}
     for modFolder in os.listdir(modsRootFolder):

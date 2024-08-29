@@ -374,7 +374,8 @@ def SortFn(A):
 
 
 def WriteColouredDiff(file, diff, isChanged):
-    """Helper to write coloured text.
+    """Help to write coloured text.
+
     diff value must always be computed as a unit_spec - unit_generic.
     A positive imaginary part represents advantageous trait.
     """
@@ -504,16 +505,18 @@ def computeTemplates(LoadTemplatesIfParent):
 
 
 def computeCivTemplates(Civs: list):
-    """Load Civ specific templates"""
-    # NOTE: whether a Civ can train a certain unit is not recorded in the unit
-    # .xml files, and hence we have to get that info elsewhere, e.g. from the
-    # Civ tree. This should be delayed until this whole parser is based on the
-    # Civ tree itself.
+    """Load Civ specific templates.
 
-    # This function must always ensure that Civ unit parenthood works as
-    # intended, i.e. a unit in a Civ indeed has a 'Civ' field recording its
-    # loyalty to that Civ. Check this when upgrading this script to keep
-    # up with the game engine.
+    NOTE: whether a Civ can train a certain unit is not recorded in the unit
+    .xml files, and hence we have to get that info elsewhere, e.g. from the
+    Civ tree. This should be delayed until this whole parser is based on the
+    Civ tree itself.
+
+    This function must always ensure that Civ unit parenthood works as
+    intended, i.e. a unit in a Civ indeed has a 'Civ' field recording its
+    loyalty to that Civ. Check this when upgrading this script to keep
+    up with the game engine.
+    """
     pwd = os.getcwd()
     os.chdir(basePath)
 
@@ -557,7 +560,7 @@ def computeCivTemplates(Civs: list):
 
 
 def computeTemplatesByParent(templates: dict, Civs: list, CivTemplates: dict):
-    """Get them in the array"""
+    """Get them in the array."""
     # Civs:list -> CivTemplates:dict -> templates:dict -> TemplatesByParent
     TemplatesByParent = {}
     for Civ in Civs:
@@ -590,7 +593,7 @@ efficiencyTable = computeUnitEfficiencyDiff(TemplatesByParent, Civs)
 
 ############################################################
 def writeHTML():
-    """Create the HTML file"""
+    """Create the HTML file."""
     f = open(
         os.path.realpath(__file__).replace("unitTables.py", "") + "unit_summary_table.html",
         "w",

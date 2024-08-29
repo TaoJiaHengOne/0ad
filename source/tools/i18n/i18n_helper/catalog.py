@@ -1,4 +1,4 @@
-"""Wrapper around babel Catalog / .po handling"""
+"""Wrapper around babel Catalog / .po handling."""
 
 from datetime import datetime
 

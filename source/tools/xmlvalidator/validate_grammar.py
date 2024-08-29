@@ -65,22 +65,23 @@ class RelaxNGValidator:
         return not self.inError
 
     def main(self):
-        """Program entry point, parses command line arguments and launches the validation"""
+        """Program entry point, parses command line arguments and launches the validation."""
         # ordered uniq mods (dict maintains ordered keys from python 3.6)
         self.logger.info("Checking %s's integrity.", "|".join(self.mods))
         self.logger.info("The following mods will be loaded: %s.", "|".join(self.mods))
         return self.run()
 
     def find_files(self, vfs_root, mods, vfs_path, *ext_list):
-        """
-        returns a list of 2-size tuple with:
+        """Find files.
+
+        Returns a list of 2-size tuple with:
             - Path relative to the mod base
             - full Path
         """
         full_exts = ["." + ext for ext in ext_list]
 
         def find_recursive(dp, base):
-            """(relative Path, full Path) generator"""
+            """(relative Path, full Path) generator."""
             if dp.is_dir():
                 if dp.name not in (".svn", ".git") and not dp.name.endswith("~"):
                     for fp in dp.iterdir():
@@ -179,7 +180,7 @@ class RelaxNGValidator:
         return realpath(join(self.vfs_root, mod_name, vfs_path))
 
     def get_relaxng_file(self, schemapath):
-        """We look for the highest priority mod relax NG file"""
+        """Get the highest priority mod relax NG file."""
         for mod in self.mods:
             relax_ng_path = self.get_physical_path(mod, schemapath)
             if exists(relax_ng_path):

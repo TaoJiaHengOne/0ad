@@ -33,9 +33,7 @@ class SimulTemplateEntity:
         return main_mod
 
     def apply_layer(self, base_tag, tag):
-        """
-        apply tag layer to base_tag
-        """
+        """Apply tag layer to base_tag."""
         if tag.get("datatype") == "tokens":
             base_tokens = split(r"\s+", base_tag.text or "")
             tokens = split(r"\s+", tag.text or "")
@@ -89,9 +87,7 @@ class SimulTemplateEntity:
         return entity
 
     def _load_inherited(self, base_path, vfs_path, mods, base=None):
-        """
-        vfs_path should be relative to base_path in a mod
-        """
+        # vfs_path should be relative to base_path in a mod
         if "|" in vfs_path:
             paths = vfs_path.split("|", 1)
             base = self._load_inherited(base_path, paths[1], mods, base)
@@ -119,15 +115,16 @@ class SimulTemplateEntity:
 
 
 def find_files(vfs_root, mods, vfs_path, *ext_list):
-    """
-    returns a list of 2-size tuple with:
+    """Find files.
+
+    Returns a list of 2-size tuple with:
         - Path relative to the mod base
         - full Path
     """
     full_exts = ["." + ext for ext in ext_list]
 
     def find_recursive(dp, base):
-        """(relative Path, full Path) generator"""
+        """(relative Path, full Path) generator."""
         if dp.is_dir():
             if dp.name not in (".svn", ".git") and not dp.name.endswith("~"):
                 for fp in dp.iterdir():
