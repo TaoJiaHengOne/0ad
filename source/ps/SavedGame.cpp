@@ -204,7 +204,8 @@ private:
 	std::string* m_SavedState;
 };
 
-Status SavedGames::Load(const std::wstring& name, const ScriptInterface& scriptInterface, JS::MutableHandleValue metadata, std::string& savedState)
+std::optional<SavedGames::LoadResult> SavedGames::Load(const ScriptInterface& scriptInterface,
+	const std::wstring& name)
 {
 	// Determine the filename to load
 	const VfsPath basename(L"saves/" + name);
@@ -212,20 +213,41 @@ Status SavedGames::Load(const std::wstring& name, const ScriptInterface& scriptI
 
 	// Don't crash just because file isn't found, this can happen if the file is deleted from the OS
 	if (!VfsFileExists(filename))
-		return ERR::FILE_NOT_FOUND;
+		return std::nullopt;
 
 	OsPath realPath;
-	WARN_RETURN_STATUS_IF_ERR(g_VFS->GetRealPath(filename, realPath));
+	{
+		const Status status{g_VFS->GetRealPath(filename, realPath)};
+		if (status < 0)
+		{
+			DEBUG_WARN_ERR(status);
+			return std::nullopt;
+		}
+	}
 
 	PIArchiveReader archiveReader = CreateArchiveReader_Zip(realPath);
 	if (!archiveReader)
-		WARN_RETURN(ERR::FAIL);
+	{
+		DEBUG_WARN_ERR(ERR::FAIL);
+		return std::nullopt;
+	}
 
+	std::string savedState;
 	CGameLoader loader(scriptInterface, &savedState);
-	WARN_RETURN_STATUS_IF_ERR(archiveReader->ReadEntries(CGameLoader::ReadEntryCallback, (uintptr_t)&loader));
-	metadata.set(loader.GetMetadata());
+	{
+		const Status status{archiveReader->ReadEntries(CGameLoader::ReadEntryCallback,
+			reinterpret_cast<uintptr_t>(&loader))};
+		if (status < 0)
+		{
+			DEBUG_WARN_ERR(status);
+			return std::nullopt;
+		}
+	}
+	const ScriptRequest rq{scriptInterface};
+	JS::RootedValue metadata{rq.cx, loader.GetMetadata()};
 
-	return INFO::OK;
+	// `std::make_optional` can't be used since `LoadResult` doesn't have a constructor.
+	return {{metadata, std::move(savedState)}};
 }
 
 JS::Value SavedGames::GetSavedGames(const ScriptInterface& scriptInterface)

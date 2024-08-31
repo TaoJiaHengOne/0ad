@@ -237,6 +237,8 @@ public:
 
 	void SendStartGameMessage(const CStr& initAttribs);
 
+	void SendStartSavedGameMessage(const CStr& initAttribs, const CStr& savedState);
+
 	/**
 	 * Call when the client (player or observer) has sent a flare.
 	 */
@@ -283,6 +285,7 @@ private:
 	static bool OnPlayerAssignment(CNetClient* client, CFsmEvent* event);
 	static bool OnInGame(CNetClient* client, CFsmEvent* event);
 	static bool OnGameStart(CNetClient* client, CFsmEvent* event);
+	static bool OnSavedGameStart(CNetClient* client, CFsmEvent* event);
 	static bool OnJoinSyncStart(CNetClient* client, CFsmEvent* event);
 	static bool OnJoinSyncEndCommandBatch(CNetClient* client, CFsmEvent* event);
 	static bool OnFlare(CNetClient* client, CFsmEvent* event);
@@ -298,6 +301,12 @@ private:
 	 * Take ownership of a session object, and use it for all network communication.
 	 */
 	void SetAndOwnSession(CNetClientSession* session);
+
+	/**
+	 * Starts a game with the specified init attributes and saved state. Called
+	 * by the start game and start saved game callbacks.
+	 */
+	void StartGame(const JS::MutableHandleValue initAttributes, const std::string& savedState);
 
 	/**
 	 * Push a message onto the GUI queue listing the current player assignments.
@@ -348,6 +357,8 @@ private:
 
 	/// Serialized game state received when joining an in-progress game
 	std::string m_JoinSyncBuffer;
+
+	std::string m_SavedState;
 
 	/// Time when the server was last checked for timeouts and bad latency
 	std::time_t m_LastConnectionCheck;

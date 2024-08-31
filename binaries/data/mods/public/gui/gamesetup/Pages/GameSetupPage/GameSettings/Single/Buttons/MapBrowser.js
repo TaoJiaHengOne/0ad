@@ -4,6 +4,12 @@ GameSettingControls.MapBrowser = class MapBrowser extends GameSettingControlButt
 	{
 		super(...args);
 
+		if (this.isSavedGame)
+		{
+			this.setHidden(true);
+			return;
+		}
+
 		this.button.tooltip = colorizeHotkey(this.HotkeyTooltip, this.HotkeyConfig);
 		Engine.SetGlobalHotkey(this.HotkeyConfig, "Press", this.onPress.bind(this));
 	}
@@ -25,7 +31,7 @@ GameSettingControls.MapBrowser = class MapBrowser extends GameSettingControlButt
 
 	onPress()
 	{
-		this.setupWindow.pages.MapBrowserPage.openPage();
+		this.setupWindow.pages.MapBrowserPage.openPage(this.enabled);
 	}
 };
 

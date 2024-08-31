@@ -7,7 +7,7 @@ class AIGameSettingControls
 
 SetupWindowPages.AIConfigPage = class
 {
-	constructor(setupWindow)
+	constructor(setupWindow, isSavedGame)
 	{
 		this.gameSettingsController = setupWindow.controls.gameSettingsController;
 
@@ -18,7 +18,8 @@ SetupWindowPages.AIConfigPage = class
 
 		for (let name of this.AIGameSettingControlOrder)
 			this.AIGameSettingControls[name] =
-				new AIGameSettingControls[name](this, undefined, undefined, setupWindow);
+				new AIGameSettingControls[name](this, undefined, undefined, setupWindow,
+					isSavedGame);
 
 		this.aiDescription = new AIDescription(this, setupWindow);
 
@@ -38,12 +39,12 @@ SetupWindowPages.AIConfigPage = class
 		return this.row++;
 	}
 
-	openPage(playerIndex)
+	openPage(playerIndex, enabled)
 	{
 		this.playerIndex = playerIndex;
 
 		for (let handler of this.openPageHandlers)
-			handler(playerIndex);
+			handler(playerIndex, enabled);
 
 		this.aiConfigPage.hidden = false;
 	}

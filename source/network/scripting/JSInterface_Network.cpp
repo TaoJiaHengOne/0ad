@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@
 #include "ps/GUID.h"
 #include "ps/Hashing.h"
 #include "ps/Pyrogenesis.h"
+#include "ps/SavedGame.h"
 #include "ps/Util.h"
 #include "scriptinterface/FunctionWrapper.h"
 #include "scriptinterface/StructuredClone.h"
@@ -62,7 +63,8 @@ bool HasNetClient()
 	return !!g_NetClient;
 }
 
-void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u16 serverPort, bool useSTUN, const CStr& password, bool storeReplay)
+void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u16 serverPort, bool useSTUN,
+	const CStr& password, const bool continueSavedGame, bool storeReplay)
 {
 	ENSURE(!g_NetClient);
 	ENSURE(!g_NetServer);
@@ -70,7 +72,7 @@ void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u1
 
 	// Always use lobby authentication for lobby matches to prevent impersonation and smurfing, in particular through mods that implemented an UI for arbitrary or other players nicknames.
 	bool hasLobby = !!g_XmppClient;
-	g_NetServer = new CNetServer(hasLobby);
+	g_NetServer = new CNetServer(continueSavedGame, hasLobby);
 
 	if (!g_NetServer->SetupConnection(serverPort))
 	{
@@ -256,14 +258,29 @@ void ClearAllPlayerReady ()
 	g_NetClient->SendClearAllReadyMessage();
 }
 
-void StartNetworkGame(const ScriptInterface& scriptInterface, JS::HandleValue attribs1)
+void StartNetworkGame(const ScriptInterface& scriptInterface, JS::HandleValue savegame, JS::HandleValue attribs1)
 {
 	ENSURE(g_NetClient);
 
-	// TODO: This is a workaround because we need to pass a MutableHandle to a JSAPI functions somewhere (with no obvious reason).
 	ScriptRequest rq(scriptInterface);
+
 	JS::RootedValue attribs(rq.cx, attribs1);
-	g_NetClient->SendStartGameMessage(Script::StringifyJSON(rq, &attribs));
+	std::string attributesAsString{Script::StringifyJSON(rq, &attribs)};
+
+	if (savegame.isFalse())
+	{
+		g_NetClient->SendStartGameMessage(attributesAsString);
+		return;
+	}
+
+	std::wstring savegameID;
+	Script::FromJSVal(rq, savegame, savegameID);
+
+	const std::optional<SavedGames::LoadResult> loadResult{SavedGames::Load(scriptInterface, savegameID)};
+	if (loadResult)
+		g_NetClient->SendStartSavedGameMessage(attributesAsString, loadResult->savedState);
+	else
+		ScriptException::Raise(rq, "Failed to load the saved game: \"%ls\"", savegameID.c_str());
 }
 
 void SetTurnLength(int length)

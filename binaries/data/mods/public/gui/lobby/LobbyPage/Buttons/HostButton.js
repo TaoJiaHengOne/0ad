@@ -3,11 +3,10 @@
  */
 class HostButton
 {
-	constructor(dialog, xmppMessages)
+	constructor(dialog, xmppMessages, button, loadSavedGame)
 	{
-		this.hostButton = Engine.GetGUIObjectByName("hostButton");
-		this.hostButton.onPress = this.onPress.bind(this);
-		this.hostButton.caption = translate("Host Game");
+		this.hostButton = button;
+		this.hostButton.onPress = this.onPress.bind(this, loadSavedGame);
 		this.hostButton.hidden = dialog;
 
 		let onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
@@ -21,9 +20,10 @@ class HostButton
 		this.hostButton.enabled = Engine.IsXmppClientConnected();
 	}
 
-	onPress()
+	onPress(loadSavedGame)
 	{
 		Engine.PushGuiPage("page_gamesetup_mp.xml", {
+			"loadSavedGame": loadSavedGame,
 			"multiplayerGameType": "host",
 			"name": g_Nickname,
 			"rating": Engine.LobbyGetPlayerRating(g_Nickname)

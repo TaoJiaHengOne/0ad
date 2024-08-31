@@ -7,6 +7,8 @@
  */
 GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSetting
 {
+	randomPicked = false;
+
 	init()
 	{
 		// NB: watchers aren't auto-triggered when modifying array elements.
@@ -21,6 +23,9 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 			attribs.settings.PlayerData = [];
 		while (attribs.settings.PlayerData.length < this.values.length)
 			attribs.settings.PlayerData.push({});
+		if (this.isSavedGame && !this.randomPicked)
+			return;
+
 		for (let i in this.values)
 			if (this.values[i])
 				attribs.settings.PlayerData[i].Name = this.values[i];
@@ -87,7 +92,7 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 			const names = this.settings.civData[civ].AINames;
 			const remainingNames = names.filter(name => !AIPlayerNamesList.includes(name));
 			const chosenName = pickRandom(remainingNames.length ? remainingNames : names);
-			
+
 			// Avoid translating AI names if the game is networked, so all players see and refer to
 			// English names instead of names in the language of the host.
 			const translatedCountLabel = this.settings.isNetworked ? this.CountLabel : translate(this.CountLabel);
@@ -98,7 +103,7 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 					count++;
 				return count;
 			}, 0);
-			
+
 			AIPlayerNamesList.push(chosenName);
 
 			this.values[i] = !duplicateNameCount ? translatedChosenName :
@@ -108,7 +113,10 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 				});
 		}
 		if (picked)
+		{
+			this.randomPicked = true;
 			this.trigger("values");
+		}
 		return picked;
 	}
 

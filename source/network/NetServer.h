@@ -112,7 +112,7 @@ public:
 	 * Construct a new network server.
 	 * once this many players are connected (intended for the command-line testing mode).
 	 */
-	CNetServer(bool useLobbyAuth = false);
+	CNetServer(const bool isSavedGame, const bool useLobbyAuth = false);
 
 	~CNetServer();
 
@@ -234,7 +234,7 @@ public:
 private:
 	friend class CNetServer;
 
-	CNetServerWorker(bool useLobbyAuth);
+	CNetServerWorker(const bool continuesSavedGame, const bool useLobbyAuth);
 	~CNetServerWorker();
 
 	bool CheckPassword(const std::string& password, const std::string& salt) const;
@@ -256,9 +256,20 @@ private:
 	void AssignPlayer(int playerID, const CStr& guid);
 
 	/**
+	 * Switch in game mode. The clients will have to be notified to start the
+	 * game. This method is called by StartGame and StartSavedGame
+	 */
+	void PreStartGame(const CStr& initAttribs);
+
+	/**
 	 * Switch in game mode and notify all clients to start the game.
 	 */
 	void StartGame(const CStr& initAttribs);
+
+	/**
+	 * Switch in game mode and notify all clients to start the saved game.
+	 */
+	void StartSavedGame(const CStr& initAttribs);
 
 	/**
 	 * Make a player name 'nicer' by limiting the length and removing forbidden characters etc.
@@ -306,6 +317,7 @@ private:
 	static bool OnGameSetup(CNetServerSession* session, CFsmEvent* event);
 	static bool OnAssignPlayer(CNetServerSession* session, CFsmEvent* event);
 	static bool OnGameStart(CNetServerSession* session, CFsmEvent* event);
+	static bool OnSavedGameStart(CNetServerSession* session, CFsmEvent* event);
 	static bool OnLoadedGame(CNetServerSession* session, CFsmEvent* event);
 	static bool OnJoinSyncingLoadedGame(CNetServerSession* session, CFsmEvent* event);
 	static bool OnRejoined(CNetServerSession* session, CFsmEvent* event);
@@ -348,6 +360,11 @@ private:
 	 * At that point, the settings are frozen and ought to be identical to the simulation Init Attributes.
 	 */
 	JS::PersistentRootedValue m_InitAttributes;
+
+	/**
+	 * Whether this match continues a saved game.
+	 */
+	const bool m_ContinuesSavedGame;
 
 	/**
 	 * Whether this match requires lobby authentication.
@@ -399,6 +416,11 @@ private:
 	 * client when a new client has asked to rejoin the game.
 	 */
 	std::string m_JoinSyncFile;
+
+	/**
+	 * The loaded game data when a game is loaded.
+	 */
+	 std::string m_SavedState;
 
 	/**
 	 *  Time when the clients connections were last checked for timeouts and latency.

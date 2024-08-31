@@ -7,6 +7,11 @@ GameSettingControls.LastManStanding = class LastManStanding extends GameSettingC
 		g_GameSettings.map.watch(() => this.render(), ["type"]);
 	}
 
+	onSettingsLoaded()
+	{
+		this.render();
+	}
+
 	render()
 	{
 		// Always display this, so that players are aware that there is this gamemode

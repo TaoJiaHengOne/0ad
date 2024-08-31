@@ -3,21 +3,22 @@
  */
 SetupWindowPages.GameSetupPage = class
 {
-	constructor(setupWindow)
+	constructor(setupWindow, isSavedGame)
 	{
 		Engine.ProfileStart("GameSetupPage");
 
 		// This class instance owns all game setting GUI controls such as dropdowns and checkboxes visible in this page.
-		this.gameSettingControlManager = new GameSettingControlManager(setupWindow);
+		this.gameSettingControlManager = new GameSettingControlManager(setupWindow, isSavedGame);
 
 		// These classes manage GUI buttons.
 		{
 			let startGameButton = new StartGameButton(setupWindow);
 			let readyButton = new ReadyButton(setupWindow);
 			this.panelButtons = {
-				"cancelButton": new CancelButton(setupWindow, startGameButton, readyButton),
 				"civInfoButton": new CivInfoButton(),
 				"lobbyButton": new LobbyButton(),
+				"savedGameLabel": new SavedGameLabel(isSavedGame),
+				"cancelButton": new CancelButton(setupWindow, startGameButton, readyButton),
 				"readyButton": readyButton,
 				"startGameButton": startGameButton
 			};
@@ -31,13 +32,13 @@ SetupWindowPages.GameSetupPage = class
 
 			this.panels = {
 				"chatPanel": new ChatPanel(setupWindow, this.gameSettingControlManager, gameSettingsPanel),
-				"gameSettingWarning": new GameSettingWarning(setupWindow, this.panelButtons.cancelButton),
+				"gameSettingWarning": new GameSettingWarning(setupWindow),
 				"gameDescription": new GameDescription(setupWindow, gameSettingTabs),
 				"gameSettingsPanel": gameSettingsPanel,
 				"gameSettingsTabs": gameSettingTabs,
-				"mapPreview": new MapPreview(setupWindow),
-				"resetCivsButton": new ResetCivsButton(setupWindow),
-				"resetTeamsButton": new ResetTeamsButton(setupWindow),
+				"mapPreview": new MapPreview(setupWindow, isSavedGame),
+				"resetCivsButton": new ResetCivsButton(setupWindow, isSavedGame),
+				"resetTeamsButton": new ResetTeamsButton(setupWindow, isSavedGame),
 				"soundNotification": new SoundNotification(setupWindow),
 				"tipsPanel": new TipsPanel(gameSettingsPanel)
 			};

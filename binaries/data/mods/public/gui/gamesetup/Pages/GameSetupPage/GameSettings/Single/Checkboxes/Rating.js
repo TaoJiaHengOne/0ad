@@ -6,7 +6,11 @@ GameSettingControls.Rating = class Rating extends GameSettingControlCheckbox
 
 		// The availability of rated games is not a GUI concern, unlike most other
 		// potentially available settings.
-		g_GameSettings.rating.watch(() => this.render(), ["enabled", "available"]);
+		if (this.isSavedGame)
+			g_GameSettings.rating.enabled = false;
+		else
+			g_GameSettings.rating.watch(() => this.render(), ["enabled", "available"]);
+
 		this.render();
 	}
 

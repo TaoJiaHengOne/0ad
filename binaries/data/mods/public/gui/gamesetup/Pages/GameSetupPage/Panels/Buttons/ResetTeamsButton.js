@@ -1,6 +1,6 @@
 class ResetTeamsButton
 {
-	constructor(setupWindow)
+	constructor(setupWindow, isSavedGame)
 	{
 		this.gameSettingsController = setupWindow.controls.gameSettingsController;
 
@@ -8,12 +8,15 @@ class ResetTeamsButton
 		this.teamResetButton.tooltip = this.Tooltip;
 		this.teamResetButton.onPress = this.onPress.bind(this);
 
-		g_GameSettings.map.watch(() => this.render(), ["type"]);
+		if (isSavedGame)
+			this.teamResetButton.hidden = true;
+		else
+			g_GameSettings.map.watch(() => this.render(), ["type"]);
 	}
 
 	render()
 	{
-		this.teamResetButton.hidden = g_GameSettings.map.type == "scenario" || !g_IsController;
+		this.teamResetButton.hidden = g_GameSettings.map.type === "scenario" || !g_IsController;
 	}
 
 	onPress()

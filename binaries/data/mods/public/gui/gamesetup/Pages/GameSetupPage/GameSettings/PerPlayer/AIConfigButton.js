@@ -5,17 +5,14 @@ PlayerSettingControls.AIConfigButton = class AIConfigButton extends GameSettingC
 		super(...args);
 
 		this.aiConfigButton = Engine.GetGUIObjectByName("aiConfigButton[" + this.playerIndex + "]");
+		this.aiConfigButton.onPress = () => {
+			this.setupWindow.pages.AIConfigPage.openPage(this.playerIndex, this.enabled);
+		};
 
 		g_GameSettings.playerAI.watch(() => this.render(), ["values"]);
 		// Save little performance by not reallocating every call
 		this.sprintfArgs = {};
 		this.render();
-	}
-
-	onLoad()
-	{
-		let aiConfigPage = this.setupWindow.pages.AIConfigPage;
-		this.aiConfigButton.onPress = aiConfigPage.openPage.bind(aiConfigPage, this.playerIndex);
 	}
 
 	render()

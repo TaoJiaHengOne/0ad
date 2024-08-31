@@ -187,13 +187,20 @@ var g_MainMenuItems = [
 				}
 			},
 			{
-				"caption": translate("Host Game"),
-				"tooltip": translate("Host a multiplayer game."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_gamesetup_mp.xml", {
-						"multiplayerGameType": "host"
-					});
-				}
+				"caption": translate("Host New Game"),
+				"tooltip": translate("Host a new multiplayer game."),
+				"onPress": Engine.PushGuiPage.bind(null, "page_gamesetup_mp.xml", {
+						"multiplayerGameType": "host",
+						"loadSavedGame": false
+					})
+			},
+			{
+				"caption": translate("Host Saved Game"),
+				"tooltip": translate("Continue playing a game from a savegame."),
+				"onPress": Engine.PushGuiPage.bind(null, "page_gamesetup_mp.xml", {
+						"multiplayerGameType": "host",
+						"loadSavedGame": true
+					})
 			},
 			{
 				"caption": translate("Game Lobby"),

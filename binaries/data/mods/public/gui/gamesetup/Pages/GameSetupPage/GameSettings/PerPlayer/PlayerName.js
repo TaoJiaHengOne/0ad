@@ -5,6 +5,7 @@ PlayerSettingControls.PlayerName = class PlayerName extends GameSettingControl
 	constructor(...args)
 	{
 		super(...args);
+		g_GameSettings.playerName.isSavedGame = this.isSavedGame;
 
 		this.playerName = Engine.GetGUIObjectByName("playerName[" + this.playerIndex + "]");
 		g_GameSettings.playerCount.watch(() => this.render(), ["nbPlayers"]);
@@ -29,8 +30,8 @@ PlayerSettingControls.PlayerName = class PlayerName extends GameSettingControl
 
 	render()
 	{
-		let name = this.guid ? g_PlayerAssignments[this.guid].name :
-			g_GameSettings.playerName.values[this.playerIndex];
+		let name = this.guid && this.isSavedGame ?
+			g_PlayerAssignments[this.guid].name : g_GameSettings.playerName.values[this.playerIndex];
 
 		if (g_IsNetworked)
 		{

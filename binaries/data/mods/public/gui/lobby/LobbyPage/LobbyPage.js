@@ -18,8 +18,11 @@ class LobbyPage
 			"buttons": {
 				"buddyButton": buddyButton,
 				"accountSettingsButton": accountSettingsButton,
-				"hostButton": new HostButton(dialog, xmppMessages),
 				"joinButton": new JoinButton(dialog, gameList),
+				"hostButton": new HostButton(dialog, xmppMessages,
+					Engine.GetGUIObjectByName("hostButton"), false),
+				"hostSavedGameButton": new HostButton(dialog, xmppMessages,
+					Engine.GetGUIObjectByName("hostSavedGameButton"), true),
 				"leaderboardButton": new LeaderboardButton(xmppMessages, leaderboardPage),
 				"profileButton": new ProfileButton(xmppMessages, profilePage),
 				"quitButton": new QuitButton(dialog, leaderboardPage, profilePage)

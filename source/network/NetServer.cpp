@@ -95,7 +95,8 @@ static CStr DebugName(CNetServerSession* session)
  * See https://gitea.wildfiregames.com/0ad/0ad/issues/654
  */
 
-CNetServerWorker::CNetServerWorker(bool useLobbyAuth) :
+CNetServerWorker::CNetServerWorker(const bool continueSavedGame, const bool useLobbyAuth) :
+	m_ContinuesSavedGame{continueSavedGame},
 	m_LobbyAuth(useLobbyAuth),
 	m_Shutdown(false),
 	m_ScriptInterface(NULL),
@@ -623,14 +624,15 @@ void CNetServerWorker::HandleMessageReceive(const CNetMessage* message, CNetServ
 	if (message->GetType() == NMT_FILE_TRANSFER_REQUEST)
 	{
 		CFileTransferRequestMessage* reqMessage = (CFileTransferRequestMessage*)message;
-		ENSURE(static_cast<CNetFileTransferer::RequestType>(reqMessage->m_RequestType) ==
-			CNetFileTransferer::RequestType::REJOIN);
 
-		// Rejoining client got our JoinSyncStart after we received the state from
-		// another client, and has now requested that we forward it to them
+		// A client requested the gamestate. Clients only request the gamestate when we sent them a
+		// JoinSyncStart or a GameSavedStart message. We only send those messages after we received the
+		// gamestate.
+		// For joins and loads the gamestate is in a different format. Send the respective one.
 
-		ENSURE(!m_JoinSyncFile.empty());
-		session->GetFileTransferer().StartResponse(reqMessage->m_RequestID, m_JoinSyncFile);
+		session->GetFileTransferer().StartResponse(reqMessage->m_RequestID,
+			static_cast<CNetFileTransferer::RequestType>(reqMessage->m_RequestType) ==
+				CNetFileTransferer::RequestType::LOADGAME ? m_SavedState : m_JoinSyncFile);
 
 		return;
 	}
@@ -663,6 +665,7 @@ void CNetServerWorker::SetupSession(CNetServerSession* session)
 	session->AddTransition(NSS_PREGAME, (uint)NMT_ASSIGN_PLAYER, NSS_PREGAME, &OnAssignPlayer, session);
 	session->AddTransition(NSS_PREGAME, (uint)NMT_KICKED, NSS_PREGAME, &OnKickPlayer, session);
 	session->AddTransition(NSS_PREGAME, (uint)NMT_GAME_START, NSS_PREGAME, &OnGameStart, session);
+	session->AddTransition(NSS_PREGAME, (uint)NMT_SAVED_GAME_START, NSS_PREGAME, &OnSavedGameStart, session);
 	session->AddTransition(NSS_PREGAME, (uint)NMT_LOADED_GAME, NSS_INGAME, &OnLoadedGame, session);
 
 	session->AddTransition(NSS_JOIN_SYNCING, (uint)NMT_KICKED, NSS_JOIN_SYNCING, &OnKickPlayer, session);
@@ -1094,7 +1097,8 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 	session->SetHostID(newHostID);
 
 	CAuthenticateResultMessage authenticateResult;
-	authenticateResult.m_Code = isRejoining ? ARC_OK_REJOINING : ARC_OK;
+	authenticateResult.m_Code = isRejoining ? ARC_OK_REJOINING :
+		server.m_ContinuesSavedGame ? ARC_OK_SAVED_GAME : ARC_OK;
 	authenticateResult.m_HostID = newHostID;
 	authenticateResult.m_Message = L"Logged in";
 	authenticateResult.m_IsController = 0;
@@ -1331,6 +1335,25 @@ bool CNetServerWorker::OnGameStart(CNetServerSession* session, CFsmEvent* event)
 	return true;
 }
 
+bool CNetServerWorker::OnSavedGameStart(CNetServerSession* session, CFsmEvent* event)
+{
+	ENSURE(event->GetType() == static_cast<uint>(NMT_SAVED_GAME_START));
+	CNetServerWorker& server{session->GetServer()};
+
+	if (session->GetGUID() != server.m_ControllerGUID)
+		return true;
+
+	CGameSavedStartMessage* message = static_cast<CGameSavedStartMessage*>(event->GetParamRef());
+	session->GetFileTransferer().StartTask(CNetFileTransferer::RequestType::LOADGAME,
+		[&server, initAttributes = std::move(message->m_InitAttributes)](std::string buffer)
+		{
+			server.m_SavedState = std::move(buffer);
+
+			server.StartSavedGame(initAttributes);
+		});
+	return true;
+}
+
 bool CNetServerWorker::OnLoadedGame(CNetServerSession* loadedSession, CFsmEvent* event)
 {
 	ENSURE(event->GetType() == (uint)NMT_LOADED_GAME);
@@ -1353,6 +1376,10 @@ bool CNetServerWorker::OnLoadedGame(CNetServerSession* loadedSession, CFsmEvent*
 			client.m_GUID = session->GetGUID();
 			message.m_Clients.push_back(client);
 		}
+
+	// If no other player is loading the server can clear the savestate
+	if (message.m_Clients.empty())
+		server.m_SavedState.clear();
 
 	// Send to the client who has loaded the game but did not reach the NSS_INGAME state yet
 	loadedSession->SendMessage(&message);
@@ -1515,7 +1542,7 @@ bool CNetServerWorker::CheckGameLoadStatus(CNetServerSession* changedSession)
 	return true;
 }
 
-void CNetServerWorker::StartGame(const CStr& initAttribs)
+void CNetServerWorker::PreStartGame(const CStr& initAttribs)
 {
 	for (std::pair<const CStr, PlayerAssignment>& player : m_PlayerAssignments)
 		if (player.second.m_Enabled && player.second.m_PlayerID != -1 && player.second.m_Status == 0)
@@ -1546,10 +1573,24 @@ void CNetServerWorker::StartGame(const CStr& initAttribs)
 
 	// Update init attributes. They should no longer change.
 	Script::ParseJSON(ScriptRequest(m_ScriptInterface), initAttribs, &m_InitAttributes);
+}
+
+void CNetServerWorker::StartGame(const CStr& initAttribs)
+{
+	PreStartGame(initAttribs);
 
 	CGameStartMessage gameStart;
 	gameStart.m_InitAttributes = initAttribs;
 	Broadcast(&gameStart, { NSS_PREGAME });
+}
+
+void CNetServerWorker::StartSavedGame(const CStr& initAttribs)
+{
+	PreStartGame(initAttribs);
+
+	CGameSavedStartMessage gameSavedStart;
+	gameSavedStart.m_InitAttributes = initAttribs;
+	Broadcast(&gameSavedStart, { NSS_PREGAME });
 }
 
 CStrW CNetServerWorker::SanitisePlayerName(const CStrW& original)
@@ -1608,8 +1649,8 @@ void CNetServerWorker::SendHolePunchingMessage(const CStr& ipStr, u16 port)
 
 
 
-CNetServer::CNetServer(bool useLobbyAuth) :
-	m_Worker(new CNetServerWorker(useLobbyAuth)),
+CNetServer::CNetServer(const bool continueSavedGame, const bool useLobbyAuth) :
+	m_Worker{new CNetServerWorker{continueSavedGame, useLobbyAuth}},
 	m_LobbyAuth(useLobbyAuth), m_UseSTUN(false), m_PublicIp(""), m_PublicPort(20595), m_Password()
 {
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@
 #include "scriptinterface/StructuredClone.h"
 #include "simulation2/Simulation2.h"
 #include "simulation2/system/TurnManager.h"
+
+#include <optional>
 
 namespace JSI_SavedGame
 {
@@ -75,6 +77,13 @@ void QuickLoad()
 		LOGERROR("Can't load quicksave if game is not running!");
 }
 
+JS::Value LoadSavedGameMetadata(const ScriptInterface& scriptInterface, const std::wstring& name)
+{
+	std::optional<SavedGames::LoadResult> data{SavedGames::Load(scriptInterface, name)};
+
+	return data ? data->metadata : JS::UndefinedValue();
+}
+
 JS::Value StartSavedGame(const ScriptInterface& scriptInterface, const std::wstring& name)
 {
 	// We need to be careful with different compartments and contexts.
@@ -88,12 +97,11 @@ JS::Value StartSavedGame(const ScriptInterface& scriptInterface, const std::wstr
 
 	ENSURE(!g_Game);
 
-	// Load the saved game data from disk
-	JS::RootedValue guiContextMetadata(rqGui.cx);
-	std::string savedState;
-	Status err = SavedGames::Load(name, scriptInterface, &guiContextMetadata, savedState);
-	if (err < 0)
+	std::optional<SavedGames::LoadResult> data{SavedGames::Load(scriptInterface, name)};
+	if (!data)
 		return JS::UndefinedValue();
+
+	JS::RootedValue guiContextMetadata{rqGui.cx, data->metadata};
 
 	g_Game = new CGame(true);
 
@@ -109,7 +117,7 @@ JS::Value StartSavedGame(const ScriptInterface& scriptInterface, const std::wstr
 		Script::GetProperty(rqGame, gameContextMetadata, "playerID", playerID);
 
 		g_Game->SetPlayerID(playerID);
-		g_Game->StartGame(&gameInitAttributes, savedState);
+		g_Game->StartGame(&gameInitAttributes, data->savedState);
 	}
 
 	return guiContextMetadata;
@@ -131,6 +139,7 @@ void RegisterScriptFunctions(const ScriptRequest& rq)
 	ScriptFunction::Register<&QuickSave>(rq, "QuickSave");
 	ScriptFunction::Register<&QuickLoad>(rq, "QuickLoad");
 	ScriptFunction::Register<&ActivateRejoinTest>(rq, "ActivateRejoinTest");
+	ScriptFunction::Register<&LoadSavedGameMetadata>(rq, "LoadSavedGameMetadata");
 	ScriptFunction::Register<&StartSavedGame>(rq, "StartSavedGame");
 }
 }

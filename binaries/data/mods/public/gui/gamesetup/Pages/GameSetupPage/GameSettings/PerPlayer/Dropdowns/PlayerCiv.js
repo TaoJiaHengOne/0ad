@@ -27,7 +27,7 @@ PlayerSettingControls.PlayerCiv = class PlayerCiv extends GameSettingControlDrop
 
 	rebuild()
 	{
-		const isLocked = g_GameSettings.playerCiv.locked[this.playerIndex];
+		const isLocked = g_GameSettings.playerCiv.locked[this.playerIndex] || this.isSavedGame;
 		if (this.wasLocked !== isLocked)
 		{
 			this.wasLocked = isLocked;

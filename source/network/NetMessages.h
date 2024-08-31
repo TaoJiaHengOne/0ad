@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -75,6 +75,7 @@ enum NetMessageType
 
 	NMT_LOADED_GAME,
 	NMT_GAME_START,
+	NMT_SAVED_GAME_START,
 	NMT_END_COMMAND_BATCH,
 
 	NMT_SYNC_CHECK,	// OOS-detection hash checking
@@ -88,6 +89,7 @@ enum NetMessageType
 enum AuthenticateResultCode
 {
 	ARC_OK,
+	ARC_OK_SAVED_GAME,
 	ARC_OK_REJOINING,
 	ARC_PASSWORD_INVALID,
 };
@@ -223,6 +225,10 @@ START_NMT_CLASS_(LoadedGame, NMT_LOADED_GAME)
 END_NMT_CLASS()
 
 START_NMT_CLASS_(GameStart, NMT_GAME_START)
+	NMT_FIELD(CStr, m_InitAttributes)
+END_NMT_CLASS()
+
+START_NMT_CLASS_(GameSavedStart, NMT_SAVED_GAME_START)
 	NMT_FIELD(CStr, m_InitAttributes)
 END_NMT_CLASS()
 

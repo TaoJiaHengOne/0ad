@@ -68,6 +68,9 @@ function init(attribs)
 		error("Unrecognised multiplayer game type: " + attribs.multiplayerGameType);
 		break;
 	}
+
+	Engine.GetGUIObjectByName("multiplayerPages").onTick = onTick.bind(null, attribs.loadSavedGame);
+	Engine.GetGUIObjectByName("continueButton").onPress = confirmSetup.bind(null, attribs.loadSavedGame);
 }
 
 function cancelSetup()
@@ -104,7 +107,7 @@ function confirmPassword()
 		switchSetupPage("pageConnecting");
 }
 
-function confirmSetup()
+function confirmSetup(loadSavedGame)
 {
 	if (!Engine.GetGUIObjectByName("pageJoin").hidden)
 	{
@@ -137,8 +140,11 @@ function confirmSetup()
 
 		let hostPlayerName = Engine.GetGUIObjectByName("hostPlayerName").caption;
 		let hostPassword = Engine.GetGUIObjectByName("hostPassword").caption;
-		if (startHost(hostPlayerName, hostServerName, getValidPort(hostPort), hostPassword))
+		if (startHost(hostPlayerName, hostServerName, getValidPort(hostPort), hostPassword,
+			loadSavedGame))
+		{
 			switchSetupPage("pageConnecting");
+		}
 	}
 }
 
@@ -150,12 +156,12 @@ function startConnectionStatus(type)
 	Engine.GetGUIObjectByName("connectionStatus").caption = translate("Connecting to server...");
 }
 
-function onTick()
+function onTick(loadSavedGame)
 {
 	if (!g_IsConnecting)
 		return;
 
-	pollAndHandleNetworkClient();
+	pollAndHandleNetworkClient(loadSavedGame);
 }
 
 function getConnectionFailReason(reason)
@@ -182,7 +188,7 @@ function reportConnectionFail(reason)
 	);
 }
 
-function pollAndHandleNetworkClient()
+function pollAndHandleNetworkClient(loadSavedGame)
 {
 	while (true)
 	{
@@ -277,17 +283,8 @@ function pollAndHandleNetworkClient()
 					break;
 
 				case "authenticated":
-					if (message.rejoining)
-					{
-						Engine.GetGUIObjectByName("connectionStatus").caption = translate("Game has already started, rejoining...");
-						g_IsRejoining = true;
-						return; // we'll process the game setup messages in the next tick
-					}
-					Engine.SwitchGuiPage("page_gamesetup.xml", {
-						"serverName": g_ServerName,
-						"hasPassword": g_ServerHasPassword
-					});
-					return; // don't process any more messages - leave them for the game GUI loop
+					handleAuthenticated(message, loadSavedGame);
+					return;
 
 				case "disconnected":
 					cancelSetup();
@@ -309,6 +306,34 @@ function pollAndHandleNetworkClient()
 			}
 		}
 	}
+}
+
+async function handleAuthenticated(message, loadSavedGame)
+{
+	if (message.rejoining)
+	{
+		Engine.GetGUIObjectByName("connectionStatus").caption =
+			translate("Game has already started, rejoining...");
+		g_IsRejoining = true;
+		return; // we'll process the game setup messages in the next tick
+	}
+	g_IsConnecting = false;
+
+	const savegameID = loadSavedGame ? await Engine.PushGuiPage("page_loadgame.xml") : null;
+
+	if (loadSavedGame && !savegameID)
+	{
+		Engine.DisconnectNetworkGame();
+		cancelSetup();
+		return;
+	}
+
+	Engine.SwitchGuiPage("page_gamesetup.xml", {
+		"savedGame": savegameID ?? message.savedGame,
+		"serverName": g_ServerName,
+		"hasPassword": g_ServerHasPassword
+	});
+	return; // don't process any more messages - leave them for the game GUI loop
 }
 
 function switchSetupPage(newPage)
@@ -343,14 +368,14 @@ function switchSetupPage(newPage)
 	Engine.GetGUIObjectByName("continueButton").hidden = newPage == "pageConnecting" || newPage == "pagePassword";
 }
 
-function startHost(playername, servername, port, password)
+function startHost(playername, servername, port, password, loadSavedGame)
 {
 	startConnectionStatus("server");
 
 	Engine.ConfigDB_CreateValue("user", "playername.multiplayer", playername);
 	Engine.ConfigDB_CreateValue("user", "multiplayerhosting.port", port);
 	Engine.ConfigDB_SaveChanges("user");
-	
+
 	let hostFeedback = Engine.GetGUIObjectByName("hostFeedback");
 
 	// Disallow identically named games in the multiplayer lobby
@@ -366,7 +391,8 @@ function startHost(playername, servername, port, password)
 
 	try
 	{
-		Engine.StartNetworkHost(playername + (g_UserRating ? " (" + g_UserRating + ")" : ""), port, useSTUN, password, true);
+		Engine.StartNetworkHost(playername + (g_UserRating ? " (" + g_UserRating + ")" : ""), port,
+			useSTUN, password, loadSavedGame, true);
 	}
 	catch (e)
 	{

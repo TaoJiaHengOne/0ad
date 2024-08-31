@@ -13,12 +13,13 @@
  */
 class GameSettingControl /* extends Profilable /* Uncomment to profile controls without hassle. */
 {
-	constructor(gameSettingControlManager, category, playerIndex, setupWindow)
+	constructor(gameSettingControlManager, category, playerIndex, setupWindow, isSavedGame)
 	{
 		// Store arguments
 		{
 			this.category = category;
 			this.playerIndex = playerIndex;
+			this.isSavedGame = isSavedGame;
 
 			this.setupWindow = setupWindow;
 			this.gameSettingsController = setupWindow.controls.gameSettingsController;
@@ -55,6 +56,9 @@ class GameSettingControl /* extends Profilable /* Uncomment to profile controls 
 
 		if (this.onPlayerAssignmentsChange)
 			this.playerAssignmentsController.registerPlayerAssignmentsChangeHandler(this.onPlayerAssignmentsChange.bind(this));
+
+		if (isSavedGame)
+			this.setEnabled(this.EnabledWhenSavedGame);
 	}
 
 	setTitle(titleCaption)
@@ -79,7 +83,7 @@ class GameSettingControl /* extends Profilable /* Uncomment to profile controls 
 
 	setEnabled(enabled)
 	{
-		this.enabled = enabled;
+		this.enabled = enabled && (!this.isSavedGame || this.EnabledWhenSavedGame);
 		this.updateVisibility();
 	}
 
@@ -137,6 +141,8 @@ class GameSettingControl /* extends Profilable /* Uncomment to profile controls 
 				(autocomplete[this.AutocompleteOrder] || []).concat(newEntries);
 	}
 }
+
+GameSettingControl.prototype.EnabledWhenSavedGame = false;
 
 GameSettingControl.prototype.TitleCaptionFormat =
 	translateWithContext("Title for specific setting", "%(setting)s:");

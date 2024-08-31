@@ -11,7 +11,7 @@ class GameSettingControls
  */
 class GameSettingControlManager
 {
-	constructor(setupWindow)
+	constructor(setupWindow, isSavedGame)
 	{
 		this.setupWindow = setupWindow;
 
@@ -24,17 +24,18 @@ class GameSettingControlManager
 		for (let name in GameSettingControls)
 			this.gameSettingControls[name] =
 				new GameSettingControls[name](
-					this, getCategory(name), undefined, setupWindow);
+					this, getCategory(name), undefined, setupWindow, isSavedGame);
 
 		for (let victoryCondition of g_VictoryConditions)
 			this.gameSettingControls[victoryCondition.Name] =
 				new VictoryConditionCheckbox(
-					victoryCondition, this, getCategory(victoryCondition.Name), undefined, setupWindow);
+					victoryCondition, this, getCategory(victoryCondition.Name), undefined,
+						setupWindow, isSavedGame);
 
 		this.playerSettingControlManagers = Array.from(
 			new Array(g_MaxPlayers),
 			(value, playerIndex) =>
-				new PlayerSettingControlManager(playerIndex, setupWindow));
+				new PlayerSettingControlManager(playerIndex, setupWindow, isSavedGame));
 	}
 
 	getNextRow(name)

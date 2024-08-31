@@ -1,8 +1,8 @@
 class AIGameSettingControlDropdown extends GameSettingControlDropdown
 {
-	onOpenPage(playerIndex)
+	onOpenPage(playerIndex, enabled)
 	{
-		this.setEnabled(true);
+		this.setEnabled(enabled);
 		this.playerIndex = playerIndex;
 		this.render();
 	}

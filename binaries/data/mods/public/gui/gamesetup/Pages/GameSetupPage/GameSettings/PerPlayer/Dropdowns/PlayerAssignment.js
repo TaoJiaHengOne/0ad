@@ -30,6 +30,16 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		// Build the initial list of values with undefined & AI clients.
 		this.rebuildList();
 
+		const savedAI = this.isSavedGame && g_GameSettings.playerAI.get(this.playerIndex);
+
+		if (savedAI)
+		{
+			this.setSelectedValue(savedAI.bot);
+			this.setEnabled(false);
+		}
+		else
+			this.rebuildList();
+
 		g_GameSettings.playerAI.watch(() => this.render(), ["values"]);
 		g_GameSettings.playerCount.watch((_, oldNb) => this.OnPlayerNbChange(oldNb), ["nbPlayers"]);
 	}
@@ -103,9 +113,13 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		// TODO: this particular bit is done for each row, which is unnecessarily inefficient.
 		this.playerItems = sortGUIDsByPlayerID().map(
 			this.clientItemFactory.createItem.bind(this.clientItemFactory));
+
+		// If loading a saved game clients and unassigned players can't be replaced by a AI. Don't show
+		// the AIs in the dropdown.
+		const disableAI = this.isSavedGame && !g_GameSettings.playerAI.get(this.playerIndex);
 		this.values = prepareForDropdown([
 			...this.playerItems,
-			...this.aiItems,
+			...disableAI ? [] : this.aiItems,
 			this.unassignedItem
 		]);
 
@@ -122,7 +136,8 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 			this.gameSettingsController,
 			this.playerAssignmentsController,
 			this.playerIndex,
-			this.values.Value[itemIdx]);
+			this.values.Value[itemIdx],
+			this.isSavedGame);
 	}
 
 	getAutocompleteEntries()
@@ -130,6 +145,8 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		return this.values.Autocomplete;
 	}
 };
+
+PlayerSettingControls.PlayerAssignment.prototype.EnabledWhenSavedGame = true;
 
 PlayerSettingControls.PlayerAssignment.prototype.Tooltip =
 	translate("Select player.");
@@ -151,7 +168,8 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 			};
 		}
 
-		onSelectionChange(gameSettingsController, playerAssignmentsController, playerIndex, guidToAssign)
+		onSelectionChange(gameSettingsController, playerAssignmentsController, playerIndex,
+			guidToAssign, isSavedGame)
 		{
 			let sourcePlayer = g_PlayerAssignments[guidToAssign].player - 1;
 			if (sourcePlayer >= 0)
@@ -161,7 +179,7 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 				if (ai)
 					g_GameSettings.playerAI.swap(sourcePlayer, playerIndex);
 				// Swap color + civ as well - this allows easy reorganizing of player order.
-				if (g_GameSettings.map.type !== "scenario")
+				if (g_GameSettings.map.type !== "scenario" && !isSavedGame)
 				{
 					g_GameSettings.playerCiv.swap(sourcePlayer, playerIndex);
 					g_GameSettings.playerColor.swap(sourcePlayer, playerIndex);

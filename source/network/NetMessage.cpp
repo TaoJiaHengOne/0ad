@@ -183,6 +183,10 @@ CNetMessage* CNetMessageFactory::CreateMessage(const void* pData,
 		pNewMessage = new CGameStartMessage;
 		break;
 
+	case NMT_SAVED_GAME_START:
+		pNewMessage = new CGameSavedStartMessage;
+		break;
+
 	case NMT_END_COMMAND_BATCH:
 		pNewMessage = new CEndCommandBatchMessage;
 		break;

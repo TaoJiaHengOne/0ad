@@ -3,7 +3,7 @@
  */
 class PlayerAssignmentsController
 {
-	constructor(setupWindow, netMessages)
+	constructor(setupWindow, netMessages, isSavedGame)
 	{
 		this.clientJoinHandlers = new Set();
 		this.clientLeaveHandlers = new Set();
@@ -35,7 +35,7 @@ class PlayerAssignmentsController
 		setupWindow.registerGetHotloadDataHandler(this.onGetHotloadData.bind(this));
 		netMessages.registerNetMessageHandler("players", this.onPlayerAssignmentMessage.bind(this));
 
-		this.registerClientJoinHandler(this.onClientJoin.bind(this));
+		this.registerClientJoinHandler(this.onClientJoin.bind(this, isSavedGame));
 	}
 
 	registerPlayerAssignmentsChangeHandler(handler)
@@ -93,10 +93,12 @@ class PlayerAssignmentsController
 	 * On client join, try to assign them to a free slot.
 	 * (This is called before g_PlayerAssignments is updated).
 	 */
-	onClientJoin(newGUID, newAssignments)
+	onClientJoin(isSavedGame, newGUID, newAssignments)
 	{
-		if (!g_IsController || newAssignments[newGUID].player != -1)
+		if (!g_IsController || newAssignments[newGUID].player !== -1 || isSavedGame)
+		{
 			return;
+		}
 
 		// Assign the client (or only buddies if prefered) to a free slot
 		if (newGUID != Engine.GetPlayerGUID())

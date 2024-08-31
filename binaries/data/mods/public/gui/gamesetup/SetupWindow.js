@@ -25,13 +25,20 @@ class SetupWindow
 		if (initData?.backPage)
 			this.backPage = initData.backPage;
 
+		const savedGame = initData?.savedGame;
+		const isSavedGame = !!savedGame;
+
 		const mapCache = new MapCache();
-		g_GameSettings = new GameSettings().init(mapCache);
+		g_GameSettings = new GameSettings();
+		g_GameSettings.init(mapCache, g_IsController ? savedGame : null);
+
 
 		let netMessages = new NetMessages();
 		let mapFilters = new MapFilters(mapCache);
-		let playerAssignmentsController = new PlayerAssignmentsController(this, netMessages);
-		let gameSettingsController = new GameSettingsController(this, netMessages, playerAssignmentsController, mapCache);
+		let playerAssignmentsController =
+			new PlayerAssignmentsController(this, netMessages, isSavedGame);
+		let gameSettingsController = new GameSettingsController(this, netMessages,
+			playerAssignmentsController, mapCache, isSavedGame);
 		let readyController = new ReadyController(netMessages, gameSettingsController, playerAssignmentsController);
 		const lobbyGameRegistrationController = g_IsController && Engine.HasXmppClient() &&
 			new LobbyGameRegistrationController(initData, this, netMessages, mapCache, playerAssignmentsController);
@@ -50,7 +57,7 @@ class SetupWindow
 		// These are the pages within the setup window that may use the controls defined above
 		this.pages = {};
 		for (let name in SetupWindowPages)
-			this.pages[name] = new SetupWindowPages[name](this);
+			this.pages[name] = new SetupWindowPages[name](this, isSavedGame);
 
 		netMessages.registerNetMessageHandler("netwarn", addNetworkWarning);
 		setTimeout(displayGamestateNotifications, 1000);

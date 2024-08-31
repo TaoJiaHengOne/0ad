@@ -3,7 +3,7 @@
  */
 class GameSettingsController
 {
-	constructor(setupWindow, netMessages, playerAssignmentsController, mapCache)
+	constructor(setupWindow, netMessages, playerAssignmentsController, mapCache, isSavedGame)
 	{
 		this.setupWindow = setupWindow;
 		this.mapCache = mapCache;
@@ -25,7 +25,7 @@ class GameSettingsController
 		this.loadingChangeHandlers = new Set();
 		this.settingsLoadedHandlers = new Set();
 
-		setupWindow.registerLoadHandler(this.onLoad.bind(this));
+		setupWindow.registerLoadHandler(this.onLoad.bind(this, isSavedGame));
 		setupWindow.registerGetHotloadDataHandler(this.onGetHotloadData.bind(this));
 
 		setupWindow.registerClosePageHandler(this.onClose.bind(this));
@@ -75,29 +75,32 @@ class GameSettingsController
 		this.settingsLoadedHandlers.add(handler);
 	}
 
-	onLoad(initData, hotloadData)
+	onLoad(isSavedGame, initData, hotloadData)
 	{
-		// This initial settings parsing in wrapped in a try-catch because it can fail unexpectedly,
-		// and particularly could fail with mods that change persistent settings, so this is
-		// difficult to fully fix from the gameSettings code.
-		// Also include hotloaded data because that can also fail and having to restart isn't very useful.
-		try {
-			if (hotloadData)
-				this.parseSettings(hotloadData.initAttributes);
-			else if (g_IsController && (initData?.gameSettings || this.persistentMatchSettings.enabled))
-			{
-				// Allow opting-in to persistence when sending initial data (though default off)
-				if (initData?.gameSettings)
-					this.persistentMatchSettings.enabled = !!initData.gameSettings?.usePersistence;
-				const settings = initData?.gameSettings || this.persistentMatchSettings.loadFile();
-					if (settings)
-						this.parseSettings(settings);
+		if (!isSavedGame)
+		{
+			// This initial settings parsing in wrapped in a try-catch because it can fail unexpectedly,
+			// and particularly could fail with mods that change persistent settings, so this is
+			// difficult to fully fix from the gameSettings code.
+			// Also include hotloaded data because that can also fail and having to restart isn't very useful.
+			try {
+				if (hotloadData)
+					this.parseSettings(hotloadData.initAttributes);
+				else if (g_IsController && (initData?.gameSettings || this.persistentMatchSettings.enabled))
+				{
+					// Allow opting-in to persistence when sending initial data (though default off)
+					if (initData?.gameSettings)
+						this.persistentMatchSettings.enabled = !!initData.gameSettings?.usePersistence;
+					const settings = initData?.gameSettings || this.persistentMatchSettings.loadFile();
+						if (settings)
+							this.parseSettings(settings);
+				}
+			} catch(err) {
+				error("There was an error loading game settings. You may need to disable persistent match settings.");
+				warn(err?.toString() ?? uneval(err));
+				if (err.stack)
+					warn(err.stack)
 			}
-		} catch(err) {
-			error("There was an error loading game settings. You may need to disable persistent match settings.");
-			warn(err?.toString() ?? uneval(err));
-			if (err.stack)
-				warn(err.stack)
 		}
 
 		// If the new settings led to AI & players conflict, remove the AI.

@@ -1,6 +1,6 @@
 class ResetCivsButton
 {
-	constructor(setupWindow)
+	constructor(setupWindow, isSavedGame)
 	{
 		this.gameSettingsController = setupWindow.controls.gameSettingsController;
 
@@ -8,12 +8,15 @@ class ResetCivsButton
 		this.civResetButton.tooltip = this.Tooltip;
 		this.civResetButton.onPress = this.onPress.bind(this);
 
-		g_GameSettings.map.watch(() => this.render(), ["type"]);
+		if (isSavedGame)
+			this.civResetButton.hidden = true;
+		else
+			g_GameSettings.map.watch(() => this.render(), ["type"]);
 	}
 
 	render()
 	{
-		this.civResetButton.hidden = g_GameSettings.map.type == "scenario" || !g_IsController;
+		this.civResetButton.hidden = g_GameSettings.map.type === "scenario" || !g_IsController;
 	}
 
 	onPress()

@@ -11,12 +11,16 @@
  */
 class GameSettings
 {
-	init(mapCache)
+	init(mapCache, savegameID)
 	{
 		if (!mapCache)
 			mapCache = new MapCache();
 		Object.defineProperty(this, "mapCache", {
 			"value": mapCache,
+		});
+
+		Object.defineProperty(this, "savegameID", {
+			"value": savegameID,
 		});
 
 		// Load all possible civ data - don't presume that some will be available.
@@ -39,6 +43,15 @@ class GameSettings
 		for (let comp in this)
 			if (this[comp].init)
 				this[comp].init();
+
+		if (!savegameID)
+			return this;
+
+		const initAttributes = Engine.LoadSavedGameMetadata(savegameID).initAttributes;
+
+		// Remove the gaia entry.
+		initAttributes.settings.PlayerData.splice(0, 1);
+		this.fromInitAttributes(initAttributes);
 
 		return this;
 	}
@@ -142,7 +155,7 @@ class GameSettings
 
 		// NB: for multiplayer support, the clients must be listening to "start" net messages.
 		if (this.isNetworked)
-			Engine.StartNetworkGame(this.finalizedAttributes, storeReplay);
+			Engine.StartNetworkGame(this.savegameID, this.finalizedAttributes, storeReplay);
 		else
 			Engine.StartGame(this.finalizedAttributes, playerAssignments.local.player, storeReplay);
 	}
