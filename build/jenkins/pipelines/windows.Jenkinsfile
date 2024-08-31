@@ -32,16 +32,6 @@ pipeline {
 	}
 
 	stages {
-		stage("Cleanup") {
-			when {
-				changelog '.*\\[CLEANBUILD\\].*'
-			}
-			steps {
-				script { env.CLEANBUILD = 'true' }
-				bat "git clean -fdx build/ source/"
-			}
-		}
-
 		stage ("Pre-build") {
 			steps {
 				discoverGitReferenceBuild()
@@ -58,7 +48,15 @@ pipeline {
 
 		stage("Debug Build") {
 			steps {
-				bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug ${buildOptions}")
+				retry(2) {
+					script {
+						try { bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug ${buildOptions}") }
+						catch(e) {
+							bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug /t:Clean")
+							throw e
+						}
+					}
+				}
 				timeout(time: 15) {
 					bat "cd binaries\\system && test_dbg.exe > cxxtest-debug.xml"
 				}
@@ -72,7 +70,15 @@ pipeline {
 
 		stage ("Release Build") {
 			steps {
-				bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}")
+				retry(2) {
+					script {
+						try { bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}") }
+						catch(e) {
+							bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release /t:Clean")
+							throw e
+						}
+					}
+				}
 				timeout(time: 5) {
 					bat "cd binaries\\system && test.exe > cxxtest-release.xml"
 				}
@@ -87,11 +93,6 @@ pipeline {
 
 	post {
 		always {
-			script {
-				if (env.CLEANBUILD == 'true') {
-					bat "git clean -fdx build/ source/"
-				}
-			}
 			recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tool: msBuild()
 		}
 	}

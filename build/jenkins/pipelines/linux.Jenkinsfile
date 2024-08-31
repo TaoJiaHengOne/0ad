@@ -60,19 +60,6 @@ pipeline {
 				}
 
 				stages {
-					stage("Cleanup") {
-						when {
-							allOf {
-								environment name: 'JENKINS_PCH', value: 'pch'
-								changelog '.*\\[CLEANBUILD\\].*'
-							}
-						}
-						steps {
-							script { env.CLEANBUILD = 'true' }
-							sh "git clean -fdx build/ source/"
-						}
-					}
-
 					stage("Pre-build") {
 						steps {
 							sh "git lfs pull -I binaries/data/tests"
@@ -97,7 +84,15 @@ pipeline {
 
 					stage("Debug Build") {
 						steps {
-							sh "cd build/workspaces/gcc/ && make -j1 config=debug"
+							retry(2) {
+								script {
+									try { sh "cd build/workspaces/gcc/ && make -j1 config=debug" }
+									catch(e) {
+										sh "cd build/workspaces/gcc/ && make clean config=debug"
+										throw e
+									}
+								}
+							}
 							timeout(time: 15) {
 								sh "cd binaries/system/ && ./test_dbg > cxxtest-debug.xml"
 							}
@@ -111,7 +106,15 @@ pipeline {
 
 					stage("Release Build") {
 						steps {
-							sh "cd build/workspaces/gcc/ && make -j1 config=release"
+							retry(2) {
+								script {
+									try { sh "cd build/workspaces/gcc/ && make -j1 config=release" }
+									catch(e) {
+										sh "cd build/workspaces/gcc/ && make clean config=release"
+										throw e
+									}
+								}
+							}
 							timeout(time: 15) {
 								sh "cd binaries/system/ && ./test > cxxtest-release.xml"
 							}
@@ -119,16 +122,6 @@ pipeline {
 						post {
 							always {
 								junit 'binaries/system/cxxtest-release.xml'
-							}
-						}
-					}
-				}
-
-				post {
-					always {
-						script {
-							if (env.CLEANBUILD == 'true' && env.JENKINS_PCH == 'pch') {
-								sh "git clean -fdx build/ source/"
 							}
 						}
 					}

@@ -29,16 +29,6 @@ pipeline {
 	}
 
 	stages {
-		stage("Cleanup") {
-			when {
-				changelog '.*\\[CLEANBUILD\\].*'
-			}
-			steps {
-				script { env.CLEANBUILD = 'true' }
-				sh "git clean -fdx build/ source/"
-			}
-		}
-
 		stage ("Pre-build") {
 			steps {
 				discoverGitReferenceBuild()
@@ -58,7 +48,15 @@ pipeline {
 
 		stage("Debug Build") {
 			steps {
-				sh "cd build/workspaces/gcc/ && make -j4 config=debug"
+				retry(2) {
+					script {
+						try { sh "cd build/workspaces/gcc/ && make -j4 config=debug" }
+						catch(e) {
+							sh "cd build/workspaces/gcc/ && make clean config=debug"
+							throw e
+						}
+					}
+				}
 				timeout(time: 15) {
 					sh "cd binaries/system/ && ./test_dbg > cxxtest-debug.xml"
 				}
@@ -72,7 +70,15 @@ pipeline {
 
 		stage("Release Build") {
 			steps {
-				sh "cd build/workspaces/gcc/ && make -j4 config=release"
+				retry(2) {
+					script {
+						try { sh "cd build/workspaces/gcc/ && make -j4 config=release" }
+						catch(e) {
+							sh "cd build/workspaces/gcc/ && make clean config=release"
+							throw e
+						}
+					}
+				}
 				timeout(time: 15) {
 					sh "cd binaries/system/ && ./test > cxxtest-release.xml"
 				}
@@ -87,11 +93,6 @@ pipeline {
 
 	post {
 		always {
-			script {
-				if (env.CLEANBUILD == 'true') {
-					sh "git clean -fdx build/ source/"
-				}
-			}
 			recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tool: clang()
 		}
 	}

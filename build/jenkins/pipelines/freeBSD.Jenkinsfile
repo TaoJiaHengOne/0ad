@@ -35,16 +35,6 @@ pipeline {
 		LLVM_OBJDUMP = '/usr/bin/llvm-objdump'
 	}
 	stages {
-		stage("Cleanup") {
-			when {
-				changelog '.*\\[CLEANBUILD\\].*'
-			}
-			steps {
-				script { env.CLEANBUILD = 'true' }
-				sh "git clean -fdx build/ source/"
-			}
-		}
-
 		stage ("Pre-build") {
 			steps {
 				discoverGitReferenceBuild()
@@ -64,7 +54,15 @@ pipeline {
 
 		stage ("Release Build") {
 			steps {
-				sh "cd build/workspaces/gcc/ && gmake -j2 config=release"
+				retry (2) {
+					script {
+						try { sh "cd build/workspaces/gcc/ && gmake -j2 config=release" }
+						catch(e) {
+							sh "cd build/workspaces/gcc/ && gmake clean config=release"
+							throw e
+						}
+					}
+				}
 
 				timeout(time: 15) {
 					sh "cd binaries/system/ && ./test > cxxtest-release.xml"
@@ -80,11 +78,6 @@ pipeline {
 
 	post {
 		always {
-			script {
-				if (env.CLEANBUILD == 'true') {
-					sh "git clean -fdx build/ source/"
-				}
-			}
 			recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tool: clang()
 		}
 	}
