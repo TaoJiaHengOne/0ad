@@ -65,13 +65,13 @@ pipeline {
 							sh "git lfs pull -I binaries/data/tests"
 							sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
-							sh "libraries/build-source-libs.sh -j1 2> ${JENKINS_COMPILER}-prebuild-errors.log"
+							sh "libraries/build-source-libs.sh 2> ${JENKINS_COMPILER}-prebuild-errors.log"
 
 							script {
 								if (env.JENKINS_PCH == "no-pch") {
-									sh "build/workspaces/update-workspaces.sh -j1 --jenkins-tests --without-pch 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
+									sh "build/workspaces/update-workspaces.sh --jenkins-tests --without-pch 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
 								} else {
-									sh "build/workspaces/update-workspaces.sh -j1 --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
+									sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
 								}
 							}
 						}
@@ -86,7 +86,7 @@ pipeline {
 						steps {
 							retry(2) {
 								script {
-									try { sh "cd build/workspaces/gcc/ && make -j1 config=debug" }
+									try { sh "cd build/workspaces/gcc/ && make config=debug" }
 									catch(e) {
 										sh "cd build/workspaces/gcc/ && make clean config=debug"
 										throw e
@@ -108,7 +108,7 @@ pipeline {
 						steps {
 							retry(2) {
 								script {
-									try { sh "cd build/workspaces/gcc/ && make -j1 config=release" }
+									try { sh "cd build/workspaces/gcc/ && make config=release" }
 									catch(e) {
 										sh "cd build/workspaces/gcc/ && make clean config=release"
 										throw e

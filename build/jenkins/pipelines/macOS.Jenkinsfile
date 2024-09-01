@@ -36,8 +36,8 @@ pipeline {
 				sh "git lfs pull -I binaries/data/tests"
 				sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
-				sh "libraries/build-macos-libs.sh -j4 2> macos-prebuild-errors.log"
-				sh "build/workspaces/update-workspaces.sh -j4 --jenkins-tests 2>> macos-prebuild-errors.log"
+				sh "libraries/build-macos-libs.sh 2> macos-prebuild-errors.log"
+				sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> macos-prebuild-errors.log"
 			}
 			post {
 				failure {
@@ -50,7 +50,7 @@ pipeline {
 			steps {
 				retry(2) {
 					script {
-						try { sh "cd build/workspaces/gcc/ && make -j4 config=debug" }
+						try { sh "cd build/workspaces/gcc/ && make config=debug" }
 						catch(e) {
 							sh "cd build/workspaces/gcc/ && make clean config=debug"
 							throw e
@@ -72,7 +72,7 @@ pipeline {
 			steps {
 				retry(2) {
 					script {
-						try { sh "cd build/workspaces/gcc/ && make -j4 config=release" }
+						try { sh "cd build/workspaces/gcc/ && make config=release" }
 						catch(e) {
 							sh "cd build/workspaces/gcc/ && make clean config=release"
 							throw e

@@ -42,8 +42,8 @@ pipeline {
 				sh "git lfs pull -I binaries/data/tests"
 				sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
-				sh "libraries/build-source-libs.sh -j2 2> freebsd-prebuild-errors.log"
-				sh "build/workspaces/update-workspaces.sh -j2 --jenkins-tests 2>> freebsd-prebuild-errors.log"
+				sh "libraries/build-source-libs.sh 2> freebsd-prebuild-errors.log"
+				sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> freebsd-prebuild-errors.log"
 			}
 			post {
 				failure {
@@ -56,7 +56,7 @@ pipeline {
 			steps {
 				retry (2) {
 					script {
-						try { sh "cd build/workspaces/gcc/ && gmake -j2 config=release" }
+						try { sh "cd build/workspaces/gcc/ && gmake config=release" }
 						catch(e) {
 							sh "cd build/workspaces/gcc/ && gmake clean config=release"
 							throw e
