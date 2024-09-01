@@ -345,20 +345,20 @@
 				"config": "shadowpcf"
 			},
 			{
-				"type": "slider",
-				"label": "Cutoff distance",
-				"tooltip": "Hides shadows beyond a certain distance from a camera.",
-				"dependencies": ["shadows"],
-				"config": "shadowscutoffdistance",
-				"min": 100,
-				"max": 1500
-			},
-			{
 				"type": "boolean",
 				"label": "Cover whole map",
 				"tooltip": "When ON shadows cover the whole map and shadows cutoff distance is ignored. Useful for making screenshots of a whole map.",
 				"dependencies": ["shadows"],
 				"config": "shadowscovermap"
+			},
+			{
+				"type": "slider",
+				"label": "Cutoff distance",
+				"tooltip": "Hides shadows beyond a certain distance from a camera.",
+				"dependencies": ["shadows", { "config": "shadowscovermap", "value": "false" }],
+				"config": "shadowscutoffdistance",
+				"min": 100,
+				"max": 1500
 			},
 			{
 				"type": "boolean",
