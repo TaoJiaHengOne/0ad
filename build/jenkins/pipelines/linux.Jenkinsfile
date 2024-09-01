@@ -130,7 +130,7 @@ pipeline {
 
 			post {
 				always {
-					node('LinuxSlave') { ws('workspace/linux') {
+					node('LinuxAgent') { ws('workspace/linux') {
 						recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tools: [clang(), gcc()]
 					}}
 				}
