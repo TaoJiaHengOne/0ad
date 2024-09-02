@@ -1363,7 +1363,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.unload") +
-				           translate("Unload All."),
+					translate("Unload All") + "\n" +
+					bodyFont(translate("Order all units to leave the selected entities.")),
 				"icon": "garrison-out.png",
 				"count": count,
 				"enabled": true
@@ -1398,7 +1399,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.unloadturrets") +
-				           translate("Unload Turrets."),
+					translate("Unload Turrets") + "\n" +
+					bodyFont(translate("Order all units to leave the selected turret points.")),
 				"icon": "garrison-out.png",
 				"count": count,
 				"enabled": true
@@ -1418,10 +1420,12 @@ var g_EntityCommands =
 				{
 					"tooltip":
 						colorizeHotkey("%(hotkey)s" + " ", "session.kill") +
-						translate("Destroy the selected units or structures.") + "\n" +
-						colorizeHotkey(
-							translate("Use %(hotkey)s to avoid the confirmation dialog."),
-							"session.noconfirmation"
+						translate("Self-Destruct") + "\n" +
+						bodyFont(translate("Destroy the selected entities.") + "\n" +
+							colorizeHotkey(
+								translate("Use %(hotkey)s to avoid the confirmation dialog."),
+								"session.noconfirmation"
+							)
 						),
 					"icon": "kill_small.png",
 					"enabled": true
@@ -1470,7 +1474,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.stop") +
-				           translate("Abort the current order."),
+					translate("Abort") + "\n" +
+					bodyFont(translate("Cancel the current orders for the selected units.")),
 				"icon": "stop.png",
 				"enabled": true
 			};
@@ -1491,7 +1496,8 @@ var g_EntityCommands =
 				return false;
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.calltoarms") +
-						translate("Send the selected units on attack move to the specified location after dropping resources."),
+						translate("Attack") + "\n" +
+						bodyFont(translate("Send the selected units on attack move to the specified location after dropping resources.")),
 				"icon": "call-to-arms.png",
 				"enabled": true
 			};
@@ -1513,7 +1519,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.garrison") +
-				           translate("Order the selected units to garrison in a structure or unit."),
+					translate("Garrison") + "\n" +
+					bodyFont(translate("Order the selected units to garrison in a structure or another unit.")),
 				"icon": "garrison.png",
 				"enabled": true
 			};
@@ -1535,7 +1542,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.occupyturret") +
-				           translate("Order the selected units to occupy a turret point."),
+					translate("Occupy Turret") + "\n" +
+					bodyFont(translate("Order the selected units to occupy a turret point.")),
 				"icon": "occupy-turret.png",
 				"enabled": true
 			};
@@ -1557,7 +1565,8 @@ var g_EntityCommands =
 				return false;
 
 			return {
-				"tooltip": translate("Unload"),
+				"tooltip": translate("Unload") + "\n" +
+					bodyFont(translate("Order the selected units to leave their turret points.")),
 				"icon": "leave-turret.png",
 				"enabled": true
 			};
@@ -1577,7 +1586,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.repair") +
-				           translate("Order the selected units to repair a structure, ship, or siege engine."),
+					translate("Repair") + "\n" +
+					bodyFont(translate("Order the selected units to repair a structure, ship, or siege engine.")),
 				"icon": "repair.png",
 				"enabled": true
 			};
@@ -1598,7 +1608,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "camera.rallypointfocus") +
-				           translate("Focus on Rally Point."),
+					translate("Focus on Rally Point") + "\n" +
+					bodyFont(translate("Center the view on the selected rally point.")),
 				"icon": "focus-rally.png",
 				"enabled": true
 			};
@@ -1635,7 +1646,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.backtowork") +
-				           translate("Back to Work"),
+					translate("Back to Work") + "\n" +
+					bodyFont(translate("Order the selected units to resume their work.")),
 				"icon": "back-to-work.png",
 				"enabled": true
 			};
@@ -1656,7 +1668,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.guard") +
-				           translate("Order the selected units to guard a structure or unit."),
+					translate("Guard") + "\n" +
+					bodyFont(translate("Order the selected units to guard a structure or unit.")),
 				"icon": "add-guard.png",
 				"enabled": true
 			};
@@ -1676,7 +1689,8 @@ var g_EntityCommands =
 				return false;
 
 			return {
-				"tooltip": translate("Remove guard"),
+				"tooltip": translate("Abort Guard") + "\n" +
+					bodyFont(translate("Order the selected units to stop guarding.")),
 				"icon": "remove-guard.png",
 				"enabled": true
 			};
@@ -1695,7 +1709,9 @@ var g_EntityCommands =
 				return false;
 
 			return {
-				"tooltip": translate("Barter & Trade"),
+				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.gui.barter.toggle") +
+					translate("Barter & Trade") + "\n" +
+					bodyFont(translate("Open the dialog for managing resource trading and bartering.")),
 				"icon": "economics.png",
 				"enabled": true
 			};
@@ -1715,8 +1731,8 @@ var g_EntityCommands =
 
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.patrol") +
-				           translate("Patrol") + "\n" +
-				           translate("Attack all encountered enemy units while avoiding structures."),
+					translate("Patrol") + "\n" +
+					bodyFont(translate("Order to repeatedly go to a point and come back, attacking all enemies along the way.")),
 				"icon": "patrol.png",
 				"enabled": true
 			};
@@ -1744,12 +1760,14 @@ var g_EntityCommands =
 
 			return sharableEntities.some(entState => !entState.resourceDropsite.shared) ?
 				{
-					"tooltip": translate("Press to allow allies to use this dropsite"),
+					"tooltip": translate("Share Dropsite") + "\n" +
+						bodyFont(translate("Allow allies to use this dropsite, now locked.")),
 					"icon": "locked_small.png",
 					"enabled": true
 				} :
 				{
-					"tooltip": translate("Press to prevent allies from using this dropsite"),
+					"tooltip": translate("Lock Dropsite") + "\n" +
+						bodyFont(translate("Prevent allies from using this dropsite, now shared.")),
 					"icon": "unlocked_small.png",
 					"enabled": true
 				};
@@ -1784,14 +1802,16 @@ var g_EntityCommands =
 
 			if (!shareableEntities.every(entState => entState.resourceDropsite.shared))
 				return {
-					"tooltip": translate("The use of this dropsite is prohibited"),
+					"tooltip": translate("Locked Dropsite") + "\n" +
+						bodyFont(translate("The use of this dropsite is prohibited.")),
 					"icon": "locked_small.png",
 					"enabled": false
 				};
 
 			return {
-				"tooltip": g_IsObserver ? translate("Allies are allowed to use this dropsite.") :
-					translate("You are allowed to use this dropsite"),
+				"tooltip": translate("Shared Dropsite") + "\n" +
+					bodyFont(g_IsObserver ? translate("Allies are allowed to use this dropsite.") :
+						translate("You are allowed to use this dropsite.")),
 				"icon": "unlocked_small.png",
 				"enabled": false
 			};
@@ -1810,7 +1830,8 @@ var g_EntityCommands =
 				return false;
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.queueunit.autoqueueon") +
-						   translate("Activate auto-queue for selected structures."),
+					translate("Activate Auto-Queue") + "\n" +
+					bodyFont(translate("Activate the production auto-queue for the selected structures.")),
 				"icon": "autoqueue-on.png",
 				"enabled": true
 			};
@@ -1830,7 +1851,8 @@ var g_EntityCommands =
 				return false;
 			return {
 				"tooltip": colorizeHotkey("%(hotkey)s" + " ", "session.queueunit.autoqueueoff") +
-						   translate("Deactivate auto-queue for selected structures."),
+					translate("Deactivate Auto-Queue") + "\n" +
+					bodyFont(translate("Deactivate the production auto-queue for the selected structures.")),
 				"icon": "autoqueue-off.png",
 				"enabled": true
 			};
