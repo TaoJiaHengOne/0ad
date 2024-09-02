@@ -45,7 +45,7 @@ class EntityBox
 
 	static compileTooltip(template)
 	{
-		return ReferencePage.buildText(template, this.prototype.TooltipFunctions) + "\n" + showTemplateViewerOnClickTooltip();
+		return ReferencePage.buildText(template, this.prototype.TooltipFunctions) + "\n" + getTemplateViewerOnClickTooltip();
 	}
 
 	/**

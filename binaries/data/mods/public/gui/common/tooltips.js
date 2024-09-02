@@ -1219,16 +1219,28 @@ function getResourceDropsiteTooltip(template)
 	});
 }
 
-function showTemplateViewerOnRightClickTooltip()
+function getFocusOnLeftClickTooltip()
 {
-	// Translation: Appears in a tooltip to indicate that right-clicking the corresponding GUI element will open the Template Details GUI page.
-	return translate("Right-click to view more information.");
+	// Translation: Appears in a tooltip to indicate that left-clicking the corresponding GUI element will center the view on the selected entity.
+	return translate("Left-click to focus.");
 }
 
-function showTemplateViewerOnClickTooltip()
+function getFollowOnLeftClickTooltip()
+{
+	// Translation: Appears in a tooltip to indicate that left-clicking the corresponding GUI element will make the camera follow the selected unit.
+	return translate("Left-click to follow.");
+}
+
+function getTemplateViewerOnRightClickTooltip()
+{
+	// Translation: Appears in a tooltip to indicate that right-clicking the corresponding GUI element will open the Template Details GUI page.
+	return translate("Right-click for more information.");
+}
+
+function getTemplateViewerOnClickTooltip()
 {
 	// Translation: Appears in a tooltip to indicate that clicking the corresponding GUI element will open the Template Details GUI page.
-	return translate("Click to view more information.");
+	return translate("Click for more information.");
 }
 
 /**

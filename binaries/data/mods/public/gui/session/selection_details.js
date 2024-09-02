@@ -324,9 +324,19 @@ function displaySingle(entState)
 	// TODO: we should require all entities to have icons
 	Engine.GetGUIObjectByName("icon").sprite = template.icon ? ("stretched:session/portraits/" + template.icon) : "BackgroundBlack";
 	if (template.icon)
-		Engine.GetGUIObjectByName("iconBorder").onPressRight = () => {
+	{
+		const iconBorder = Engine.GetGUIObjectByName("iconBorder");
+
+		// Actions on left click
+		iconBorder.onPress = () => {
+			setCameraFollow(entState.id);
+		};
+
+		// Actions on right click
+		iconBorder.onPressRight = () => {
 			showTemplateDetails(entState.template, playerState.civ);
 		};
+	}
 
 	let detailedTooltip = [
 		getAttackTooltip,
@@ -357,9 +367,11 @@ function displaySingle(entState)
 		getVisibleEntityClassesFormatted,
 		getAurasTooltip,
 		getEntityTooltip,
-		getTreasureTooltip,
-		showTemplateViewerOnRightClickTooltip
+		getTreasureTooltip
 	].map(func => func(template)));
+
+	const leftClickTooltip = hasClass(entState, "Unit") ? getFollowOnLeftClickTooltip() : getFocusOnLeftClickTooltip();
+	iconTooltips.push(leftClickTooltip + " " + getTemplateViewerOnRightClickTooltip());
 
 	Engine.GetGUIObjectByName("iconBorder").tooltip = iconTooltips.filter(tip => tip).join("\n");
 

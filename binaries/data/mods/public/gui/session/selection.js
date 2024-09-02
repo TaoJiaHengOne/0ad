@@ -479,8 +479,8 @@ EntitySelection.prototype.selectAndMoveTo = function(entityID)
 	this.reset();
 	this.addList([entityID]);
 
-	Engine.CameraMoveTo(entState.position.x, entState.position.z);
-}
+	setCameraFollow(entityID);
+};
 
 /**
  * Adds the formation members of a selected entities to the selection.

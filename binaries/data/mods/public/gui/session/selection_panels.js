@@ -207,7 +207,7 @@ g_SelectionPanels.Construction = {
 			getGarrisonTooltip(template),
 			getTurretsTooltip(template),
 			getPopulationBonusTooltip(template),
-			showTemplateViewerOnRightClickTooltip(template)
+			getTemplateViewerOnRightClickTooltip(template)
 		);
 
 
@@ -578,7 +578,7 @@ g_SelectionPanels.Queue = {
 				"neededSlots": queuedItem.neededSlots
 			}));
 		}
-		tooltips.push(showTemplateViewerOnRightClickTooltip(template));
+		tooltips.push(getTemplateViewerOnRightClickTooltip(template));
 		data.button.tooltip = tooltips.join("\n");
 
 		data.countDisplay.caption = queuedItem.count > 1 ? queuedItem.count : "";
@@ -763,7 +763,7 @@ g_SelectionPanels.Research = {
 				getEntityNamesFormatted,
 				getEntityTooltip,
 				getEntityCostTooltip,
-				showTemplateViewerOnRightClickTooltip
+				getTemplateViewerOnRightClickTooltip
 			].map(func => func(template));
 
 			if (!requirementsPassed)
@@ -1058,7 +1058,7 @@ g_SelectionPanels.Training = {
 				getResourceDropsiteTooltip
 			].map(func => func(template)));
 
-		tooltips.push(showTemplateViewerOnRightClickTooltip());
+		tooltips.push(getTemplateViewerOnRightClickTooltip());
 		tooltips.push(
 			formatBatchTrainingString(buildingsCountToTrainFullBatch, fullBatchSize, remainderBatch),
 			getRequirementsTooltip(requirementsMet, template.requirements, GetSimState().players[data.player].civ),
@@ -1180,7 +1180,8 @@ g_SelectionPanels.Upgrade = {
 				formatMatchLimitString(limits.matchLimit, limits.matchCount, limits.type),
 				getRequirementsTooltip(requirementsMet, data.item.requirements, GetSimState().players[data.player].civ),
 				getNeededResourcesTooltip(neededResources),
-				showTemplateViewerOnRightClickTooltip());
+				getTemplateViewerOnRightClickTooltip()
+			);
 
 			tooltip = tooltips.filter(tip => tip).join("\n");
 
