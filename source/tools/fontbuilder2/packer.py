@@ -44,16 +44,16 @@ class RectanglePacker:
     http://www.csc.liv.ac.uk/~epa/surveyhtml.html
     """
 
-    def __init__(self, packingAreaWidth, packingAreaHeight):
+    def __init__(self, packing_area_width, packing_area_height):
         """Initialize a new rectangle packer.
 
         packingAreaWidth: Maximum width of the packing area
         packingAreaHeight: Maximum height of the packing area
         """
-        self.packingAreaWidth = packingAreaWidth
-        self.packingAreaHeight = packingAreaHeight
+        self.packingAreaWidth = packing_area_width
+        self.packingAreaHeight = packing_area_height
 
-    def Pack(self, rectangleWidth, rectangleHeight):
+    def pack(self, rectangle_width, rectangle_height):
         """Allocate space for a rectangle in the packing area.
 
         rectangleWidth: Width of the rectangle to allocate
@@ -61,14 +61,14 @@ class RectanglePacker:
 
         Returns the location at which the rectangle has been placed
         """
-        point = self.TryPack(rectangleWidth, rectangleHeight)
+        point = self.try_pack(rectangle_width, rectangle_height)
 
         if not point:
             raise OutOfSpaceError("Rectangle does not fit in packing area")
 
         return point
 
-    def TryPack(self, rectangleWidth, rectangleHeight):
+    def try_pack(self, rectangle_width, rectangle_height):
         """Try to allocate space for a rectangle in the packing area.
 
         rectangleWidth: Width of the rectangle to allocate
@@ -81,23 +81,23 @@ class RectanglePacker:
 
 
 class DumbRectanglePacker(RectanglePacker):
-    def __init__(self, packingAreaWidth, packingAreaHeight):
-        RectanglePacker.__init__(self, packingAreaWidth, packingAreaHeight)
+    def __init__(self, packing_area_width, packing_area_height):
+        RectanglePacker.__init__(self, packing_area_width, packing_area_height)
         self.x = 0
         self.y = 0
         self.rowh = 0
 
-    def TryPack(self, rectangleWidth, rectangleHeight):
-        if self.x + rectangleWidth >= self.packingAreaWidth:
+    def try_pack(self, rectangle_width, rectangle_height):
+        if self.x + rectangle_width >= self.packingAreaWidth:
             self.x = 0
             self.y += self.rowh
             self.rowh = 0
-            if self.y + rectangleHeight >= self.packingAreaHeight:
+            if self.y + rectangle_height >= self.packingAreaHeight:
                 return None
 
         r = Point(self.x, self.y)
-        self.x += rectangleWidth
-        self.rowh = max(self.rowh, rectangleHeight)
+        self.x += rectangle_width
+        self.rowh = max(self.rowh, rectangle_height)
         return r
 
 
@@ -118,21 +118,21 @@ class CygonRectanglePacker(RectanglePacker):
     analyzed to find the position where the rectangle would achieve the lowest
     """
 
-    def __init__(self, packingAreaWidth, packingAreaHeight):
+    def __init__(self, packing_area_width, packing_area_height):
         """Initialize a new rectangle packer.
 
         packingAreaWidth: Maximum width of the packing area
         packingAreaHeight: Maximum height of the packing area
         """
-        RectanglePacker.__init__(self, packingAreaWidth, packingAreaHeight)
+        RectanglePacker.__init__(self, packing_area_width, packing_area_height)
 
         # Stores the height silhouette of the rectangles
-        self.heightSlices = []
+        self.height_slices = []
 
         # At the beginning, the packing area is a single slice of height 0
-        self.heightSlices.append(Point(0, 0))
+        self.height_slices.append(Point(0, 0))
 
-    def TryPack(self, rectangleWidth, rectangleHeight):
+    def try_pack(self, rectangle_width, rectangle_height):
         """Try to allocate space for a rectangle in the packing area.
 
         rectangleWidth: Width of the rectangle to allocate
@@ -145,20 +145,20 @@ class CygonRectanglePacker(RectanglePacker):
 
         # If the rectangle is larger than the packing area in any dimension,
         # it will never fit!
-        if rectangleWidth > self.packingAreaWidth or rectangleHeight > self.packingAreaHeight:
+        if rectangle_width > self.packingAreaWidth or rectangle_height > self.packingAreaHeight:
             return None
 
         # Determine the placement for the new rectangle
-        placement = self.tryFindBestPlacement(rectangleWidth, rectangleHeight)
+        placement = self.try_find_best_placement(rectangle_width, rectangle_height)
 
         # If a place for the rectangle could be found, update the height slice
         # table to mark the region of the rectangle as being taken.
         if placement:
-            self.integrateRectangle(placement.x, rectangleWidth, placement.y + rectangleHeight)
+            self.integrate_rectangle(placement.x, rectangle_width, placement.y + rectangle_height)
 
         return placement
 
-    def tryFindBestPlacement(self, rectangleWidth, rectangleHeight):
+    def try_find_best_placement(self, rectangle_width, rectangle_height):
         """Find the best position for a rectangle of the given dimensions.
 
         rectangleWidth: Width of the rectangle to find a position for
@@ -169,70 +169,70 @@ class CygonRectanglePacker(RectanglePacker):
         """
         # Slice index, vertical position and score of the best placement we
         # could find
-        bestSliceIndex = -1  # Slice index where the best placement was found
-        bestSliceY = 0  # Y position of the best placement found
+        best_slice_index = -1  # Slice index where the best placement was found
+        best_slice_y = 0  # Y position of the best placement found
         # lower == better!
-        bestScore = self.packingAreaHeight
+        best_score = self.packingAreaHeight
 
         # This is the counter for the currently checked position. The search
         # works by skipping from slice to slice, determining the suitability
         # of the location for the placement of the rectangle.
-        leftSliceIndex = 0
+        left_slice_index = 0
 
         # Determine the slice in which the right end of the rectangle is located
-        rightSliceIndex = bisect_left(self.heightSlices, Point(rectangleWidth, 0))
+        right_slice_index = bisect_left(self.height_slices, Point(rectangle_width, 0))
 
-        while rightSliceIndex <= len(self.heightSlices):
+        while right_slice_index <= len(self.height_slices):
             # Determine the highest slice within the slices covered by the
             # rectangle at its current placement. We cannot put the rectangle
             # any lower than this without overlapping the other rectangles.
-            highest = self.heightSlices[leftSliceIndex].y
-            for index in range(leftSliceIndex + 1, rightSliceIndex):
-                highest = max(self.heightSlices[index].y, highest)
+            highest = self.height_slices[left_slice_index].y
+            for index in range(left_slice_index + 1, right_slice_index):
+                highest = max(self.height_slices[index].y, highest)
 
             # Only process this position if it doesn't leave the packing area
-            if highest + rectangleHeight < self.packingAreaHeight:
+            if highest + rectangle_height < self.packingAreaHeight:
                 score = highest
 
-                if score < bestScore:
-                    bestSliceIndex = leftSliceIndex
-                    bestSliceY = highest
-                    bestScore = score
+                if score < best_score:
+                    best_slice_index = left_slice_index
+                    best_slice_y = highest
+                    best_score = score
 
             # Advance the starting slice to the next slice start
-            leftSliceIndex += 1
-            if leftSliceIndex >= len(self.heightSlices):
+            left_slice_index += 1
+            if left_slice_index >= len(self.height_slices):
                 break
 
             # Advance the ending slice until we're on the proper slice again,
             # given the new starting position of the rectangle.
-            rightRectangleEnd = self.heightSlices[leftSliceIndex].x + rectangleWidth
-            while rightSliceIndex <= len(self.heightSlices):
-                if rightSliceIndex == len(self.heightSlices):
-                    rightSliceStart = self.packingAreaWidth
+            right_rectangle_end = self.height_slices[left_slice_index].x + rectangle_width
+            while right_slice_index <= len(self.height_slices):
+                if right_slice_index == len(self.height_slices):
+                    right_slice_start = self.packingAreaWidth
                 else:
-                    rightSliceStart = self.heightSlices[rightSliceIndex].x
+                    right_slice_start = self.height_slices[right_slice_index].x
 
                 # Is this the slice we're looking for?
-                if rightSliceStart > rightRectangleEnd:
+                if right_slice_start > right_rectangle_end:
                     break
 
-                rightSliceIndex += 1
+                right_slice_index += 1
 
             # If we crossed the end of the slice array, the rectangle's right
             # end has left the packing area, and thus, our search ends.
-            if rightSliceIndex > len(self.heightSlices):
+            if right_slice_index > len(self.height_slices):
                 break
 
         # Return the best placement we found for this rectangle. If the
         # rectangle didn't fit anywhere, the slice index will still have its
         # initialization value of -1 and we can report that no placement
         # could be found.
-        if bestSliceIndex == -1:
+        if best_slice_index == -1:
             return None
-        return Point(self.heightSlices[bestSliceIndex].x, bestSliceY)
+        return Point(self.height_slices[best_slice_index].x, best_slice_y)
 
-    def integrateRectangle(self, left, width, bottom):
+    def integrate_rectangle(self, left, width, bottom):
         """Integrate a new rectangle into the height slice table.
 
         left: Position of the rectangle's left side
@@ -240,46 +240,46 @@ class CygonRectanglePacker(RectanglePacker):
         bottom: Position of the rectangle's lower side
         """
         # Find the first slice that is touched by the rectangle
-        startSlice = bisect_left(self.heightSlices, Point(left, 0))
+        start_slice = bisect_left(self.height_slices, Point(left, 0))
 
         # We scored a direct hit, so we can replace the slice we have hit
-        firstSliceOriginalHeight = self.heightSlices[startSlice].y
-        self.heightSlices[startSlice] = Point(left, bottom)
+        first_slice_original_height = self.height_slices[start_slice].y
+        self.height_slices[start_slice] = Point(left, bottom)
 
         right = left + width
-        startSlice += 1
+        start_slice += 1
 
         # Special case, the rectangle started on the last slice, so we cannot
         # use the start slice + 1 for the binary search and the possibly
         # already modified start slice height now only remains in our temporary
-        # firstSliceOriginalHeight variable
-        if startSlice >= len(self.heightSlices):
+        # first_slice_original_height variable
+        if start_slice >= len(self.height_slices):
             # If the slice ends within the last slice (usual case, unless it
             # has the exact same width the packing area has), add another slice
             # to return to the original height at the end of the rectangle.
             if right < self.packingAreaWidth:
-                self.heightSlices.append(Point(right, firstSliceOriginalHeight))
+                self.height_slices.append(Point(right, first_slice_original_height))
         else:  # The rectangle doesn't start on the last slice
-            endSlice = bisect_left(
-                self.heightSlices, Point(right, 0), startSlice, len(self.heightSlices)
+            end_slice = bisect_left(
+                self.height_slices, Point(right, 0), start_slice, len(self.height_slices)
             )
 
             # Another direct hit on the final slice's end?
-            if endSlice < len(self.heightSlices) and not (
-                Point(right, 0) < self.heightSlices[endSlice]
+            if end_slice < len(self.height_slices) and not (
+                Point(right, 0) < self.height_slices[end_slice]
             ):
-                del self.heightSlices[startSlice:endSlice]
+                del self.height_slices[start_slice:end_slice]
             else:  # No direct hit, rectangle ends inside another slice
                 # Find out to which height we need to return at the right end of
                 # the rectangle
-                if endSlice == startSlice:
-                    returnHeight = firstSliceOriginalHeight
+                if end_slice == start_slice:
+                    return_height = first_slice_original_height
                 else:
-                    returnHeight = self.heightSlices[endSlice - 1].y
+                    return_height = self.height_slices[end_slice - 1].y
 
                 # Remove all slices covered by the rectangle and begin a new
                 # slice at its end to return back to the height of the slice on
                 # which the rectangle ends.
-                del self.heightSlices[startSlice:endSlice]
+                del self.height_slices[start_slice:end_slice]
                 if right < self.packingAreaWidth:
-                    self.heightSlices.insert(startSlice, Point(right, returnHeight))
+                    self.height_slices.insert(start_slice, Point(right, return_height))

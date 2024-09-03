@@ -32,8 +32,8 @@ in particular, let us know and we can try to clarify it.
 
   fontbuilder2
     MIT
-    unspecified (FontLoader.py)
-    IBM CPL (Packer.py)
+    unspecified (font_loader.py)
+    IBM CPL (packer.py)
 
   i18n
     GPL version 2 (or later)

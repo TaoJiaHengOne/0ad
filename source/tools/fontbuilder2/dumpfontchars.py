@@ -2,12 +2,12 @@
 # list of decimal codepoints (from U+0001 to U+FFFF) for which that font
 # contains some glyph data.
 
-import FontLoader
+import font_loader
 
 
 def dump_font(ttf):
-    (face, indexes) = FontLoader.create_cairo_font_face_for_file(
-        f"../../../binaries/data/tools/fontbuilder/fonts/{ttf}", 0, FontLoader.FT_LOAD_DEFAULT
+    (face, indexes) = font_loader.create_cairo_font_face_for_file(
+        f"../../../binaries/data/tools/fontbuilder/fonts/{ttf}", 0, font_loader.FT_LOAD_DEFAULT
     )
 
     mappings = [(c, indexes(chr(c))) for c in range(1, 65535)]

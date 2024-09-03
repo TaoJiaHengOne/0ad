@@ -3,8 +3,8 @@
 import math
 
 import cairo
-import FontLoader
-import Packer
+import font_loader
+import packer
 
 
 # Representation of a rendered glyph
@@ -50,8 +50,8 @@ class Glyph:
         self.w = bb[2] - bb[0]
         self.h = bb[3] - bb[1]
 
-    def pack(self, packer):
-        self.pos = packer.Pack(self.w, self.h)
+    def pack(self, packer_instance):
+        self.pos = packer_instance.pack(self.w, self.h)
 
     def render(self, ctx):
         if ctx.get_font_face() != self.face:
@@ -95,41 +95,41 @@ def setup_context(width, height, renderstyle):
     return ctx, surface
 
 
-def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
-    faceList = []
-    indexList = []
-    for i in range(len(ttfNames)):
-        (face, indices) = FontLoader.create_cairo_font_face_for_file(
-            f"../../../binaries/data/tools/fontbuilder/fonts/{ttfNames[i]}", 0, loadopts
+def generate_font(outname, ttf_names, loadopts, size, renderstyle, dsizes):
+    face_list = []
+    index_list = []
+    for i in range(len(ttf_names)):
+        (face, indices) = font_loader.create_cairo_font_face_for_file(
+            f"../../../binaries/data/tools/fontbuilder/fonts/{ttf_names[i]}", 0, loadopts
         )
-        faceList.append(face)
-        if ttfNames[i] not in dsizes:
-            dsizes[ttfNames[i]] = 0
-        indexList.append(indices)
+        face_list.append(face)
+        if ttf_names[i] not in dsizes:
+            dsizes[ttf_names[i]] = 0
+        index_list.append(indices)
 
     (ctx, _) = setup_context(1, 1, renderstyle)
 
     # TODO: this gets the line height from the default font
     # while entire texts can be in the fallback font
-    ctx.set_font_face(faceList[0])
-    ctx.set_font_size(size + dsizes[ttfNames[0]])
+    ctx.set_font_face(face_list[0])
+    ctx.set_font_size(size + dsizes[ttf_names[0]])
     (_, _, linespacing, _, _) = ctx.font_extents()
 
     # Estimate the 'average' height of text, for vertical center alignment
-    charheight = round(ctx.glyph_extents([(indexList[0]("I"), 0.0, 0.0)])[3])
+    charheight = round(ctx.glyph_extents([(index_list[0]("I"), 0.0, 0.0)])[3])
 
     # Translate all the characters into glyphs
     # (This is inefficient if multiple characters have the same glyph)
     glyphs = []
     # for c in chars:
     for c in range(0x20, 0xFFFE):
-        for i in range(len(indexList)):
-            idx = indexList[i](chr(c))
+        for i in range(len(index_list)):
+            idx = index_list[i](chr(c))
             if c == 0xFFFD and idx == 0:  # use "?" if the missing-glyph glyph is missing
-                idx = indexList[i]("?")
+                idx = index_list[i]("?")
             if idx:
                 glyphs.append(
-                    Glyph(ctx, renderstyle, chr(c), idx, faceList[i], size + dsizes[ttfNames[i]])
+                    Glyph(ctx, renderstyle, chr(c), idx, face_list[i], size + dsizes[ttf_names[i]])
                 )
                 break
 
@@ -149,10 +149,10 @@ def generate_font(outname, ttfNames, loadopts, size, renderstyle, dsizes):
         try:
             # Using the dump pacher usually creates bigger textures, but runs faster
             # In practice the size difference is so small it always ends up in the same size
-            packer = Packer.DumbRectanglePacker(w, h)
+            packer_instance = packer.DumbRectanglePacker(w, h)
             for g in glyphs:
-                g.pack(packer)
-        except Packer.OutOfSpaceError:
+                g.pack(packer_instance)
+        except packer.OutOfSpaceError:
             continue
 
         ctx, surface = setup_context(w, h, renderstyle)
@@ -199,12 +199,12 @@ stroked2 = {"colour": True, "stroke": [((0, 0, 0, 1), 2.0)], "fill": [(1, 1, 1, 
 stroked3 = {"colour": True, "stroke": [((0, 0, 0, 1), 2.5)], "fill": [(1, 1, 1, 1), (1, 1, 1, 1)]}
 
 # For extra glyph support, add your preferred font to the font array
-Sans = (["LinBiolinum_Rah.ttf", "FreeSans.ttf"], FontLoader.FT_LOAD_DEFAULT)
-Sans_Bold = (["LinBiolinum_RBah.ttf", "FreeSansBold.ttf"], FontLoader.FT_LOAD_DEFAULT)
-Sans_Italic = (["LinBiolinum_RIah.ttf", "FreeSansOblique.ttf"], FontLoader.FT_LOAD_DEFAULT)
-SansMono = (["DejaVuSansMono.ttf", "FreeMono.ttf"], FontLoader.FT_LOAD_DEFAULT)
-Serif = (["texgyrepagella-regular.otf", "FreeSerif.ttf"], FontLoader.FT_LOAD_NO_HINTING)
-Serif_Bold = (["texgyrepagella-bold.otf", "FreeSerifBold.ttf"], FontLoader.FT_LOAD_NO_HINTING)
+Sans = (["LinBiolinum_Rah.ttf", "FreeSans.ttf"], font_loader.FT_LOAD_DEFAULT)
+Sans_Bold = (["LinBiolinum_RBah.ttf", "FreeSansBold.ttf"], font_loader.FT_LOAD_DEFAULT)
+Sans_Italic = (["LinBiolinum_RIah.ttf", "FreeSansOblique.ttf"], font_loader.FT_LOAD_DEFAULT)
+SansMono = (["DejaVuSansMono.ttf", "FreeMono.ttf"], font_loader.FT_LOAD_DEFAULT)
+Serif = (["texgyrepagella-regular.otf", "FreeSerif.ttf"], font_loader.FT_LOAD_NO_HINTING)
+Serif_Bold = (["texgyrepagella-bold.otf", "FreeSerifBold.ttf"], font_loader.FT_LOAD_NO_HINTING)
 
 # Define the size differences used to render different fallback fonts
 # I.e. when adding a fallback font has smaller glyphs than the original, you can bump it
