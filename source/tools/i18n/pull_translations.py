@@ -19,16 +19,16 @@
 import os
 import subprocess
 
-from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFolder
+from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY, TRANSIFEX_CLIENT_FOLDER
 
 
 def main():
-    for root, folders, _ in os.walk(projectRootDirectory):
+    for root, folders, _ in os.walk(PROJECT_ROOT_DIRECTORY):
         for folder in folders:
-            if folder != l10nFolderName:
+            if folder != L10N_FOLDER_NAME:
                 continue
 
-            if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
+            if os.path.exists(os.path.join(root, folder, TRANSIFEX_CLIENT_FOLDER)):
                 path = os.path.join(root, folder)
                 os.chdir(path)
                 print(f"INFO: Starting to pull translations in {path}...")

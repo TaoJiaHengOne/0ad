@@ -21,9 +21,9 @@ import multiprocessing
 import os
 import sys
 
-from i18n_helper import l10nFolderName, projectRootDirectory
+from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY
 from i18n_helper.catalog import Catalog
-from i18n_helper.globber import getCatalogs
+from i18n_helper.globber import get_catalogs
 
 
 DEBUG_PREFIX = "X_X "
@@ -41,7 +41,7 @@ def generate_long_strings(root_path, input_file_name, output_file_name, language
     input_file_path = os.path.join(root_path, input_file_name)
     output_file_path = os.path.join(root_path, output_file_name)
 
-    template_catalog = Catalog.readFrom(input_file_path)
+    template_catalog = Catalog.read_from(input_file_path)
     # Pretend we write English to get plurals.
     long_string_catalog = Catalog(locale="en")
 
@@ -55,7 +55,7 @@ def generate_long_strings(root_path, input_file_name, output_file_name, language
         )
 
     # Load existing translation catalogs.
-    existing_translation_catalogs = getCatalogs(input_file_path, languages)
+    existing_translation_catalogs = get_catalogs(input_file_path, languages)
 
     # If any existing translation has more characters than the average expansion, use that instead.
     for translation_catalog in existing_translation_catalogs:
@@ -100,7 +100,7 @@ def generate_long_strings(root_path, input_file_name, output_file_name, language
                     longest_plural_string,
                 ]
                 translation_message = long_string_catalog_message
-    long_string_catalog.writeTo(output_file_path)
+    long_string_catalog.write_to(output_file_path)
 
 
 def generate_debug(root_path, input_file_name, output_file_name):
@@ -114,7 +114,7 @@ def generate_debug(root_path, input_file_name, output_file_name):
     input_file_path = os.path.join(root_path, input_file_name)
     output_file_path = os.path.join(root_path, output_file_name)
 
-    template_catalog = Catalog.readFrom(input_file_path)
+    template_catalog = Catalog.read_from(input_file_path)
     # Pretend we write English to get plurals.
     out_catalog = Catalog(locale="en")
 
@@ -134,7 +134,7 @@ def generate_debug(root_path, input_file_name, output_file_name):
                 auto_comments=message.auto_comments,
             )
 
-    out_catalog.writeTo(output_file_path)
+    out_catalog.write_to(output_file_path)
 
 
 def main():
@@ -159,12 +159,12 @@ def main():
         sys.exit(0)
 
     found_pot_files = 0
-    for root, _, filenames in os.walk(projectRootDirectory):
+    for root, _, filenames in os.walk(PROJECT_ROOT_DIRECTORY):
         for filename in filenames:
             if (
                 len(filename) > 4
                 and filename[-4:] == ".pot"
-                and os.path.basename(root) == l10nFolderName
+                and os.path.basename(root) == L10N_FOLDER_NAME
             ):
                 found_pot_files += 1
                 if args.debug:
@@ -180,8 +180,8 @@ def main():
     if found_pot_files == 0:
         print(
             "This script did not work because no '.pot' files were found. "
-            "Please, run 'updateTemplates.py' to generate the '.pot' files, and run "
-            "'pullTranslations.py' to pull the latest translations from Transifex. "
+            "Please, run 'update_templates.py' to generate the '.pot' files, and run "
+            "'pull_translations.py' to pull the latest translations from Transifex. "
             "Then you can run this script to generate '.po' files with obvious debug strings."
         )
 

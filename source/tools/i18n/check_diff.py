@@ -23,12 +23,12 @@ import os
 import subprocess
 from typing import List
 
-from i18n_helper import projectRootDirectory
+from i18n_helper import PROJECT_ROOT_DIRECTORY
 
 
 def get_diff():
     """Return a diff using svn diff."""
-    os.chdir(projectRootDirectory)
+    os.chdir(PROJECT_ROOT_DIRECTORY)
 
     diff_process = subprocess.run(["svn", "diff", "binaries"], capture_output=True, check=False)
     if diff_process.returncode != 0:

@@ -133,16 +133,16 @@ pipeline {
 		stage("Update translations") {
 			steps {
 				ws("workspace/nightly-svn") {
-					bat "cd source\\tools\\i18n && python updateTemplates.py"
+					bat "cd source\\tools\\i18n && python update_templates.py"
 					withCredentials([string(credentialsId: 'TX_TOKEN', variable: 'TX_TOKEN')]) {
-						bat "cd source\\tools\\i18n && python pullTranslations.py"
+						bat "cd source\\tools\\i18n && python pull_translations.py"
 					}
-					bat "cd source\\tools\\i18n && python generateDebugTranslation.py --long"
-					bat "cd source\\tools\\i18n && python cleanTranslationFiles.py"
+					bat "cd source\\tools\\i18n && python generate_debug_translation.py --long"
+					bat "cd source\\tools\\i18n && python clean_translation_files.py"
 					script { if (!params.NEW_REPO) {
-						bat "python source\\tools\\i18n\\checkDiff.py --verbose"
+						bat "python source\\tools\\i18n\\check_diff.py --verbose"
 					}}
-					bat "cd source\\tools\\i18n && python creditTranslators.py"
+					bat "cd source\\tools\\i18n && python credit_translators.py"
 				}
 			}
 		}

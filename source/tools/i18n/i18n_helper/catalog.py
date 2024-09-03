@@ -44,10 +44,10 @@ class Catalog(BabelCatalog):
         return [("Project-Id-Version", self._project), *headers]
 
     @staticmethod
-    def readFrom(file_path, locale=None):
+    def read_from(file_path, locale=None):
         with open(file_path, "r+", encoding="utf-8") as fd:
             return read_po(fd, locale=locale)
 
-    def writeTo(self, file_path):
+    def write_to(self, file_path):
         with open(file_path, "wb+") as fd:
             return write_po(fileobj=fd, catalog=self, width=90, sort_by_file=True)

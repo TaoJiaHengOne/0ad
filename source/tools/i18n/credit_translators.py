@@ -27,7 +27,7 @@ automatic deletion. This has not been needed so far. A possibility would be to a
 optional boolean entry to the dictionary containing the name.
 
 Translatable strings will be extracted from the generated file, so this should be run
-once before updateTemplates.py.
+once before update_templates.py.
 """
 
 import json
@@ -37,20 +37,20 @@ from collections import defaultdict
 from pathlib import Path
 
 from babel import Locale, UnknownLocaleError
-from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFolder
+from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY, TRANSIFEX_CLIENT_FOLDER
 
 
-poLocations = []
-for root, folders, _filenames in os.walk(projectRootDirectory):
+po_locations = []
+for root, folders, _filenames in os.walk(PROJECT_ROOT_DIRECTORY):
     for folder in folders:
-        if folder != l10nFolderName:
+        if folder != L10N_FOLDER_NAME:
             continue
 
-        if os.path.exists(os.path.join(root, folder, transifexClientFolder)):
-            poLocations.append(os.path.join(root, folder))
+        if os.path.exists(os.path.join(root, folder, TRANSIFEX_CLIENT_FOLDER)):
+            po_locations.append(os.path.join(root, folder))
 
-creditsLocation = os.path.join(
-    projectRootDirectory,
+credits_location = os.path.join(
+    PROJECT_ROOT_DIRECTORY,
     "binaries",
     "data",
     "mods",
@@ -62,19 +62,19 @@ creditsLocation = os.path.join(
 )
 
 # This dictionary will hold creditors lists for each language, indexed by code
-langsLists = defaultdict(list)
+langs_lists = defaultdict(list)
 
 # Create the new JSON data
-newJSONData = {"Title": "Translators", "Content": []}
+new_json_data = {"Title": "Translators", "Content": []}
 
 # Now go through the list of languages and search the .po files for people
 
 # Prepare some regexes
-translatorMatch = re.compile(r"^#\s+([^,<]*)")
-deletedUsernameMatch = re.compile(r"[0-9a-f]{32}(_[0-9a-f]{7})?")
+translator_match = re.compile(r"^#\s+([^,<]*)")
+deleted_username_match = re.compile(r"[0-9a-f]{32}(_[0-9a-f]{7})?")
 
 # Search
-for location in poLocations:
+for location in po_locations:
     files = Path(location).glob("*.po")
 
     for file in files:
@@ -84,46 +84,46 @@ for location in poLocations:
         if lang in ("debug", "long"):
             continue
 
-        with file.open(encoding="utf-8") as poFile:
+        with file.open(encoding="utf-8") as po_file:
             reached = False
-            for line in poFile:
+            for line in po_file:
                 if reached:
-                    m = translatorMatch.match(line)
+                    m = translator_match.match(line)
                     if not m:
                         break
 
                     username = m.group(1)
-                    if not deletedUsernameMatch.fullmatch(username):
-                        langsLists[lang].append(username)
+                    if not deleted_username_match.fullmatch(username):
+                        langs_lists[lang].append(username)
                 if line.strip() == "# Translators:":
                     reached = True
 
 # Sort translator names and remove duplicates
 # Sorting should ignore case, but prefer versions of names starting
 # with an upper case letter to have a neat credits list.
-for lang in langsLists:
+for lang in langs_lists:
     translators = {}
-    for name in sorted(langsLists[lang], reverse=True):
+    for name in sorted(langs_lists[lang], reverse=True):
         if name.lower() not in translators or name.istitle():
             translators[name.lower()] = name
-    langsLists[lang] = sorted(translators.values(), key=lambda s: s.lower())
+    langs_lists[lang] = sorted(translators.values(), key=lambda s: s.lower())
 
 # Now insert the new data into the new JSON file
-for langCode, langList in sorted(langsLists.items()):
+for lang_code, lang_list in sorted(langs_lists.items()):
     try:
-        lang_name = Locale.parse(langCode).english_name
+        lang_name = Locale.parse(lang_code).english_name
     except UnknownLocaleError:
-        lang_name = Locale.parse("en").languages.get(langCode)
+        lang_name = Locale.parse("en").languages.get(lang_code)
 
         if not lang_name:
             raise
 
-    translators = [{"name": name} for name in langList]
-    newJSONData["Content"].append({"LangName": lang_name, "List": translators})
+    translators = [{"name": name} for name in lang_list]
+    new_json_data["Content"].append({"LangName": lang_name, "List": translators})
 
 # Sort languages by their English names
-newJSONData["Content"] = sorted(newJSONData["Content"], key=lambda x: x["LangName"])
+new_json_data["Content"] = sorted(new_json_data["Content"], key=lambda x: x["LangName"])
 
 # Save the JSON data to the credits file
-with open(creditsLocation, "w", encoding="utf-8") as creditsFile:
-    json.dump(newJSONData, creditsFile, indent=4)
+with open(credits_location, "w", encoding="utf-8") as credits_file:
+    json.dump(new_json_data, credits_file, indent=4)

@@ -33,19 +33,19 @@ import os
 import re
 import sys
 
-from i18n_helper import l10nFolderName, projectRootDirectory, transifexClientFolder
+from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY, TRANSIFEX_CLIENT_FOLDER
 
 
 def main():
-    translatorMatch = re.compile(r"^(#\s+[^,<]*)\s+<.*>(.*)")
-    lastTranslatorMatch = re.compile(r"^(\"Last-Translator:[^,<]*)\s+<.*>(.*)")
+    translator_match = re.compile(r"^(#\s+[^,<]*)\s+<.*>(.*)")
+    last_translator_match = re.compile(r"^(\"Last-Translator:[^,<]*)\s+<.*>(.*)")
 
-    for root, folders, _ in os.walk(projectRootDirectory):
+    for root, folders, _ in os.walk(PROJECT_ROOT_DIRECTORY):
         for folder in folders:
-            if folder != l10nFolderName:
+            if folder != L10N_FOLDER_NAME:
                 continue
 
-            if not os.path.exists(os.path.join(root, folder, transifexClientFolder)):
+            if not os.path.exists(os.path.join(root, folder, TRANSIFEX_CLIENT_FOLDER)):
                 continue
 
             path = os.path.join(root, folder, "*.po")
@@ -59,16 +59,16 @@ def main():
                     if reached:
                         if line == "# \n":
                             line = ""
-                        m = translatorMatch.match(line)
+                        m = translator_match.match(line)
                         if m:
                             if m.group(1) in usernames:
                                 line = ""
                             else:
                                 line = m.group(1) + m.group(2) + "\n"
                                 usernames.append(m.group(1))
-                        m2 = lastTranslatorMatch.match(line)
+                        m2 = last_translator_match.match(line)
                         if m2:
-                            line = re.sub(lastTranslatorMatch, r"\1\2", line)
+                            line = re.sub(last_translator_match, r"\1\2", line)
                     elif line.strip() == "# Translators:":
                         reached = True
                     sys.stdout.write(line)

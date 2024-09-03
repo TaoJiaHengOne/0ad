@@ -24,7 +24,7 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import codecs
-import json as jsonParser
+import json
 import os
 import re
 import sys
@@ -54,8 +54,8 @@ def pathmatch(mask, path):
 
 
 class Extractor:
-    def __init__(self, directoryPath, filemasks, options):
-        self.directoryPath = directoryPath
+    def __init__(self, directory_path, filemasks, options):
+        self.directoryPath = directory_path
         self.options = options
 
         if isinstance(filemasks, dict):
@@ -73,8 +73,8 @@ class Extractor:
         :rtype:     ``iterator``
         """
         empty_string_pattern = re.compile(r"^\s*$")
-        directoryAbsolutePath = os.path.abspath(self.directoryPath)
-        for root, folders, filenames in os.walk(directoryAbsolutePath):
+        directory_absolute_path = os.path.abspath(self.directoryPath)
+        for root, folders, filenames in os.walk(directory_absolute_path):
             for subdir in folders:
                 if subdir.startswith((".", "_")):
                     folders.remove(subdir)
@@ -90,14 +90,14 @@ class Extractor:
                 else:
                     for filemask in self.includeMasks:
                         if pathmatch(filemask, filename):
-                            filepath = os.path.join(directoryAbsolutePath, filename)
+                            filepath = os.path.join(directory_absolute_path, filename)
                             for (
                                 message,
                                 plural,
                                 context,
                                 position,
                                 comments,
-                            ) in self.extractFromFile(filepath):
+                            ) in self.extract_from_file(filepath):
                                 if empty_string_pattern.match(message):
                                     continue
 
@@ -105,7 +105,7 @@ class Extractor:
                                     filename = "\u2068" + filename + "\u2069"
                                 yield message, plural, context, (filename, position), comments
 
-    def extractFromFile(self, filepath):
+    def extract_from_file(self, filepath):
         """Extract messages from a specific file.
 
         :return:    An iterator over ``(message, plural, context, position, comments)`` tuples.
@@ -113,7 +113,7 @@ class Extractor:
         """
 
 
-class javascript(Extractor):
+class JavascriptExtractor(Extractor):
     """Extract messages from JavaScript source code."""
 
     empty_msgid_warning = (
@@ -121,7 +121,7 @@ class javascript(Extractor):
         "returns the header entry with meta information, not the empty string."
     )
 
-    def extractJavascriptFromFile(self, fileObject):
+    def extract_javascript_from_file(self, file_object):
         from babel.messages.jslexer import tokenize, unquote_string
 
         funcname = message_lineno = None
@@ -134,7 +134,7 @@ class javascript(Extractor):
         comment_tags = self.options.get("commentTags", [])
         keywords = self.options.get("keywords", {}).keys()
 
-        for token in tokenize(fileObject.read(), dotted=False):
+        for token in tokenize(file_object.read(), dotted=False):
             if token.type == "operator" and (
                 token.value == "(" or (call_stack != -1 and (token.value in ("[", "{")))
             ):
@@ -236,9 +236,11 @@ class javascript(Extractor):
 
             last_token = token
 
-    def extractFromFile(self, filepath):
-        with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
-            for lineno, funcname, messages, comments in self.extractJavascriptFromFile(fileObject):
+    def extract_from_file(self, filepath):
+        with codecs.open(filepath, "r", encoding="utf-8-sig") as file_object:
+            for lineno, funcname, messages, comments in self.extract_javascript_from_file(
+                file_object
+            ):
                 spec = self.options.get("keywords", {})[funcname] or (1,) if funcname else (1,)
                 if not isinstance(messages, (list, tuple)):
                     messages = [messages]
@@ -276,7 +278,7 @@ class javascript(Extractor):
                 if not messages[first_msg_index]:
                     # An empty string msgid isn't valid, emit a warning
                     where = "%s:%i" % (
-                        hasattr(fileObject, "name") and fileObject.name or "(unknown)",
+                        hasattr(file_object, "name") and file_object.name or "(unknown)",
                         lineno,
                     )
                     print(self.empty_msgid_warning % where, file=sys.stderr)
@@ -291,54 +293,54 @@ class javascript(Extractor):
                 yield message, plural, context, lineno, comments
 
 
-class cpp(javascript):
+class CppExtractor(JavascriptExtractor):
     """Extract messages from C++ source code."""
 
 
-class txt(Extractor):
+class TXTExtractor(Extractor):
     """Extract messages from plain text files."""
 
-    def extractFromFile(self, filepath):
-        with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
+    def extract_from_file(self, filepath):
+        with codecs.open(filepath, "r", encoding="utf-8-sig") as file_object:
             for lineno, line in enumerate(
-                [line.strip("\n\r") for line in fileObject.readlines()], start=1
+                [line.strip("\n\r") for line in file_object.readlines()], start=1
             ):
                 if line:
                     yield line, None, None, lineno, []
 
 
-class json(Extractor):
+class JsonExtractor(Extractor):
     """Extract messages from JSON files."""
 
-    def __init__(self, directoryPath=None, filemasks=None, options=None):
+    def __init__(self, directory_path=None, filemasks=None, options=None):
         if options is None:
             options = {}
         if filemasks is None:
             filemasks = []
-        super().__init__(directoryPath, filemasks, options)
+        super().__init__(directory_path, filemasks, options)
         self.keywords = self.options.get("keywords", {})
         self.context = self.options.get("context", None)
         self.comments = self.options.get("comments", [])
 
-    def setOptions(self, options):
+    def set_options(self, options):
         self.options = options
         self.keywords = self.options.get("keywords", {})
         self.context = self.options.get("context", None)
         self.comments = self.options.get("comments", [])
 
-    def extractFromFile(self, filepath):
-        with codecs.open(filepath, "r", "utf-8") as fileObject:
-            for message, context in self.extractFromString(fileObject.read()):
+    def extract_from_file(self, filepath):
+        with codecs.open(filepath, "r", "utf-8") as file_object:
+            for message, context in self.extract_from_string(file_object.read()):
                 yield message, None, context, None, self.comments
 
-    def extractFromString(self, string):
-        jsonDocument = jsonParser.loads(string)
-        if isinstance(jsonDocument, list):
-            for message, context in self.parseList(jsonDocument):
+    def extract_from_string(self, string):
+        json_document = json.loads(string)
+        if isinstance(json_document, list):
+            for message, context in self.parse_list(json_document):
                 if message:  # Skip empty strings.
                     yield message, context
-        elif isinstance(jsonDocument, dict):
-            for message, context in self.parseDictionary(jsonDocument):
+        elif isinstance(json_document, dict):
+            for message, context in self.parse_dictionary(json_document):
                 if message:  # Skip empty strings.
                     yield message, context
         else:
@@ -347,22 +349,22 @@ class json(Extractor):
                 "You must extend the JSON extractor to support it."
             )
 
-    def parseList(self, itemsList):
-        for listItem in itemsList:
-            if isinstance(listItem, list):
-                for message, context in self.parseList(listItem):
+    def parse_list(self, items_list):
+        for list_item in items_list:
+            if isinstance(list_item, list):
+                for message, context in self.parse_list(list_item):
                     yield message, context
-            elif isinstance(listItem, dict):
-                for message, context in self.parseDictionary(listItem):
+            elif isinstance(list_item, dict):
+                for message, context in self.parse_dictionary(list_item):
                     yield message, context
 
-    def parseDictionary(self, dictionary):
+    def parse_dictionary(self, dictionary):
         for keyword in dictionary:
             if keyword in self.keywords:
                 if isinstance(dictionary[keyword], str):
-                    yield self.extractString(dictionary[keyword], keyword)
+                    yield self.extract_string(dictionary[keyword], keyword)
                 elif isinstance(dictionary[keyword], list):
-                    for message, context in self.extractList(dictionary[keyword], keyword):
+                    for message, context in self.extract_list(dictionary[keyword], keyword):
                         yield message, context
                 elif isinstance(dictionary[keyword], dict):
                     extract = None
@@ -370,22 +372,22 @@ class json(Extractor):
                         "extractFromInnerKeys" in self.keywords[keyword]
                         and self.keywords[keyword]["extractFromInnerKeys"]
                     ):
-                        for message, context in self.extractDictionaryInnerKeys(
+                        for message, context in self.extract_dictionary_inner_keys(
                             dictionary[keyword], keyword
                         ):
                             yield message, context
                     else:
-                        extract = self.extractDictionary(dictionary[keyword], keyword)
+                        extract = self.extract_dictionary(dictionary[keyword], keyword)
                         if extract:
                             yield extract
             elif isinstance(dictionary[keyword], list):
-                for message, context in self.parseList(dictionary[keyword]):
+                for message, context in self.parse_list(dictionary[keyword]):
                     yield message, context
             elif isinstance(dictionary[keyword], dict):
-                for message, context in self.parseDictionary(dictionary[keyword]):
+                for message, context in self.parse_dictionary(dictionary[keyword]):
                     yield message, context
 
-    def extractString(self, string, keyword):
+    def extract_string(self, string, keyword):
         context = None
         if "tagAsContext" in self.keywords[keyword]:
             context = keyword
@@ -395,16 +397,16 @@ class json(Extractor):
             context = self.context
         return string, context
 
-    def extractList(self, itemsList, keyword):
-        for listItem in itemsList:
-            if isinstance(listItem, str):
-                yield self.extractString(listItem, keyword)
-            elif isinstance(listItem, dict):
-                extract = self.extractDictionary(listItem[keyword], keyword)
+    def extract_list(self, items_list, keyword):
+        for list_item in items_list:
+            if isinstance(list_item, str):
+                yield self.extract_string(list_item, keyword)
+            elif isinstance(list_item, dict):
+                extract = self.extract_dictionary(list_item[keyword], keyword)
                 if extract:
                     yield extract
 
-    def extractDictionary(self, dictionary, keyword):
+    def extract_dictionary(self, dictionary, keyword):
         message = dictionary.get("_string", None)
         if message and isinstance(message, str):
             context = None
@@ -419,45 +421,47 @@ class json(Extractor):
             return message, context
         return None
 
-    def extractDictionaryInnerKeys(self, dictionary, keyword):
-        for innerKeyword in dictionary:
-            if isinstance(dictionary[innerKeyword], str):
-                yield self.extractString(dictionary[innerKeyword], keyword)
-            elif isinstance(dictionary[innerKeyword], list):
-                yield from self.extractList(dictionary[innerKeyword], keyword)
-            elif isinstance(dictionary[innerKeyword], dict):
-                extract = self.extractDictionary(dictionary[innerKeyword], keyword)
+    def extract_dictionary_inner_keys(self, dictionary, keyword):
+        for inner_keyword in dictionary:
+            if isinstance(dictionary[inner_keyword], str):
+                yield self.extract_string(dictionary[inner_keyword], keyword)
+            elif isinstance(dictionary[inner_keyword], list):
+                yield from self.extract_list(dictionary[inner_keyword], keyword)
+            elif isinstance(dictionary[inner_keyword], dict):
+                extract = self.extract_dictionary(dictionary[inner_keyword], keyword)
                 if extract:
                     yield extract
 
 
-class xml(Extractor):
+class XmlExtractor(Extractor):
     """Extract messages from XML files."""
 
-    def __init__(self, directoryPath, filemasks, options):
-        super().__init__(directoryPath, filemasks, options)
+    def __init__(self, directory_path, filemasks, options):
+        super().__init__(directory_path, filemasks, options)
         self.keywords = self.options.get("keywords", {})
         self.jsonExtractor = None
 
-    def getJsonExtractor(self):
+    def get_json_extractor(self):
         if not self.jsonExtractor:
-            self.jsonExtractor = json()
+            self.jsonExtractor = JsonExtractor()
         return self.jsonExtractor
 
-    def extractFromFile(self, filepath):
+    def extract_from_file(self, filepath):
         from lxml import etree
 
-        with codecs.open(filepath, "r", encoding="utf-8-sig") as fileObject:
-            xmlDocument = etree.parse(fileObject)
+        with codecs.open(filepath, "r", encoding="utf-8-sig") as file_object:
+            xml_document = etree.parse(file_object)
             for keyword in self.keywords:
-                for element in xmlDocument.iter(keyword):
+                for element in xml_document.iter(keyword):
                     lineno = element.sourceline
                     if element.text is not None:
                         comments = []
                         if "extractJson" in self.keywords[keyword]:
-                            jsonExtractor = self.getJsonExtractor()
-                            jsonExtractor.setOptions(self.keywords[keyword]["extractJson"])
-                            for message, context in jsonExtractor.extractFromString(element.text):
+                            json_extractor = self.get_json_extractor()
+                            json_extractor.set_options(self.keywords[keyword]["extractJson"])
+                            for message, context in json_extractor.extract_from_string(
+                                element.text
+                            ):
                                 yield message, None, context, lineno, comments
                         else:
                             context = None
@@ -474,12 +478,12 @@ class xml(Extractor):
                                 )  # Remove tabs, line breaks and unecessary spaces.
                                 comments.append(comment)
                             if "splitOnWhitespace" in self.keywords[keyword]:
-                                for splitText in element.text.split():
+                                for split_text in element.text.split():
                                     # split on whitespace is used for token lists, there, a
                                     # leading '-' means the token has to be removed, so it's not
                                     # to be processed here either
-                                    if splitText[0] != "-":
-                                        yield str(splitText), None, context, lineno, comments
+                                    if split_text[0] != "-":
+                                        yield str(split_text), None, context, lineno, comments
                             else:
                                 yield str(element.text), None, context, lineno, comments
 
@@ -500,14 +504,14 @@ class FakeSectionHeader:
             return self.fp.readline()
 
 
-class ini(Extractor):
+class IniExtractor(Extractor):
     """Extract messages from INI files."""
 
-    def __init__(self, directoryPath, filemasks, options):
-        super().__init__(directoryPath, filemasks, options)
+    def __init__(self, directory_path, filemasks, options):
+        super().__init__(directory_path, filemasks, options)
         self.keywords = self.options.get("keywords", [])
 
-    def extractFromFile(self, filepath):
+    def extract_from_file(self, filepath):
         import ConfigParser
 
         config = ConfigParser.RawConfigParser()
