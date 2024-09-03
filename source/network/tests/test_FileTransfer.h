@@ -89,7 +89,8 @@ public:
 
 		bool complete{false};
 
-		client.transferer.StartTask([&complete](std::string buffer)
+		client.transferer.StartTask(CNetFileTransferer::RequestType::LOADGAME,
+			[&complete](std::string buffer)
 			{
 				// This callback is executed exactly once.
 				const bool previousComplete{std::exchange(complete, true)};
@@ -120,5 +121,18 @@ public:
 
 		server.transferer.HandleMessageReceive(client.queues.acknowledgements.at(0));
 		CheckSizes(server.queues, 0, 1, 1, 0);
+	}
+
+	void test_RequestType()
+	{
+		for (const auto& requestType : {CNetFileTransferer::RequestType::LOADGAME,
+			CNetFileTransferer::RequestType::REJOIN})
+		{
+			Participant client;
+
+			client.transferer.StartTask(requestType, [](auto&&){});
+			TS_ASSERT_EQUALS(static_cast<CNetFileTransferer::RequestType>(
+				client.queues.requests.at(0).m_RequestType), requestType);
+		}
 	}
 };

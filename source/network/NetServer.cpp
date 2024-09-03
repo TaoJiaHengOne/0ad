@@ -623,6 +623,8 @@ void CNetServerWorker::HandleMessageReceive(const CNetMessage* message, CNetServ
 	if (message->GetType() == NMT_FILE_TRANSFER_REQUEST)
 	{
 		CFileTransferRequestMessage* reqMessage = (CFileTransferRequestMessage*)message;
+		ENSURE(static_cast<CNetFileTransferer::RequestType>(reqMessage->m_RequestType) ==
+			CNetFileTransferer::RequestType::REJOIN);
 
 		// Rejoining client got our JoinSyncStart after we received the state from
 		// another client, and has now requested that we forward it to them
@@ -1123,7 +1125,8 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 	// copy from.
 	CNetServerSession* sourceSession = server.m_Sessions.at(0);
 
-	sourceSession->GetFileTransferer().StartTask([&server, newHostID](std::string buffer)
+	sourceSession->GetFileTransferer().StartTask(CNetFileTransferer::RequestType::REJOIN,
+		[&server, newHostID](std::string buffer)
 		{
 			// We've received the game state from an existing player - now we need to send it onwards
 			// to the newly rejoining player.

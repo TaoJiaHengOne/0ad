@@ -141,13 +141,14 @@ Status CNetFileTransferer::OnFileTransferAck(const CFileTransferAckMessage& mess
 
 }
 
-void CNetFileTransferer::StartTask(std::function<void(std::string)> task)
+void CNetFileTransferer::StartTask(RequestType requestType, std::function<void(std::string)> task)
 {
 	u32 requestID = m_NextRequestID++;
 
 	m_FileReceiveTasks.emplace(requestID, AsyncFileReceiveTask{std::move(task)});
 
 	CFileTransferRequestMessage request;
+	request.m_RequestType = static_cast<i8>(requestType);
 	request.m_RequestID = requestID;
 	m_Session->SendMessage(&request);
 }

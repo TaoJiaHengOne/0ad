@@ -534,6 +534,9 @@ bool CNetClient::HandleMessage(CNetMessage* message)
 	{
 		CFileTransferRequestMessage* reqMessage = static_cast<CFileTransferRequestMessage*>(message);
 
+		ENSURE(static_cast<CNetFileTransferer::RequestType>(reqMessage->m_RequestType) ==
+			CNetFileTransferer::RequestType::REJOIN);
+
 		// TODO: we should support different transfer request types, instead of assuming
 		// it's always requesting the simulation state
 
@@ -796,7 +799,7 @@ bool CNetClient::OnJoinSyncStart(CNetClient* client, CFsmEvent* event)
 	CJoinSyncStartMessage* joinSyncStartMessage = (CJoinSyncStartMessage*)event->GetParamRef();
 
 	// The server wants us to start downloading the game state from it, so do so
-	client->m_Session->GetFileTransferer().StartTask(
+	client->m_Session->GetFileTransferer().StartTask(CNetFileTransferer::RequestType::REJOIN,
 		[client, initAttributes = std::move(joinSyncStartMessage->m_InitAttributes)](std::string buffer)
 			mutable
 		{

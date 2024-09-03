@@ -48,6 +48,12 @@ static const size_t MAX_FILE_TRANSFER_SIZE = 8*MiB;
 class CNetFileTransferer
 {
 public:
+	enum class RequestType
+	{
+		LOADGAME,
+		REJOIN
+	};
+
 	CNetFileTransferer(INetSession* session)
 		: m_Session(session), m_NextRequestID(1), m_LastProgressReportTime(0)
 	{
@@ -64,7 +70,7 @@ public:
 	/**
 	 * Registers a file-receiving task.
 	 */
-	void StartTask(std::function<void(std::string)> task);
+	void StartTask(RequestType requestType, std::function<void(std::string)> task);
 
 	/**
 	 * Registers data to be sent in response to a request.
