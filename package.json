@@ -1,0 +1,11 @@
+{
+	"type": "module",
+	"devDependencies": {
+		"eslint": "^9.27.0",
+		"eslint-plugin-brace-rules": "^0.1.6"
+	},
+	"scripts": {
+		"lint": "eslint",
+		"lint:fix": "eslint --fix"
+	}
+}

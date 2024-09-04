@@ -8,7 +8,6 @@ https://secure.phabricator.com/book/phabricator/article/arcanist_lint/
 
 - `text` is configured to detect whitespace issues.
 - `json` detects JSON syntax errors.
-- `eslint`, if installed, will run on javascript files.
 
 ## Installation
 
@@ -21,14 +20,3 @@ Configuration is at the root of the project, under `.arclint`.
 ### Installing linters
 
 We provide dummy replacement for external linters, so that they are not required.
-
-#### eslint
-
-Installation via npm is recommended. The linter assumes a global installation
-of both eslint and the "brace-rules" plugin.
-
-```
-npm install -g eslint@latest eslint-plugin-brace-rules`
-```
-
-See also https://eslint.org/docs/user-guide/getting-started

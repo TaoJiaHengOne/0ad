@@ -87,6 +87,10 @@ binaries/data/mods/**/*.jpg
 # Vulkan SPIR-V shaders
 binaries/data/mods/*/shaders/spirv
 
+# eslint
+node_modules
+package-lock.json
+
 # Windows specific data
 desktop.ini
 Thumbs.db

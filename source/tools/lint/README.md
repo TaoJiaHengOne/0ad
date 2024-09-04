@@ -20,3 +20,17 @@ Adding library cfg's for other deps could improve cppchecks ability to find issu
 ## copyright
 
 A linter for checking copyright dates in file headers are up to date.
+
+## eslint
+
+For eslint run 'pre-commt run eslint -a'
+
+### Installation and IDE integration
+
+Install Node.js and then run 'npm install' in the repo root.
+
+Now you can run eslint as 'npm run-script lint' or if you want eslint to try
+fix the issues 'npm run-script lint:fix'.
+
+After having installed eslint you might want to add an eslint extension to your
+editor to get inline warnings and to allow for auto-formatting.

@@ -72,3 +72,13 @@ repos:
       - id: yamllint
         args:
           - --strict
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.27.0
+    hooks:
+      - id: eslint
+        additional_dependencies:
+          - eslint@9.27.0
+          - eslint-plugin-brace-rules@0.1.6
+        args:
+          - --max-warnings=0
+          - --no-warn-ignored
