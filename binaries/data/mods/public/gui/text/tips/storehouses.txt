@@ -1,3 +1,0 @@
-STOREHOUSES
-A cheap dropsite for non-food resources (Wood, Stone, Metal).
-Research technologies to improve the gathering capabilities of your citizens.

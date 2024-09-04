@@ -1,4 +1,4 @@
 PIKEMEN
-Heavily armored and slow. Low attack.
-Used against cavalry or against other melee infantry to pin them in place.
-Available to: Kushites, Macedonians, Ptolemies, and Seleucids.
+Available to the Kushites, Macedonians, Ptolemies, and Seleucids.
+Heavily armored, but low attack damage.
+Use against Cavalry or against other Melee Infantry to pin them in place.

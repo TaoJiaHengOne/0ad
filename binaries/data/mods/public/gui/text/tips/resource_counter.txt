@@ -1,3 +1,4 @@
 RESOURCE COUNTER
-The resource counter panel shows you how much of each resources you have at the moment.
-The number below it shows you how many citizens are currently gathering them.
+Located in the top left corner of the screen.
+Keep tabs on how much of each resource you've stockpiled in your treasury and how many units are currently gathering them.
+Keep an eye on it while playing to avoid running out in crucial moments.
