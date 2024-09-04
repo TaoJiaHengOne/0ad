@@ -55,7 +55,7 @@ pipeline {
 		stage("Template Analyzer") {
 			steps {
 				ws("/zpool0/entity-docs"){
-					sh "cd source/tools/templatesanalyzer/ && python3 unitTables.py"
+					sh "cd source/tools/templatesanalyzer/ && python3 unit_tables.py"
 				}
 			}
 		}

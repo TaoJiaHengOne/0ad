@@ -4,7 +4,7 @@ This python tool has been written by wraitii and updated to 0ad A25 by hyiltiz.
 Its purpose is to help with unit and civ balancing by allowing quick comparison
 between important template data.
 
-Run it using `python unitTables.py` or `pypy unitTables.py` (if you have pypy
+Run it using `python unit_tables.py` or `pypy unit_tables.py` (if you have pypy
 installed). The output will be located in an HTML file called
 `unit_summary_table.html` in this folder.
 
@@ -17,15 +17,15 @@ The script generates 3 informative tables:
 
 You can customize the script by changing the units to include (loading all units
 might make it slightly unreadable). To change this, change the
-`LoadTemplatesIfParent` variable. You can also consider only some civilizations.
+`LOAD_TEMPLATES_IF_PARENT` constant. You can also consider only some civilizations.
 You may also filter some templates based on their name, if you want to remove
 specific templates. By default it loads all citizen soldiers and all champions,
-and ignores non-interesting units for the comparison/efficienicy table (2nd
+and ignores non-interesting units for the comparison/efficiency table (2nd
 table).
 
 The HTML page comes with a JavaScript extension that allows to filter and sort
 in-place, to help with comparisons. You can disable this by disabling javascript
-or by changing the `AddSortingOverlay` parameter in the script. This JS
+or by changing the `ADD_SORTING_OVERLAY` constant in the script. This JS
 extension, called TableFilter, is released under the MIT license. The version
 used can be found at https://github.com/koalyptus/TableFilter/
 
@@ -62,13 +62,13 @@ getting familiarized with the analyzer. Note that you'll need `dot` engine provi
 by the `graphviz` package. You can install `graphviz` using your system's package manager.
 
     pip3 install pyan3==1.1.1
-    python3 -m pyan unitTables.py --uses --no-defines --colored \
+    python3 -m pyan unit_tables.py --uses --no-defines --colored \
       --grouped --annotated --html > fundeps.html
 
 Alternatively, only create the `.dot` file using the following line, and render
 it with an online renderer like http://viz-js.com/
 
-    python3 -m pyan unitTables.py --uses --no-defines --colored \
+    python3 -m pyan unit_tables.py --uses --no-defines --colored \
       --grouped --annotated --dot > fundeps.dot
 
 Enjoy!
