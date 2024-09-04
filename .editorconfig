@@ -10,5 +10,9 @@ indent_style = tab
 function_next_line = true
 switch_case_indent = true
 
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
+
 [build/premake/premake5/**]
 ignore = true
