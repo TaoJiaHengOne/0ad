@@ -297,7 +297,7 @@ class CppExtractor(JavascriptExtractor):
     """Extract messages from C++ source code."""
 
 
-class TXTExtractor(Extractor):
+class TxtExtractor(Extractor):
     """Extract messages from plain text files."""
 
     def extract_from_file(self, filepath):
