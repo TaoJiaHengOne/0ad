@@ -1,7 +1,6 @@
 # Built and prebuilt binaries
 binaries/system/*
-!binaries/system/Atlas.bat
-!binaries/system/Quickstart.bat
+!binaries/system/*.bat
 !binaries/system/readme.txt
 
 # Workspaces
