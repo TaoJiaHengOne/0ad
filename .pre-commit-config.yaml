@@ -20,7 +20,6 @@ repos:
             ^binaries/data/mods/_test.sim/simulation/templates.illformed.xml|
             ^binaries/data/mods/public/maps/.*\.xml
           )
-      - id: check-yaml
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.1
     hooks:
@@ -69,3 +68,10 @@ repos:
             ^build/premake/|
             ^source/third_party/
           )
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args:
+          - --strict
+        exclude: ^build/premake/premake5/
