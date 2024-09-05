@@ -16,7 +16,7 @@
 	<!-- Background circle -->
 	<object
 		type="image"
-		size="4 4 100%-4 100%-4"
+		size="4 6 100%-4 100%-6"
 		sprite="stretched:session/minimap_circle_modern.png"
 		ghost="true"
 	/>
@@ -24,7 +24,7 @@
 	<!-- Idle Worker Button -->
 	<object name="idleWorkerButton"
 		type="button"
-		size="100%-119 100%-120 100%-4 100%-5"
+		size="100%-119 100%-121 100%-4 100%-6"
 		tooltip_style="sessionToolTip"
 		hotkey="selection.idleworker"
 		sprite="stretched:session/minimap-idle.png"
@@ -45,7 +45,7 @@
 	<!-- Diplomacy Colors Button -->
 	<object name="diplomacyColorsButton"
 		type="button"
-		size="4 100%-120 119 100%-5"
+		size="3 100%-121 118 100%-6"
 		tooltip_style="sessionToolTip"
 		hotkey="session.diplomacycolors"
 	/>
@@ -54,7 +54,7 @@
 	<object
 		name="flareButton"
 		type="button"
-		size="3 3 118 118"
+		size="2 4 117 119"
 		tooltip_style="sessionToolTip"
 		hotkey="session.flareactivate"
 		sprite="stretched:session/minimap-flare.png"
@@ -66,7 +66,7 @@
 	<!-- MiniMap -->
 	<object
 		name="minimap"
-		size="8 8 100%-8 100%-8"
+		size="8 10 100%-8 100%-10"
 		type="minimap"
 		mask="true"
 		flare_texture_count="16"

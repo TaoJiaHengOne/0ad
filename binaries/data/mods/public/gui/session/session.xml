@@ -79,7 +79,7 @@
 	<!-- Limit to the minimal supported width of 1024 pixels. -->
 	<object size="50%-512 0 50%+512 100%">
 
-		<object size="50%-512 100%-200 50%-312 100%">
+		<object size="50%-512 100%-204 50%-312 100%">
 			<include file="gui/session/minimap/MiniMap.xml"/>
 		</object>
 
@@ -95,7 +95,7 @@
 
 		<!-- Selection Details Panel (middle). -->
 		<object name="selectionDetails"
-			size="50%-114 100%-200 50%+114 100%"
+			size="50%-114 100%-204 50%+114 100%"
 			sprite="selectionDetailsPanel"
 			type="image"
 		>
