@@ -13,7 +13,9 @@ jobs:
         run: pip3 install lxml
       - name: Workaround for authentication problem with LFS
         # https://gitea.com/gitea/act_runner/issues/164
-        run: git config --local http.${{ gitea.server_url }}/${{ gitea.repository }}.git/info/lfs/objects/.extraheader ''
+        run: >
+          git config --local
+          http.${{ gitea.server_url }}/${{ gitea.repository }}.git/info/lfs/objects/.extraheader ''
       - name: Download necessary LFS assets
         run: git lfs pull -I binaries/data/mods/public/maps
       - name: Check for missing references
