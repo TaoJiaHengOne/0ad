@@ -1,5 +1,13 @@
 # 0 A.D. Introductory Information
 
+[![FreeBSD Build Status](https://jenkins.wildfiregames.com/job/0ad-freebsd/job/main/badge/icon?subject=FreeBSD&style=plastic)](https://jenkins.wildfiregames.com/job/0ad-freebsd/job/main/)
+[![Linux Build Status](https://jenkins.wildfiregames.com/job/0ad-linux/job/main/badge/icon?subject=Linux&style=plastic)](https://jenkins.wildfiregames.com/job/0ad-linux/job/main/)
+[![macOS Build Status](https://jenkins.wildfiregames.com/job/0ad-macos/job/main/badge/icon?subject=macOS&style=plastic)](https://jenkins.wildfiregames.com/job/0ad-macos/job/main/)
+[![Windows Build Status](https://jenkins.wildfiregames.com/job/0ad-windows/job/main/badge/icon?subject=Windows&style=plastic)](https://jenkins.wildfiregames.com/job/0ad-windows/job/main/)
+
+[![Game References Checks Status](https://gitea.wildfiregames.com/0ad/0ad/actions/workflows/checkrefs.yml/badge.svg?branch=main)](https://gitea.wildfiregames.com/0ad/0ad/actions?workflow=checkrefs.yml)
+[![Pre-commit Checks Status](https://gitea.wildfiregames.com/0ad/0ad/actions/workflows/pre-commit.yml/badge.svg?branch=main)](https://gitea.wildfiregames.com/0ad/0ad/actions?workflow=pre-commit.yml)
+
 0 A.D. (pronounced "zero ey-dee") is a free, open-source, cross-platform
 real-time strategy game of ancient warfare.
 
