@@ -21,6 +21,7 @@
 import io
 import os
 import subprocess
+from itertools import islice
 from typing import List
 
 from i18n_helper import PROJECT_ROOT_DIRECTORY
@@ -87,15 +88,30 @@ def check_diff(diff: io.StringIO) -> List[str]:
 
 
 def revert_files(files: List[str], verbose=False):
-    revert_process = subprocess.run(["svn", "revert", *files], capture_output=True, check=False)
-    if revert_process.returncode != 0:
-        print(
-            "Warning: Some files could not be reverted. "
-            f"Error: {revert_process.stderr.decode('utf-8')}"
+    def batched(iterable, n):
+        """Split an iterable in equally sized chunks.
+
+        Can be removed in favor of itertools.batched(), once Python
+        3.12 is the minimum required Python version.
+        """
+        iterable = iter(iterable)
+        return iter(lambda: tuple(islice(iterable, n)), ())
+
+    errors = []
+    for batch in batched(files, 100):
+        revert_process = subprocess.run(
+            ["svn", "revert", *batch], capture_output=True, check=False
         )
+        if revert_process.returncode != 0:
+            errors.append(revert_process.stderr.decode())
+
     if verbose:
         for file in files:
             print(f"Reverted {file}")
+    if errors:
+        print()
+        print("Warning: Some files could not be reverted. Errors:")
+        print("\n".join(errors))
 
 
 def add_untracked(verbose=False):
