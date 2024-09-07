@@ -23,7 +23,6 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import codecs
 import json
 import os
 import re
@@ -237,7 +236,7 @@ class JavascriptExtractor(Extractor):
             last_token = token
 
     def extract_from_file(self, filepath):
-        with codecs.open(filepath, "r", encoding="utf-8-sig") as file_object:
+        with open(filepath, encoding="utf-8-sig") as file_object:
             for lineno, funcname, messages, comments in self.extract_javascript_from_file(
                 file_object
             ):
@@ -301,10 +300,8 @@ class TxtExtractor(Extractor):
     """Extract messages from plain text files."""
 
     def extract_from_file(self, filepath):
-        with codecs.open(filepath, "r", encoding="utf-8-sig") as file_object:
-            for lineno, line in enumerate(
-                [line.strip("\n\r") for line in file_object.readlines()], start=1
-            ):
+        with open(filepath, encoding="utf-8-sig") as file_object:
+            for lineno, line in enumerate([line.strip("\n\r") for line in file_object], start=1):
                 if line:
                     yield line, None, None, lineno, []
 
@@ -329,7 +326,7 @@ class JsonExtractor(Extractor):
         self.comments = self.options.get("comments", [])
 
     def extract_from_file(self, filepath):
-        with codecs.open(filepath, "r", "utf-8") as file_object:
+        with open(filepath, encoding="utf-8") as file_object:
             for message, context in self.extract_from_string(file_object.read()):
                 yield message, None, context, None, self.comments
 
@@ -449,7 +446,7 @@ class XmlExtractor(Extractor):
     def extract_from_file(self, filepath):
         from lxml import etree
 
-        with codecs.open(filepath, "r", encoding="utf-8-sig") as file_object:
+        with open(filepath, encoding="utf-8-sig") as file_object:
             xml_document = etree.parse(file_object)
             for keyword in self.keywords:
                 for element in xml_document.iter(keyword):
