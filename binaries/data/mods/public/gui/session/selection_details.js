@@ -327,12 +327,10 @@ function displaySingle(entState)
 	{
 		const iconBorder = Engine.GetGUIObjectByName("iconBorder");
 
-		// Actions on left click
 		iconBorder.onPress = () => {
 			setCameraFollow(entState.id);
 		};
 
-		// Actions on right click
 		iconBorder.onPressRight = () => {
 			showTemplateDetails(entState.template, playerState.civ);
 		};
