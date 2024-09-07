@@ -490,39 +490,3 @@ class XmlExtractor(Extractor):
                                         yield str(split_text), None, context, lineno, comments
                             else:
                                 yield str(element.text), None, context, lineno, comments
-
-
-# Hack from http://stackoverflow.com/a/2819788
-class FakeSectionHeader:
-    def __init__(self, fp):
-        self.fp = fp
-        self.sechead = "[root]\n"
-
-    def readline(self):
-        if self.sechead:
-            try:
-                return self.sechead
-            finally:
-                self.sechead = None
-        else:
-            return self.fp.readline()
-
-
-class IniExtractor(Extractor):
-    """Extract messages from INI files."""
-
-    def __init__(self, directory_path, filemasks, options):
-        super().__init__(directory_path, filemasks, options)
-        self.keywords = self.options.get("keywords", [])
-
-    def extract_from_file(self, filepath):
-        import ConfigParser
-
-        config = ConfigParser.RawConfigParser()
-        with open(filepath, encoding="utf-8") as fd:
-            config.read_file(FakeSectionHeader(fd))
-        for keyword in self.keywords:
-            message = config.get("root", keyword).strip('"').strip("'")
-            context = None
-            comments = []
-            yield message, None, context, None, comments
