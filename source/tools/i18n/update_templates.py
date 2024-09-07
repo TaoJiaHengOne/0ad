@@ -80,7 +80,7 @@ def generate_pot(template_settings, root_path):
 
         options = rule.get("options", {})
         extractor_class = getattr(
-            import_module("extractors.extractors"), f'{rule["extractor"].title()}Extractor'
+            import_module("i18n_helper.extractors"), f'{rule["extractor"].title()}Extractor'
         )
         extractor = extractor_class(input_root_path, rule["filemasks"], options)
         format_flag = None
