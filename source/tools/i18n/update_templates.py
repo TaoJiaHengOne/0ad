@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
+import glob
 import json
 import multiprocessing
 import os
@@ -120,12 +121,13 @@ def main():
         "Type '.' for current working directory",
     )
     args = parser.parse_args()
-    for root, folders, _filenames in os.walk(args.scandir or PROJECT_ROOT_DIRECTORY):
-        for folder in folders:
-            if folder == L10N_FOLDER_NAME:
-                messages_file_path = os.path.join(root, folder, messages_filename)
-                if os.path.exists(messages_file_path):
-                    generate_templates_for_messages_file(messages_file_path)
+    dir_to_scan = args.scandir or PROJECT_ROOT_DIRECTORY
+    for messages_file_path in glob.glob(
+        f"**/{L10N_FOLDER_NAME}/{messages_filename}", root_dir=dir_to_scan, recursive=True
+    ):
+        generate_templates_for_messages_file(
+            os.path.abspath(f"{dir_to_scan}/{messages_file_path}")
+        )
 
     warn_about_untouched_mods()
 
