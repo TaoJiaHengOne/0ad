@@ -338,60 +338,32 @@ class JsonExtractor(Extractor):
 
     def extract_from_string(self, string):
         json_document = json.loads(string)
-        if isinstance(json_document, list):
-            for message, context in self.parse_list(json_document):
-                if message:  # Skip empty strings.
-                    yield message, context
-        elif isinstance(json_document, dict):
-            for message, context in self.parse_dictionary(json_document):
-                if message:  # Skip empty strings.
-                    yield message, context
-        else:
-            raise Exception(
-                "Unexpected JSON document parent structure (not a list or a dictionary). "
-                "You must extend the JSON extractor to support it."
-            )
+        yield from self.parse(json_document)
 
-    def parse_list(self, items_list):
-        for list_item in items_list:
-            if isinstance(list_item, list):
-                for message, context in self.parse_list(list_item):
-                    yield message, context
-            elif isinstance(list_item, dict):
-                for message, context in self.parse_dictionary(list_item):
-                    yield message, context
-
-    def parse_dictionary(self, dictionary):
-        for keyword in dictionary:
-            if keyword in self.keywords:
-                if isinstance(dictionary[keyword], str):
-                    yield self.extract_string(dictionary[keyword], keyword)
-                elif isinstance(dictionary[keyword], list):
-                    for message, context in self.extract_list(dictionary[keyword], keyword):
-                        yield message, context
-                elif isinstance(dictionary[keyword], dict):
-                    extract = None
-                    if (
-                        "extractFromInnerKeys" in self.keywords[keyword]
-                        and self.keywords[keyword]["extractFromInnerKeys"]
-                    ):
-                        for message, context in self.extract_dictionary_inner_keys(
-                            dictionary[keyword], keyword
-                        ):
-                            yield message, context
-                    else:
-                        extract = self.extract_dictionary(dictionary[keyword], keyword)
-                        if extract:
-                            yield extract
-            elif isinstance(dictionary[keyword], list):
-                for message, context in self.parse_list(dictionary[keyword]):
-                    yield message, context
-            elif isinstance(dictionary[keyword], dict):
-                for message, context in self.parse_dictionary(dictionary[keyword]):
-                    yield message, context
+    def parse(self, data, key=None):
+        """Recursively parse JSON data and extract strings."""
+        if isinstance(data, list):
+            for item in data:
+                yield from self.parse(item)
+        elif isinstance(data, dict):
+            for key2, value in data.items():
+                if key2 in self.keywords:
+                    if isinstance(value, str):
+                        yield self.extract_string(value, key2)
+                    elif isinstance(value, list):
+                        yield from self.extract_list(value, key2)
+                    elif isinstance(value, dict):
+                        if self.keywords[key2].get("extractFromInnerKeys"):
+                            for value2 in value.values():
+                                yield from self.parse(value2, key2)
+                        else:
+                            yield from self.extract_dictionary(value, key2)
+                else:
+                    yield from self.parse(value, key2)
+        elif isinstance(data, str) and key in self.keywords:
+            yield self.extract_string(data, key)
 
     def extract_string(self, string, keyword):
-        context = None
         if "tagAsContext" in self.keywords[keyword]:
             context = keyword
         elif "customContext" in self.keywords[keyword]:
@@ -412,7 +384,6 @@ class JsonExtractor(Extractor):
     def extract_dictionary(self, dictionary, keyword):
         message = dictionary.get("_string", None)
         if message and isinstance(message, str):
-            context = None
             if "context" in dictionary:
                 context = str(dictionary["context"])
             elif "tagAsContext" in self.keywords[keyword]:
@@ -421,19 +392,7 @@ class JsonExtractor(Extractor):
                 context = self.keywords[keyword]["customContext"]
             else:
                 context = self.context
-            return message, context
-        return None
-
-    def extract_dictionary_inner_keys(self, dictionary, keyword):
-        for inner_keyword in dictionary:
-            if isinstance(dictionary[inner_keyword], str):
-                yield self.extract_string(dictionary[inner_keyword], keyword)
-            elif isinstance(dictionary[inner_keyword], list):
-                yield from self.extract_list(dictionary[inner_keyword], keyword)
-            elif isinstance(dictionary[inner_keyword], dict):
-                extract = self.extract_dictionary(dictionary[inner_keyword], keyword)
-                if extract:
-                    yield extract
+            yield message, context
 
 
 class XmlExtractor(Extractor):
