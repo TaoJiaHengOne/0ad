@@ -27,7 +27,24 @@ import json
 import os
 import re
 import sys
+from functools import lru_cache
 from textwrap import dedent
+
+
+@lru_cache
+def get_mask_pattern(mask: str) -> re.Pattern:
+    """Build a regex pattern for matching file paths."""
+    parts = re.split(r"([*][*]?)", mask)
+    pattern = ""
+    for i, part in enumerate(parts):
+        if i % 2 != 0:
+            pattern += "[^/]+"
+            if len(part) == 2:
+                pattern += "(/[^/]+)*"
+        else:
+            pattern += re.escape(part)
+    pattern += "$"
+    return re.compile(pattern)
 
 
 def pathmatch(mask, path):
@@ -37,19 +54,9 @@ def pathmatch(mask, path):
     * matches a sequence of characters without /.
     ** matches a sequence of characters without / followed by a / and
     sequence of characters without /
-    :return: true iff path matches the mask, false otherwise
+    :return: true if path matches the mask, false otherwise
     """
-    s = re.split(r"([*][*]?)", mask)
-    p = ""
-    for i in range(len(s)):
-        if i % 2 != 0:
-            p = p + "[^/]+"
-            if len(s[i]) == 2:
-                p = p + "(/[^/]+)*"
-        else:
-            p = p + re.escape(s[i])
-    p = p + "$"
-    return re.match(p, path) is not None
+    return get_mask_pattern(mask).match(path) is not None
 
 
 class Extractor:
