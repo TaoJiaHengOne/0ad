@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import glob
 import json
 import multiprocessing
@@ -112,8 +113,6 @@ def generate_templates_for_messages_file(messages_file_path):
 
 
 def main():
-    import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--scandir",

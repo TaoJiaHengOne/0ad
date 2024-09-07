@@ -30,6 +30,9 @@ import sys
 from functools import lru_cache
 from textwrap import dedent
 
+from babel.messages.jslexer import tokenize, unquote_string
+from lxml import etree
+
 
 @lru_cache
 def get_mask_pattern(mask: str) -> re.Pattern:
@@ -128,8 +131,6 @@ class JavascriptExtractor(Extractor):
     )
 
     def extract_javascript_from_file(self, file_object):
-        from babel.messages.jslexer import tokenize, unquote_string
-
         funcname = message_lineno = None
         messages = []
         last_argument = None
@@ -451,8 +452,6 @@ class XmlExtractor(Extractor):
         return self.jsonExtractor
 
     def extract_from_file(self, filepath):
-        from lxml import etree
-
         with open(filepath, encoding="utf-8-sig") as file_object:
             xml_document = etree.parse(file_object)
             for keyword in self.keywords:
