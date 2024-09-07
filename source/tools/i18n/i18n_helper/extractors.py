@@ -98,21 +98,19 @@ class Extractor:
                         break
                 else:
                     for filemask in self.include_masks:
-                        if pathmatch(filemask, filename):
-                            filepath = os.path.join(directory_absolute_path, filename)
-                            for (
-                                message,
-                                plural,
-                                context,
-                                position,
-                                comments,
-                            ) in self.extract_from_file(filepath):
-                                if empty_string_pattern.match(message):
-                                    continue
+                        if not pathmatch(filemask, filename):
+                            continue
 
-                                if " " in filename or "\t" in filename:
-                                    filename = "\u2068" + filename + "\u2069"
-                                yield message, plural, context, (filename, position), comments
+                        filepath = os.path.join(directory_absolute_path, filename)
+                        for message, plural, context, position, comments in self.extract_from_file(
+                            filepath
+                        ):
+                            if empty_string_pattern.match(message):
+                                continue
+
+                            if " " in filename or "\t" in filename:
+                                filename = "\u2068" + filename + "\u2069"
+                            yield message, plural, context, (filename, position), comments
 
     def extract_from_file(self, filepath):
         """Extract messages from a specific file.
@@ -457,35 +455,35 @@ class XmlExtractor(Extractor):
             for keyword in self.keywords:
                 for element in xml_document.iter(keyword):
                     lineno = element.sourceline
-                    if element.text is not None:
-                        comments = []
-                        if "extractJson" in self.keywords[keyword]:
-                            json_extractor = self.get_json_extractor()
-                            json_extractor.set_options(self.keywords[keyword]["extractJson"])
-                            for message, context in json_extractor.extract_from_string(
-                                element.text
-                            ):
-                                yield message, None, context, lineno, comments
+                    if element.text is None:
+                        continue
+
+                    comments = []
+                    if "extractJson" in self.keywords[keyword]:
+                        json_extractor = self.get_json_extractor()
+                        json_extractor.set_options(self.keywords[keyword]["extractJson"])
+                        for message, context in json_extractor.extract_from_string(element.text):
+                            yield message, None, context, lineno, comments
+                    else:
+                        context = None
+                        if "context" in element.attrib:
+                            context = str(element.get("context"))
+                        elif "tagAsContext" in self.keywords[keyword]:
+                            context = keyword
+                        elif "customContext" in self.keywords[keyword]:
+                            context = self.keywords[keyword]["customContext"]
+                        if "comment" in element.attrib:
+                            comment = element.get("comment")
+                            comment = " ".join(
+                                comment.split()
+                            )  # Remove tabs, line breaks and unecessary spaces.
+                            comments.append(comment)
+                        if "splitOnWhitespace" in self.keywords[keyword]:
+                            for split_text in element.text.split():
+                                # split on whitespace is used for token lists, there, a
+                                # leading '-' means the token has to be removed, so it's not
+                                # to be processed here either
+                                if split_text[0] != "-":
+                                    yield str(split_text), None, context, lineno, comments
                         else:
-                            context = None
-                            if "context" in element.attrib:
-                                context = str(element.get("context"))
-                            elif "tagAsContext" in self.keywords[keyword]:
-                                context = keyword
-                            elif "customContext" in self.keywords[keyword]:
-                                context = self.keywords[keyword]["customContext"]
-                            if "comment" in element.attrib:
-                                comment = element.get("comment")
-                                comment = " ".join(
-                                    comment.split()
-                                )  # Remove tabs, line breaks and unecessary spaces.
-                                comments.append(comment)
-                            if "splitOnWhitespace" in self.keywords[keyword]:
-                                for split_text in element.text.split():
-                                    # split on whitespace is used for token lists, there, a
-                                    # leading '-' means the token has to be removed, so it's not
-                                    # to be processed here either
-                                    if split_text[0] != "-":
-                                        yield str(split_text), None, context, lineno, comments
-                            else:
-                                yield str(element.text), None, context, lineno, comments
+                            yield str(element.text), None, context, lineno, comments

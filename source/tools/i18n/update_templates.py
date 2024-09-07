@@ -35,18 +35,21 @@ def warn_about_untouched_mods():
     mods_root_folder = os.path.join(PROJECT_ROOT_DIRECTORY, "binaries", "data", "mods")
     untouched_mods = {}
     for mod_folder in os.listdir(mods_root_folder):
-        if mod_folder[0] != "_" and mod_folder[0] != ".":
-            if not os.path.exists(os.path.join(mods_root_folder, mod_folder, L10N_FOLDER_NAME)):
-                untouched_mods[mod_folder] = (
-                    f"There is no '{L10N_FOLDER_NAME}' folder in the root folder of this mod."
-                )
-            elif not os.path.exists(
-                os.path.join(mods_root_folder, mod_folder, L10N_FOLDER_NAME, messages_filename)
-            ):
-                untouched_mods[mod_folder] = (
-                    f"There is no '{messages_filename}' file within the '{L10N_FOLDER_NAME}' "
-                    f"folder in the root folder of this mod."
-                )
+        if mod_folder.startswith(("_", ".")):
+            continue
+
+        if not os.path.exists(os.path.join(mods_root_folder, mod_folder, L10N_FOLDER_NAME)):
+            untouched_mods[mod_folder] = (
+                f"There is no '{L10N_FOLDER_NAME}' folder in the root folder of this mod."
+            )
+        elif not os.path.exists(
+            os.path.join(mods_root_folder, mod_folder, L10N_FOLDER_NAME, messages_filename)
+        ):
+            untouched_mods[mod_folder] = (
+                f"There is no '{messages_filename}' file within the '{L10N_FOLDER_NAME}' "
+                f"folder in the root folder of this mod."
+            )
+
     if untouched_mods:
         print("Warning: No messages were extracted from the following mods:")
         for mod in untouched_mods:
