@@ -64,15 +64,15 @@ def pathmatch(mask, path):
 
 class Extractor:
     def __init__(self, directory_path, filemasks, options):
-        self.directoryPath = directory_path
+        self.directory_path = directory_path
         self.options = options
 
         if isinstance(filemasks, dict):
-            self.includeMasks = filemasks["includeMasks"]
-            self.excludeMasks = filemasks["excludeMasks"]
+            self.include_masks = filemasks["includeMasks"]
+            self.exclude_masks = filemasks["excludeMasks"]
         else:
-            self.includeMasks = filemasks
-            self.excludeMasks = []
+            self.include_masks = filemasks
+            self.exclude_masks = []
 
     def run(self):
         """Extract messages.
@@ -82,7 +82,7 @@ class Extractor:
         :rtype:     ``iterator``
         """
         empty_string_pattern = re.compile(r"^\s*$")
-        directory_absolute_path = os.path.abspath(self.directoryPath)
+        directory_absolute_path = os.path.abspath(self.directory_path)
         for root, folders, filenames in os.walk(directory_absolute_path):
             for subdir in folders:
                 if subdir.startswith((".", "_")):
@@ -91,13 +91,13 @@ class Extractor:
             filenames.sort()
             for filename in filenames:
                 filename = os.path.relpath(
-                    os.path.join(root, filename), self.directoryPath
+                    os.path.join(root, filename), self.directory_path
                 ).replace(os.sep, "/")
-                for filemask in self.excludeMasks:
+                for filemask in self.exclude_masks:
                     if pathmatch(filemask, filename):
                         break
                 else:
-                    for filemask in self.includeMasks:
+                    for filemask in self.include_masks:
                         if pathmatch(filemask, filename):
                             filepath = os.path.join(directory_absolute_path, filename)
                             for (
@@ -444,12 +444,12 @@ class XmlExtractor(Extractor):
     def __init__(self, directory_path, filemasks, options):
         super().__init__(directory_path, filemasks, options)
         self.keywords = self.options.get("keywords", {})
-        self.jsonExtractor = None
+        self.json_extractor = None
 
     def get_json_extractor(self):
-        if not self.jsonExtractor:
-            self.jsonExtractor = JsonExtractor()
-        return self.jsonExtractor
+        if not self.json_extractor:
+            self.json_extractor = JsonExtractor(self.directory_path)
+        return self.json_extractor
 
     def extract_from_file(self, filepath):
         with open(filepath, encoding="utf-8-sig") as file_object:
