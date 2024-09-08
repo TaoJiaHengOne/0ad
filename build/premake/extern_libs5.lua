@@ -361,7 +361,7 @@ extern_lib_defs = {
 		end,
 	},
 	glad = {
-		add_source_include_paths("glad")
+		add_third_party_include_paths("glad")
 	},
 	gloox = {
 		compile_settings = function()

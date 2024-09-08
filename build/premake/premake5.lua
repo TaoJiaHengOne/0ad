@@ -943,16 +943,11 @@ function setup_all_libs ()
 
 	extern_libs = { "glad" }
 	if not os.istarget("windows") and not _OPTIONS["android"] and not os.istarget("macosx") then
-		-- X11 should only be linked on *nix
-		table.insert(used_extern_libs, "x11")
+		table.insert(extern_libs, "x11")
 	end
-	setup_static_lib_project("gladwrapper", {}, used_extern_libs, { no_pch = 1 })
-	glad_path = libraries_source_dir.."glad/"
-	if externalincludedirs then
-		externalincludedirs { glad_path.."include" }
-	else
-		sysincludedirs { glad_path.."include" }
-	end
+	setup_static_lib_project("gladwrapper", {}, extern_libs, { no_pch = 1 })
+	-- select files to build for the current platform
+	glad_path = third_party_source_dir.."glad/"
 	files { glad_path.."src/vulkan.cpp" }
 	if _OPTIONS["gles"] then
 		files { glad_path.."src/gles2.cpp" }
