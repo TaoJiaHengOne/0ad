@@ -959,6 +959,10 @@ function setup_all_libs ()
 			files { glad_path.."src/egl.cpp", glad_path.."src/glx.cpp" }
 		end
 	end
+	-- on Windows, silence a build warning in vulkan.cpp
+	filter "action:vs*"
+		buildoptions { "/wd4551" }
+	filter {}
 
 
 	-- Third-party libraries that are built as part of the main project,

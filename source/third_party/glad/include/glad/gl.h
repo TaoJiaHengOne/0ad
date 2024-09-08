@@ -1763,6 +1763,7 @@ typedef void *GLeglImageOES;
 typedef char GLchar;
 typedef char GLcharARB;
 #ifdef __APPLE__
+// --- Patched by WFG
 // See https://bugs.freedesktop.org/show_bug.cgi?id=66346
 // macOS considers those to be different.
 // typedef void *GLhandleARB;

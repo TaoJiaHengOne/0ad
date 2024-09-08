@@ -15,6 +15,9 @@ cd glad
 pip install -r requirements.txt
 ```
 
+Do not revert the WFG patch in include/glad/gl.h (around line 1765):
+do not add the change reverting it after the generation of the file
+
 Build the source files for all four backends with their respective extensions
 - GL
     ```sh
