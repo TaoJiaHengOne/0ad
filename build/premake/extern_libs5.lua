@@ -14,7 +14,11 @@ else
 	-- No Unix-specific libs yet (use source directory instead!)
 end
 -- directory for shared, bundled libraries
-libraries_source_dir = rootdir.."/libraries/source/"
+if os.istarget("windows") then
+	libraries_source_dir = rootdir.."/libraries/win32/"
+else
+	libraries_source_dir = rootdir.."/libraries/source/"
+end
 third_party_source_dir = rootdir.."/source/third_party/"
 
 local function add_default_lib_paths(extern_lib)
