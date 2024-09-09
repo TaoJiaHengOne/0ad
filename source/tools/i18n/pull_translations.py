@@ -32,7 +32,7 @@ def main():
                 path = os.path.join(root, folder)
                 os.chdir(path)
                 print(f"INFO: Starting to pull translations in {path}...")
-                subprocess.run(["tx", "pull", "-a", "-f"], check=False)
+                subprocess.run(["tx", "pull", "--all", "--force", "--workers=12"], check=False)
 
 
 if __name__ == "__main__":
