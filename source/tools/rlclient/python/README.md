@@ -58,4 +58,4 @@ actions = [zero_ad.actions.attack(my_units, enemy_units[0])]
 state = game.step(actions)
 ```
 
-For a more thorough example, check out samples/simple-example.py!
+For a more thorough example, check out samples/simple_example.py!
