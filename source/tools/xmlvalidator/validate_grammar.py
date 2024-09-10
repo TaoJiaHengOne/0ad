@@ -21,7 +21,7 @@ class SingleLevelFilter(Filter):
         return record.levelno == self.passlevel
 
 
-class VFS_File:
+class VFSFile:
     def __init__(self, mod_name, vfs_path):
         self.mod_name = mod_name
         self.vfs_path = vfs_path
