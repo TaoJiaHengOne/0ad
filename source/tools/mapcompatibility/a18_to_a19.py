@@ -56,13 +56,13 @@ args = parser.parse_args()
 
 HEIGHTMAP_BIT_SHIFT = 3
 
-for xmlFile in args.files:
-    pmpFile = xmlFile[:-3] + "pmp"
+for xml_file in args.files:
+    pmp_file = xml_file[:-3] + "pmp"
 
-    print("Processing " + xmlFile + " ...")
+    print("Processing " + xml_file + " ...")
 
-    if os.path.isfile(pmpFile):
-        with open(pmpFile, "rb") as f1, open(pmpFile + "~", "wb") as f2:
+    if os.path.isfile(pmp_file):
+        with open(pmp_file, "rb") as f1, open(pmp_file + "~", "wb") as f2:
             # 4 bytes PSMP to start the file
             f2.write(f1.read(4))
 
@@ -73,7 +73,7 @@ for xmlFile in args.files:
             elif args.reverse:
                 if version != 6:
                     print(
-                        f"Warning: File {pmpFile} was not at version 6, while a negative version "
+                        f"Warning: File {pmp_file} was not at version 6, while a negative version "
                         f"bump was requested.\nABORTING ..."
                     )
                     continue
@@ -81,7 +81,7 @@ for xmlFile in args.files:
             else:
                 if version != 5:
                     print(
-                        f"Warning: File {pmpFile} was not at version 5, while a version bump was "
+                        f"Warning: File {pmp_file} was not at version 5, while a version bump was "
                         f"requested.\nABORTING ..."
                     )
                     continue
@@ -122,13 +122,13 @@ for xmlFile in args.files:
             f1.close()
 
         # replace the old file, comment to see both files
-        os.remove(pmpFile)
-        os.rename(pmpFile + "~", pmpFile)
+        os.remove(pmp_file)
+        os.rename(pmp_file + "~", pmp_file)
 
-    if os.path.isfile(xmlFile):
+    if os.path.isfile(xml_file):
         with (
-            open(xmlFile, encoding="utf-8") as f1,
-            open(xmlFile + "~", "w", encoding="utf-8") as f2,
+            open(xml_file, encoding="utf-8") as f1,
+            open(xml_file + "~", "w", encoding="utf-8") as f2,
         ):
             data = f1.read()
 
@@ -137,7 +137,7 @@ for xmlFile in args.files:
                 if args.reverse:
                     if data.find('<Scenario version="6">') == -1:
                         print(
-                            f"Warning: File {xmlFile} was not at version 6, while a negative "
+                            f"Warning: File {xml_file} was not at version 6, while a negative "
                             f"version bump was requested.\nABORTING ..."
                         )
                         sys.exit()
@@ -145,7 +145,7 @@ for xmlFile in args.files:
                         data = data.replace('<Scenario version="6">', '<Scenario version="5">')
                 elif data.find('<Scenario version="5">') == -1:
                     print(
-                        f"Warning: File {xmlFile} was not at version 5, while a version bump "
+                        f"Warning: File {xml_file} was not at version 5, while a version bump "
                         f"was requested.\nABORTING ..."
                     )
                     sys.exit()
@@ -164,5 +164,5 @@ for xmlFile in args.files:
             f2.close()
 
         # replace the old file, comment to see both files
-        os.remove(xmlFile)
-        os.rename(xmlFile + "~", xmlFile)
+        os.remove(xml_file)
+        os.rename(xml_file + "~", xml_file)
