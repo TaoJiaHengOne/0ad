@@ -387,8 +387,8 @@ class CheckRefs:
 
                 cmp_auras = entity.find("Auras")
                 if cmp_auras is not None:
-                    auraString = cmp_auras.text
-                    for aura in auraString.split():
+                    aura_string = cmp_auras.text
+                    for aura in aura_string.split():
                         if not aura:
                             continue
                         if aura.startswith("-"):
@@ -397,33 +397,33 @@ class CheckRefs:
 
                 cmp_identity = entity.find("Identity")
                 if cmp_identity is not None:
-                    reqTag = cmp_identity.find("Requirements")
-                    if reqTag is not None:
+                    req_tag = cmp_identity.find("Requirements")
+                    if req_tag is not None:
 
-                        def parse_requirements(fp, req, recursionDepth=1):
-                            techsTag = req.find("Techs")
-                            if techsTag is not None:
-                                for techTag in techsTag.text.split():
+                        def parse_requirements(fp, req, recursion_depth=1):
+                            techs_tag = req.find("Techs")
+                            if techs_tag is not None:
+                                for tech_tag in techs_tag.text.split():
                                     self.deps.append(
-                                        (fp, Path(f"simulation/data/technologies/{techTag}.json"))
+                                        (fp, Path(f"simulation/data/technologies/{tech_tag}.json"))
                                     )
 
-                            if recursionDepth > 0:
-                                recursionDepth -= 1
-                                allReqTag = req.find("All")
-                                if allReqTag is not None:
-                                    parse_requirements(fp, allReqTag, recursionDepth)
-                                anyReqTag = req.find("Any")
-                                if anyReqTag is not None:
-                                    parse_requirements(fp, anyReqTag, recursionDepth)
+                            if recursion_depth > 0:
+                                recursion_depth -= 1
+                                all_req_tag = req.find("All")
+                                if all_req_tag is not None:
+                                    parse_requirements(fp, all_req_tag, recursion_depth)
+                                any_req_tag = req.find("Any")
+                                if any_req_tag is not None:
+                                    parse_requirements(fp, any_req_tag, recursion_depth)
 
-                        parse_requirements(fp, reqTag)
+                        parse_requirements(fp, req_tag)
 
                 cmp_researcher = entity.find("Researcher")
                 if cmp_researcher is not None:
-                    techString = cmp_researcher.find("Technologies")
-                    if techString is not None:
-                        for tech in techString.text.split():
+                    tech_string = cmp_researcher.find("Technologies")
+                    if tech_string is not None:
+                        for tech in tech_string.text.split():
                             if not tech:
                                 continue
                             if tech.startswith("-"):
