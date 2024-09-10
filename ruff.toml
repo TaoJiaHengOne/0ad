@@ -16,7 +16,7 @@ ignore = [
     "FIX",
     "FBT",
     "ISC001",
-    "N",
+    "N817",
     "PERF203",
     "PERF401",
     "PLR0912",
