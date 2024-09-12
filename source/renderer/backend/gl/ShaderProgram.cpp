@@ -675,9 +675,11 @@ public:
 			case GL_FRAGMENT_SHADER:
 				stageDefine = "STAGE_FRAGMENT";
 				break;
+#if !CONFIG2_GLES
 			case GL_COMPUTE_SHADER:
 				stageDefine = "STAGE_COMPUTE";
 				break;
+#endif
 			default:
 				break;
 			}
@@ -1341,6 +1343,7 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(CDevice* device, const CS
 
 	if (isGLSL)
 	{
+#if !CONFIG2_GLES
 		if (!computeFile.empty())
 		{
 			ENSURE(streamFlags == 0);
@@ -1349,6 +1352,10 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(CDevice* device, const CS
 		const PS::StaticVector<std::tuple<VfsPath, GLenum>, 2> shaderStages{computeFile.empty()
 			? PS::StaticVector<std::tuple<VfsPath, GLenum>, 2>{{vertexFile, GL_VERTEX_SHADER}, {fragmentFile, GL_FRAGMENT_SHADER}}
 			: PS::StaticVector<std::tuple<VfsPath, GLenum>, 2>{{computeFile, GL_COMPUTE_SHADER}}};
+#else 
+		const PS::StaticVector<std::tuple<VfsPath, GLenum>, 2> shaderStages{{{vertexFile, GL_VERTEX_SHADER}, {fragmentFile, GL_FRAGMENT_SHADER}}};
+#endif
+
 		return std::make_unique<CShaderProgramGLSL>(
 			device, name, xmlFilename, shaderStages, defines,
 			vertexAttribs, streamFlags);

@@ -1257,11 +1257,17 @@ void CDeviceCommandContext::Dispatch(
 	const uint32_t groupCountY,
 	const uint32_t groupCountZ)
 {
+#if !CONFIG2_GLES 
 	ENSURE(m_InsideComputePass);
 	glDispatchCompute(groupCountX, groupCountY, groupCountZ);
 	// TODO: we might want to do binding tracking to avoid redundant barriers.
 	glMemoryBarrier(
 		GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT | GL_TEXTURE_UPDATE_BARRIER_BIT | GL_FRAMEBUFFER_BARRIER_BIT);
+#else
+	UNUSED2(groupCountX);
+	UNUSED2(groupCountY);
+	UNUSED2(groupCountZ);
+#endif
 }
 
 void CDeviceCommandContext::SetTexture(const int32_t bindingSlot, ITexture* texture)
@@ -1308,6 +1314,7 @@ void CDeviceCommandContext::SetTexture(const int32_t bindingSlot, ITexture* text
 
 void CDeviceCommandContext::SetStorageTexture(const int32_t bindingSlot, ITexture* texture)
 {
+#if !CONFIG2_GLES
 	ENSURE(m_ShaderProgram);
 	ENSURE(texture);
 	ENSURE(texture->GetUsage() & Renderer::Backend::ITexture::Usage::STORAGE);
@@ -1319,6 +1326,10 @@ void CDeviceCommandContext::SetStorageTexture(const int32_t bindingSlot, ITextur
 	ENSURE(textureUnit.type == GL_IMAGE_2D);
 	ENSURE(texture->GetFormat() == Format::R8G8B8A8_UNORM);
 	glBindImageTexture(textureUnit.unit, texture->As<CTexture>()->GetHandle(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
+#else
+	UNUSED2(bindingSlot);
+	UNUSED2(texture);
+#endif
 }
 
 void CDeviceCommandContext::SetUniform(
