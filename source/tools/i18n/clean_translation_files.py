@@ -27,51 +27,64 @@ However that needs to be fixed on the transifex side, see rP25896. For now
 strip the e-mails using this script.
 """
 
-import fileinput
 import glob
 import os
 import re
-import sys
 
 from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY, TRANSIFEX_CLIENT_FOLDER
 
 
+TRANSLATOR_REGEX = re.compile(r"^(#\s+[^,<]*)\s+<.*>(.*)$")
+LAST_TRANSLATION_REGEX = re.compile(r"^(\"Last-Translator:[^,<]*)\s+<.*>(.*)$")
+
+
 def main():
-    translator_match = re.compile(r"^(#\s+[^,<]*)\s+<.*>(.*)")
-    last_translator_match = re.compile(r"^(\"Last-Translator:[^,<]*)\s+<.*>(.*)")
+    for folder in glob.iglob(
+        f"**/{L10N_FOLDER_NAME}/{TRANSIFEX_CLIENT_FOLDER}/",
+        root_dir=PROJECT_ROOT_DIRECTORY,
+        recursive=True,
+    ):
+        for file in glob.iglob(
+            f"{os.path.join(folder, os.pardir)}/*.po", root_dir=PROJECT_ROOT_DIRECTORY
+        ):
+            absolute_file_path = os.path.abspath(f"{PROJECT_ROOT_DIRECTORY}/{file}")
 
-    for root, folders, _ in os.walk(PROJECT_ROOT_DIRECTORY):
-        for folder in folders:
-            if folder != L10N_FOLDER_NAME:
-                continue
-
-            if not os.path.exists(os.path.join(root, folder, TRANSIFEX_CLIENT_FOLDER)):
-                continue
-
-            path = os.path.join(root, folder, "*.po")
-            files = glob.glob(path)
-            for file in files:
-                usernames = []
-                reached = False
-                for line in fileinput.input(
-                    file.replace("\\", "/"), inplace=True, encoding="utf-8"
-                ):
-                    if reached:
+            file_content = []
+            usernames = []
+            changes = False
+            in_translators = False
+            found_last_translator = False
+            with open(absolute_file_path, "r+", encoding="utf-8") as fd:
+                for line in fd:
+                    if line.strip() == "# Translators:":
+                        in_translators = True
+                    elif not line.strip().startswith("#"):
+                        in_translators = False
+                    elif in_translators:
                         if line == "# \n":
-                            line = ""
-                        m = translator_match.match(line)
-                        if m:
-                            if m.group(1) in usernames:
-                                line = ""
-                            else:
-                                line = m.group(1) + m.group(2) + "\n"
-                                usernames.append(m.group(1))
-                        m2 = last_translator_match.match(line)
-                        if m2:
-                            line = re.sub(last_translator_match, r"\1\2", line)
-                    elif line.strip() == "# Translators:":
-                        reached = True
-                    sys.stdout.write(line)
+                            changes = True
+                            continue
+                        translator_match = TRANSLATOR_REGEX.match(line)
+                        if translator_match:
+                            changes = True
+                            if translator_match.group(1) in usernames:
+                                continue
+                            line = TRANSLATOR_REGEX.sub(r"\1\2", line)
+                            usernames.append(translator_match.group(1))
+
+                    if not in_translators and not found_last_translator:
+                        last_translator_match = LAST_TRANSLATION_REGEX.match(line)
+                        if last_translator_match:
+                            found_last_translator = True
+                            changes = True
+                            line = LAST_TRANSLATION_REGEX.sub(r"\1\2", line)
+
+                    file_content.append(line)
+
+                if changes:
+                    fd.seek(0)
+                    fd.truncate()
+                    fd.writelines(file_content)
 
 
 if __name__ == "__main__":
