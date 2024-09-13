@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 class TestMatrix : public CxxTest::TestSuite
 {
 	std::mt19937 m_Engine;
+	const float m_Epsilon{0.0001f};
 
 public:
 	void setUp()
@@ -46,17 +47,155 @@ public:
 			}
 			CMatrix3D n;
 			m.GetInverse(n);
-			m *= n;
+			m.Concatenate(n);
 			// verify identity has 1s on diagonal and 0 otherwise
 			for (int x = 0; x < 4; ++x)
 			{
 				for (int y = 0; y < 4; ++y)
 				{
 					const float expected = (x==y)? 1.0f : 0.0f;
-					TS_ASSERT_DELTA(m(x,y), expected, 0.0002f);
+					TS_ASSERT_DELTA(m(x,y), expected, m_Epsilon);
 				}
 			}
 		}
+	}
+
+	void test_compoundMultiplication()
+	{
+		const float invertibleData[16] = {
+			2.f, -3.f, 0.f, 1.f,
+			-2.f, 3.f, 0.f, 0.f,
+			1.f, -2.f, 1.f, 0.f,
+			1.f, -1.f, 0.f, 0.f
+		};
+
+		// Invertible matrix.
+		CMatrix3D a(invertibleData);
+		CMatrix3D n;
+		a.GetInverse(n);
+		a *= n;
+		CMatrix3D a2(invertibleData);
+		n *= a2;
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(a, n, 16, m_Epsilon);
+
+		// Non invertible matrix.
+		const float nonInvertibleData[16] = {
+			2.f, -3.f, 0.f, 1.f,
+			-2.f, 3.f, 0.f, 0.f,
+			1.f, -2.f, 1.f, 0.f,
+			0.f, 0.f, 0.f, 0.f
+		};
+
+		CMatrix3D b(nonInvertibleData);
+		b.GetInverse(n);
+		b *= n;
+		CMatrix3D b2(nonInvertibleData);
+		n *= b2;
+
+		TS_ASSERT_MATRIX_DIFFERS_DELTA(b, n, 16, m_Epsilon);
+	}
+
+	void test_multiplication()
+	{
+		const float data1[16] = {
+			2.f, -3.f, 0.f, 1.f,
+			-2.f, 3.f, 0.f, 0.f,
+			1.f, -2.f, 1.f, 0.f,
+			1.f, -1.f, 0.f, 0.f
+		};
+
+		const float data2[16] = {
+			22.f, -3.f, 0.f, 1.f,
+			-2.f, 3.f, 8.f, 12.f,
+			1.f, -2.f, 1.f, 0.f,
+			1.f, -1.f, 16.f, 0.f
+		};
+
+		CMatrix3D mat1(data1);
+		CMatrix3D mat2(data2);
+
+		CMatrix3D mat3 = mat2 * mat1;
+
+		const float result[16] = {
+			51.f, -16.f, -8.f, -34.f,
+			-50.f, 15.f, 24.f, 34.f,
+			27.f, -11.f, -15.f, -23.f,
+			24.f, -6.f, -8.f, -11.f
+		};
+
+		CMatrix3D resultMat3(result);
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(mat3, resultMat3, 16, m_Epsilon);
+
+		const float result2[16] = {
+			51.f, -76.f, 0.f, 22.f,
+			10.f, -13.f, 8.f, -2.f,
+			7.f, -11.f, 1.f, 1.f,
+			20.f, -38.f, 16.f, 1.f
+		};
+
+		CMatrix3D resultMat4(result2);
+
+		CMatrix3D mat4 = mat1 * mat2;
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(mat4, resultMat4, 16, m_Epsilon);
+
+		mat1.Concatenate(mat2);
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(mat1, resultMat3, 16, m_Epsilon);
+
+		mat1 = CMatrix3D(data1);
+
+		mat2.Concatenate(mat1);
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(mat2, resultMat4, 16, m_Epsilon);
+	}
+
+	void test_nonCommutative()
+	{
+		const float data1[16] = {
+			1.f, 1.f, 1.f, 1.f,
+			0.f, 0.f, 0.f, 0.f,
+			0.f, 0.f, 0.f, 0.f,
+			0.f, 0.f, 0.f, 0.f
+		};
+
+		const float data2[16] = {
+			1.f, 0.f, 0.f, 0.f,
+			1.f, 0.f, 0.f, 0.f,
+			1.f, 0.f, 0.f, 0.f,
+			1.f, 0.f, 0.f, 0.f
+		};
+
+		CMatrix3D mat1(data1);
+		CMatrix3D mat2(data2);
+
+		mat1 *= mat2;
+
+		const float result[16] = {
+			1.f, 1.f, 1.f, 1.f,
+			1.f, 1.f, 1.f, 1.f,
+			1.f, 1.f, 1.f, 1.f,
+			1.f, 1.f, 1.f, 1.f
+		};
+
+		CMatrix3D resultMat3(result);
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(mat1, resultMat3, 16, m_Epsilon);
+
+		const float result2[16] = {
+			4.f, 0.f, 0.f, 0.f,
+			0.f, 0.f, 0.f, 0.f,
+			0.f, 0.f, 0.f, 0.f,
+			0.f, 0.f, 0.f, 0.f
+		};
+
+		CMatrix3D mat3(data1);
+		CMatrix3D resultMat4(result2);
+		mat2 *= mat3;
+
+		TS_ASSERT_MATRIX_EQUALS_DELTA(mat2, resultMat4, 16, m_Epsilon);
 	}
 
 	void test_quats()
@@ -108,7 +247,7 @@ public:
 
 		for (int x = 0; x < 4; ++x)
 			for (int y = 0; y < 4; ++y)
-				TS_ASSERT_DELTA(a(x,y), b(x,y), 0.0002f);
+				TS_ASSERT_DELTA(a(x,y), b(x,y), m_Epsilon);
 
 		a = m;
 		b = m;
@@ -118,7 +257,7 @@ public:
 
 		for (int x = 0; x < 4; ++x)
 			for (int y = 0; y < 4; ++y)
-				TS_ASSERT_DELTA(a(x,y), b(x,y), 0.0002f);
+				TS_ASSERT_DELTA(a(x,y), b(x,y), m_Epsilon);
 
 		a = m;
 		b = m;
@@ -128,7 +267,7 @@ public:
 
 		for (int x = 0; x < 4; ++x)
 			for (int y = 0; y < 4; ++y)
-				TS_ASSERT_DELTA(a(x,y), b(x,y), 0.0002f);
+				TS_ASSERT_DELTA(a(x,y), b(x,y), m_Epsilon);
 	}
 
 	void test_getRotation()
@@ -147,7 +286,7 @@ public:
 		{
 			float a = 2 * M_PI * distribution01(m_Engine) - M_PI;
 			m.SetYRotation(a);
-			TS_ASSERT_DELTA(m.GetYRotation(), a, 0.001f);
+			TS_ASSERT_DELTA(m.GetYRotation(), a, m_Epsilon);
 		}
 	}
 
@@ -170,6 +309,6 @@ public:
 
 		for (int x = 0; x < 4; ++x)
 			for (int y = 0; y < 4; ++y)
-				TS_ASSERT_DELTA(a(x,y), b(x,y), 0.0002f);
+				TS_ASSERT_DELTA(a(x,y), b(x,y), m_Epsilon);
 	}
 };

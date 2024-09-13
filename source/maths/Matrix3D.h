@@ -77,6 +77,14 @@ public:
 	{
 	}
 
+	CMatrix3D(const float data[]) :
+		_11(data[0]), _21(data[1]), _31(data[2]), _41(data[3]),
+		_12(data[4]), _22(data[5]), _32(data[6]), _42(data[7]),
+		_13(data[8]), _23(data[9]), _33(data[10]), _43(data[11]),
+		_14(data[12]), _24(data[13]), _34(data[14]), _44(data[15])
+	{
+	}
+
 	// accessors to individual elements of matrix
 	// NOTE: in this function definition, 'col' and 'row' represent the column and row into the
 	// internal element matrix which is the transposed of the mathematical notation, so the first
@@ -128,7 +136,7 @@ public:
 	// matrix multiplication/assignment
 	CMatrix3D& operator*=(const CMatrix3D &matrix)
 	{
-		Concatenate(matrix);
+		*this = *this * matrix;
 		return *this;
 	}
 

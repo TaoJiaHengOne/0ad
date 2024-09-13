@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,8 +24,9 @@
 #define INCLUDED_SELF_TEST
 
 // for convenience, to avoid having to include all of these manually
-#include "lib/status.h"
+#include "lib/lib.h"
 #include "lib/os_path.h"
+#include "lib/status.h"
 #include "lib/posix/posix.h"
 
 #define CXXTEST_HAVE_EH
@@ -146,6 +147,14 @@ std::vector<T> ts_make_vector(T* start, size_t size_bytes)
 }
 #define TS_ASSERT_VECTOR_EQUALS_ARRAY(vec1, array) TS_ASSERT_EQUALS(vec1, ts_make_vector((array), sizeof(array)))
 #define TS_ASSERT_VECTOR_CONTAINS(vec1, element) TS_ASSERT(std::find((vec1).begin(), (vec1).end(), element) != (vec1).end());
+
+#define TS_ASSERT_MATRIX_EQUALS_DELTA(m1, m2, size, epsilon)  \
+		for (int j = 0; j < size; ++j)						  \
+			TS_ASSERT_DELTA(m1._data[j], m2._data[j], epsilon);
+
+#define TS_ASSERT_MATRIX_DIFFERS_DELTA(m1, m2, size, epsilon)  \
+		for (int j = 0; j < size; ++j)						   \
+			TS_ASSERT(!feq(m1._data[j], m2._data[j], epsilon));
 
 class ScriptInterface;
 // Script-based testing setup (defined in test_setup.cpp). Defines TS_* functions.
