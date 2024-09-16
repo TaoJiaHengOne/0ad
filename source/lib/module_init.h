@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,12 +27,14 @@
 #ifndef INCLUDED_MODULE_INIT
 #define INCLUDED_MODULE_INIT
 
+#include <atomic>
+
 /**
  * initialization state of a module (class, source file, etc.)
  * must be initialized to zero (e.g. by defining as a static variable).
  * DO NOT change the value!
  **/
-typedef intptr_t ModuleInitState;	// intptr_t is required by cpu_CAS
+typedef std::atomic<Status> ModuleInitState;
 
 /**
  * calls a user-defined init function if initState is zero.

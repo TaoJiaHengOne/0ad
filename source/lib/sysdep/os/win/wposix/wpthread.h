@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,7 +27,6 @@
 #ifndef INCLUDED_WPTHREAD
 #define INCLUDED_WPTHREAD
 
-
 //
 // <sched.h>
 //
@@ -52,12 +51,6 @@ enum
 //
 // <pthread.h>
 //
-
-// one-time init
-typedef intptr_t pthread_once_t;	// required for cpu_CAS
-#define PTHREAD_ONCE_INIT 0	// static pthread_once_t x = PTHREAD_ONCE_INIT;
-
-int pthread_once(pthread_once_t*, void (*init_routine)());
 
 // thread
 typedef uintptr_t pthread_t;

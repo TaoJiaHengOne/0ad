@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -97,7 +97,7 @@ static Status InitCpuid()
 
 bool cpuid(CpuidRegs* regs)
 {
-	static ModuleInitState initState;
+	static ModuleInitState initState{ 0 };
 	ModuleInit(&initState, InitCpuid);
 
 	const u32 function = regs->eax;
@@ -118,7 +118,7 @@ bool cpuid(CpuidRegs* regs)
 // keep in sync with enum Cap!
 static u32 caps[4];
 
-static ModuleInitState capsInitState;
+static ModuleInitState capsInitState{ 0 };
 
 static Status InitCaps()
 {
@@ -199,7 +199,7 @@ static Status InitVendor()
 
 Vendors Vendor()
 {
-	static ModuleInitState initState;
+	static ModuleInitState initState{ 0 };
 	ModuleInit(&initState, InitVendor);
 	return vendor;
 }
@@ -210,7 +210,7 @@ Vendors Vendor()
 
 static size_t m_Model;
 static size_t m_Family;
-static ModuleInitState signatureInitState;
+static ModuleInitState signatureInitState{ 0 };
 
 static Status InitSignature()
 {
@@ -360,7 +360,7 @@ static Status InitIdentifierString()
 
 static const char* IdentifierString()
 {
-	static ModuleInitState initState;
+	static ModuleInitState initState{ 0 };
 	ModuleInit(&initState, InitIdentifierString);
 	return identifierString;
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -271,7 +271,7 @@ static void PopulateNodesFromProximityDomains(const ProximityDomains& proximityD
 
 //-----------------------------------------------------------------------------
 
-static ModuleInitState initState;
+static ModuleInitState initState{ 0 };
 
 static Status InitTopology()
 {
@@ -434,7 +434,7 @@ static Status InitRelativeDistance()
 
 double numa_Factor()
 {
-	static ModuleInitState _initState;
+	static ModuleInitState _initState{ 0 };
 	UNUSED2(ModuleInit(&_initState, InitRelativeDistance));
 	return relativeDistance;
 }
@@ -464,7 +464,7 @@ static Status InitMemoryInterleaved()
 
 bool numa_IsMemoryInterleaved()
 {
-	static ModuleInitState _initState;
+	static ModuleInitState _initState{ 0 };
 	UNUSED2(ModuleInit(&_initState, InitMemoryInterleaved));
 	return isMemoryInterleaved;
 }

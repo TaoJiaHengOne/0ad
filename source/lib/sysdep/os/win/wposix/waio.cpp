@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -35,12 +35,12 @@
 #include "lib/bits.h"	// round_up
 #include "lib/alignment.h"	// IsAligned
 #include "lib/module_init.h"
-#include "lib/sysdep/cpu.h"	// cpu_AtomicAdd
 #include "lib/sysdep/filesystem.h"	// O_DIRECT
 #include "lib/sysdep/os/win/wutil.h"	// wutil_SetPrivilege
 #include "lib/sysdep/os/win/wiocp.h"
 #include "lib/sysdep/os/win/wposix/crt_posix.h"	// _get_osfhandle
 
+#include <atomic>
 #include <ctime>
 
 // (dynamic linking preserves compatibility with previous Windows versions)
@@ -171,7 +171,7 @@ struct OvlAllocator	// POD
 	void Shutdown()
 	{
 		if(extant != 0)
-			debug_printf("waio: OvlAllocator::Shutdown with extant=%d\n", extant);
+			debug_printf("waio: OvlAllocator::Shutdown with extant=%d\n", extant.load());
 
 		InterlockedFlushSList(&freelist);
 
@@ -208,14 +208,14 @@ struct OvlAllocator	// POD
 		ovl.OffsetHigh = u64_hi(offset);
 		ovl.hEvent = 0;	// (notification is via IOCP and/or polling)
 
-		cpu_AtomicAdd(&extant, +1);
+		++extant;
 
 		return &ovl;
 	}
 
 	void Deallocate(OVERLAPPED* ovl)
 	{
-		cpu_AtomicAdd(&extant, -1);
+		--extant;
 
 		const uintptr_t address = uintptr_t(ovl);
 		ENSURE(uintptr_t(storage) <= address && address < uintptr_t(storage)+storageSize);
@@ -236,7 +236,7 @@ struct OvlAllocator	// POD
 # pragma warning(pop)
 #endif
 
-	volatile intptr_t extant;
+	std::atomic<intptr_t> extant{ 0 };
 };
 
 
@@ -306,7 +306,7 @@ struct FileControlBlocks // POD
 	static const int firstDescriptor = 4000;
 
 	FileControlBlock fcbs[maxFiles];
-	CACHE_ALIGNED(volatile intptr_t) inUse[maxFiles];
+	CACHE_ALIGNED(std::atomic<intptr_t>) inUse[maxFiles]{ 0,0,0,0,0,0,0,0 };
 
 	void Init()
 	{
@@ -330,7 +330,8 @@ struct FileControlBlocks // POD
 	{
 		for(size_t i = 0; i < maxFiles; i++)
 		{
-			if(cpu_CAS(&inUse[i], 0, 1))
+			intptr_t expected{ 0 };
+			if(inUse[i].compare_exchange_strong(expected, 1))
 				return &fcbs[i];
 		}
 
@@ -366,7 +367,7 @@ static FileControlBlocks fileControlBlocks;
 //-----------------------------------------------------------------------------
 // init/shutdown
 
-static ModuleInitState waio_initState;
+static ModuleInitState waio_initState{ 0 };
 
 // called from waio_Open (avoids overhead if this module is never used)
 static Status waio_Init()

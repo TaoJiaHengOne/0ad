@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -100,7 +100,7 @@ static Status InitApicIds()
 	return status;
 }
 
-static ModuleInitState apicInitState;
+static ModuleInitState apicInitState{ 0 };
 
 
 bool AreApicIdsReliable()

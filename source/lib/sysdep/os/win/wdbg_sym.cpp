@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -33,13 +33,13 @@
 
 #include "lib/byte_order.h"	// movzx_le64
 #include "lib/module_init.h"
-#include "lib/sysdep/cpu.h"
 #include "lib/debug_stl.h"
 #include "lib/app_hooks.h"
 #include "lib/external_libraries/dbghelp.h"
 #include "lib/sysdep/os/win/wdbg.h"
 #include "lib/sysdep/os/win/wutil.h"
 
+#include <atomic>
 
 //----------------------------------------------------------------------------
 // dbghelp
@@ -95,7 +95,7 @@ static Status InitDbghelp()
 // symserv wants to access the internet.
 static void sym_init()
 {
-	static ModuleInitState initState;
+	static ModuleInitState initState{ 0 };
 	ModuleInit(&initState, InitDbghelp);
 }
 
@@ -1717,8 +1717,9 @@ static Status dump_frame_cb(const STACKFRAME64* sf, uintptr_t UNUSED(userContext
 
 Status debug_DumpStack(wchar_t* buf, size_t maxChars, void* pcontext, const wchar_t* lastFuncToSkip)
 {
-	static intptr_t busy;
-	if(!cpu_CAS(&busy, 0, 1))
+	static std::atomic<bool> busy{ false };
+
+	if(busy.exchange(true))
 		return ERR::REENTERED;	// NOWARN
 
 	out_init(buf, maxChars);
@@ -1727,8 +1728,7 @@ Status debug_DumpStack(wchar_t* buf, size_t maxChars, void* pcontext, const wcha
 	wdbg_assert(pcontext != 0);
 	Status ret = wdbg_sym_WalkStack(dump_frame_cb, 0, *(CONTEXT*)pcontext, lastFuncToSkip);
 
-	COMPILER_FENCE;
-	busy = 0;
+	busy = false;
 
 	return ret;
 }

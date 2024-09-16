@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -29,11 +29,11 @@
 
 #include "lib/byte_order.h"		// FOURCC
 #include "lib/utf8.h"
-#include "lib/sysdep/cpu.h"
 #include "lib/sysdep/os/win/win.h"
 #include "lib/sysdep/os/win/wutil.h"
 #include "lib/sysdep/os/win/wdbg_sym.h"			// wdbg_sym_WriteMinidump
 
+#include <atomic>
 #include <process.h>			// __security_init_cookie
 #define NEED_COOKIE_INIT
 
@@ -249,8 +249,8 @@ long __stdcall wseh_ExceptionFilter(struct _EXCEPTION_POINTERS* ep)
 	// make sure we don't recurse infinitely if this function raises an
 	// SEH exception. (we may only have the guard page's 4 KB worth of
 	// stack space if the exception is EXCEPTION_STACK_OVERFLOW)
-	static intptr_t nestingLevel = 0;
-	cpu_AtomicAdd(&nestingLevel, 1);
+	static std::atomic<intptr_t> nestingLevel{ 0 };
+	++nestingLevel;
 	if(nestingLevel >= 3)
 		return EXCEPTION_CONTINUE_SEARCH;
 

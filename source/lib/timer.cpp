@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -111,7 +111,7 @@ void timer_Init()
 	ENSURE(gettimeofday(&start, 0) == 0);
 #endif
 
-	static ModuleInitState initState;
+	static ModuleInitState initState{ 0 };
 	ModuleInit(&initState, InitResolution);
 	ENSURE(resolution != 0.0);
 }

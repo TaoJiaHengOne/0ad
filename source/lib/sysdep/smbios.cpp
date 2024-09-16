@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -690,7 +690,7 @@ void FieldStringizer::operator()<const char*>(size_t flags, const char*& value, 
 
 const Structures* GetStructures()
 {
-	static ModuleInitState initState;
+	static ModuleInitState initState{ 0 };
 	Status ret = ModuleInit(&initState, InitStructures);
 	// (callers have to check if member pointers are nonzero anyway, so
 	// we always return a valid pointer to simplify most use cases.)

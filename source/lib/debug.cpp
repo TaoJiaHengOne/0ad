@@ -173,13 +173,11 @@ Status debug_WriteCrashlog(const wchar_t* text)
 		BUSY,
 		FAILED
 	};
-	// note: the initial state is IDLE. we rely on zero-init because
-	// initializing local static objects from constants may happen when
-	// this is first called, which isn't thread-safe. (see C++ 6.7.4)
-	cassert(IDLE == 0);
-	static volatile intptr_t state;
 
-	if(!cpu_CAS(&state, IDLE, BUSY))
+	static std::atomic<State> state{ IDLE };
+
+	State initial{ IDLE };
+	if(!state.compare_exchange_strong(initial, BUSY))
 		return ERR::REENTERED;	// NOWARN
 
 	OsPath pathname = ah_get_log_dir()/"crashlog.txt";
@@ -342,7 +340,7 @@ void debug_DisplayMessage(const wchar_t* caption, const wchar_t* msg)
 // errors (e.g. caused by atexit handlers) to come up, possibly causing an
 // infinite loop. hiding errors isn't good, but we assume that whoever clicked
 // exit really doesn't want to see any more messages.
-static std::atomic<bool> isExiting;
+static std::atomic<bool> isExiting{ false };
 
 // this logic is applicable to any type of error. special cases such as
 // suppressing certain expected WARN_ERRs are done there.
@@ -465,17 +463,17 @@ enum SkipStatus
 {
 	INVALID, VALID, BUSY
 };
-static intptr_t skipStatus = INVALID;
+static std::atomic<SkipStatus> skipStatus{ INVALID };
 static Status errorToSkip;
 static size_t numSkipped;
 
 void debug_SkipErrors(Status err)
 {
-	if(cpu_CAS(&skipStatus, INVALID, BUSY))
+	SkipStatus expected{ INVALID };
+	if(skipStatus.compare_exchange_strong(expected, BUSY))
 	{
 		errorToSkip = err;
 		numSkipped = 0;
-		COMPILER_FENCE;
 		skipStatus = VALID;	// linearization point
 	}
 	else
@@ -484,10 +482,10 @@ void debug_SkipErrors(Status err)
 
 size_t debug_StopSkippingErrors()
 {
-	if(cpu_CAS(&skipStatus, VALID, BUSY))
+	SkipStatus expected{ VALID };
+	if(skipStatus.compare_exchange_strong(expected, BUSY))
 	{
 		const size_t ret = numSkipped;
-		COMPILER_FENCE;
 		skipStatus = INVALID;	// linearization point
 		return ret;
 	}
@@ -500,11 +498,11 @@ size_t debug_StopSkippingErrors()
 
 static bool ShouldSkipError(Status err)
 {
-	if(cpu_CAS(&skipStatus, VALID, BUSY))
+	SkipStatus expected{ VALID };
+	if(skipStatus.compare_exchange_strong(expected, BUSY))
 	{
 		numSkipped++;
 		const bool ret = (err == errorToSkip);
-		COMPILER_FENCE;
 		skipStatus = VALID;
 		return ret;
 	}

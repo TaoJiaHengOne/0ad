@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,10 +24,11 @@
 #include "lib/sysdep/os/win/acpi.h"
 
 #include "lib/byte_order.h"
-#include "lib/sysdep/cpu.h"
 #include "lib/module_init.h"
 
 #include "lib/sysdep/os/win/wfirmware.h"
+
+#include <atomic>
 
 #pragma pack(1)
 
@@ -103,7 +104,7 @@ static bool ValidateTable(const AcpiTable* table, const char* signature = 0)
 	return true;
 }
 
-static void AllocateAndCopyTables(const AcpiTable**& tables, size_t& numTables)
+static void AllocateAndCopyTables(std::atomic<const AcpiTable**>& tables, size_t& numTables)
 {
 	const wfirmware::Provider provider = FOURCC_BE('A','C','P','I');
 	const wfirmware::TableIds tableIDs = wfirmware::GetTableIDs(provider);
@@ -135,7 +136,7 @@ static void AllocateAndCopyTables(const AcpiTable**& tables, size_t& numTables)
 //-----------------------------------------------------------------------------
 
 // note: avoid global std::map etc. because we may be called before _cinit
-static const AcpiTable** tables;	// tables == 0 <=> not initialized
+static std::atomic<const AcpiTable**> tables{ nullptr };	// tables == nullptr <=> not initialized
 static const AcpiTable* invalidTables;	// tables == &invalidTables => init failed
 static size_t numTables;
 
@@ -153,7 +154,8 @@ void acpi_Shutdown()
 
 const AcpiTable* acpi_GetTable(const char* signature)
 {
-	if(cpu_CAS(&tables, (const AcpiTable**)0, &invalidTables))
+	const AcpiTable** initial{ nullptr };
+	if(tables.compare_exchange_strong(initial, &invalidTables))
 		AllocateAndCopyTables(tables, numTables);
 
 	// (typically only a few tables, linear search is OK)

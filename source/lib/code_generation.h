@@ -44,7 +44,7 @@
  * execute the code passed as a parameter only the first time this is
  * reached.
  * may be called at any time (in particular before main), but is not
- * thread-safe. if that's important, use pthread_once() instead.
+ * thread-safe. if that's important, use std::call_once instead.
  **/
 #define ONCE(ONCE_code__)\
 STMT(\

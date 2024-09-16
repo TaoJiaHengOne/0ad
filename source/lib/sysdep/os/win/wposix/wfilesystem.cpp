@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,12 +24,12 @@
 #include "lib/sysdep/filesystem.h"
 
 #include "lib/debug.h"
-#include "lib/sysdep/cpu.h"	// cpu_CAS
 #include "lib/sysdep/os/win/wutil.h"	// StatusFromWin
 #include "lib/sysdep/os/win/wposix/waio.h"	// waio_reopen
 #include "lib/sysdep/os/win/wposix/wtime_internal.h"	// wtime_utc_filetime_to_time_t
 #include "lib/sysdep/os/win/wposix/crt_posix.h"			// _close, _lseeki64 etc.
 
+#include <atomic>
 
 //-----------------------------------------------------------------------------
 // WDIR suballocator
@@ -57,11 +57,11 @@ struct WDIR	// POD
 };
 
 static WDIR wdir_storage;
-static volatile intptr_t wdir_in_use;
+static std::atomic<bool> wdir_in_use{ false };
 
 static inline WDIR* wdir_alloc()
 {
-	if(cpu_CAS(&wdir_in_use, 0, 1))	// gained ownership
+	if(!wdir_in_use.exchange(true))	// gained ownership
 		return &wdir_storage;
 
 	// already in use (rare) - allocate from heap
@@ -72,7 +72,7 @@ static inline void wdir_free(WDIR* d)
 {
 	if(d == &wdir_storage)
 	{
-		const bool ok = cpu_CAS(&wdir_in_use, 1, 0);	// relinquish ownership
+		const bool ok = wdir_in_use.exchange(false);	// relinquish ownership
 		ENSURE(ok);	// ensure it wasn't double-freed
 	}
 	else	// allocated from heap

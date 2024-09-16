@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,25 +27,25 @@
 #include "precompiled.h"
 #include "lib/module_init.h"
 
-#include "lib/sysdep/cpu.h"	// cpu_CAS
+#include "lib/sysdep/cpu.h"
 
 // not yet initialized, or already shutdown
-static const ModuleInitState UNINITIALIZED = 0;	// value documented in header
+static const Status UNINITIALIZED = 0;	// value documented in header
 // running user callback - concurrent ModuleInit callers must spin
-static const ModuleInitState BUSY = ERR::AGAIN;	// never returned
+static const Status BUSY = ERR::AGAIN;	// never returned
 // init succeeded; allow shutdown
-static const ModuleInitState INITIALIZED = INFO::SKIPPED;
+static const Status INITIALIZED = INFO::SKIPPED;
 
 
 Status ModuleInit(volatile ModuleInitState* initState, Status (*init)())
 {
 	for(;;)
 	{
-		if(cpu_CAS(initState, UNINITIALIZED, BUSY))
+		Status expected{ UNINITIALIZED };
+		if(initState->compare_exchange_strong(expected, BUSY))
 		{
 			Status ret = init();
-			*initState = (ret == INFO::OK)? INITIALIZED : ret;
-			COMPILER_FENCE;
+			initState->store(ret == INFO::OK ? INITIALIZED : ret);
 			return ret;
 		}
 
@@ -66,11 +66,11 @@ Status ModuleShutdown(volatile ModuleInitState* initState, void (*shutdown)())
 {
 	for(;;)
 	{
-		if(cpu_CAS(initState, INITIALIZED, BUSY))
+		Status expected{ INITIALIZED };
+		if(initState->compare_exchange_strong(expected, BUSY))
 		{
 			shutdown();
-			*initState = UNINITIALIZED;
-			COMPILER_FENCE;
+			initState->store(UNINITIALIZED);
 			return INFO::OK;
 		}
 
