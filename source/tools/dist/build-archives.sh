@@ -43,10 +43,18 @@ if [ "${BUILD_SHADERS}" = true ]; then
 	PYTHON=${PYTHON:=$(command -v python3 || command -v python || true)}
 	GLSLC=${GLSLC:=$(command -v glslc || true)}
 	SPIRV_REFLECT=${SPIRV_REFLECT:=$(command -v spirv-reflect || true)}
+	if [ -e "$(realpath libraries/source/spirv-reflect/bin/spirv-reflect || true)" ]; then
+		: "${SPIRV_REFLECT:=$(realpath libraries/source/spirv-reflect/bin/spirv-reflect || true)}"
+	fi
+	export SPIRV_REFLECT
 
 	[ -n "${PYTHON}" ] || die "Error: python is not available. Install it before proceeding."
-	[ -n "${GLSLC}" ] || die "Error: glslc is not available. Install it with the Vulkan SDK before proceeding."
-	[ -n "${SPIRV_REFLECT}" ] || die "Error: spirv-reflect is not available. Install it with the Vulkan SDK before proceeding."
+	[ -n "${GLSLC}" ] ||
+		die "Error: glslc is not available." \
+			" Install it with the Vulkan SDK or shaderc package before proceeding."
+	[ -n "${SPIRV_REFLECT}" ] ||
+		die "Error: spirv-reflect is not available." \
+			" Install it with the Vulkan SDK or build vendored spirv-reflect before proceeding."
 
 	cd source/tools/spirv || die
 
