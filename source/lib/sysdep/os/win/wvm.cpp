@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -355,12 +355,8 @@ void ReleaseAddressSpace(void* p, size_t UNUSED(size))
 //-----------------------------------------------------------------------------
 // commit/decommit, allocate/free, protect
 
-TIMER_ADD_CLIENT(tc_commit);
-
 bool Commit(uintptr_t address, size_t size, PageType pageType, int prot)
 {
-	TIMER_ACCRUE_ATOMIC(tc_commit);
-
 	return AllocateLargeOrSmallPages(address, size, MEM_COMMIT, pageType, prot) != 0;
 }
 

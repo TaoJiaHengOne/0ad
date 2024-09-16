@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -28,7 +28,6 @@
 #define INCLUDED_TIMER
 
 #include "lib/config2.h"	// CONFIG2_TIMER_ALLOW_RDTSC
-#include "lib/sysdep/cpu.h"	// cpu_AtomicAdd
 #if ARCH_X86_X64 && CONFIG2_TIMER_ALLOW_RDTSC
 # include "lib/sysdep/os_cpu.h"	// os_cpu_ClockFrequency
 # include "lib/sysdep/arch/x86_x64/x86_x64.h"	// x86_x64::rdtsc
@@ -181,20 +180,6 @@ public:
 		m_cycles += t1.m_cycles - t0.m_cycles;
 	}
 
-	void AddDifferenceAtomic(TimerUnit t0, TimerUnit t1)
-	{
-		const Cycles delta = t1.m_cycles - t0.m_cycles;
-#if ARCH_AMD64
-		cpu_AtomicAdd(&m_cycles, delta);
-#elif ARCH_IA32
-retry:
-		if(!cpu_CAS64(&m_cycles, m_cycles, m_cycles+delta))
-			goto retry;
-#else
-# error "port"
-#endif
-	}
-
 	void Subtract(TimerUnit t)
 	{
 		m_cycles -= t.m_cycles;
@@ -233,20 +218,6 @@ public:
 	void AddDifference(TimerUnit t0, TimerUnit t1)
 	{
 		m_seconds += t1.m_seconds - t0.m_seconds;
-	}
-
-	void AddDifferenceAtomic(TimerUnit t0, TimerUnit t1)
-	{
-retry:
-		i64 oldRepresentation;
-		memcpy(&oldRepresentation, &m_seconds, sizeof(oldRepresentation));
-
-		const double seconds = m_seconds + t1.m_seconds - t0.m_seconds;
-		i64 newRepresentation;
-		memcpy(&newRepresentation, &seconds, sizeof(newRepresentation));
-
-		if(!cpu_CAS64((volatile i64*)&m_seconds, oldRepresentation, newRepresentation))
-			goto retry;
 	}
 
 	void Subtract(TimerUnit t)
@@ -313,33 +284,6 @@ TimerClient* timer_AddClient(TimerClient* tc, const wchar_t* description);
 	static TimerClient* id = timer_AddClient(&UID__, WIDEN(#id))
 
 /**
- * bill the difference between t0 and t1 to the client's total.
- **/
-struct BillingPolicy_Default
-{
-	void operator()(TimerClient* tc, TimerUnit t0, TimerUnit t1) const
-	{
-		tc->sum.AddDifference(t0, t1);
-		tc->num_calls++;
-	}
-};
-
-/**
- * thread-safe (not used by default due to its higher overhead)
- * note: we can't just use thread-local variables to avoid
- * synchronization overhead because we don't have control over all
- * threads (for accumulating their separate timer copies).
- **/
-struct BillingPolicy_Atomic
-{
-	void operator()(TimerClient* tc, TimerUnit t0, TimerUnit t1) const
-	{
-		tc->sum.AddDifferenceAtomic(t0, t1);
-		cpu_AtomicAdd(&tc->num_calls, +1);
-	}
-};
-
-/**
  * display all clients' totals; does not reset them.
  * typically called at exit.
  **/
@@ -347,7 +291,6 @@ void timer_DisplayClientTotals();
 
 
 /// used by TIMER_ACCRUE
-template<class BillingPolicy = BillingPolicy_Default>
 class ScopeTimerAccrue
 {
 	NONCOPYABLE(ScopeTimerAccrue);
@@ -362,7 +305,8 @@ public:
 	{
 		TimerUnit t1;
 		t1.SetFromTimer();
-		BillingPolicy()(m_tc, m_t0, t1);
+		m_tc->sum.AddDifference(m_t0, t1);
+		++m_tc->num_calls;
 	}
 
 private:
@@ -389,7 +333,6 @@ private:
  * 	[later or at exit]
  * 	timer_DisplayClientTotals();
  **/
-#define TIMER_ACCRUE(client) ScopeTimerAccrue<> UID__(client)
-#define TIMER_ACCRUE_ATOMIC(client) ScopeTimerAccrue<BillingPolicy_Atomic> UID__(client)
+#define TIMER_ACCRUE(client) ScopeTimerAccrue UID__(client)
 
 #endif	// #ifndef INCLUDED_TIMER
