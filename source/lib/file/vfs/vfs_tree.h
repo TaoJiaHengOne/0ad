@@ -1,4 +1,4 @@
-/* Copyright (C) 2016 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -172,7 +172,7 @@ private:
 	VfsSubdirectories m_subdirectories;
 
 	PRealDirectory m_realDirectory;
-	volatile intptr_t m_shouldPopulate;	// (cpu_CAS can't be used on bool)
+	bool m_shouldPopulate;
 };
 
 
