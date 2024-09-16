@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -41,6 +41,8 @@
 #include "lib/code_generation.h"
 #include "lib/status.h"
 #include "lib/types.h"
+
+#include <atomic>
 
 /**
  * trigger a breakpoint when reached/"called".
@@ -109,21 +111,6 @@ enum DebugDisplayErrorFlags
 };
 
 /**
- * a bool that is reasonably certain to be set atomically.
- * we cannot assume support for OpenMP (requires GCC 4.2) or C++0x,
- * so we'll have to resort to intptr_t, cpu_CAS and COMPILER_FENCE.
- **/
-typedef volatile intptr_t atomic_bool;
-
-/**
- * value for suppress flag once set by debug_DisplayError.
- * rationale: this value is fairly distinctive and helps when
- * debugging the symbol engine.
- * use 0 as the initial value to avoid allocating .rdata space.
- **/
-static const atomic_bool DEBUG_SUPPRESS = 0xAB;
-
-/**
  * choices offered by the error dialog that are returned
  * by debug_DisplayError.
  **/
@@ -187,10 +174,10 @@ enum ErrorReactionInternal
  * suppress this error. if NULL, this functionality is skipped and the
  * "Suppress" dialog button will be disabled.
  * note: this flag is read and written exclusively here; caller only
- * provides the storage. values: see DEBUG_SUPPRESS above.
+ * provides the storage.
  * @return ErrorReaction (user's choice: continue running or stop?)
  **/
-ErrorReaction debug_DisplayError(const wchar_t* description, size_t flags, void* context, const wchar_t* lastFuncToSkip, const wchar_t* file, int line, const char* func, atomic_bool* suppress);
+ErrorReaction debug_DisplayError(const wchar_t* description, size_t flags, void* context, const wchar_t* lastFuncToSkip, const wchar_t* file, int line, const char* func, std::atomic<bool>* suppress);
 
 // simplified version for just displaying an error message
 #define DEBUG_DISPLAY_ERROR_IMPL(description, flags)\
@@ -290,7 +277,7 @@ Status debug_WriteCrashlog(const char* text);
 #define ENSURE(expr)\
 	do\
 	{\
-		static atomic_bool suppress__;\
+		static std::atomic<bool> suppress__{ false };\
 		if(!(expr))\
 		{\
 			switch(debug_OnAssertionFailure(WIDEN(#expr), &suppress__, WIDEN(__FILE__), __LINE__, __func__))\
@@ -339,7 +326,7 @@ Status debug_WriteCrashlog(const char* text);
 #define DEBUG_WARN_ERR(status)\
 	do\
 	{\
-		static atomic_bool suppress__;\
+		static std::atomic<bool> suppress__{ false };\
 		switch(debug_OnError(status, &suppress__, WIDEN(__FILE__), __LINE__, __func__))\
 		{\
 		case ER_CONTINUE:\
@@ -363,7 +350,7 @@ Status debug_WriteCrashlog(const char* text);
  * @param func name of the function containing it
  * @return ErrorReaction (user's choice: continue running or stop?)
  **/
-ErrorReaction debug_OnAssertionFailure(const wchar_t* assert_expr, atomic_bool* suppress, const wchar_t* file, int line, const char* func) ANALYZER_NORETURN;
+ErrorReaction debug_OnAssertionFailure(const wchar_t* assert_expr, std::atomic<bool>* suppress, const wchar_t* file, int line, const char* func) ANALYZER_NORETURN;
 
 /**
  * called when a DEBUG_WARN_ERR indicates an error occurred;
@@ -375,7 +362,7 @@ ErrorReaction debug_OnAssertionFailure(const wchar_t* assert_expr, atomic_bool* 
  * @param func name of the function containing it
  * @return ErrorReaction (user's choice: continue running or stop?)
  **/
-ErrorReaction debug_OnError(Status err, atomic_bool* suppress, const wchar_t* file, int line, const char* func) ANALYZER_NORETURN;
+ErrorReaction debug_OnError(Status err, std::atomic<bool>* suppress, const wchar_t* file, int line, const char* func) ANALYZER_NORETURN;
 
 
 /**

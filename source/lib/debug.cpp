@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -26,7 +26,6 @@
 #include "lib/alignment.h"
 #include "lib/app_hooks.h"
 #include "lib/fnv_hash.h"
-#include "lib/sysdep/cpu.h"	// cpu_CAS
 #include "lib/sysdep/sysdep.h"
 #include "lib/sysdep/vm.h"
 
@@ -343,11 +342,11 @@ void debug_DisplayMessage(const wchar_t* caption, const wchar_t* msg)
 // errors (e.g. caused by atexit handlers) to come up, possibly causing an
 // infinite loop. hiding errors isn't good, but we assume that whoever clicked
 // exit really doesn't want to see any more messages.
-static atomic_bool isExiting;
+static std::atomic<bool> isExiting;
 
 // this logic is applicable to any type of error. special cases such as
 // suppressing certain expected WARN_ERRs are done there.
-static bool ShouldSuppressError(atomic_bool* suppress)
+static bool ShouldSuppressError(std::atomic<bool>* suppress)
 {
 	if(isExiting)
 		return true;
@@ -355,7 +354,7 @@ static bool ShouldSuppressError(atomic_bool* suppress)
 	if(!suppress)
 		return false;
 
-	if(*suppress == DEBUG_SUPPRESS)
+	if(*suppress)
 		return true;
 
 	return false;
@@ -372,7 +371,7 @@ static ErrorReactionInternal CallDisplayError(const wchar_t* text, size_t flags)
 	return er;
 }
 
-static ErrorReaction PerformErrorReaction(ErrorReactionInternal er, size_t flags, atomic_bool* suppress)
+static ErrorReaction PerformErrorReaction(ErrorReactionInternal er, size_t flags, std::atomic<bool>* suppress)
 {
 	const bool shouldHandleBreak = (flags & DE_MANUAL_BREAK) == 0;
 
@@ -393,12 +392,13 @@ static ErrorReaction PerformErrorReaction(ErrorReactionInternal er, size_t flags
 			return ER_BREAK;
 
 	case ERI_SUPPRESS:
-		(void)cpu_CAS(suppress, 0, DEBUG_SUPPRESS);
+	{
+		bool initialSuppress{ false };
+		(void)suppress->compare_exchange_strong(initialSuppress, true);
 		return ER_CONTINUE;
-
+	}
 	case ERI_EXIT:
-		isExiting = 1;	// see declaration
-		COMPILER_FENCE;
+		isExiting = true;	// see declaration
 
 		exit(EXIT_FAILURE);
 
@@ -412,7 +412,7 @@ static ErrorReaction PerformErrorReaction(ErrorReactionInternal er, size_t flags
 ErrorReaction debug_DisplayError(const wchar_t* description,
 	size_t flags, void* context, const wchar_t* lastFuncToSkip,
 	const wchar_t* pathname, int line, const char* func,
-	atomic_bool* suppress)
+	std::atomic<bool>* suppress)
 {
 	// "suppressing" this error means doing nothing and returning ER_CONTINUE.
 	if(ShouldSuppressError(suppress))
@@ -511,7 +511,7 @@ static bool ShouldSkipError(Status err)
 	return false;
 }
 
-ErrorReaction debug_OnError(Status err, atomic_bool* suppress, const wchar_t* file, int line, const char* func)
+ErrorReaction debug_OnError(Status err, std::atomic<bool>* suppress, const wchar_t* file, int line, const char* func)
 {
 	CACHE_ALIGNED(u8) context[DEBUG_CONTEXT_SIZE];
 	(void)debug_CaptureContext(context);
@@ -526,7 +526,7 @@ ErrorReaction debug_OnError(Status err, atomic_bool* suppress, const wchar_t* fi
 	return debug_DisplayError(buf, DE_MANUAL_BREAK, context, lastFuncToSkip, file,line,func, suppress);
 }
 
-ErrorReaction debug_OnAssertionFailure(const wchar_t* expr, atomic_bool* suppress, const wchar_t* file, int line, const char* func)
+ErrorReaction debug_OnAssertionFailure(const wchar_t* expr, std::atomic<bool>* suppress, const wchar_t* file, int line, const char* func)
 {
 	CACHE_ALIGNED(u8) context[DEBUG_CONTEXT_SIZE];
 	(void)debug_CaptureContext(context);
