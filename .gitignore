@@ -20,6 +20,7 @@ libraries/source/cxxtest-4.4/*
 libraries/source/fcollada/*
 libraries/source/nvtt/*
 libraries/source/spidermonkey/*
+libraries/source/spirv-reflect/*
 !libraries/source/**/build.sh
 !libraries/source/**/patches/
 

@@ -24,6 +24,7 @@ esac
 without_nvtt=false
 with_system_nvtt=false
 with_system_mozjs=false
+with_spirv_reflect=false
 
 JOBS=${JOBS:="-j2"}
 
@@ -32,6 +33,7 @@ for i in "$@"; do
 		--without-nvtt) without_nvtt=true ;;
 		--with-system-nvtt) with_system_nvtt=true ;;
 		--with-system-mozjs) with_system_mozjs=true ;;
+		--with-spirv-reflect) with_spirv_reflect=true ;;
 		-j*) JOBS=$i ;;
 	esac
 done
@@ -67,5 +69,8 @@ if [ "$with_system_mozjs" = "false" ]; then
 	cp source/spidermonkey/bin/* ../binaries/system/
 fi
 echo
+if [ "$with_spirv_reflect" = "true" ]; then
+	./source/spirv-reflect/build.sh || die "spirv-reflect build failed"
+fi
 
 echo "Done."
