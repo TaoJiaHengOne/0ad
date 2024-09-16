@@ -23,7 +23,7 @@ LANGS="ast ca cs de el en_GB es eu fi fr gd hu id it nl pl pt_BR ru sk sv tr uk"
 REGEX=$(printf "\|%s" ${LANGS} | cut -c 2-)
 REGEX=".*/\(${REGEX}\)\.[-A-Za-z0-9_.]\+\.po"
 
-find binaries/ -name "*.po" | grep -v "$REGEX" | xargs rm -v || die "Error filtering languages."
+find binaries/ -name "*.po" | grep -v "$REGEX" | xargs rm -fv || die "Error filtering languages."
 
 # Build archive(s) - don't archive the _test.* mods
 cd binaries/data/mods || die
