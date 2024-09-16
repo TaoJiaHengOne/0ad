@@ -76,13 +76,16 @@
 		}
 	],
 	"AINames": [
-		"Prasutagus",
-		"Venutius",
+		"Adminius",
+		"Cassivellaunus",
 		"Cogidubnus",
 		"Commius",
 		"Comux",
-		"Adminius",
 		"Dubnovellaunus",
+		"Imanuentius",
+		"Mandubracius",
+		"Prasutagus",
+		"Venutius",
 		"Vosenius"
 	],
 	"SkirmishReplacements": {

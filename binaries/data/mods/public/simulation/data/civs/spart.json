@@ -60,16 +60,21 @@
 		}
 	],
 	"AINames": [
-		"Dienekes",
-		"Agis II",
-		"Archidamus",
-		"Lysander",
-		"Pausanias",
 		"Agesilaus",
+		"Agesipolis",
+		"Agis II",
+		"Anaxandridas",
+		"Archidamus",
+		"Cleomenes",
+		"Dienekes",
 		"Echestratus",
-		"Eurycrates",
 		"Eucleidas",
-		"Agesipolis"
+		"Eurybiades",
+		"Eurycrates",
+		"Gylippus",
+		"Leotychidas",
+		"Lysander",
+		"Pausanias"
 	],
 	"SkirmishReplacements": {
 		"skirmish/structures/default_house_10": "structures/{civ}/house",

@@ -56,18 +56,25 @@
 		}
 	],
 	"AINames": [
-		"Cimon",
-		"Aristides",
-		"Xenophon",
-		"Hippias",
-		"Cleisthenes",
-		"Thucydides",
 		"Alcibiades",
-		"Miltiades",
+		"Aristides",
+		"Callias",
+		"Chabrias",
+		"Cimon",
+		"Cleisthenes",
 		"Cleon",
 		"Cleophon",
+		"Conon",
+		"Demosthenes",
+		"Ephialtes",
+		"Hippias",
+		"Miltiades",
+		"Nicias",
+		"Phocion",
+		"Pisistratus",
 		"Thrasybulus",
-		"Demosthenes"
+		"Thucydides",
+		"Xenophon"
 	],
 	"SkirmishReplacements": {
 		"skirmish/units/default_infantry_ranged_b": "units/athen/infantry_slinger_b",
