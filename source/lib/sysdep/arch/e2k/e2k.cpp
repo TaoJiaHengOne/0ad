@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,21 +27,6 @@
 #include "precompiled.h"
 
 #include "lib/sysdep/cpu.h"
-
-intptr_t cpu_AtomicAdd(volatile intptr_t* location, intptr_t increment)
-{
-	return __sync_fetch_and_add(location, increment);
-}
-
-bool cpu_CAS(volatile intptr_t* location, intptr_t expected, intptr_t newValue)
-{
-	return __sync_bool_compare_and_swap(location, expected, newValue);
-}
-
-bool cpu_CAS64(volatile i64* location, i64 expected, i64 newValue)
-{
-	return __sync_bool_compare_and_swap(location, expected, newValue);
-}
 
 const char* cpu_IdentifierString()
 {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -45,26 +45,3 @@ cassert(sizeof(void*) == 8);
 cassert(sizeof(i64) == sizeof(intptr_t));
 #endif
 cassert(sizeof(void*) == sizeof(intptr_t));
-
-
-
-static void TestCAS64()
-{
-	volatile i64 var = 1;
-	cpu_CAS64(&var, 1ull, 2ull);
-	ENSURE(var == 2ull);
-}
-
-static void TestAtomicAdd()
-{
-	volatile intptr_t i1 = 1;
-	intptr_t prev = cpu_AtomicAdd(&i1, 1);
-	ENSURE(prev == 1);
-	ENSURE(i1 == 2);
-}
-
-void cpu_Test()
-{
-	TestCAS64();
-	TestAtomicAdd();
-}
