@@ -25,10 +25,12 @@ import hashlib
 import itertools
 import json
 import os
+import shutil
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from enum import Enum
+from pathlib import Path
 
 import yaml
 
@@ -124,7 +126,17 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
         )
         execute(command[:-2] + ["-g", "-E", "-o", preprocessor_output_path])
         raise ValueError(err)
-    ret, out, err = execute(["spirv-reflect", "-y", "-v", "1", output_path])
+    spirv_reflect = os.getenv("SPIRV_REFLECT", "spirv-reflect")
+    if shutil.which(spirv_reflect) is None:
+        spirv_reflect = (
+            Path(__file__).resolve().parent.parent.parent.parent
+            / "libraries"
+            / "source"
+            / "spirv-reflect"
+            / "bin"
+            / "spirv-reflect"
+        )
+    ret, out, err = execute([spirv_reflect, "-y", "-v", "1", output_path])
     if ret:
         sys.stderr.write(
             "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\n"
