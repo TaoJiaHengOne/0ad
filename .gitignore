@@ -23,6 +23,10 @@ libraries/source/spidermonkey/*
 !libraries/source/**/build.sh
 !libraries/source/**/patches/
 
+# Tools
+archives/
+source/tools/spirv/rules.*.json
+
 # premake5 build files, adapted from upstream
 build/premake/premake5/**/.gitignore
 build/premake/premake5/**/.travis.yml
