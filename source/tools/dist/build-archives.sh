@@ -40,9 +40,9 @@ cd - || die
 
 BUILD_SHADERS="${BUILD_SHADERS:=true}"
 if [ "${BUILD_SHADERS}" = true ]; then
-	PYTHON=${PYTHON:=$(command -v python3 || command -v python)}
-	GLSLC=${GLSLC:=$(command -v glslc)}
-	SPIRV_REFLECT=${SPIRV_REFLECT:=$(command -v spirv-reflect)}
+	PYTHON=${PYTHON:=$(command -v python3 || command -v python || true)}
+	GLSLC=${GLSLC:=$(command -v glslc || true)}
+	SPIRV_REFLECT=${SPIRV_REFLECT:=$(command -v spirv-reflect || true)}
 
 	[ -n "${PYTHON}" ] || die "Error: python is not available. Install it before proceeding."
 	[ -n "${GLSLC}" ] || die "Error: glslc is not available. Install it with the Vulkan SDK before proceeding."
