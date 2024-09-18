@@ -576,7 +576,7 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 	CXeromycesEngine xeromycesEngine;
 
 	// Initialise the global task manager at this point (JS & Profiler2 are set up).
-	Threading::TaskManager::Initialise();
+	Threading::TaskManager taskManager;
 
 	if (ATLAS_RunIfOnCmdLine(args, false))
 		return;
@@ -719,8 +719,6 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 	if (g_Shutdown == ShutdownType::RestartAsAtlas)
 		ATLAS_RunIfOnCmdLine(args, true);
 #endif
-
-	Threading::TaskManager::Instance().ClearQueue();
 }
 
 #if OS_ANDROID

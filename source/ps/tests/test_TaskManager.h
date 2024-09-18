@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,13 +29,12 @@ class TestTaskManager : public CxxTest::TestSuite
 public:
 	void test_basic()
 	{
-		Threading::TaskManager& taskManager = Threading::TaskManager::Instance();
 		// There is a minimum of 3.
-		TS_ASSERT(taskManager.GetNumberOfWorkers() >= 3);
+		TS_ASSERT(g_TaskManager.GetNumberOfWorkers() >= 3);
 
 		std::atomic<int> tasks_run = 0;
 		auto increment_run = [&tasks_run]() { tasks_run++; };
-		Future future = taskManager.PushTask(increment_run);
+		Future future = g_TaskManager.PushTask(increment_run);
 		future.Wait();
 		TS_ASSERT_EQUALS(tasks_run.load(), 1);
 
@@ -43,7 +42,7 @@ public:
 		std::condition_variable cv;
 		std::mutex mutex;
 		std::atomic<bool> go = false;
-		future = taskManager.PushTask([&]() {
+		future = g_TaskManager.PushTask([&]() {
 			std::unique_lock<std::mutex> lock(mutex);
 			cv.wait(lock, [&go]() -> bool { return go; });
 			lock.unlock();
@@ -67,44 +66,41 @@ public:
 
 	void test_Priority()
 	{
-		Threading::TaskManager& taskManager = Threading::TaskManager::Instance();
 		std::atomic<int> tasks_run = 0;
 		// Push general tasks
 		auto increment_run = [&tasks_run]() { tasks_run++; };
-		Future future = taskManager.PushTask(increment_run);
-		Future futureLow = taskManager.PushTask(increment_run, Threading::TaskPriority::LOW);
+		Future future = g_TaskManager.PushTask(increment_run);
+		Future futureLow = g_TaskManager.PushTask(increment_run, Threading::TaskPriority::LOW);
 		future.Wait();
 		futureLow.Wait();
 		TS_ASSERT_EQUALS(tasks_run.load(), 2);
 		// Also check with no waiting expected.
-		taskManager.PushTask(increment_run).Wait();
+		g_TaskManager.PushTask(increment_run).Wait();
 		TS_ASSERT_EQUALS(tasks_run.load(), 3);
-		taskManager.PushTask(increment_run, Threading::TaskPriority::LOW).Wait();
+		g_TaskManager.PushTask(increment_run, Threading::TaskPriority::LOW).Wait();
 		TS_ASSERT_EQUALS(tasks_run.load(), 4);
 	}
 
 	void test_Load()
 	{
-		Threading::TaskManager& taskManager = Threading::TaskManager::Instance();
-
 #define ITERATIONS 100000
 		std::vector<Future<int>> futures;
 		futures.resize(ITERATIONS);
 		std::vector<u32> values(ITERATIONS);
 
-		auto f1 = taskManager.PushTask([&taskManager, &futures]() {
+		auto f1 = g_TaskManager.PushTask([&futures]() {
 			for (u32 i = 0; i < ITERATIONS; i+=3)
-				futures[i] = taskManager.PushTask([]() { return 5; });
+				futures[i] = g_TaskManager.PushTask([]() { return 5; });
 		});
 
-		auto f2 = taskManager.PushTask([&taskManager, &futures]() {
+		auto f2 = g_TaskManager.PushTask([&futures]() {
 			for (u32 i = 1; i < ITERATIONS; i+=3)
-				futures[i] = taskManager.PushTask([]() { return 5; }, Threading::TaskPriority::LOW);
+				futures[i] = g_TaskManager.PushTask([]() { return 5; }, Threading::TaskPriority::LOW);
 		});
 
-		auto f3 = taskManager.PushTask([&taskManager, &futures]() {
+		auto f3 = g_TaskManager.PushTask([&futures]() {
 			for (u32 i = 2; i < ITERATIONS; i+=3)
-				futures[i] = taskManager.PushTask([]() { return 5; });
+				futures[i] = g_TaskManager.PushTask([]() { return 5; });
 		});
 
 		f1.Wait();

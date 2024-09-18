@@ -38,6 +38,8 @@
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 
+#include <optional>
+
 class LeakReporter : public CxxTest::GlobalFixture
 {
 	virtual bool tearDownWorld()
@@ -75,14 +77,14 @@ class MiscSetup : public CxxTest::GlobalFixture
 		m_ScriptEngine = new ScriptEngine;
 		g_ScriptContext = ScriptContext::CreateContext();
 
-		Threading::TaskManager::Initialise();
+		taskManager.emplace();
 
 		return true;
 	}
 
 	virtual bool tearDownWorld()
 	{
-		Threading::TaskManager::Instance().ClearQueue();
+		taskManager.reset();
 		g_ScriptContext.reset();
 		SAFE_DELETE(m_ScriptEngine);
 		g_Profiler2.Shutdown();
@@ -103,6 +105,7 @@ private:
 	// We're doing the initialization and shutdown of the ScriptEngine explicitly here
 	// to make sure it's only initialized when setUpWorld is called.
 	ScriptEngine* m_ScriptEngine;
+	std::optional<Threading::TaskManager> taskManager;
 };
 
 static LeakReporter leakReporter;

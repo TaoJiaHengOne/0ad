@@ -459,7 +459,7 @@ bool CTextureConverter::ConvertTexture(const CTexturePtr& texture, const VfsPath
 		delete[] rgba;
 	}
 
-	m_ResultQueue.push(Threading::TaskManager::Instance().PushTask([request = std::move(request)]
+	m_ResultQueue.push(g_TaskManager.PushTask([request = std::move(request)]
 		{
 			PROFILE2("compress");
 			// Set up the result object

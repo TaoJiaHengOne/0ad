@@ -59,7 +59,7 @@ void CCmpPathfinder::Init(const CParamNode& UNUSED(paramNode))
 
 	m_AtlasOverlay = NULL;
 
-	size_t workerThreads = Threading::TaskManager::Instance().GetNumberOfWorkers();
+	size_t workerThreads = g_TaskManager.GetNumberOfWorkers();
 	// Store one vertex pathfinder for each thread (including the main thread).
 	while (m_VertexPathfinders.size() < workerThreads + 1)
 		m_VertexPathfinders.emplace_back(m_GridSize, m_TerrainOnlyGrid);
@@ -825,17 +825,18 @@ void CCmpPathfinder::StartProcessingMoves(bool useMax)
 	m_ShortPathRequests.PrepareForComputation(useMax ? m_MaxSameTurnMoves : 0);
 	m_LongPathRequests.PrepareForComputation(useMax ? m_MaxSameTurnMoves : 0);
 
-	Threading::TaskManager& taskManager = Threading::TaskManager::Instance();
 	for (size_t i = 0; i < m_Futures.size(); ++i)
 	{
 		ENSURE(!m_Futures[i].Valid());
 		// Pass the i+1th vertex pathfinder to keep the first for the main thread,
 		// each thread get its own instance to avoid conflicts in cached data.
-		m_Futures[i] = taskManager.PushTask([&pathfinder=*this, &vertexPfr=m_VertexPathfinders[i + 1]]() {
-			PROFILE2("Async pathfinding");
-			pathfinder.m_ShortPathRequests.Compute(pathfinder, vertexPfr);
-			pathfinder.m_LongPathRequests.Compute(pathfinder, *pathfinder.m_LongPathfinder);
-		});
+		m_Futures[i] = g_TaskManager.PushTask(
+			[&pathfinder=*this, &vertexPfr=m_VertexPathfinders[i + 1]]()
+			{
+				PROFILE2("Async pathfinding");
+				pathfinder.m_ShortPathRequests.Compute(pathfinder, vertexPfr);
+				pathfinder.m_LongPathRequests.Compute(pathfinder, *pathfinder.m_LongPathfinder);
+			});
 	}
 }
 

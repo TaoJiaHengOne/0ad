@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -56,8 +56,6 @@ size_t GetDefaultNumberOfWorkers()
 }
 
 } // anonymous namespace
-
-std::unique_ptr<TaskManager> g_TaskManager;
 
 class Thread;
 
@@ -127,8 +125,14 @@ public:
 	Impl() = default;
 	~Impl()
 	{
-		ClearQueue();
-		m_Workers.clear();
+		{
+			std::lock_guard<std::mutex> lock(m_GlobalMutex);
+			ENSURE(m_GlobalQueue.empty());
+		}
+		{
+			std::lock_guard<std::mutex> lock(m_GlobalLowPriorityMutex);
+			ENSURE(m_GlobalLowPriorityQueue.empty());
+		}
 	}
 
 	/**
@@ -179,19 +183,6 @@ void TaskManager::Impl::SetupWorkers(size_t numberOfWorkers)
 		m_Workers.emplace_back(*this);
 }
 
-void TaskManager::ClearQueue() { m->ClearQueue(); }
-void TaskManager::Impl::ClearQueue()
-{
-	{
-		std::lock_guard<std::mutex> lock(m_GlobalMutex);
-		m_GlobalQueue.clear();
-	}
-	{
-		std::lock_guard<std::mutex> lock(m_GlobalLowPriorityMutex);
-		m_GlobalLowPriorityQueue.clear();
-	}
-}
-
 size_t TaskManager::GetNumberOfWorkers() const
 {
 	return m->m_Workers.size();
@@ -234,18 +225,6 @@ bool TaskManager::Impl::PopTask(std::function<void()>& taskOut)
 		return true;
 	}
 	return false;
-}
-
-void TaskManager::Initialise()
-{
-	if (!g_TaskManager)
-		g_TaskManager = std::make_unique<TaskManager>();
-}
-
-TaskManager& TaskManager::Instance()
-{
-	ENSURE(g_TaskManager);
-	return *g_TaskManager;
 }
 
 // Thread definition
