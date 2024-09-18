@@ -237,7 +237,7 @@ public:
 	}
 
 	// This just attempts loading every public entity, to check there's no validation errors
-	void test_load_all_DISABLED() // disabled since it's a bit slow and noisy
+	void DISABLED_test_load_all() // disabled since it's a bit slow and noisy
 	{
 		CTerrain dummy;
 		CSimulation2 sim{nullptr, *g_ScriptContext, &dummy};

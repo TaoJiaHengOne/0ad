@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -262,7 +262,7 @@ public:
 			"#line 1\n\n\t\n\n\n\t\n\t\n\n\n\t\n\t\n\t\n\t\n\tvec3 color();\n\t\n#line 5\n\t42 256");
 	}
 
-	void test_performance_DISABLED()
+	void DISABLED_test_performance()
 	{
 		CPreprocessorWrapper::IncludeRetrieverCallback includeCallback = [](
 			const CStr& includePath, CStr& out) {

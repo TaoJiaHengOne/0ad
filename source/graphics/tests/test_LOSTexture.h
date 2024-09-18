@@ -65,7 +65,7 @@ public:
 		TS_ASSERT_EQUALS(losData[0], 104);
 	}
 
-	void test_perf_DISABLED()
+	void DISABLED_test_perf()
 	{
 		CSimulation2 sim{nullptr, *g_ScriptContext, nullptr};
 		CLOSTexture tex(sim);

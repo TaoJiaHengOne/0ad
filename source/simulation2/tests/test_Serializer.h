@@ -843,7 +843,7 @@ public:
 class TestSerializerPerf : public CxxTest::TestSuite
 {
 public:
-	void test_script_props_DISABLED()
+	void DISABLED_test_script_props()
 	{
 		const char* input = "var x = {}; for (var i=0;i<256;++i) x[i]=Math.pow(i, 2); x";
 
@@ -877,7 +877,7 @@ public:
 		}
 	}
 
-	void test_hash_DISABLED()
+	void DISABLED_test_hash()
 	{
 		CXeromyces::Startup();
 

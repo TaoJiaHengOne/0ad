@@ -133,7 +133,7 @@ public:
 		}
 	}
 
-	void test_performance_DISABLED()
+	void DISABLED_test_performance()
 	{
 		CTerrain terrain;
 
@@ -191,7 +191,7 @@ public:
 		printf("[%f]", t);
 	}
 
-	void test_performance_short_DISABLED()
+	void DISABLED_test_performance_short()
 	{
 		CTerrain terrain;
 		terrain.Initialize(5, NULL);
@@ -247,7 +247,7 @@ public:
 		}
 	}
 
-	void test_perf2_DISABLED()
+	void DISABLED_test_perf2()
 	{
 		CTerrain terrain;
 
@@ -304,7 +304,7 @@ public:
 		stream << "</svg>\n";
 	}
 
-	void test_perf3_DISABLED()
+	void DISABLED_test_perf3()
 	{
 		CTerrain terrain;
 

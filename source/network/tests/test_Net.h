@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -127,7 +127,10 @@ public:
 		}
 	}
 
-	void test_basic_DISABLED()
+	// just so that cxxtestgen doesn't complain "No tests defined" if all are disabled
+	void test_dummy() {}
+
+	void DISABLED_test_basic()
 	{
 		// This doesn't actually test much, it just runs a very quick multiplayer game
 		// and prints a load of debug output so you can see if anything funny's going on
@@ -209,7 +212,7 @@ public:
 		wait(clients, 100);
 	}
 
-	void test_rejoin_DISABLED()
+	void DISABLED_test_rejoin()
 	{
 		ScriptInterface scriptInterface("Engine", "Test", g_ScriptContext);
 		ScriptRequest rq(scriptInterface);

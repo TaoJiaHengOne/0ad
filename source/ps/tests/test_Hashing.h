@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@ public:
 		TS_ASSERT_EQUALS(HashCryptographically("D9895FDEE287DBEE19907B7329207F388B1708AC4A123CA537603E953885B20F", "foobar"), "8CE4D45113D5A682FE4B6F185C1880F83EEA6CB2F007E815DCA5BF4B8178ECD0");
 	}
 
-	void test_hash_perf_DISABLED()
+	void DISABLED_test_hash_perf()
 	{
 		double t = timer_Time();
 		for (size_t i = 0; i < 100; ++i)
