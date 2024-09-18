@@ -254,10 +254,12 @@ extern_lib_defs = {
 	},
 	cxxtest = {
 		compile_settings = function()
-			if externalincludedirs then
-				externalincludedirs { libraries_source_dir .. "cxxtest-4.4" }
-			else
-				sysincludedirs { libraries_source_dir .. "cxxtest-4.4" }
+			if not _OPTIONS["with-system-cxxtest"] then
+				if externalincludedirs then
+					externalincludedirs { libraries_source_dir .. "cxxtest-4.4" }
+				else
+					sysincludedirs { libraries_source_dir .. "cxxtest-4.4" }
+				end
 			end
 		end,
 	},

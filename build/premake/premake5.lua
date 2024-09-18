@@ -6,6 +6,7 @@ newoption { trigger = "icc", description = "Use Intel C++ Compiler (Linux only; 
 newoption { trigger = "jenkins-tests", description = "Configure CxxTest to use the XmlPrinter runner which produces Jenkins-compatible output" }
 newoption { trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
 newoption { trigger = "outpath", description = "Location for generated project files" }
+newoption { trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
 newoption { trigger = "with-system-mozjs", description = "Search standard paths for libmozjs91, instead of using bundled copy" }
 newoption { trigger = "with-system-nvtt", description = "Search standard paths for nvidia-texture-tools library, instead of using bundled copy" }
 newoption { trigger = "with-valgrind", description = "Enable Valgrind support (non-Windows only)" }
@@ -1401,7 +1402,14 @@ function setup_tests()
 	if os.istarget("windows") then
 		cxxtest.setpath(rootdir.."/build/bin/cxxtestgen.exe")
 	else
-		cxxtest.setpath(rootdir.."/libraries/source/cxxtest-4.4/bin/cxxtestgen")
+		if _OPTIONS["with-system-cxxtest"] then
+			local handle = io.popen("command -v cxxtestgen")
+			local cxxtestgen = handle:read("*a"):gsub("\n", " ")
+			handle:close()
+			cxxtest.setpath(cxxtestgen)
+		else
+			cxxtest.setpath(rootdir.."/libraries/source/cxxtest-4.4/bin/cxxtestgen")
+		end
 	end
 
 	local runner = "ErrorPrinter"

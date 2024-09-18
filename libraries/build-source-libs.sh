@@ -22,6 +22,7 @@ case "$(realpath .)" in
 esac
 
 without_nvtt=false
+with_system_cxxtest=false
 with_system_nvtt=false
 with_system_mozjs=false
 with_spirv_reflect=false
@@ -31,6 +32,7 @@ JOBS=${JOBS:="-j2"}
 for i in "$@"; do
 	case $i in
 		--without-nvtt) without_nvtt=true ;;
+		--with-system-cxxtest) with_system_cxxtest=true ;;
 		--with-system-nvtt) with_system_nvtt=true ;;
 		--with-system-mozjs) with_system_mozjs=true ;;
 		--with-spirv-reflect) with_spirv_reflect=true ;;
@@ -55,7 +57,9 @@ export MAKE JOBS
 echo "Building third-party dependencies..."
 echo
 
-./source/cxxtest-4.4/build.sh || die "cxxtest build failed"
+if [ "$with_system_cxxtest" = "false" ]; then
+	./source/cxxtest-4.4/build.sh || die "cxxtest build failed"
+fi
 echo
 ./source/fcollada/build.sh || die "FCollada build failed"
 echo
