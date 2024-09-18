@@ -38,6 +38,7 @@
 class TestGuiManager : public CxxTest::TestSuite
 {
 	std::unique_ptr<CConfigDB> configDB;
+	std::optional<CXeromycesEngine> xeromycesEngine;
 	std::optional<ScriptInterface> scriptInterface;
 public:
 
@@ -49,7 +50,7 @@ public:
 
 		configDB = std::make_unique<CConfigDB>();
 
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 
 		scriptInterface.emplace("Engine", "GUIManager", *g_ScriptContext);
 		g_GUI = new CGUIManager{*g_ScriptContext, *scriptInterface};
@@ -59,7 +60,7 @@ public:
 	{
 		delete g_GUI;
 		scriptInterface.reset();
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 		configDB.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");

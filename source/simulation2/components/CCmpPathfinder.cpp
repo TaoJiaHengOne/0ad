@@ -70,7 +70,7 @@ void CCmpPathfinder::Init(const CParamNode& UNUSED(paramNode))
 	m_Futures.resize(workerThreads);
 
 	// Register Relax NG validator
-	CXeromyces::AddValidator(g_VFS, "pathfinder", "simulation/data/pathfinder.rng");
+	g_Xeromyces.AddValidator(g_VFS, "pathfinder", "simulation/data/pathfinder.rng");
 
 	// Since this is used as a system component (not loaded from an entity template),
 	// we can't use the real paramNode (it won't get handled properly when deserializing),

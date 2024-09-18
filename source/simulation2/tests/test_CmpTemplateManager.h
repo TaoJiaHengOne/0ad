@@ -33,20 +33,23 @@
 #include "scriptinterface/JSON.h"
 #include "scriptinterface/ScriptRequest.h"
 
+#include <optional>
+
 class TestCmpTemplateManager : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> xeromycesEngine;
 public:
 	void setUp()
 	{
 		g_VFS = CreateVfs();
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.sim" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
 	}
@@ -226,12 +229,10 @@ public:
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "mod" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "public" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir()/"_testcache" / "", 0, VFS_MAX_PRIORITY));
-		CXeromyces::Startup();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
 	}
@@ -239,6 +240,7 @@ public:
 	// This just attempts loading every public entity, to check there's no validation errors
 	void DISABLED_test_load_all() // disabled since it's a bit slow and noisy
 	{
+		CXeromycesEngine xeromycesEngine;
 		CTerrain dummy;
 		CSimulation2 sim{nullptr, *g_ScriptContext, &dummy};
 		sim.LoadDefaultScripts();

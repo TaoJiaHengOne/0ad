@@ -34,15 +34,19 @@
 #include "simulation2/Simulation2.h"
 #include "simulation2/system/TurnManager.h"
 
+#include <optional>
+
 class TestNetComms : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> xeromycesEngine;
+
 public:
 	void setUp()
 	{
 		g_VFS = CreateVfs();
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "public" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 
 		enet_initialize();
 	}
@@ -51,7 +55,7 @@ public:
 	{
 		enet_deinitialize();
 
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
 	}

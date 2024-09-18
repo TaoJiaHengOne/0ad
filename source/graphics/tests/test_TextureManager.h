@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -25,10 +25,13 @@
 #include "ps/XML/Xeromyces.h"
 #include "renderer/backend/dummy/Device.h"
 
+#include <optional>
+
 class TestTextureManager : public CxxTest::TestSuite
 {
 	PIVFS m_VFS;
 	std::unique_ptr<Renderer::Backend::IDevice> m_Device;
+	std::optional<CXeromycesEngine> m_XeromycesEngine;
 
 public:
 
@@ -42,14 +45,14 @@ public:
 		TS_ASSERT_OK(m_VFS->Mount(L"", DataDir() / "mods" / "_test.tex" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(m_VFS->Mount(L"cache/", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
 
-		CXeromyces::Startup();
+		m_XeromycesEngine.emplace();
 
 		m_Device = std::make_unique<Renderer::Backend::Dummy::CDevice>();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
+		m_XeromycesEngine.reset();
 
 		m_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");

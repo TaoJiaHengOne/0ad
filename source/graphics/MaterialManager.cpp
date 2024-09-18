@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -37,8 +37,11 @@ CMaterialManager::CMaterialManager()
 	CFG_GET_VAL("materialmgr.quality", qualityLevel);
 	qualityLevel = Clamp(qualityLevel, 0.0f, 10.0f);
 
-	if (VfsDirectoryExists(L"art/materials/") && !CXeromyces::AddValidator(g_VFS, "material", "art/materials/material.rng"))
+	if (VfsDirectoryExists(L"art/materials/") &&
+		!g_Xeromyces.AddValidator(g_VFS, "material", "art/materials/material.rng"))
+	{
 		LOGERROR("CMaterialManager: failed to load grammar file 'art/materials/material.rng'");
+	}
 }
 
 CMaterial CMaterialManager::LoadMaterial(const VfsPath& pathname)

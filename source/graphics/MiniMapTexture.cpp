@@ -197,7 +197,7 @@ CMiniMapTexture::CMiniMapTexture(Renderer::Backend::IDevice* device, CSimulation
 	m_InstanceVertexArray(Renderer::Backend::IBuffer::Type::VERTEX, Renderer::Backend::IBuffer::Usage::TRANSFER_DST)
 {
 	// Register Relax NG validator.
-	CXeromyces::AddValidator(g_VFS, "pathfinder", "simulation/data/pathfinder.rng");
+	g_Xeromyces.AddValidator(g_VFS, "pathfinder", "simulation/data/pathfinder.rng");
 
 	m_ShallowPassageHeight = GetShallowPassageHeight();
 

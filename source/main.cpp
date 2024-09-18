@@ -573,16 +573,13 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 	// We need to initialize SpiderMonkey and libxml2 in the main thread before
 	// any thread uses them. So initialize them here before we might run Atlas.
 	ScriptEngine scriptEngine;
-	CXeromyces::Startup();
+	CXeromycesEngine xeromycesEngine;
 
 	// Initialise the global task manager at this point (JS & Profiler2 are set up).
 	Threading::TaskManager::Initialise();
 
 	if (ATLAS_RunIfOnCmdLine(args, false))
-	{
-		CXeromyces::Terminate();
 		return;
-	}
 
 	if (isNonVisualReplay)
 	{
@@ -603,8 +600,6 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 		}
 
 		g_VFS.reset();
-
-		CXeromyces::Terminate();
 		return;
 	}
 
@@ -629,8 +624,6 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 			builder.AddBaseMod(paths.RData()/"mods"/mods[i]);
 
 		builder.Build(zip, args.Has("archivebuild-compress"));
-
-		CXeromyces::Terminate();
 		return;
 	}
 
@@ -728,7 +721,6 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 #endif
 
 	Threading::TaskManager::Instance().ClearQueue();
-	CXeromyces::Terminate();
 }
 
 #if OS_ANDROID

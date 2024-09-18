@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -32,12 +32,10 @@ public:
 		g_VFS = CreateVfs();
 		g_VFS->Mount(L"", DataDir() / "mods" / "mod" / "", VFS_MOUNT_MUST_EXIST);
 		g_VFS->Mount(L"", DataDir() / "mods" / "public" / "", VFS_MOUNT_MUST_EXIST, 1); // ignore directory-not-found errors
-		CXeromyces::Startup();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
 		g_VFS.reset();
 	}
 
@@ -79,6 +77,7 @@ public:
 
 	void test_global_scripts()
 	{
+		CXeromycesEngine xeromycesEngine;
 		if (!VfsDirectoryExists(L"globalscripts/tests/"))
 		{
 			debug_printf("Skipping globalscripts tests (can't find binaries/data/mods/public/globalscripts/tests/)\n");
@@ -102,6 +101,7 @@ public:
 
 	void test_scripts()
 	{
+		CXeromycesEngine xeromycesEngine;
 		if (!VfsFileExists(L"simulation/components/tests/setup.js"))
 		{
 			debug_printf("Skipping component scripts tests (can't find binaries/data/mods/public/simulation/components/tests/setup.js)\n");

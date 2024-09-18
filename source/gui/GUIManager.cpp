@@ -76,9 +76,9 @@ CGUIManager::CGUIManager(ScriptContext& scriptContext, ScriptInterface& scriptIn
 	m_ScriptInterface.SetCallbackData(this);
 	m_ScriptInterface.LoadGlobalScripts();
 
-	if (!CXeromyces::AddValidator(g_VFS, "gui_page", "gui/gui_page.rng"))
+	if (!g_Xeromyces.AddValidator(g_VFS, "gui_page", "gui/gui_page.rng"))
 		LOGERROR("CGUIManager: failed to load GUI page grammar file 'gui/gui_page.rng'");
-	if (!CXeromyces::AddValidator(g_VFS, "gui", "gui/gui.rng"))
+	if (!g_Xeromyces.AddValidator(g_VFS, "gui", "gui/gui.rng"))
 		LOGERROR("CGUIManager: failed to load GUI XML grammar file 'gui/gui.rng'");
 
 	RegisterFileReloadFunc(ReloadChangedFileCB, this);

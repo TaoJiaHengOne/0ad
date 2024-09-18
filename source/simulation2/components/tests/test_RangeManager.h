@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -24,6 +24,8 @@
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
+
+#include <optional>
 
 class MockVisionRgm : public ICmpVision
 {
@@ -114,15 +116,16 @@ private:
 
 class TestCmpRangeManager : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> xeromycesEngine;
 public:
 	void setUp()
 	{
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 	}
 
 	// TODO It would be nice to call Verify() with the shore revealing system

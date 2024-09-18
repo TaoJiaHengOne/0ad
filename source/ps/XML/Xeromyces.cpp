@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -37,7 +37,6 @@
 
 static std::mutex g_ValidatorCacheLock;
 static std::map<const std::string, RelaxNGValidator> g_ValidatorCache;
-static bool g_XeromycesStarted = false;
 
 static void errorHandler(void* UNUSED(userData),
 	std::conditional_t<LIBXML_VERSION >= 21200, const xmlError, xmlError>* error)
@@ -54,20 +53,16 @@ static void errorHandler(void* UNUSED(userData),
 	// so the caching is less transparent than it should be
 }
 
-void CXeromyces::Startup()
+CXeromycesEngine::CXeromycesEngine()
 {
-	ENSURE(!g_XeromycesStarted);
 	xmlInitParser();
 	xmlSetStructuredErrorFunc(NULL, &errorHandler);
 	std::lock_guard<std::mutex> lock(g_ValidatorCacheLock);
 	g_ValidatorCache.insert(std::make_pair(std::string(), RelaxNGValidator()));
-	g_XeromycesStarted = true;
 }
 
-void CXeromyces::Terminate()
+CXeromycesEngine::~CXeromycesEngine()
 {
-	ENSURE(g_XeromycesStarted);
-	g_XeromycesStarted = false;
 	ClearSchemaCache();
 	std::lock_guard<std::mutex> lock(g_ValidatorCacheLock);
 	g_ValidatorCache.clear();
@@ -75,10 +70,8 @@ void CXeromyces::Terminate()
 	xmlCleanupParser();
 }
 
-bool CXeromyces::AddValidator(const PIVFS& vfs, const std::string& name, const VfsPath& grammarPath)
+bool CXeromycesEngine::AddValidator(const PIVFS& vfs, const std::string& name, const VfsPath& grammarPath)
 {
-	ENSURE(g_XeromycesStarted);
-
 	RelaxNGValidator validator;
 	if (!validator.LoadGrammarFile(vfs, grammarPath))
 	{
@@ -95,7 +88,7 @@ bool CXeromyces::AddValidator(const PIVFS& vfs, const std::string& name, const V
 	return true;
 }
 
-bool CXeromyces::ValidateEncoded(const std::string& name, const std::string& filename, const std::string& document)
+bool CXeromycesEngine::ValidateEncoded(const std::string& name, const std::string& filename, const std::string& document)
 {
 	std::lock_guard<std::mutex> lock(g_ValidatorCacheLock);
 	return GetValidator(name).ValidateEncoded(filename, document);
@@ -104,7 +97,7 @@ bool CXeromyces::ValidateEncoded(const std::string& name, const std::string& fil
 /**
  * NOTE: Callers MUST acquire the g_ValidatorCacheLock before calling this.
  */
-RelaxNGValidator& CXeromyces::GetValidator(const std::string& name)
+RelaxNGValidator& CXeromycesEngine::GetValidator(const std::string& name)
 {
 	if (g_ValidatorCache.find(name) == g_ValidatorCache.end())
 		return g_ValidatorCache.find("")->second;
@@ -113,14 +106,12 @@ RelaxNGValidator& CXeromyces::GetValidator(const std::string& name)
 
 PSRETURN CXeromyces::Load(const PIVFS& vfs, const VfsPath& filename, const std::string& validatorName /* = "" */)
 {
-	ENSURE(g_XeromycesStarted);
-
 	CCacheLoader cacheLoader(vfs, L".xmb");
 
 	MD5 validatorGrammarHash;
 	{
 		std::lock_guard<std::mutex> lock(g_ValidatorCacheLock);
-		validatorGrammarHash = GetValidator(validatorName).GetGrammarHash();
+		validatorGrammarHash = g_Xeromyces.GetValidator(validatorName).GetGrammarHash();
 	}
 	VfsPath xmbPath;
 	Status ret = cacheLoader.TryLoadingCached(filename, validatorGrammarHash, XMBStorage::XMBVersion, xmbPath);
@@ -181,7 +172,7 @@ PSRETURN CXeromyces::ConvertFile(const PIVFS& vfs, const VfsPath& filename, cons
 
 	{
 		std::lock_guard<std::mutex> lock(g_ValidatorCacheLock);
-		RelaxNGValidator& validator = GetValidator(validatorName);
+		RelaxNGValidator& validator = g_Xeromyces.GetValidator(validatorName);
 		if (validator.CanValidate() && !validator.ValidateEncoded(doc))
 		{
 			LOGERROR("CXeromyces: failed to validate XML file %s", filename.string8());
@@ -205,8 +196,6 @@ PSRETURN CXeromyces::ConvertFile(const PIVFS& vfs, const VfsPath& filename, cons
 
 PSRETURN CXeromyces::LoadString(const char* xml, const std::string& validatorName /* = "" */)
 {
-	ENSURE(g_XeromycesStarted);
-
 	xmlDocPtr doc = xmlReadMemory(xml, (int)strlen(xml), "(no file)", NULL, XML_PARSE_NONET|XML_PARSE_NOCDATA);
 	if (!doc)
 	{
@@ -216,7 +205,7 @@ PSRETURN CXeromyces::LoadString(const char* xml, const std::string& validatorNam
 
 	{
 		std::lock_guard<std::mutex> lock(g_ValidatorCacheLock);
-		RelaxNGValidator& validator = GetValidator(validatorName);
+		RelaxNGValidator& validator = g_Xeromyces.GetValidator(validatorName);
 		if (validator.CanValidate() && !validator.ValidateEncoded(doc))
 		{
 			LOGERROR("CXeromyces: failed to validate XML string");

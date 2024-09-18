@@ -52,7 +52,7 @@ CShaderManager::CShaderManager(Renderer::Backend::IDevice* device)
 	{
 		TIMER_ACCRUE(tc_ShaderValidation);
 
-		if (!CXeromyces::AddValidator(g_VFS, "shader", "shaders/program.rng"))
+		if (!g_Xeromyces.AddValidator(g_VFS, "shader", "shaders/program.rng"))
 			LOGERROR("CShaderManager: failed to load grammar shaders/program.rng");
 	}
 #endif

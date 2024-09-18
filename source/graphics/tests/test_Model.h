@@ -42,6 +42,7 @@
 #include "scriptinterface/ScriptInterface.h"
 #include "simulation2/Simulation2.h"
 
+#include <optional>
 #include <memory>
 #include <string_view>
 
@@ -100,6 +101,7 @@ constexpr std::string_view TEST_ACTOR_WITH_SHADOWS_XML{R"(<?xml version="1.0" en
 
 class TestModel : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> m_XeromycesEngine;
 	OsPath m_ModPath;
 	OsPath m_CachePath;
 	std::unique_ptr<CProfileViewer> m_Viewer;
@@ -112,7 +114,7 @@ public:
 
 		CConfigDB::Initialise();
 		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "rendererbackend", "dummy");
-		CXeromyces::Startup();
+		m_XeromycesEngine.emplace();
 
 		TestLogger logger;
 
@@ -152,7 +154,7 @@ public:
 		m_Viewer.reset();
 		g_VideoMode.Shutdown();
 
-		CXeromyces::Terminate();
+		m_XeromycesEngine.reset();
 		CConfigDB::Shutdown();
 		g_VFS.reset();
 

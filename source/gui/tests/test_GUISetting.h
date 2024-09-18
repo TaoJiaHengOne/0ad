@@ -33,10 +33,12 @@
 #include "scriptinterface/ScriptInterface.h"
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 class TestGUISetting : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> m_XeromycesEngine;
 	std::unique_ptr<CProfileViewer> m_Viewer;
 	std::unique_ptr<CRenderer> m_Renderer;
 
@@ -55,7 +57,7 @@ public:
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.minimal" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
 
-		CXeromyces::Startup();
+		m_XeromycesEngine.emplace();
 
 		// The renderer spews messages.
 		TestLogger logger;
@@ -76,7 +78,7 @@ public:
 		m_Viewer.reset();
 		g_VideoMode.Shutdown();
 		CConfigDB::Shutdown();
-		CXeromyces::Terminate();
+		m_XeromycesEngine.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir() / "_testcache");
 	}

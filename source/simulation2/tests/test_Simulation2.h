@@ -45,18 +45,17 @@ public:
 		g_VFS = CreateVfs();
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.sim" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
-		CXeromyces::Startup();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
 	}
 
 	void test_AddEntity()
 	{
+		CXeromycesEngine xeromycesEngine;
 		CSimulation2 sim{nullptr, *g_ScriptContext, &m_Terrain};
 		TS_ASSERT(sim.LoadScripts(L"simulation/components/addentity/"));
 
@@ -77,6 +76,7 @@ public:
 
 	void test_DestroyEntity()
 	{
+		CXeromycesEngine xeromycesEngine;
 		CSimulation2 sim{nullptr, *g_ScriptContext, &m_Terrain};
 		TS_ASSERT(sim.LoadScripts(L"simulation/components/addentity/"));
 
@@ -133,6 +133,7 @@ public:
 
 	void test_hotload_scripts()
 	{
+		CXeromycesEngine xeromycesEngine;
 		CSimulation2 sim{nullptr, *g_ScriptContext, &m_Terrain};
 
 		TS_ASSERT_OK(CreateDirectories(DataDir()/"mods"/"_test.sim"/"simulation"/"components"/"hotload"/"", 0700));

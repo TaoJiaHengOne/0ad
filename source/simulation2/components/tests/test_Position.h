@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -48,16 +48,6 @@ public:
 class TestCmpPosition : public CxxTest::TestSuite
 {
 public:
-	void setUp()
-	{
-		CXeromyces::Startup();
-	}
-
-	void tearDown()
-	{
-		CXeromyces::Terminate();
-	}
-
 	static CFixedVector3D fixedvec(int x, int y, int z)
 	{
 		return CFixedVector3D(fixed::FromInt(x), fixed::FromInt(y), fixed::FromInt(z));
@@ -65,6 +55,7 @@ public:
 
 	void test_basic()
 	{
+		CXeromycesEngine xeromycesEngine;
 		ComponentTestHelper test(*g_ScriptContext);
 
 		MockTerrain terrain;
@@ -137,6 +128,7 @@ public:
 
 	void test_water()
 	{
+		CXeromycesEngine xeromycesEngine;
 		ComponentTestHelper test(*g_ScriptContext);
 
 		MockTerrain terrain;
@@ -210,6 +202,7 @@ public:
 
 	void test_serialize()
 	{
+		CXeromycesEngine xeromycesEngine;
 		ComponentTestHelper test(*g_ScriptContext);
 
 		MockTerrain terrain;

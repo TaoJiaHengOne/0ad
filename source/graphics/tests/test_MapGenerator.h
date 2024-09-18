@@ -31,17 +31,16 @@ public:
 		g_VFS = CreateVfs();
 		g_VFS->Mount(L"", DataDir() / "mods" / "mod" / "", VFS_MOUNT_MUST_EXIST);
 		g_VFS->Mount(L"", DataDir() / "mods" / "public" / "", VFS_MOUNT_MUST_EXIST, 1); // ignore directory-not-found errors
-		CXeromyces::Startup();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
 		g_VFS.reset();
 	}
 
 	void test_mapgen_scripts()
 	{
+		CXeromycesEngine xeromycesEngine;
 		if (!VfsDirectoryExists(L"maps/random/tests/"))
 		{
 			debug_printf("Skipping map generator tests (can't find binaries/data/mods/public/maps/random/tests/)\n");

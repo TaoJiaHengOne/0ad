@@ -136,7 +136,7 @@ public:
 		m_TerritoryTotalPassableCellCount = 0;
 
 		// Register Relax NG validator
-		CXeromyces::AddValidator(g_VFS, "territorymanager", "simulation/data/territorymanager.rng");
+		g_Xeromyces.AddValidator(g_VFS, "territorymanager", "simulation/data/territorymanager.rng");
 
 		CParamNode externalParamNode;
 		CParamNode::LoadXML(externalParamNode, L"simulation/data/territorymanager.xml", "territorymanager");

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,6 +19,8 @@
 
 #include "simulation2/components/ICmpObstructionManager.h"
 #include "simulation2/components/ICmpObstruction.h"
+
+#include <optional>
 
 class MockObstruction : public ICmpObstruction
 {
@@ -59,6 +61,8 @@ class TestCmpObstructionManager : public CxxTest::TestSuite
 	typedef ICmpObstructionManager::tag_t tag_t;
 	typedef ICmpObstructionManager::ObstructionSquare ObstructionSquare;
 
+	std::optional<CXeromycesEngine> xeromycesEngine;
+
 	// some variables for setting up a scene with 3 shapes
 	entity_id_t ent1, ent2, ent3; // entity IDs
 	entity_angle_t ent1a; // angles
@@ -75,7 +79,7 @@ class TestCmpObstructionManager : public CxxTest::TestSuite
 public:
 	void setUp()
 	{
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 		CxxTest::setAbortTestOnFail(true);
 
 		// set up a simple scene with some predefined obstruction shapes
@@ -126,7 +130,7 @@ public:
 		delete testHelper;
 		cmp = NULL; // not our responsibility to deallocate
 
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 	}
 
 	/**

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,6 +30,8 @@
 #include "ps/Filesystem.h"
 #include "ps/XML/Xeromyces.h"
 
+#include <optional>
+
 #define TS_ASSERT_STREAM(stream, len, buffer) \
 	TS_ASSERT_EQUALS(stream.str().length(), (size_t)len); \
 	TS_ASSERT_SAME_DATA(stream.str().data(), buffer, len)
@@ -40,18 +42,19 @@
 
 class TestComponentManager : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> xeromycesEngine;
 public:
 	void setUp()
 	{
 		g_VFS = CreateVfs();
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.sim" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
 	}

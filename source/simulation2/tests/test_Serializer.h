@@ -879,7 +879,7 @@ public:
 
 	void DISABLED_test_hash()
 	{
-		CXeromyces::Startup();
+		CXeromycesEngine xeromycesEngine;
 
 		g_VFS = CreateVfs();
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "public" / "", VFS_MOUNT_MUST_EXIST));
@@ -935,7 +935,6 @@ public:
 		// Shut down the world
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
-		CXeromyces::Terminate();
 	}
 
 };

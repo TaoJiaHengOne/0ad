@@ -662,7 +662,7 @@ void InitGraphics(const CmdLineArgs& args, int flags, const std::vector<CStr>& i
 
 	// TODO: Is this the best place for this?
 	if (VfsDirectoryExists(L"maps/"))
-		CXeromyces::AddValidator(g_VFS, "map", "maps/scenario.rng");
+		g_Xeromyces.AddValidator(g_VFS, "map", "maps/scenario.rng");
 
 	try
 	{

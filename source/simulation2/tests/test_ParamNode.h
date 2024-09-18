@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -22,17 +22,20 @@
 #include "ps/CLogger.h"
 #include "ps/XML/Xeromyces.h"
 
+#include <optional>
+
 class TestParamNode : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> xeromycesEngine;
 public:
 	void setUp()
 	{
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 	}
 
 	void test_basic()

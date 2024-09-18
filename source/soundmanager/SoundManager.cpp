@@ -261,7 +261,7 @@ CSoundManager::CSoundManager(ALCdevice* device)
 		m_PlayListItems = new PlayList;
 	}
 
-	if (!CXeromyces::AddValidator(g_VFS, "sound_group", "audio/sound_group.rng"))
+	if (!g_Xeromyces.AddValidator(g_VFS, "sound_group", "audio/sound_group.rng"))
 		LOGERROR("CSoundManager: failed to load grammar file 'audio/sound_group.rng'");
 
 	RegisterFileReloadFunc(ReloadChangedFileCB, this);

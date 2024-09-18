@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ CObjectManager::CObjectManager(CMeshManager& meshManager, CSkeletonAnimManager& 
 	m_QualityHook = std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("max_actor_quality", [this]() { ActorQualityChanged(); }));
 	m_VariantDiversityHook = std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("variant_diversity", [this]() { VariantDiversityChanged(); }));
 
-	if (!CXeromyces::AddValidator(g_VFS, "actor", "art/actors/actor.rng"))
+	if (!g_Xeromyces.AddValidator(g_VFS, "actor", "art/actors/actor.rng"))
 		LOGERROR("CObjectManager: failed to load actor grammar file 'art/actors/actor.rng'");
 }
 

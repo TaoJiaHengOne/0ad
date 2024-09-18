@@ -32,9 +32,11 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 
 class TestCGUIText : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> m_XeromycesEngine;
 	CProfileViewer* m_Viewer = nullptr;
 	CRenderer* m_Renderer = nullptr;
 
@@ -45,7 +47,7 @@ public:
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.minimal" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
 
-		CXeromyces::Startup();
+		m_XeromycesEngine.emplace();
 
 		// The renderer spews messages.
 		TestLogger logger;
@@ -66,7 +68,7 @@ public:
 		delete m_Viewer;
 		g_VideoMode.Shutdown();
 		CConfigDB::Shutdown();
-		CXeromyces::Terminate();
+		m_XeromycesEngine.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir() / "_testcache");
 	}

@@ -1208,8 +1208,7 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(CDevice* device, const CS
 		XMLWriter_File shaderFile;
 		shaderFile.SetPrettyPrint(false);
 		shaderFile.XMB(XeroFile);
-		bool ok = CXeromyces::ValidateEncoded("shader", name, shaderFile.GetOutput());
-		if (!ok)
+		if (!g_Xeromyces.ValidateEncoded("shader", name, shaderFile.GetOutput()))
 			return nullptr;
 	}
 #endif

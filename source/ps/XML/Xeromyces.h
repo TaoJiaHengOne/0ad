@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,6 +30,7 @@ ERROR_TYPE(Xeromyces, XMLOpenFailed);
 ERROR_TYPE(Xeromyces, XMLParseError);
 ERROR_TYPE(Xeromyces, XMLValidationFailed);
 
+#include "ps/Singleton.h"
 #include "ps/XMB/XMBData.h"
 #include "ps/XMB/XMBStorage.h"
 
@@ -59,29 +60,30 @@ public:
 	 */
 	bool GenerateCachedXMB(const PIVFS& vfs, const VfsPath& sourcePath, VfsPath& archiveCachePath, const std::string& validatorName = "");
 
-	/**
-	 * Call once when initialising the program, to load libxml2.
-	 * This should be run in the main thread, before any thread uses libxml2.
-	 */
-	static void Startup();
-
-	/**
-	 * Call once when shutting down the program, to unload libxml2.
-	 */
-	static void Terminate();
-
-	static bool AddValidator(const PIVFS& vfs, const std::string& name, const VfsPath& grammarPath);
-
-	static bool ValidateEncoded(const std::string& name, const std::string& filename, const std::string& document);
-
 private:
-	static RelaxNGValidator& GetValidator(const std::string& name);
-
 	PSRETURN ConvertFile(const PIVFS& vfs, const VfsPath& filename, const VfsPath& xmbPath, const std::string& validatorName);
 
 	XMBStorage m_Data;
 };
 
+class CXeromycesEngine : public Singleton<CXeromycesEngine>
+{
+	friend CXeromyces;
+public:
+	/**
+	 * This should be run in the main thread, before any thread uses libxml2.
+	 */
+	CXeromycesEngine();
+	~CXeromycesEngine();
+
+	bool AddValidator(const PIVFS& vfs, const std::string& name, const VfsPath& grammarPath);
+	bool ValidateEncoded(const std::string& name, const std::string& filename, const std::string& document);
+
+private:
+	RelaxNGValidator& GetValidator(const std::string& name);
+};
+
+#define g_Xeromyces CXeromycesEngine::GetSingleton()
 
 #define _XERO_MAKE_UID2__(p,l) p ## l
 #define _XERO_MAKE_UID1__(p,l) _XERO_MAKE_UID2__(p,l)

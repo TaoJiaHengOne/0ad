@@ -32,10 +32,12 @@
 #include "simulation2/Simulation2.h"
 
 #include <fstream>
+#include <optional>
 #include <random>
 
 class TestCmpPathfinder : public CxxTest::TestSuite
 {
+	std::optional<CXeromycesEngine> xeromycesEngine;
 public:
 	void setUp()
 	{
@@ -44,12 +46,12 @@ public:
 		g_VFS->Mount(L"", DataDir() / "mods" / "public" / "", VFS_MOUNT_MUST_EXIST, 1); // ignore directory-not-found errors
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
 
-		CXeromyces::Startup();
+		xeromycesEngine.emplace();
 	}
 
 	void tearDown()
 	{
-		CXeromyces::Terminate();
+		xeromycesEngine.reset();
 		g_VFS.reset();
 		DeleteDirectory(DataDir()/"_testcache");
 	}
