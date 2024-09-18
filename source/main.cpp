@@ -125,6 +125,7 @@ extern "C"
 #endif
 
 #include <chrono>
+#include <utility>
 
 extern CStrW g_UniqueLogPostfix;
 
@@ -631,7 +632,7 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 	g_frequencyFilter = CreateFrequencyFilter(res, 30.0);
 
 	// run the game
-	int flags = INIT_MODS;
+	bool firstIteration{true};
 	do
 	{
 		g_Shutdown = ShutdownType::None;
@@ -644,9 +645,8 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 		// output log files).
 		FileLogger logger;
 
-		if (!Init(args, flags))
+		if (!Init(args, std::exchange(firstIteration, false) ? INIT_MODS : 0))
 		{
-			flags &= ~INIT_MODS;
 			ShutdownConfigAndSubsequent();
 			continue;
 		}
@@ -708,7 +708,6 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 		guiScriptInterface.reset();
 		ShutdownConfigAndSubsequent();
 		MainControllerShutdown();
-		flags &= ~INIT_MODS;
 
 	} while (g_Shutdown == ShutdownType::Restart);
 
