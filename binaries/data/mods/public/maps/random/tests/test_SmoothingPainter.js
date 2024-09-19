@@ -10,10 +10,10 @@ Engine.GetTemplate = (path) => {
 
 Engine.LoadLibrary("rmgen");
 
-var g_MapSettings = { "Size": 512 };
-var g_Map;
-
+function* GenerateMap()
 {
+	g_MapSettings = { "Size": 512 };
+
 	let min = new Vector2D(5, 5);
 	let center = new Vector2D(6, 6);
 	let max = new Vector2D(7, 7);
@@ -23,7 +23,7 @@ var g_Map;
 
 	// Test SmoothingPainter
 	{
-		g_Map = new RandomMap(0, "blackness");
+		globalThis.g_Map = new RandomMap(0, "blackness");
 
 		let centerHeight = g_Map.getHeight(center);
 

@@ -60,22 +60,10 @@ public:
 			const Script::StructuredClone result{RunMapGenerationScript(progress, scriptInterface,
 				path, "{\"Seed\": 0}", JSPROP_ENUMERATE | JSPROP_PERMANENT)};
 
-			if (path == "maps/random/tests/test_Generator.js" ||
-				path == "maps/random/tests/test_RecoverableError.js")
-			{
+			TS_ASSERT_DIFFERS(result, nullptr);
+
+			if (path == "maps/random/tests/test_Generator.js")
 				TS_ASSERT_EQUALS(progress.load(), 50);
-				TS_ASSERT_DIFFERS(result, nullptr);
-			}
-			else
-			{
-				// The test scripts don't call `ExportMap` so `RunMapGenerationScript` allways
-				// returns `nullptr`.
-				TS_ASSERT_EQUALS(result, nullptr);
-				// Because the test scripts don't call `ExportMap`, `GenerateMap` is searched, which
-				// doesn't exist.
-				TS_ASSERT_STR_CONTAINS(logger.GetOutput(),
-					"Failed to call the generator `GenerateMap`.");
-			}
 		}
 	}
 };

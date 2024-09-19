@@ -10,10 +10,11 @@ Engine.GetTemplate = (path) => {
 
 Engine.LoadLibrary("rmgen");
 
-var g_MapSettings = { "Size": 512 };
-var g_Map = new RandomMap(0, "blackness");
-
+function* GenerateMap()
 {
+	g_MapSettings = { "Size": 512 };
+	globalThis.g_Map = new RandomMap(0, "blackness");
+
 	let min = new Vector2D(5, 5);
 	let max = new Vector2D(7, 7);
 
