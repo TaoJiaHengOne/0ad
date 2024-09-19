@@ -38,6 +38,9 @@ RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends \
       zlib1g-dev \
  && apt-get clean
 
+# From bullseye forward this is done by installing the package python-is-python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
 # Install git-lfs
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
 RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends git-lfs
