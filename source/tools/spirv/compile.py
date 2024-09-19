@@ -49,14 +49,6 @@ def calculate_hash(path):
         return hashlib.sha1(handle.read()).hexdigest()
 
 
-def compare_spirv(path1, path2):
-    with open(path1, "rb") as handle:
-        spirv1 = handle.read()
-    with open(path2, "rb") as handle:
-        spirv2 = handle.read()
-    return spirv1 == spirv2
-
-
 def resolve_if(defines, expression):
     for item in expression.strip().split("||"):
         item = item.strip()
@@ -456,19 +448,10 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
 
             spirv_hash = calculate_hash(output_spirv_path)
             if spirv_hash not in hashed_cache:
-                hashed_cache[spirv_hash] = [file_name]
+                hashed_cache[spirv_hash] = file_name
             else:
-                found_candidate = False
-                for candidate_name in hashed_cache[spirv_hash]:
-                    candidate_path = os.path.join(output_spirv_mod_path, candidate_name)
-                    if compare_spirv(output_spirv_path, candidate_path):
-                        found_candidate = True
-                        file_name = candidate_name
-                        break
-                if found_candidate:
-                    os.remove(output_spirv_path)
-                else:
-                    hashed_cache[spirv_hash].append(file_name)
+                file_name = hashed_cache[spirv_hash]
+                os.remove(output_spirv_path)
 
             shader_element = ET.SubElement(program_root, shader["type"])
             shader_element.set("file", "spirv/" + file_name)
