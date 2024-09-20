@@ -20,17 +20,15 @@ function* GenerateMap(mapSettings)
 
 	yield 10;
 
-	const pattern = mapSettings.TeamPlacement ||
-		pickRandom(["line", "radial", "randomGroup", "stronghold"]);
 	const [playerIDs, playerPosition] =
 		createBases(
 			...playerPlacementByPattern(
-				pattern,
+				mapSettings.TeamPlacement,
 				fractionToTiles(randFloat(0.2, 0.35)),
 				fractionToTiles(randFloat(0.08, 0.1)),
 				randomAngle(),
 				undefined),
-			g_PlayerbaseTypes[pattern].walls);
+			g_PlayerbaseTypes[mapSettings.TeamPlacement].walls);
 
 	if (!isNomad())
 		markPlayerAvoidanceArea(playerPosition, defaultPlayerBaseRadius());

@@ -23,17 +23,14 @@ function* GenerateMap(mapSettings)
 
 	if (!isNomad())
 	{
-		// Note: `|| pickRandom(...)` is needed for atlas.
-		const pattern = mapSettings.TeamPlacement ||
-			pickRandom(["line", "radial", "randomGroup", "stronghold"]);
 		createBases(
 			...playerPlacementByPattern(
-				pattern,
+				mapSettings.TeamPlacement,
 				fractionToTiles(randFloat(0.2, 0.35)),
 				fractionToTiles(randFloat(0.08, 0.1)),
 				randomAngle(),
 				undefined),
-			g_PlayerbaseTypes[pattern].walls);
+			g_PlayerbaseTypes[mapSettings.TeamPlacement].walls);
 	}
 	yield 40;
 

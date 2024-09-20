@@ -64,6 +64,7 @@ enum
 	ID_SimSlow,
 	ID_SimPause,
 	ID_SimReset,
+	ID_TeamPlacement,
 	ID_OpenPlayerPanel
 };
 
@@ -475,6 +476,10 @@ MapSidebar::MapSidebar(ScenarioEditor& scenarioEditor, wxWindow* sidebarContaine
 			wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
 		gridSizer->Add(new wxChoice(scrolledWindow, ID_RandomBiome), wxSizerFlags().Expand());
 
+		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Team Placement")),
+			wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
+		gridSizer->Add(new wxChoice(scrolledWindow, ID_TeamPlacement), wxSizerFlags().Expand());
+
 		wxChoice* sizeChoice = new wxChoice(scrolledWindow, ID_RandomSize);
 		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Map size")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
 		gridSizer->Add(sizeChoice, wxSizerFlags().Expand());
@@ -716,6 +721,12 @@ void MapSidebar::OnRandomScript(wxCommandEvent& WXUNUSED(evt))
 		biomeChoice->Append(wxString::FromUTF8(biome.c_str()));
 
 	biomeChoice->SetSelection(0);
+
+	wxChoice* teamPlacementChoice = wxDynamicCast(FindWindow(ID_TeamPlacement), wxChoice);
+	teamPlacementChoice->Clear();
+	for (AtIter it = mapSettings["TeamPlacements"]["item"]; it.defined(); ++it)
+		teamPlacementChoice->Append(wxString::FromUTF8(static_cast<const char*>(*it)));
+	teamPlacementChoice->SetSelection(0);
 }
 
 void MapSidebar::OnRandomReseed(wxCommandEvent& WXUNUSED(evt))
@@ -760,6 +771,11 @@ void MapSidebar::OnRandomGenerate(wxCommandEvent& WXUNUSED(evt))
 	const wxString biome{wxDynamicCast(FindWindow(ID_RandomBiome), wxChoice)->GetStringSelection()};
 	if (!biome.IsEmpty())
 		settings.set("Biome", biome.utf8_str());
+
+	const wxString teamPlacement{
+		wxDynamicCast(FindWindow(ID_TeamPlacement), wxChoice)->GetStringSelection()};
+	if (!teamPlacement.empty())
+		settings.set("TeamPlacement", teamPlacement.utf8_str());
 
 	std::string json = AtlasObject::SaveToJSON(settings);
 
