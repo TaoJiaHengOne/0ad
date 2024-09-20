@@ -50,6 +50,8 @@ You may change hotkeys in [font="sans-bold-14"]Options > Hotkeys[font="sans-14"]
   hotkey.bigscreenshot – Take huge screenshot (6400×4800 pixels, in .bmp format, location is displayed in the top left of the GUI after the file has been saved, and can also be seen in the console/logs if you miss it there)
   hotkey.tab.next – Switch to the next tab
   hotkey.tab.prev – Switch to the previous tab
+  hotkey.item.next – Switch to the next item of a list
+  hotkey.item.prev – Switch to the previous item of a list
 
 [font="sans-bold-14"]In Game[font="sans-14"]
   Double Left Click \[on unit] – Select all of your units of the same kind on the screen (even if they're different ranks)

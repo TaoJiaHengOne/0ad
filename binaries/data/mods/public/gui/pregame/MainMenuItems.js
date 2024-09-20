@@ -33,6 +33,13 @@ var g_MainMenuItems = [
 				}
 			},
 			{
+				"caption": translate("Tips and Tricks"),
+				"tooltip": translate("Discover simple tips, tricks, and game mechanics."),
+				"onPress": () => {
+					Engine.PushGuiPage("page_tips.xml");
+				}
+			},
+			{
 				"caption": translate("Structure Tree"),
 				"tooltip": colorizeHotkey(translate("%(hotkey)s: View the structure tree of civilizations featured in 0 A.D."), "structree"),
 				"hotkey": "structree",

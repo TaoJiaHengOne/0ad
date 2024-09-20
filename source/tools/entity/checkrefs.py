@@ -714,10 +714,10 @@ class CheckRefs:
 
     def add_tips(self):
         self.logger.info("Loading tips...")
-        for fp, _ffp in sorted(self.find_files("gui/text/tips", "txt")):
+        for fp, _ffp in sorted(self.find_files("gui/reference/tips/texts/", "txt")):
             self.files.append(fp)
             self.roots.append(fp)
-            self.deps.append((fp, Path(f"art/textures/ui/loading/tips/{fp.stem}.png")))
+            self.deps.append((fp, Path(f"art/textures/ui/tips/{fp.stem}.png")))
 
     def add_rms(self):
         self.logger.info("Loading random maps...")

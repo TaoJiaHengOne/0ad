@@ -30,19 +30,6 @@
 		text_valign="top"
 	/>
 
-	<style name="LoadingTipTitleText"
-		font="sans-bold-16"
-		textcolor="black"
-		text_align="left"
-		text_valign="top"
-	/>
-
-	<style name="LoadingTipText"
-		font="sans-bold-14"
-		textcolor="black"
-		text_align="left"
-		text_valign="top"
-	/>
 
 	<style name="LoadingProgressbar"
 		sprite_bar="LoadingProgressBarMiddle"

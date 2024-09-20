@@ -15,7 +15,7 @@
 		</object>
 
 		<object size="50%-452 50%-196 50%+452 50%+196">
-			<include file="gui/loading/TipDisplay.xml"/>
+			<include file="gui/reference/tips/sections/TipDisplay.xml"/>
 		</object>
 
 		<object size="50%-448 50%+230 50%+448 100%-16">
