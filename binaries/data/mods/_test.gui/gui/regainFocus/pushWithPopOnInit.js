@@ -1,1 +1,4 @@
-Engine.PushGuiPage("regainFocus/page_emptyPage.xml").then(Engine.PopGuiPage);
+function init()
+{
+	return Engine.PushGuiPage("regainFocus/page_emptyPage.xml");
+}

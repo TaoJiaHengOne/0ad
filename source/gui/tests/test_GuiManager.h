@@ -26,6 +26,7 @@
 #include "ps/GameSetup/GameSetup.h"
 #include "ps/Hotkey.h"
 #include "ps/XML/Xeromyces.h"
+#include "scriptinterface/FunctionWrapper.h"
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptRequest.h"
 #include "scriptinterface/ScriptInterface.h"
@@ -34,6 +35,14 @@
 
 #include <memory>
 #include <optional>
+
+#if MSC_VERSION
+# pragma warning(push, 1)
+#endif
+#include "js/Promise.h"
+#if MSC_VERSION
+# pragma warning(pop)
+#endif
 
 class TestGuiManager : public CxxTest::TestSuite
 {
@@ -205,37 +214,74 @@ public:
 
 	static void CloseTopmostPage()
 	{
-		g_GUI->PopPage(JS::NullHandleValue);
+		ScriptRequest rq{g_GUI->GetActiveGUI()->GetScriptInterface()};
+		JS::RootedValue global{rq.cx, rq.globalValue()};
+		TS_ASSERT(ScriptFunction::CallVoid(rq, global, "closePageCallback"));
+		// Check whether promises are settled in the page stack and flush the stack.
 		g_GUI->TickObjects();
 	}
 
 	void test_PageRegainedFocusEvent()
 	{
-		// Load up a test page.
 		ScriptRequest rq{g_GUI->GetScriptInterface()};
-		JS::RootedValue val(rq.cx);
-		Script::CreateObject(rq, &val);
+		const Script::StructuredClone undefined{
+			Script::WriteStructuredClone(rq, JS::UndefinedHandleValue)};
 
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 0);
-		Script::StructuredClone data = Script::WriteStructuredClone(rq, JS::NullHandleValue);
-		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", data);
-
-		const ScriptInterface& pageScriptInterface = *(g_GUI->GetActiveGUI()->GetScriptInterface());
-		ScriptRequest prq(pageScriptInterface);
-		JS::RootedValue global(prq.cx, prq.globalValue());
-
-		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
-		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", data);
-		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);
-		CloseTopmostPage();
+		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", undefined);
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
 
 		// This page instantly pushes an empty page with a callback that pops another page again.
-		g_GUI->PushPage(L"regainFocus/page_pushWithPopOnInit.xml", data);
+		g_GUI->PushPage(L"regainFocus/page_pushWithPopOnInit.xml", undefined);
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 3);
 
-		// Pop the empty page
+		// Pop the empty page and execute the continuation.
 		CloseTopmostPage();
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
+
+		CloseTopmostPage();
+		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 0);
+	}
+
+	void test_ResolveReject()
+	{
+		TestLogger logger;
+		constexpr std::array<std::tuple<bool, JS::PromiseState>, 2> testSteps{{
+			{false, JS::PromiseState::Fulfilled},
+			{true, JS::PromiseState::Rejected}}};
+
+		const ScriptRequest rq{g_GUI->GetScriptInterface()};
+
+		const Script::StructuredClone undefined{
+			Script::WriteStructuredClone(rq, JS::UndefinedHandleValue)};
+		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", undefined);
+
+
+		for (const auto& [reject, result] : testSteps)
+		{
+			const JS::RootedValue value{rq.cx, JS::BooleanValue(reject)};
+			const Script::StructuredClone clonedValue{Script::WriteStructuredClone(rq, value)};
+
+			const JS::RootedValue promise{rq.cx,
+				g_GUI->PushPage(L"resolveReject/page_resolveReject.xml", clonedValue)};
+
+			// Check whether promises are settled in the page stack and flush the stack.
+			g_GUI->TickObjects();
+			const JS::RootedObject promiseObject{rq.cx, &promise.toObject()};
+			TS_ASSERT_EQUALS(JS::GetPromiseState(promiseObject), result);
+		}
+	}
+
+	void test_Sequential()
+	{
+		const ScriptRequest rq{g_GUI->GetScriptInterface()};
+		const Script::StructuredClone undefined{
+			Script::WriteStructuredClone(rq, JS::UndefinedHandleValue)};
+		g_GUI->PushPage(L"sequential/page_sequential.xml", undefined);
+		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);
+		CloseTopmostPage();
+		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);
+		CloseTopmostPage();
+		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 0);
 	}
 };
