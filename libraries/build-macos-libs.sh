@@ -811,6 +811,7 @@ GNUTLS_DIR="$(pwd)/gnutls"
 				HOGWEED_LIBS="-L${NETTLE_DIR}/lib -lhogweed" \
 				GMP_CFLAGS="-I${GMP_DIR}/include" \
 				GMP_LIBS="-L${GMP_DIR}/lib -lgmp" \
+				"$HOST_PLATFORM" \
 				--prefix="$INSTALL_DIR" \
 				--enable-shared=no \
 				--without-idn \
@@ -818,8 +819,10 @@ GNUTLS_DIR="$(pwd)/gnutls"
 				--with-included-libtasn1 \
 				--without-p11-kit \
 				--without-brotli \
+				--without-zstd \
+				--without-tpm2 \
+				--disable-libdane \
 				--disable-tests \
-				--disable-guile \
 				--disable-doc \
 				--disable-tools \
 				--disable-nls
