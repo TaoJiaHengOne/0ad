@@ -3,6 +3,7 @@
 \\.gitea/.* @Stan @Itms
 ## Linting
 \\.pre-commit-config\\.yaml @Dunedan
+ruff\\.toml @Dunedan
 
 ## == Build & Libraries
 (build|libraries)/.* @Itms @Stan
