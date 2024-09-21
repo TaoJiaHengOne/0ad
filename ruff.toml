@@ -1,5 +1,7 @@
 line-length = 99
 
+target-version = "py311"
+
 [format]
 line-ending = "lf"
 

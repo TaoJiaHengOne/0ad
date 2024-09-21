@@ -26,7 +26,7 @@ class RLAPI:
     def get_templates(self, names):
         post_data = "\n".join(names)
         response = self.post("templates", post_data)
-        return zip(names, response.decode().split("\n"))
+        return zip(names, response.decode().split("\n"), strict=False)
 
     def evaluate(self, code):
         response = self.post("evaluate", code)

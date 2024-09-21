@@ -30,8 +30,6 @@ repos:
       - id: ruff-format
         args:
           - --check
-          - --target-version
-          - py311
         exclude: ^source/tools/webservices/
   - repo: local
     hooks:

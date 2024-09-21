@@ -17,7 +17,7 @@ class ZeroAD:
             actions = []
         player_ids = cycle([self.player_id]) if player is None else cycle(player)
 
-        cmds = zip(player_ids, actions)
+        cmds = zip(player_ids, actions, strict=False)
         cmds = ((player, action) for (player, action) in cmds if action is not None)
         state_json = self.api.step(cmds)
         self.current_state = GameState(json.loads(state_json), self)

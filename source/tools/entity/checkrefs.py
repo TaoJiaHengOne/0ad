@@ -8,7 +8,6 @@ from json import load, loads
 from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
 from pathlib import Path
 from struct import calcsize, unpack
-from typing import Dict, List, Set, Tuple
 from xml.etree import ElementTree as ET
 
 from scriptlib import SimulTemplateEntity, find_files
@@ -27,9 +26,9 @@ class SingleLevelFilter(Filter):
 
 class CheckRefs:
     def __init__(self):
-        self.files: List[Path] = []
-        self.roots: List[Path] = []
-        self.deps: List[Tuple[Path, Path]] = []
+        self.files: list[Path] = []
+        self.roots: list[Path] = []
+        self.deps: list[tuple[Path, Path]] = []
         self.vfs_root = Path(__file__).resolve().parents[3] / "binaries" / "data" / "mods"
         self.supportedTextureFormats = ("dds", "png")
         self.supportedMeshesFormats = ("pmd", "dae")
@@ -794,7 +793,7 @@ class CheckRefs:
         uniq_files = {r.as_posix() for r in self.files}
         lower_case_files = {f.lower(): f for f in uniq_files}
 
-        missing_files: Dict[str, Set[str]] = defaultdict(set)
+        missing_files: dict[str, set[str]] = defaultdict(set)
 
         for parent, dep in self.deps:
             dep_str = dep.as_posix()

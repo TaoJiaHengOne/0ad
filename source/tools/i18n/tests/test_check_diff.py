@@ -97,7 +97,7 @@ PATCHES_EXPECT_REVERT = [
 ]
 
 
-@pytest.fixture(params=zip(PATCHES, PATCHES_EXPECT_REVERT))
+@pytest.fixture(params=zip(PATCHES, PATCHES_EXPECT_REVERT, strict=False))
 def patch(request):
     return [io.StringIO(request.param[0]), request.param[1]]
 

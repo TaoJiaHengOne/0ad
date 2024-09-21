@@ -22,7 +22,6 @@ import io
 import os
 import subprocess
 from itertools import islice
-from typing import List
 
 from i18n_helper import PROJECT_ROOT_DIRECTORY
 
@@ -38,7 +37,7 @@ def get_diff():
     return io.StringIO(diff_process.stdout.decode("utf-8"))
 
 
-def check_diff(diff: io.StringIO) -> List[str]:
+def check_diff(diff: io.StringIO) -> list[str]:
     """Check a diff of .po files for meaningful changes.
 
     Run through a diff of .po files and check that some of the changes
@@ -87,7 +86,7 @@ def check_diff(diff: io.StringIO) -> List[str]:
     return list(files.difference(keep))
 
 
-def revert_files(files: List[str], verbose=False):
+def revert_files(files: list[str], verbose=False):
     def batched(iterable, n):
         """Split an iterable in equally sized chunks.
 

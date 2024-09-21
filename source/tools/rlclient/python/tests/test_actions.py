@@ -11,11 +11,11 @@ with open(path.join(scriptdir, "..", "samples", "arcadia.json"), encoding="utf-8
 
 
 def dist(p1, p2):
-    return math.sqrt(sum(math.pow(x2 - x1, 2) for (x1, x2) in zip(p1, p2)))
+    return math.sqrt(sum(math.pow(x2 - x1, 2) for (x1, x2) in zip(p1, p2, strict=False)))
 
 
 def center(units):
-    sum_position = map(sum, zip(*(u.position() for u in units)))
+    sum_position = map(sum, zip(*(u.position() for u in units), strict=False))
     return [x / len(units) for x in sum_position]
 
 

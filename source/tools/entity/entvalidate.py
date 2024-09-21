@@ -7,7 +7,6 @@ import shutil
 import sys
 from pathlib import Path
 from subprocess import CalledProcessError, run
-from typing import Sequence
 from xml.etree import ElementTree as ET
 
 from scriptlib import SimulTemplateEntity, find_files
@@ -50,7 +49,7 @@ errorch.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
 logger.addHandler(errorch)
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main() -> int:
     parser = argparse.ArgumentParser(description="Validate templates")
     parser.add_argument("-m", "--mod-name", required=True, help="The name of the mod to validate.")
     parser.add_argument(
@@ -73,7 +72,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument("-v", "--verbose", help="Be verbose about the output.", default=False)
 
-    args = parser.parse_args(argv)
+    args = parser.parse_args()
 
     if not args.relaxng_schema.exists():
         logging.error(RELAXNG_SCHEMA_ERROR_MSG.format(args.relaxng_schema))
