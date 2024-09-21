@@ -43,17 +43,6 @@ void SwitchGuiPage(const ScriptInterface& scriptInterface, const std::wstring& n
 	g_GUI->SwitchPage(name, &scriptInterface, initData);
 }
 
-void PopGuiPage(const ScriptRequest& rq, JS::HandleValue args)
-{
-	if (g_GUI->GetPageCount() < 2)
-	{
-		ScriptException::Raise(rq, "Can't pop GUI pages when less than two pages are opened!");
-		return;
-	}
-
-	g_GUI->PopPage(args);
-}
-
 void SetCursor(const std::wstring& name)
 {
 	g_VideoMode.SetCursor(name);
@@ -79,7 +68,6 @@ void RegisterScriptFunctions(const ScriptRequest& rq)
 {
 	ScriptFunction::Register<&PushGuiPage>(rq, "PushGuiPage");
 	ScriptFunction::Register<&SwitchGuiPage>(rq, "SwitchGuiPage");
-	ScriptFunction::Register<&PopGuiPage>(rq, "PopGuiPage");
 	ScriptFunction::Register<&SetCursor>(rq, "SetCursor");
 	ScriptFunction::Register<&ResetCursor>(rq, "ResetCursor");
 	ScriptFunction::Register<&TemplateExists>(rq, "TemplateExists");

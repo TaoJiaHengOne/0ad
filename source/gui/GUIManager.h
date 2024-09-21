@@ -74,12 +74,6 @@ public:
 	JS::Value PushPage(const CStrW& pageName, Script::StructuredClone initData);
 
 	/**
-	 * Unload the currently active GUI page, and make the previous page active.
-	 * (There must be at least two pages when you call this.)
-	 */
-	void PopPage(JS::HandleValue arg);
-
-	/**
 	 * Called when a file has been modified, to hotload changes.
 	 */
 	Status ReloadChangedFile(const VfsPath& path);

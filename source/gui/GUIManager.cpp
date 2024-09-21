@@ -138,13 +138,6 @@ JS::Value CGUIManager::PushPage(const CStrW& pageName, Script::StructuredClone i
 	return promise;
 }
 
-void CGUIManager::PopPage(JS::HandleValue arg)
-{
-	SGUIPage& topmostPage{m_PageStack.back()};
-	const ScriptRequest rq{topmostPage.gui->GetScriptInterface()};
-	JS::ResolvePromise(rq.cx, *topmostPage.sendingPromise, arg);
-}
-
 CGUIManager::SGUIPage::SGUIPage(const CStrW& pageName, const Script::StructuredClone initData)
 	: m_Name(pageName), initData(initData)
 {
