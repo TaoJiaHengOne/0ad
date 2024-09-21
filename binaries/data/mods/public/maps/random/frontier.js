@@ -5,7 +5,7 @@ Engine.LoadLibrary("rmbiome");
 
 function* GenerateMap(mapSettings)
 {
-	setSelectedBiome();
+	setBiome(mapSettings.Biome);
 
 	// Random elevation with a bias towards lower elevations
 	let randElevation = randIntInclusive(0, 29);

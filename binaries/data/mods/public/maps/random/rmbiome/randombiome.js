@@ -11,12 +11,6 @@ function currentBiome()
 	return g_BiomeID;
 }
 
-function setSelectedBiome()
-{
-	// TODO: Replace ugly default for atlas by a dropdown
-	setBiome(g_MapSettings.Biome || "generic/alpine");
-}
-
 function setBiome(biomeID)
 {
 	RandomMapLogger.prototype.printDirectly("Setting biome " + biomeID + ".\n");

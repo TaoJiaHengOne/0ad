@@ -4,11 +4,7 @@ Engine.LoadLibrary("rmbiome");
 
 function* GenerateMap(mapSettings)
 {
-	if (mapSettings.Biome)
-		setSelectedBiome();
-	else
-		setBiome("generic/sahara");
-
+	setBiome(mapSettings.Biome);
 
 	const tPrimary = g_Terrains.mainTerrain;
 	const tCity = g_Terrains.roadWild;

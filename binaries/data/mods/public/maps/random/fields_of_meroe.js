@@ -4,10 +4,7 @@ Engine.LoadLibrary("rmbiome");
 
 function* GenerateMap(mapSettings)
 {
-	if (mapSettings.Biome)
-		setSelectedBiome();
-	else
-		setBiome("fields_of_meroe/dry");
+	setBiome(mapSettings.Biome);
 
 	const tMainDirt = g_Terrains.mainDirt;
 	const tSecondaryDirt = g_Terrains.secondaryDirt;

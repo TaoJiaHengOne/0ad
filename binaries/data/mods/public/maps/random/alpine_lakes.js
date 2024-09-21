@@ -4,8 +4,8 @@ Engine.LoadLibrary("rmgen-common");
 
 function* GenerateMap(mapSettings)
 {
-	setBiome(mapSettings.Biome ?? "alpine/winter");
-	const isLateSpringBiome = mapSettings.Biome !== "alpine/winter";
+	setBiome(mapSettings.Biome);
+	const isLateSpringBiome = mapSettings.Biome === "alpine/late_spring";
 
 	setFogThickness(isLateSpringBiome ? 0.26 : 0.19);
 	setFogFactor(isLateSpringBiome ? 0.4 : 0.35);

@@ -6,11 +6,7 @@ function* GenerateMap(mapSettings)
 {
 	TILE_CENTERED_HEIGHT_MAP = true;
 
-	if (mapSettings.Biome)
-		setSelectedBiome();
-	else
-		// TODO: Replace ugly default for atlas by a dropdown
-		setBiome("gulf_of_bothnia/winter");
+	setBiome(mapSettings.Biome);
 
 	const isLakeFrozen = g_Environment.Water.Frozen;
 

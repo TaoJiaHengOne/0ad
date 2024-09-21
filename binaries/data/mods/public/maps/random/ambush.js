@@ -5,7 +5,7 @@ Engine.LoadLibrary("rmbiome");
 
 function* GenerateMap(mapSettings)
 {
-	setSelectedBiome();
+	setBiome(mapSettings.Biome);
 
 	const heightLand = 2;
 

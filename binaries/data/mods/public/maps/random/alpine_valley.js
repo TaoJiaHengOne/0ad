@@ -236,7 +236,7 @@ MountainRangeBuilder.prototype.CreateMountainRanges = function*(map)
 
 function* GenerateMap(mapSettings)
 {
-	setBiome(mapSettings.Biome ?? "alpine/winter");
+	setBiome(mapSettings.Biome);
 
 	const heightLand = 3;
 	const heightOffsetBump = 2;

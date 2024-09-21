@@ -4,11 +4,7 @@ Engine.LoadLibrary("rmbiome");
 
 function* GenerateMap(mapSettings)
 {
-	if (mapSettings.Biome)
-		setSelectedBiome();
-	else
-		setBiome("generic/savanna");
-
+	setBiome(mapSettings.Biome);
 
 	// Pick some biome defaults and overload a few settings.
 	const tPrimary = g_Terrains.mainTerrain;

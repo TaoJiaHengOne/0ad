@@ -4,11 +4,7 @@ Engine.LoadLibrary("rmbiome");
 
 function* GenerateMap(mapSettings)
 {
-	if (mapSettings.Biome)
-		setSelectedBiome();
-	else
-		// TODO: Replace ugly default for atlas by a dropdown
-		setBiome("persian_highlands/summer");
+	setBiome(mapSettings.Biome);
 
 	const tDirtMain = g_Terrains.mainTerrain;
 	const tCity = g_Terrains.road;

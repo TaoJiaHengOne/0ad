@@ -3,7 +3,7 @@ Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 Engine.LoadLibrary("heightmap");
 
-function* GenerateMap()
+function* GenerateMap(mapSettings)
 {
 	globalThis.g_Map = new RandomMap(0, "whiteness");
 
@@ -17,7 +17,7 @@ function* GenerateMap()
 		return stringOrArrayOfStrings;
 	}
 
-	setSelectedBiome();
+	setBiome(mapSettings.Biome);
 
 	// Terrain, entities and actors
 	const wildLakeBiome = [
