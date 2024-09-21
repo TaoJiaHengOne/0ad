@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -220,6 +220,11 @@ QUERY(RasterizeMinimap,
 QUERY(GetRMSData,
 		,
 		((std::vector<std::string>, data))
+		);
+
+QUERY(ExpandBiomes,
+		,
+		((std::vector<std::string>, biomes))
 		);
 
 COMMAND(ResizeMap, NOMERGE,

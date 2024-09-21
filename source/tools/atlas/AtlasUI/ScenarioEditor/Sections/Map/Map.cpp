@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,8 +29,10 @@
 #include <algorithm>
 #include <ctime>
 #include <random>
+#include <string>
 #include <wx/busyinfo.h>
 #include <wx/filename.h>
+#include <vector>
 
 #define CREATE_CHECKBOX(window, parentSizer, name, description, ID) \
 	parentSizer->Add(new wxStaticText(window, wxID_ANY, _(name)), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT)); \
@@ -51,6 +53,7 @@ enum
 	ID_MapKW_Trigger,
 	ID_RandomScript,
 	ID_RandomSize,
+	ID_RandomBiome,
 	ID_RandomNomad,
 	ID_RandomSeed,
 	ID_RandomReseed,
@@ -468,6 +471,10 @@ MapSidebar::MapSidebar(ScenarioEditor& scenarioEditor, wxWindow* sidebarContaine
 		wxFlexGridSizer* gridSizer = new wxFlexGridSizer(2, 5, 5);
 		gridSizer->AddGrowableCol(1);
 
+		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Biome")),
+			wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
+		gridSizer->Add(new wxChoice(scrolledWindow, ID_RandomBiome), wxSizerFlags().Expand());
+
 		wxChoice* sizeChoice = new wxChoice(scrolledWindow, ID_RandomSize);
 		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Map size")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
 		gridSizer->Add(sizeChoice, wxSizerFlags().Expand());
@@ -669,6 +676,48 @@ void MapSidebar::OnSimReset(wxCommandEvent& WXUNUSED(event))
 	UpdateSimButtons();
 }
 
+void MapSidebar::OnRandomScript(wxCommandEvent& WXUNUSED(evt))
+{
+	wxChoice* biomeChoice = wxDynamicCast(FindWindow(ID_RandomBiome), wxChoice);
+	wxChoice* scriptChoice = wxDynamicCast(FindWindow(ID_RandomScript), wxChoice);
+
+	if (scriptChoice->GetSelection() < 0)
+		return;
+
+	biomeChoice->Clear();
+
+	AtObj mapSettings = dynamic_cast<AtObjClientData*>(scriptChoice->GetClientObject(
+		scriptChoice->GetSelection()))->GetValue();
+	std::vector<std::string> biomes;
+	if (mapSettings["SupportedBiomes"]["@array"].defined())
+	{
+		for (AtIter it = mapSettings["SupportedBiomes"]["item"]; it.defined(); ++it)
+			biomes.push_back(static_cast<const char*>(*it));
+	}
+	else
+	{
+		std::string singleBiome{static_cast<const char*>(*mapSettings["SupportedBiomes"])};
+		if (!singleBiome.empty())
+			biomes.push_back(singleBiome);
+	}
+
+	if (std::any_of(biomes.begin(), biomes.end(), [](const std::string& biome)
+		{
+			return !biome.empty() && biome.back() == '/';
+		}))
+	{
+		AtlasMessage::qExpandBiomes qry;
+		qry.biomes = std::move(biomes);
+		qry.Post();
+		biomes = *qry.biomes;
+	}
+
+	for (const std::string& biome : biomes)
+		biomeChoice->Append(wxString::FromUTF8(biome.c_str()));
+
+	biomeChoice->SetSelection(0);
+}
+
 void MapSidebar::OnRandomReseed(wxCommandEvent& WXUNUSED(evt))
 {
 	std::mt19937 engine(std::time(nullptr));
@@ -707,6 +756,10 @@ void MapSidebar::OnRandomGenerate(wxCommandEvent& WXUNUSED(evt))
 	settings.setBool("Nomad", wxDynamicCast(FindWindow(ID_RandomNomad), wxCheckBox)->GetValue());
 
 	settings.setInt("Seed", wxAtoi(wxDynamicCast(FindWindow(ID_RandomSeed), wxTextCtrl)->GetValue()));
+
+	const wxString biome{wxDynamicCast(FindWindow(ID_RandomBiome), wxChoice)->GetStringSelection()};
+	if (!biome.IsEmpty())
+		settings.set("Biome", biome.utf8_str());
 
 	std::string json = AtlasObject::SaveToJSON(settings);
 
@@ -764,4 +817,5 @@ BEGIN_EVENT_TABLE(MapSidebar, Sidebar)
 	EVT_BUTTON(ID_RandomGenerate, MapSidebar::OnRandomGenerate)
 	EVT_BUTTON(ID_ResizeMap, MapSidebar::OnResizeMap)
 	EVT_BUTTON(ID_OpenPlayerPanel, MapSidebar::OnOpenPlayerPanel)
+	EVT_CHOICE(ID_RandomScript, MapSidebar::OnRandomScript)
 END_EVENT_TABLE();

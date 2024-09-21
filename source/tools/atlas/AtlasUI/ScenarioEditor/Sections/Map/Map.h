@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -36,6 +36,7 @@ private:
 
 	void OnCollapse(wxCollapsiblePaneEvent& evt);
 	void OnOpenPlayerPanel(wxCommandEvent& evt);
+	void OnRandomScript(wxCommandEvent& evt);
 	void OnRandomReseed(wxCommandEvent& evt);
 	void OnRandomGenerate(wxCommandEvent& evt);
 	void OnResizeMap(wxCommandEvent& evt);

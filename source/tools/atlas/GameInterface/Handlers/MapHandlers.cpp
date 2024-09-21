@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -57,6 +57,9 @@
 #include "simulation2/components/ICmpVisual.h"
 #include "simulation2/system/ParamNode.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
 
 #ifdef _MSC_VER
 # pragma warning(disable: 4458) // Declaration hides class member.
@@ -355,6 +358,41 @@ QUERYHANDLER(RasterizeMinimap)
 QUERYHANDLER(GetRMSData)
 {
 	msg->data = g_Game->GetSimulation2()->GetRMSData();
+}
+
+QUERYHANDLER(ExpandBiomes)
+{
+	std::vector<std::string> unexpandedBiomes = *msg->biomes;
+	std::vector<std::string> expandedBiomes;
+	for (const std::string& toExpand : unexpandedBiomes)
+	{
+		if (toExpand.empty())
+		{
+			LOGERROR("Got an empty biome");
+			continue;
+		}
+		if (toExpand.back() != '/')
+		{
+			expandedBiomes.push_back(toExpand);
+			continue;
+		}
+
+		VfsPaths biomesList;
+		if (vfs::GetPathnames(g_VFS, "maps/random/rmbiome/" + toExpand, L"*.json", biomesList) ==
+			INFO::OK)
+		{
+			std::transform(biomesList.begin(), biomesList.end(), std::back_inserter(expandedBiomes),
+				[&](const VfsPath& biome)
+				{
+					return toExpand + biome.Basename().string8();
+				});
+		}
+		else
+			LOGERROR("Error reading biome files in %s", toExpand);
+
+	}
+
+	msg->biomes = std::move(expandedBiomes);
 }
 
 QUERYHANDLER(GetCurrentMapSize)
