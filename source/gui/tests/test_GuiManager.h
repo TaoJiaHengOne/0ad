@@ -203,6 +203,12 @@ public:
 		UnloadHotkeys();
 	}
 
+	static void CloseTopmostPage()
+	{
+		g_GUI->PopPage(JS::NullHandleValue);
+		g_GUI->TickObjects();
+	}
+
 	void test_PageRegainedFocusEvent()
 	{
 		// Load up a test page.
@@ -221,7 +227,7 @@ public:
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
 		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", data);
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);
-		g_GUI->PopPage(data);
+		CloseTopmostPage();
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
 
 		// This page instantly pushes an empty page with a callback that pops another page again.
@@ -229,9 +235,7 @@ public:
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 3);
 
 		// Pop the empty page
-		g_GUI->PopPage(data);
-		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);
-		scriptInterface->GetContext().RunJobs();
+		CloseTopmostPage();
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
 	}
 };

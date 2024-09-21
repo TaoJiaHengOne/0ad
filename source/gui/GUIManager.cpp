@@ -124,9 +124,10 @@ JS::Value CGUIManager::PushPage(const CStrW& pageName, Script::StructuredClone i
 			if (m_PageStack.empty())
 				return JS::UndefinedValue();
 
+			CGUI& currentPage = *m_PageStack.back().gui;
 			// Make sure we unfocus anything on the current page.
-			m_PageStack.back().gui->SendFocusMessage(GUIM_LOST_FOCUS);
-			return m_PageStack.back().ReplacePromise(m_ScriptInterface);
+			currentPage.SendFocusMessage(GUIM_LOST_FOCUS);
+			return m_PageStack.back().ReplacePromise(*currentPage.GetScriptInterface());
 		}()};
 
 	// Push the page prior to loading its contents, because that may push
@@ -137,26 +138,15 @@ JS::Value CGUIManager::PushPage(const CStrW& pageName, Script::StructuredClone i
 	return promise;
 }
 
-void CGUIManager::PopPage(Script::StructuredClone args)
+void CGUIManager::PopPage(JS::HandleValue arg)
 {
-	if (m_PageStack.size() < 2)
-	{
-		debug_warn(L"Tried to pop GUI page when there's < 2 in the stack");
-		return;
-	}
-
-	// Make sure we unfocus anything on the current page.
-	m_PageStack.back().gui->SendFocusMessage(GUIM_LOST_FOCUS);
-
-	m_PageStack.pop_back();
-	m_PageStack.back().ResolvePromise(args);
-
-	// We return to a page where some object might have been focused.
-	m_PageStack.back().gui->SendFocusMessage(GUIM_GOT_FOCUS);
+	SGUIPage& topmostPage{m_PageStack.back()};
+	const ScriptRequest rq{topmostPage.gui->GetScriptInterface()};
+	JS::ResolvePromise(rq.cx, *topmostPage.sendingPromise, arg);
 }
 
 CGUIManager::SGUIPage::SGUIPage(const CStrW& pageName, const Script::StructuredClone initData)
-	: m_Name(pageName), initData(initData), inputs(), gui(), callbackFunction()
+	: m_Name(pageName), initData(initData)
 {
 }
 
@@ -178,6 +168,9 @@ void CGUIManager::SGUIPage::LoadPage(ScriptContext& scriptContext)
 	g_VideoMode.ResetCursor();
 	inputs.clear();
 	gui.reset(new CGUI(scriptContext));
+	const ScriptRequest rq{gui->GetScriptInterface()};
+	sendingPromise = std::make_shared<JS::PersistentRootedObject>(rq.cx,
+		JS::NewPromiseObject(rq.cx, nullptr));
 
 	gui->AddObjectTypes();
 
@@ -232,9 +225,6 @@ void CGUIManager::SGUIPage::LoadPage(ScriptContext& scriptContext)
 
 	gui->LoadedXmlFiles();
 
-	std::shared_ptr<ScriptInterface> scriptInterface = gui->GetScriptInterface();
-	ScriptRequest rq(scriptInterface);
-
 	JS::RootedValue initDataVal(rq.cx);
 	JS::RootedValue hotloadDataVal(rq.cx);
 	JS::RootedValue global(rq.cx, rq.globalValue());
@@ -245,40 +235,68 @@ void CGUIManager::SGUIPage::LoadPage(ScriptContext& scriptContext)
 	if (hotloadData)
 		Script::ReadStructuredClone(rq, hotloadData, &hotloadDataVal);
 
-	if (Script::HasProperty(rq, global, "init") &&
-	    !ScriptFunction::CallVoid(rq, global, "init", initDataVal, hotloadDataVal))
+	if (!Script::HasProperty(rq, global, "init"))
+		return;
+
+	JS::RootedValue returnValue{rq.cx};
+	if (!ScriptFunction::Call(rq, global, "init", &returnValue, initDataVal, hotloadDataVal))
+	{
 		LOGERROR("GUI page '%s': Failed to call init() function", utf8_from_wstring(m_Name));
+		return;
+	}
+
+	if (!returnValue.isObject())
+		return;
+
+	JS::RootedObject returnObject{rq.cx, &returnValue.toObject()};
+	if (!JS::IsPromiseObject(returnObject))
+		return;
+
+	sendingPromise = std::make_shared<JS::PersistentRootedObject>(rq.cx, returnObject);
 }
 
 JS::Value CGUIManager::SGUIPage::ReplacePromise(ScriptInterface& scriptInterface)
 {
-	JSContext* generalContext{scriptInterface.GetGeneralJSContext()};
-	callbackFunction = std::make_shared<JS::PersistentRootedObject>(generalContext,
-		JS::NewPromiseObject(generalContext, nullptr));
-	return JS::ObjectValue(**callbackFunction);
+	const ScriptRequest rq{scriptInterface};
+	receivingPromise = std::make_shared<JS::PersistentRootedObject>(rq.cx,
+			JS::NewPromiseObject(rq.cx, nullptr));
+
+	return JS::ObjectValue(**receivingPromise);
 }
 
-void CGUIManager::SGUIPage::ResolvePromise(Script::StructuredClone args)
+std::optional<CGUIManager::SGUIPage::CloseResult> CGUIManager::SGUIPage::MaybeClose()
 {
-	if (!callbackFunction)
-		return;
+	if (JS::GetPromiseState(*sendingPromise) == JS::PromiseState::Pending)
+		return std::nullopt;
+
+	// Make sure we unfocus anything on the current page.
+	gui->SendFocusMessage(GUIM_LOST_FOCUS);
+
+	const ScriptRequest rq{gui->GetScriptInterface()};
+	JS::RootedValue arg{rq.cx, JS::GetPromiseResult(*sendingPromise)};
+	return CGUIManager::SGUIPage::CloseResult{Script::WriteStructuredClone(rq, arg),
+		JS::GetPromiseState(*sendingPromise) == JS::PromiseState::Rejected};
+}
+
+void CGUIManager::SGUIPage::Refocus(const CloseResult& result)
+{
+	ENSURE(receivingPromise);
 
 	std::shared_ptr<ScriptInterface> scriptInterface = gui->GetScriptInterface();
 	ScriptRequest rq(scriptInterface);
 
 	JS::RootedObject globalObj(rq.cx, rq.glob);
 
-	JS::RootedObject funcVal(rq.cx, *callbackFunction);
-
-	// Delete the callback function, so that it is not called again
-	callbackFunction.reset();
+	JS::RootedObject recv(rq.cx, *std::exchange(receivingPromise, nullptr));
 
 	JS::RootedValue argVal(rq.cx);
-	if (args)
-		Script::ReadStructuredClone(rq, args, &argVal);
+	Script::ReadStructuredClone(rq, result.arg, &argVal);
 
 	// This only resolves the promise, it doesn't call the continuation.
-	JS::ResolvePromise(rq.cx, funcVal, argVal);
+	(result.rejected ? JS::RejectPromise : JS::ResolvePromise)(rq.cx, recv, argVal);
+
+	// We return to a page where some object might have been focused.
+	gui->SendFocusMessage(GUIM_GOT_FOCUS);
 }
 
 Status CGUIManager::ReloadChangedFile(const VfsPath& path)
@@ -379,6 +397,20 @@ void CGUIManager::TickObjects()
 		p.gui->TickObjects();
 
 	m_ScriptContext.RunJobs();
+
+	while (!m_PageStack.empty())
+	{
+		const size_t stackSize{m_PageStack.size()};
+		const std::optional<SGUIPage::CloseResult> result{m_PageStack.back().MaybeClose()};
+		if (!result.has_value())
+			break;
+		ENSURE(m_PageStack.size() == stackSize);
+		m_PageStack.pop_back();
+		if (!m_PageStack.empty())
+			m_PageStack.back().Refocus(result.value());
+
+		m_ScriptContext.RunJobs();
+	}
 }
 
 void CGUIManager::Draw(CCanvas2D& canvas) const

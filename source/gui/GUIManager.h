@@ -25,6 +25,7 @@
 #include "scriptinterface/StructuredClone.h"
 
 #include <deque>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -76,7 +77,7 @@ public:
 	 * Unload the currently active GUI page, and make the previous page active.
 	 * (There must be at least two pages when you call this.)
 	 */
-	void PopPage(Script::StructuredClone args);
+	void PopPage(JS::HandleValue arg);
 
 	/**
 	 * Called when a file has been modified, to hotload changes.
@@ -151,10 +152,24 @@ private:
 		 */
 		JS::Value ReplacePromise(ScriptInterface& scriptInterface);
 
+		struct CloseResult
+		{
+			Script::StructuredClone arg;
+			bool rejected;
+		};
 		/**
-		 * Execute the stored callback function with the given arguments.
+		 * If the page should be closed this function closes the page and
+		 * returns the result of the @c init function.
+		 * If this page wasn't closed an empty optional is returned.
 		 */
-		void ResolvePromise(Script::StructuredClone args);
+		std::optional<CloseResult> MaybeClose();
+
+		/**
+		 * This function should be called when a child page got closed. The
+		 * result of the closed page should be the argument of this
+		 * function. This function resolves the @c receivingPromise.
+		 */
+		void Refocus(const CloseResult& result);
 
 		std::wstring m_Name;
 		std::unordered_set<VfsPath> inputs; // for hotloading
@@ -162,10 +177,16 @@ private:
 		std::shared_ptr<CGUI> gui; // the actual GUI page
 
 		/**
-		 * Function executed by this parent GUI page when the child GUI page it pushed is popped.
-		 * Notice that storing it in the SGUIPage instead of CGUI means that it will survive the hotloading CGUI reset.
+		 * When this promise is settled this page wants to be closed. It
+		 * settles with the page completion value.
 		 */
-		std::shared_ptr<JS::PersistentRootedObject> callbackFunction;
+		std::shared_ptr<JS::PersistentRootedObject> sendingPromise;
+
+		/**
+		 * The parent page waits on this promise. It also gets the
+		 * completion value through this promise.
+		 */
+		std::shared_ptr<JS::PersistentRootedObject> receivingPromise;
 	};
 
 	std::shared_ptr<CGUI> top() const;

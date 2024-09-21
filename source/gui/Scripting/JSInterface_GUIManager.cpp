@@ -51,7 +51,7 @@ void PopGuiPage(const ScriptRequest& rq, JS::HandleValue args)
 		return;
 	}
 
-	g_GUI->PopPage(Script::WriteStructuredClone(rq, args));
+	g_GUI->PopPage(args);
 }
 
 void SetCursor(const std::wstring& name)
