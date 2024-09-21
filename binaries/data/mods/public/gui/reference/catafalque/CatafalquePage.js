@@ -1,8 +1,8 @@
 class CatafalquePage extends ReferencePage
 {
-	constructor(data)
+	constructor(closePageCallback)
 	{
-		super();
+		super(closePageCallback);
 
 		this.Canvas = Engine.GetGUIObjectByName("canvas");
 		this.Emblems = [];
@@ -31,7 +31,7 @@ class CatafalquePage extends ReferencePage
 
 	closePage()
 	{
-		Engine.PopGuiPage({ "page": "page_catafalque.xml" });
+		this.closePageCallback({ "page": "page_catafalque.xml" });
 	}
 
 }

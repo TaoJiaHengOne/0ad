@@ -5,9 +5,9 @@
  */
 class StructreePage extends ReferencePage
 {
-	constructor(data)
+	constructor(closePageCallback)
 	{
-		super();
+		super(closePageCallback);
 
 		this.structureBoxes = [];
 		this.trainerBoxes = [];
@@ -36,7 +36,7 @@ class StructreePage extends ReferencePage
 
 	closePage()
 	{
-		Engine.PopGuiPage({
+		this.closePageCallback({
 			"page": "page_structree.xml",
 			"args": {
 				"civ": this.activeCiv

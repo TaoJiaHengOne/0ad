@@ -28,7 +28,6 @@
 
 			<object name="cancel" type="button" size="18 100%-46 50%-5 100%-18" style="ModernButtonRed" hotkey="cancel">
 				<translatableAttribute id="caption">Cancel</translatableAttribute>
-				<action on="Press">cancelButton();</action>
 			</object>
 
 		</object>

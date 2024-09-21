@@ -1,8 +1,8 @@
 class CivInfoPage extends ReferencePage
 {
-	constructor(data)
+	constructor(closePageCallback)
 	{
-		super();
+		super(closePageCallback);
 
 		this.civSelection = new CivSelectDropdown(this.civData);
 		if (!this.civSelection.hasCivs())
@@ -25,7 +25,7 @@ class CivInfoPage extends ReferencePage
 
 	switchToStructreePage()
 	{
-		Engine.PopGuiPage({
+		this.closePageCallback({
 			"nextPage": "page_structree.xml",
 			"args": {
 				"civ": this.activeCiv
@@ -35,7 +35,7 @@ class CivInfoPage extends ReferencePage
 
 	closePage()
 	{
-		Engine.PopGuiPage({
+		this.closePageCallback({
 			"page": "page_civinfo.xml",
 			"args": {
 				"civ": this.activeCiv

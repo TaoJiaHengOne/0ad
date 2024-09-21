@@ -1,4 +1,4 @@
 function init(data = {})
 {
-	g_Page = new CatafalquePage(data);
+	return new Promise(closePageCallback => { g_Page = new CatafalquePage(closePageCallback); });
 }

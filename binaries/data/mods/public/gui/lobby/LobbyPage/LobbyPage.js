@@ -4,7 +4,7 @@
  */
 class LobbyPage
 {
-	constructor(dialog, xmppMessages, leaderboardPage, profilePage)
+	constructor(closePageCallback, dialog, xmppMessages, leaderboardPage, profilePage)
 	{
 		Engine.ProfileStart("Create LobbyPage");
 		let mapCache = new MapCache();
@@ -25,7 +25,8 @@ class LobbyPage
 					Engine.GetGUIObjectByName("hostSavedGameButton"), true),
 				"leaderboardButton": new LeaderboardButton(xmppMessages, leaderboardPage),
 				"profileButton": new ProfileButton(xmppMessages, profilePage),
-				"quitButton": new QuitButton(dialog, leaderboardPage, profilePage)
+				"quitButton": new QuitButton(closePageCallback, dialog, leaderboardPage,
+					profilePage)
 			},
 			"panels": {
 				"chatPanel": new ChatPanel(xmppMessages),

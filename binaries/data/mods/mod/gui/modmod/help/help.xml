@@ -17,9 +17,8 @@
 			<object name="mainText" type="text" style="ModernTextPanel"/>
 		</object>
 
-		<object type="button" style="ModernButtonRed" tooltip_style="snToolTip" size="0%+24 100%-52 33%-4 100%-24" hotkey="cancel">
+		<object name="closeButton" type="button" style="ModernButtonRed" tooltip_style="snToolTip" size="0%+24 100%-52 33%-4 100%-24" hotkey="cancel">
 			<translatableAttribute id="caption">Close</translatableAttribute>
-			<action on="Press">Engine.PopGuiPage();</action>
 		</object>
 		<object type="button" style="ModernButtonRed" size="33%+4 100%-52 66%-4 100%-24">
 			<translatableAttribute id="caption">Modding Guide</translatableAttribute>

@@ -7,4 +7,8 @@ function init()
 
 	// Replace anything starting with 'hotkey.' with its hotkey.
 	mainText.caption = text.replace(/hotkey\.([a-z0-9_\.]+)/g, (_, k) => formatHotkeyCombinations(hotkeys[k]));
+
+	return new Promise(closePageCallback => {
+		Engine.GetGUIObjectByName("closeButton").onPress = closePageCallback;
+	});
 }

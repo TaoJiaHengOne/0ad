@@ -13,11 +13,10 @@ function init()
 
 	var localeText = Engine.GetGUIObjectByName("localeText");
 	localeText.caption = currentLocale;
-}
 
-function cancelSetup()
-{
-	Engine.PopGuiPage();
+	return new Promise(closePageCallback => {
+		Engine.GetGUIObjectByName("cancelButton").onPress = closePageCallback;
+	});
 }
 
 function applySelectedLocale()

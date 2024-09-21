@@ -3,8 +3,9 @@
  */
 class SavegameLoader
 {
-	constructor()
+	constructor(closePageCallback)
 	{
+		this.closePageCallback = closePageCallback;
 		this.confirmButton = Engine.GetGUIObjectByName("confirmButton");
 		this.confirmButton.caption = translate("Load");
 		this.confirmButton.enabled = false;
@@ -27,7 +28,7 @@ class SavegameLoader
 
 		if (sameEngineVersion && sameMods)
 		{
-			Engine.PopGuiPage(gameId);
+			this.closePageCallback(gameId);
 			return;
 		}
 
@@ -60,6 +61,6 @@ class SavegameLoader
 			translate("Warning"),
 			[translate("No"), translate("Yes")]);
 		if (buttonIndex === 1)
-			Engine.PopGuiPage(gameId);
+			this.closePageCallback(gameId);
 	}
 }

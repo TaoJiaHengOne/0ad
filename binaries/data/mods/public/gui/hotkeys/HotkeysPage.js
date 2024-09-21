@@ -1,6 +1,6 @@
 class HotkeysPage
 {
-	constructor(metadata)
+	constructor(metadata, closePageCallback)
 	{
 		this.metadata = metadata;
 
@@ -23,7 +23,7 @@ class HotkeysPage
 		this.saveButton = Engine.GetGUIObjectByName("hotkeySave");
 		this.saveButton.enabled = false;
 
-		Engine.GetGUIObjectByName("hotkeyClose").onPress = () => Engine.PopGuiPage();
+		Engine.GetGUIObjectByName("hotkeyClose").onPress = closePageCallback;
 		Engine.GetGUIObjectByName("hotkeyReset").onPress = () => this.resetUserHotkeys();
 		this.saveButton.onPress = () => {
 			this.saveUserHotkeys();
@@ -181,7 +181,9 @@ class HotkeysPage
 
 function init()
 {
-	let hotkeyPage = new HotkeysPage(new HotkeyMetadata());
+	return new Promise(closePageCallback => {
+		new HotkeysPage(new HotkeyMetadata(), closePageCallback);
+	});
 }
 
 HotkeysPage.prototype.UnavailableTooltipString = markForTranslation("No tooltip available.");

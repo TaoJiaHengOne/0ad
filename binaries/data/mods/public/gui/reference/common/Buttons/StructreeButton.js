@@ -12,7 +12,7 @@ class StructreeButton
 
 	onPress()
 	{
-		Engine.PopGuiPage({
+		this.parentPage.closePageCallback({
 			"nextPage": "page_structree.xml",
 			"args": {
 				"civ": this.parentPage.activeCiv

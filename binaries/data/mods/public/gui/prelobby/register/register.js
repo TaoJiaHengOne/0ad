@@ -1,7 +1,5 @@
 function init()
 {
-	g_LobbyMessages.registered = onRegistered;
-
 	Engine.GetGUIObjectByName("continue").caption = translate("Register");
 
 	initLobbyTerms();
@@ -9,6 +7,8 @@ function init()
 	initRememberPassword();
 
 	updateFeedback();
+
+	return Promise.race([ onRegistered(), cancelButton() ]);
 }
 
 function updateFeedback()
@@ -32,14 +32,14 @@ function continueButton()
 	Engine.ConnectXmppClient();
 }
 
-function onRegistered()
+async function onRegistered()
 {
+	await new Promise(resolve => { g_LobbyMessages.registered = resolve; });
 	saveCredentials();
 
 	setFeedback(translate("Registered"));
 
 	Engine.StopXmppClient();
 
-	Engine.PopGuiPage();
 	Engine.PushGuiPage("page_prelobby_login.xml");
 }

@@ -4,10 +4,7 @@
  */
 class ColorMixer
 {
-	/**
-	 * @param {String} color - initial color as RGB string e.g. 100 0 200
-	 */
-	constructor(color)
+	constructor()
 	{
 		this.panel = Engine.GetGUIObjectByName("main");
 		this.colorDisplay = Engine.GetGUIObjectByName("colorDisplay");
@@ -15,10 +12,11 @@ class ColorMixer
 		this.color = [0, 0, 0];
 		this.sliders = [];
 		this.valuesText = [];
-
-		this.run(color);
 	}
 
+	/**
+	 * @param {String} color - initial color as RGB string e.g. 100 0 200
+	 */
 	async run(color)
 	{
 		Engine.GetGUIObjectByName("titleBar").caption = translate("Color");
@@ -64,7 +62,7 @@ class ColorMixer
 		// Update return color on cancel to prevent malformed values from initial input.
 		color = this.color.join(" ");
 
-		Engine.PopGuiPage(await closePromise === 0 ? color : this.color.join(" "));
+		return await closePromise === 0 ? color : this.color.join(" ");
 	}
 
 	updateFromSlider(index)
@@ -85,5 +83,5 @@ ColorMixer.prototype.captions = [translate("Cancel"), translate("Save")];
 
 function init(color)
 {
-	new ColorMixer(color);
+	return new ColorMixer().run(color);
 }

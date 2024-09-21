@@ -135,10 +135,22 @@ var g_SelectedChart = {
 	"type": [0, 0]
 };
 
-function init(data)
+async function init(data)
 {
 	initSummaryData(data);
 	initGUISummary();
+
+	while (true)
+	{
+		const branchless = await new Promise(resolve => {
+			Engine.GetGUIObjectByName("continueButton").onPress = resolve.bind(null, true);
+			Engine.GetGUIObjectByName("summaryHotkey").onPress = resolve.bind(null, true);
+			Engine.GetGUIObjectByName("cancelHotkey").onPress = resolve.bind(null, false);
+		});
+
+		if (branchless || data.gui.isInGame)
+			return continueButton(data);
+	}
 }
 
 function initSummaryData(data)
@@ -454,30 +466,32 @@ function updatePanelData(panelInfo)
 		updateCountersTeam(teamCounterFn, panelInfo.counters, panelInfo.headings, index);
 }
 
-function continueButton()
+function continueButton(gameData)
 {
 	let summarySelection = {
 		"panel": g_TabCategorySelected,
 		"charts": g_SelectedChart,
 		"teamCharts": Engine.GetGUIObjectByName("toggleTeamBox").checked
 	};
-	if (g_GameData.gui.isInGame)
-		Engine.PopGuiPage({
+	if (gameData.gui.isInGame)
+		return {
 			"summarySelection": summarySelection
-		});
-	else if (g_GameData.gui.dialog)
-		Engine.PopGuiPage();
+		};
+	if (gameData.gui.dialog)
+		return undefined;
 	else if (Engine.HasXmppClient())
 		Engine.SwitchGuiPage("page_lobby.xml", { "dialog": false });
-	else if (g_GameData.gui.isReplay)
+	else if (gameData.gui.isReplay)
 		Engine.SwitchGuiPage("page_replaymenu.xml", {
-			"replaySelectionData": g_GameData.gui.replaySelectionData,
+			"replaySelectionData": gameData.gui.replaySelectionData,
 			"summarySelection": summarySelection
 		});
-	else if (g_GameData.campaignData)
-		Engine.SwitchGuiPage(g_GameData.nextPage, g_GameData.campaignData);
+	else if (gameData.campaignData)
+		Engine.SwitchGuiPage(gameData.nextPage, gameData.campaignData);
 	else
 		Engine.SwitchGuiPage("page_pregame.xml");
+
+	return undefined;
 }
 
 function startReplay()

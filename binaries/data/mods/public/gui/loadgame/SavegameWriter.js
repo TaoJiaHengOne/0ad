@@ -4,8 +4,9 @@
  */
 class SavegameWriter
 {
-	constructor(savedGameData)
+	constructor(closePageCallback, savedGameData)
 	{
+		this.closePageCallback = closePageCallback;
 		this.savedGameData = savedGameData;
 
 		let saveNew = () => {
@@ -58,6 +59,6 @@ class SavegameWriter
 
 		Engine[gameID ? "SaveGame" : "SaveGamePrefix"](name, desc, this.savedGameData);
 
-		Engine.PopGuiPage();
+		this.closePageCallback();
 	}
 }

@@ -11,7 +11,7 @@ var g_TermsPage;
 var g_TermsFile;
 var g_TermsSprintf;
 
-function init(data)
+async function init(data)
 {
 	g_TermsPage = data.page;
 	g_TermsFile = data.file;
@@ -20,6 +20,15 @@ function init(data)
 	Engine.GetGUIObjectByName("title").caption = data.title;
 	initURLButtons(data.termsURL, data.urlButtons);
 	initLanguageSelection();
+
+	const accepted = await new Promise(resolve => {
+		Engine.GetGUIObjectByName("cancelButton").onPress = resolve.bind(null, false);
+		Engine.GetGUIObjectByName("connectButton").onPress = resolve.bind(null, true);
+	});
+	return {
+		"page": g_TermsPage,
+		"accepted": accepted
+	};
 }
 
 function initURLButtons(termsURL, urlButtons)
@@ -81,12 +90,4 @@ function initLanguageSelection()
 	};
 
 	languageDropdown.selected = languageDropdown.list.length - 1;
-}
-
-function closeTerms(accepted)
-{
-	Engine.PopGuiPage({
-		"page": g_TermsPage,
-		"accepted": accepted
-	});
 }

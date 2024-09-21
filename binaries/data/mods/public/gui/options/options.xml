@@ -58,10 +58,9 @@
 			<action on="Press">saveChanges();</action>
 		</object>
 
-		<object type="button" style="ModernButtonRed" size="50%+177 100%-44 50%+339 100%-16" hotkey="cancel">
+		<object name="closeButton" type="button" style="ModernButtonRed" size="50%+177 100%-44 50%+339 100%-16" hotkey="cancel">
 			<translatableAttribute id="caption">Close</translatableAttribute>
 			<translatableAttribute id="tooltip">Unsaved changes affect this session only</translatableAttribute>
-			<action on="Press">closePage();</action>
 		</object>
 
 	</object>

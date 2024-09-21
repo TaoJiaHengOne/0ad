@@ -37,9 +37,9 @@ function setFeedback(feedbackText)
 	Engine.GetGUIObjectByName("continue").enabled = !feedbackText;
 }
 
-function cancelButton()
+async function cancelButton()
 {
+	await new Promise(resolve => { Engine.GetGUIObjectByName("cancel").onPress = resolve; });
 	if (Engine.HasXmppClient())
 		Engine.StopXmppClient();
-	Engine.PopGuiPage();
 }

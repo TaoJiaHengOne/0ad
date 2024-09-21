@@ -250,7 +250,7 @@ function init(initData, hotloadData)
 	{
 		Engine.EndGame();
 		Engine.SwitchGuiPage("page_pregame.xml");
-		return;
+		return undefined;
 	}
 
 	// Fallback used by atlas
@@ -269,8 +269,10 @@ function init(initData, hotloadData)
 			restoreSavedGameData(initData.savedGUIData);
 	}
 
-	if (g_InitAttributes.campaignData)
-		g_CampaignSession = new CampaignSession(g_InitAttributes.campaignData);
+	const promise = new Promise(closePageCallback => {
+		if (g_InitAttributes.campaignData)
+			g_CampaignSession = new CampaignSession(g_InitAttributes.campaignData, closePageCallback);
+	});
 
 	let mapCache = new MapCache();
 	g_Cheats = new Cheats();
@@ -331,6 +333,8 @@ function init(initData, hotloadData)
 	onSimulationUpdate();
 
 	setTimeout(displayGamestateNotifications, 1000);
+
+	return promise;
 }
 
 function registerPlayersInitHandler(handler)

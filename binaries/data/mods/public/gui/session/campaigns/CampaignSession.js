@@ -1,9 +1,9 @@
 class CampaignSession
 {
-	constructor(data)
+	constructor(data, closePageCallback)
 	{
 		this.run = new CampaignRun(data.run).load();
-		registerPlayersFinishedHandler(this.onFinish.bind(this));
+		registerPlayersFinishedHandler(this.onFinish.bind(this, closePageCallback));
 		this.endGameData = {
 			"won": false,
 			"initData": data,
@@ -11,7 +11,7 @@ class CampaignSession
 		};
 	}
 
-	onFinish(players, won)
+	onFinish(closePageCallback, players, won)
 	{
 		let playerID = Engine.GetPlayerID();
 		if (players.indexOf(playerID) === -1)
@@ -24,7 +24,7 @@ class CampaignSession
 
 		// Run the endgame script.
 		Engine.PushGuiPage(this.getEndGame(), this.endGameData);
-		Engine.PopGuiPage();
+		closePageCallback();
 	}
 
 	getMenu()

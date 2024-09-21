@@ -5,16 +5,8 @@
 	<script directory="gui/common/"/>
 	<script directory="gui/summary/"/>
 
-	<object hotkey="summary">
-		<action on="Press">continueButton();</action>
-	</object>
-
-	<object hotkey="cancel">
-		<action on="Press">
-		if (g_GameData.gui.isInGame)
-			continueButton();
-		</action>
-	</object>
+	<object name="summaryHotkey" hotkey="summary"/>
+	<object name="cancelHotkey" hotkey="cancel"/>
 
 	<object type="image" sprite="ModernFade" name="fadeImage"/>
 
@@ -191,7 +183,6 @@
 
 		<object type="button" name="continueButton" style="ModernButtonRed" size="100%-200 100%-48 100%-20 100%-20" z="50">
 			<translatableAttribute id="caption">Continue</translatableAttribute>
-			<action on="Press">continueButton();</action>
 		</object>
 	</object>
 </objects>

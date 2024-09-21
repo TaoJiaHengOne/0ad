@@ -2,6 +2,10 @@ function init()
 {
 	if (Engine.ConfigDB_GetValue("user", "lobby.login"))
 		loginButton();
+
+	return new Promise(closePageCallback => {
+		Engine.GetGUIObjectByName("cancel").onPress = closePageCallback;
+	});
 }
 
 function loginButton()
@@ -12,9 +16,4 @@ function loginButton()
 function registerButton()
 {
 	Engine.PushGuiPage("page_prelobby_register.xml");
-}
-
-function cancelButton()
-{
-	Engine.PopGuiPage();
 }

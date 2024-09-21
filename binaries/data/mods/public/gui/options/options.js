@@ -209,7 +209,7 @@ var g_OptionType = {
 	}
 };
 
-function init(data, hotloadData)
+async function init(data, hotloadData)
 {
 	g_ChangedKeys = hotloadData ? hotloadData.changedKeys : new Set();
 	g_TabCategorySelected = hotloadData ? hotloadData.tabCategorySelected : 0;
@@ -225,6 +225,13 @@ function init(data, hotloadData)
 		g_TabButtonDist,
 		selectPanel,
 		displayOptions);
+
+	while (true)
+	{
+		await new Promise(resolve => { Engine.GetGUIObjectByName("closeButton").onPress = resolve; });
+		if (await shouldClosePage())
+			return g_ChangedKeys;
+	}
 }
 
 function getHotloadData()
@@ -436,20 +443,18 @@ async function saveChanges()
 }
 
 /**
- * Close GUI page and inform the parent GUI page which options changed.
- **/
-async function closePage()
+ * Asks the user if this page really should be closed.
+ */
+async function shouldClosePage()
 {
-	if (Engine.ConfigDB_HasChanges("user"))
-	{
-		const buttonIndex = await messageBox(
-			500, 200,
-			translate("You have unsaved changes, do you want to close this window?"),
-			translate("Warning"),
-			[translate("No"), translate("Yes")]);
-		if (buttonIndex === 0)
-			return;
-	}
+	if (!Engine.ConfigDB_HasChanges("user"))
+		return true
 
-	Engine.PopGuiPage(g_ChangedKeys);
+	const buttonIndex = await messageBox(
+		500, 200,
+		translate("You have unsaved changes, do you want to close this window?"),
+		translate("Warning"),
+		[translate("No"), translate("Yes")]);
+
+	return buttonIndex === 1;
 }

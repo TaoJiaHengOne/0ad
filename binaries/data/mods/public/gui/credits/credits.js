@@ -59,6 +59,10 @@ function init()
 		category => {
 			Engine.GetGUIObjectByName("creditsText").caption = g_PanelData[category].content;
 		});
+
+	return new Promise(closePageCallback => {
+		Engine.GetGUIObjectByName("closeButton").onPress = closePageCallback;
+	});
 }
 
 // Run through a "Content" list and parse elements for formatting and translation

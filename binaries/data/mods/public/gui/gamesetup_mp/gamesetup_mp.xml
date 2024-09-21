@@ -123,9 +123,8 @@
 			<translatableAttribute id="caption">Continue</translatableAttribute>
 		</object>
 
-		<object type="button" style="ModernButtonRed" size="18 100%-45 50%-5 100%-17" hotkey="cancel">
+		<object name="cancelButton" type="button" style="ModernButtonRed" size="18 100%-45 50%-5 100%-17" hotkey="cancel">
 			<translatableAttribute id="caption">Cancel</translatableAttribute>
-			<action on="Press">cancelSetup();</action>
 		</object>
 
 		<object name="pageConnecting" hidden="true">
@@ -146,7 +145,6 @@
 			</object>
 			<object name="confirmPasswordButton" hotkey="confirm" type="button" size="50%+5 100%-45 100%-18 100%-17" style="ModernButtonRed">
 				<translatableAttribute id="caption">Confirm</translatableAttribute>
-				<action on="Press">confirmPassword();</action>
 			</object>
 		</object>
 	</object>

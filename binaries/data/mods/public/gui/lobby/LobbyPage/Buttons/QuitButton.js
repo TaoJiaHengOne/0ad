@@ -3,8 +3,9 @@
  */
 class QuitButton
 {
-	constructor(dialog, leaderboardPage, profilePage)
+	constructor(closePageCallback, dialog, leaderboardPage, profilePage)
 	{
+		this.closePageCallback = closePageCallback;
 		let closeDialog = this.closeDialog.bind(this);
 		let returnToMainMenu = this.returnToMainMenu.bind(this);
 		let onPress = dialog ? closeDialog : returnToMainMenu;
@@ -29,7 +30,7 @@ class QuitButton
 	closeDialog()
 	{
 		Engine.LobbySetPlayerPresence("playing");
-		Engine.PopGuiPage();
+		this.closePageCallback();
 	}
 
 	returnToMainMenu()

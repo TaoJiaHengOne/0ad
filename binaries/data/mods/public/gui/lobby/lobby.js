@@ -31,10 +31,13 @@ var g_LobbyHandler;
 /**
  * Called after the XmppConnection succeeded and when returning from a game.
  */
-function init(attribs)
+async function init(attribs)
 {
 	if (g_Settings)
-		g_LobbyHandler = new LobbyHandler(attribs && attribs.dialog);
-	else
-		error("Could not load settings");
+		return new Promise(closePageCallback => {
+			g_LobbyHandler = new LobbyHandler(closePageCallback, attribs && attribs.dialog);
+		});
+
+	error("Could not load settings");
+	return undefined;
 }

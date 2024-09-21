@@ -4,6 +4,14 @@
  */
 class TimedConfirmation
 {
+	messageObject = Engine.GetGUIObjectByName("tmcText");
+	panel = Engine.GetGUIObjectByName("tmcMain");
+
+	constructor()
+	{
+		this.panel.onTick = this.onTick.bind(this);
+	}
+
 	/**
 	 * @param {Object} data
 	 * @param {Number} data.width - The width of the confirmation box
@@ -15,15 +23,7 @@ class TimedConfirmation
 	 * @param {String|undefined} data.buttonCaptions - The captions used for buttons (if not defined, defaults to 'OK')
 	 * @param {String|undefined} data.font - The used font
 	 */
-	constructor(data)
-	{
-		this.messageObject = Engine.GetGUIObjectByName("tmcText");
-		this.panel = Engine.GetGUIObjectByName("tmcMain");
-		this.panel.onTick = this.onTick.bind(this);
-		this.setup(data);
-	}
-
-	async setup(data)
+	setup(data)
 	{
 		Engine.GetGUIObjectByName("tmcTitleBar").caption = data.title;
 
@@ -37,7 +37,6 @@ class TimedConfirmation
 		this.updateDisplayedTimer(data.timeout);
 
 		const cancelHotkey = Engine.GetGUIObjectByName("tmcCancelHotkey");
-		cancelHotkey.onPress = Engine.PopGuiPage;
 
 		const lRDiff = data.width / 2;
 		const uDDiff = data.height / 2;
@@ -49,8 +48,7 @@ class TimedConfirmation
 		const closePromise =
 			setButtonCaptionsAndVisibility(button, captions, cancelHotkey, "tmcButton");
 		distributeButtonsHorizontally(button, captions);
-
-		Engine.PopGuiPage(await closePromise);
+		return closePromise;
 	}
 
 	onTick()
@@ -73,5 +71,5 @@ class TimedConfirmation
 
 function init(data)
 {
-	new TimedConfirmation(data);
+	return new TimedConfirmation().setup(data);
 }

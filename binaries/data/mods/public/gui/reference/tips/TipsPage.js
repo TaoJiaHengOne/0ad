@@ -1,14 +1,15 @@
 class TipsPage
 {
-	constructor(initData, hotloadData)
+	constructor(initData, hotloadData, closePageCallback)
 	{
+		this.closePageCallback = closePageCallback;
 		this.tipDisplay = new TipDisplay(initData, hotloadData);
 		this.closeButton = new CloseButton(this);
 	}
 
 	closePage()
 	{
-		Engine.PopGuiPage("page_tips.xml");
+		this.closePageCallback("page_tips.xml");
 	}
 }
 

@@ -13,6 +13,8 @@ function init()
 	initRememberPassword();
 
 	updateFeedback();
+
+	return cancelButton();
 }
 
 function updateFeedback()

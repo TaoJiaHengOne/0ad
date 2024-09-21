@@ -3,8 +3,9 @@
  */
 class ReferencePage
 {
-	constructor()
+	constructor(closePageCallback)
 	{
+		this.closePageCallback = closePageCallback;
 		this.civData = loadCivData(true, false);
 
 		this.TemplateLoader = new TemplateLoader();

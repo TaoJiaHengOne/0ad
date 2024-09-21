@@ -2,7 +2,9 @@ var g_TipsPage;
 
 function init(initData, hotloadData)
 {
-	g_TipsPage = new TipsPage(initData, hotloadData);
+	return new Promise(closePageCallback => {
+		g_TipsPage = new TipsPage(initData, hotloadData, closePageCallback);
+	});
 }
 
 function getHotloadData()

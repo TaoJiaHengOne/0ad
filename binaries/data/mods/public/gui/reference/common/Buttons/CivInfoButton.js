@@ -12,7 +12,7 @@ class CivInfoButton
 
 	onPress()
 	{
-		Engine.PopGuiPage({
+		this.parentPage.closePageCallback({
 			"nextPage": "page_civinfo.xml",
 			"args": {
 				"civ": this.parentPage.activeCiv

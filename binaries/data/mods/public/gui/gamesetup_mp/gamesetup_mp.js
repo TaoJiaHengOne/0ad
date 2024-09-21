@@ -24,7 +24,7 @@ var g_IsRejoining = false;
 var g_PlayerAssignments; // used when rejoining
 var g_UserRating;
 
-function init(attribs)
+async function init(attribs)
 {
 	g_UserRating = attribs.rating;
 
@@ -45,6 +45,8 @@ function init(attribs)
 		}
 		else if (startJoinFromLobby(attribs.name, attribs.hostJID, ""))
 			switchSetupPage("pageConnecting");
+		else if (cancelSetup())
+			return;
 		break;
 	}
 	case "host":
@@ -66,8 +68,26 @@ function init(attribs)
 		break;
 	}
 
-	Engine.GetGUIObjectByName("multiplayerPages").onTick = onTick.bind(null, attribs.loadSavedGame);
-	Engine.GetGUIObjectByName("continueButton").onPress = confirmSetup.bind(null, attribs.loadSavedGame);
+	while (true)
+	{
+		await new Promise(resolve => {
+			Engine.GetGUIObjectByName("cancelButton").onPress = resolve;
+			Engine.GetGUIObjectByName("multiplayerPages").onTick = async() => {
+				if (await onTick(attribs.loadSavedGame))
+					resolve();
+			};
+			Engine.GetGUIObjectByName("continueButton").onPress = () => {
+				if (confirmSetup(attribs.loadSavedGame))
+					resolve();
+			};
+			Engine.GetGUIObjectByName("confirmPasswordButton").onPress = () => {
+				if (confirmPassword())
+					resolve();
+			};
+		});
+		if (cancelSetup())
+			return;
+	}
 }
 
 function cancelSetup()
@@ -80,10 +100,7 @@ function cancelSetup()
 
 	// Keep the page open if an attempt to join/host by ip failed
 	if (!g_IsConnecting || (Engine.HasXmppClient() && g_GameType == "client"))
-	{
-		Engine.PopGuiPage();
-		return;
-	}
+		return true;
 
 	g_IsConnecting = false;
 	Engine.GetGUIObjectByName("hostFeedback").caption = "";
@@ -94,14 +111,19 @@ function cancelSetup()
 		switchSetupPage("pageHost");
 	else
 		error("cancelSetup: Unrecognised multiplayer game type: " + g_GameType);
+	return false;
 }
 
 function confirmPassword()
 {
 	if (Engine.GetGUIObjectByName("pagePassword").hidden)
-		return;
+		return false;
 	if (startJoinFromLobby(g_ServerName, g_ServerId, Engine.GetGUIObjectByName("clientPassword").caption))
+	{
 		switchSetupPage("pageConnecting");
+		return false;
+	}
+	return true;
 }
 
 function confirmSetup(loadSavedGame)
@@ -113,15 +135,20 @@ function confirmSetup(loadSavedGame)
 		let joinPort = Engine.GetGUIObjectByName("joinPort").caption;
 
 		if (startJoin(joinPlayerName, joinServer, getValidPort(joinPort)))
+		{
 			switchSetupPage("pageConnecting");
+			return false;
+		}
+		return true;
 	}
-	else if (!Engine.GetGUIObjectByName("pageHost").hidden)
+
+	if (!Engine.GetGUIObjectByName("pageHost").hidden)
 	{
 		let hostServerName = Engine.GetGUIObjectByName("hostServerName").caption;
 		if (!hostServerName)
 		{
 			Engine.GetGUIObjectByName("hostFeedback").caption = translate("Please enter a valid server name.");
-			return;
+			return false;
 		}
 
 		let hostPort = Engine.GetGUIObjectByName("hostPort").caption;
@@ -132,7 +159,7 @@ function confirmSetup(loadSavedGame)
 					"min": g_ValidPorts.min,
 					"max": g_ValidPorts.max
 				});
-			return;
+			return false;
 		}
 
 		let hostPlayerName = Engine.GetGUIObjectByName("hostPlayerName").caption;
@@ -141,8 +168,12 @@ function confirmSetup(loadSavedGame)
 			loadSavedGame))
 		{
 			switchSetupPage("pageConnecting");
+			return false;
 		}
+		return true;
 	}
+
+	return false;
 }
 
 function startConnectionStatus(type)
@@ -156,9 +187,9 @@ function startConnectionStatus(type)
 function onTick(loadSavedGame)
 {
 	if (!g_IsConnecting)
-		return;
+		return false;
 
-	pollAndHandleNetworkClient(loadSavedGame);
+	return pollAndHandleNetworkClient(loadSavedGame);
 }
 
 function getConnectionFailReason(reason)
@@ -191,7 +222,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 	{
 		var message = Engine.PollNetworkClient();
 		if (!message)
-			break;
+			return false;
 
 		log(sprintf("Net message: %(message)s", { "message": uneval(message) }));
 		// If we're rejoining an active game, we don't want to actually display
@@ -205,9 +236,8 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				switch (message.status)
 				{
 				case "failed":
-					cancelSetup();
 					reportConnectionFail(message.reason, false);
-					return;
+					return true;
 
 				default:
 					error("Unrecognised netstatus type: " + message.status);
@@ -219,12 +249,11 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				switch (message.status)
 				{
 				case "disconnected":
-					cancelSetup();
 					if (message.reason === 16)
 						reportHandshakeDisconnect(message.mismatch_type, message.client_mismatch, message.server_mismatch);
 					else
 						reportDisconnect(message.reason, false);
-					return;
+					return true;
 
 				default:
 					error("Unrecognised netstatus type: " + message.status);
@@ -244,7 +273,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				});
 
 				// Process further pending netmessages in the session page
-				return;
+				return false;
 
 			case "chat":
 				break;
@@ -265,9 +294,8 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				switch (message.status)
 				{
 				case "failed":
-					cancelSetup();
 					reportConnectionFail(message.reason, false);
-					return;
+					return true;
 
 				default:
 					error("Unrecognised netstatus type: " + message.status);
@@ -283,16 +311,14 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					break;
 
 				case "authenticated":
-					handleAuthenticated(message, loadSavedGame);
-					return;
+					return handleAuthenticated(message, loadSavedGame);
 
 				case "disconnected":
-					cancelSetup();
 					if (message.reason === 16)
 						reportHandshakeDisconnect(message.mismatch_type, message.client_mismatch_component, message.server_mismatch_component);
 					else
 						reportDisconnect(message.reason, false);
-					return;
+					return true;
 
 				default:
 					error("Unrecognised netstatus type: " + message.status);
@@ -318,7 +344,7 @@ async function handleAuthenticated(message, loadSavedGame)
 		Engine.GetGUIObjectByName("connectionStatus").caption =
 			translate("Game has already started, rejoining...");
 		g_IsRejoining = true;
-		return; // we'll process the game setup messages in the next tick
+		return false; // we'll process the game setup messages in the next tick
 	}
 	g_IsConnecting = false;
 
@@ -328,7 +354,7 @@ async function handleAuthenticated(message, loadSavedGame)
 	{
 		Engine.DisconnectNetworkGame();
 		cancelSetup();
-		return;
+		return true;
 	}
 
 	Engine.SwitchGuiPage("page_gamesetup.xml", {
@@ -336,7 +362,7 @@ async function handleAuthenticated(message, loadSavedGame)
 		"serverName": g_ServerName,
 		"hasPassword": g_ServerHasPassword
 	});
-	return; // don't process any more messages - leave them for the game GUI loop
+	return false; // don't process any more messages - leave them for the game GUI loop
 }
 
 function switchSetupPage(newPage)
@@ -385,7 +411,6 @@ function startHost(playername, servername, port, password, loadSavedGame)
 	if (Engine.HasXmppClient() &&
 	    Engine.GetGameList().some(game => game.name == servername))
 	{
-		cancelSetup();
 		hostFeedback.caption = translate("Game name already in use.");
 		return false;
 	}
@@ -397,7 +422,6 @@ function startHost(playername, servername, port, password, loadSavedGame)
 	}
 	catch (e)
 	{
-		cancelSetup();
 		messageBox(
 			400, 200,
 			sprintf(translate("Cannot host game: %(message)s."), { "message": e.message }),
@@ -426,7 +450,6 @@ function startJoin(playername, ip, port)
 	}
 	catch (e)
 	{
-		cancelSetup();
 		messageBox(
 			400, 200,
 			sprintf(translate("Cannot join game: %(message)s."), { "message": e.message }),
@@ -456,7 +479,6 @@ function startJoinFromLobby(playername, hostJID, password)
 {
 	if (!Engine.HasXmppClient())
 	{
-		cancelSetup();
 		messageBox(
 			400, 200,
 			sprintf("You cannot join a lobby game without logging in to the lobby."),
@@ -471,7 +493,6 @@ function startJoinFromLobby(playername, hostJID, password)
 	}
 	catch (e)
 	{
-		cancelSetup();
 		messageBox(
 			400, 200,
 			sprintf(translate("Cannot join game: %(message)s."), { "message": e.message }),

@@ -46,17 +46,19 @@ function init(initData)
 
 	// fill the script
 	scriptInput.caption = Engine.GetLocaleScript(initData.locale);
+
+	return new Promise(closePageCallback => {
+		Engine.GetGUIObjectByName("cancelButton").onPress = closePageCallback;
+		Engine.GetGUIObjectByName("acceptButton").onPress = () => {
+			closePageCallback(applySelectedLocale());
+		};
+	});
 }
 
 // TODO: an onChanged event for input boxes would be useful and would allow us to avoid a tick event here.
 function onTick()
 {
 	updateResultingLocale();
-}
-
-function cancelSetup()
-{
-	Engine.PopGuiPage();
 }
 
 function updateResultingLocale()
@@ -113,6 +115,5 @@ function autoDetectLocale()
 
 function applySelectedLocale()
 {
-	var resultingLocaleText = Engine.GetGUIObjectByName("resultingLocale");
-	Engine.PopGuiPage(resultingLocaleText.caption);
+	return Engine.GetGUIObjectByName("resultingLocale").caption;
 }

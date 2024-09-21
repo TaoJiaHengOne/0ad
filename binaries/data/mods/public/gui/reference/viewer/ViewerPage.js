@@ -3,9 +3,9 @@
  */
 class ViewerPage extends ReferencePage
 {
-	constructor(data)
+	constructor(closePageCallback)
 	{
-		super();
+		super(closePageCallback);
 
 		this.currentTemplate = undefined;
 
@@ -140,7 +140,7 @@ class ViewerPage extends ReferencePage
 
 	closePage()
 	{
-		Engine.PopGuiPage({ "civ": this.activeCiv, "page": "page_viewer.xml" });
+		this.closePageCallback({ "civ": this.activeCiv, "page": "page_viewer.xml" });
 	}
 }
 

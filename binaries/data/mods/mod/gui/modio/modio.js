@@ -27,10 +27,10 @@ var g_ModIOState = {
 	/**
 	 * Finished status indicators
 	 */
-	"ready": progressData => {
+	"ready": (progressData, closePageCallback) => {
 		// GameID acquired, ready to fetch mod list
 		if (!g_RequestCancelled)
-			updateModList();
+			updateModList(closePageCallback);
 	},
 	"listed": progressData => {
 		// List of available mods acquired
@@ -65,7 +65,7 @@ var g_ModIOState = {
 	/**
 	 * Error/Failure status indicators.
 	 */
-	"failed_gameid": async(progressData) => {
+	"failed_gameid": async(progressData, closePageCallback) => {
 		// Game ID couldn't be retrieved
 		const promise = showErrorMessageBox(
 			sprintf(translateWithContext("mod.io error message", "Game ID could not be retrieved.\n\n%(technicalDetails)s"), {
@@ -76,11 +76,11 @@ var g_ModIOState = {
 		if (!promise)
 			return;
 		if (await promise === 0)
-			closePage();
+			closePageCallback();
 		else
 			init();
 	},
-	"failed_listing": async(progressData) => {
+	"failed_listing": async(progressData, closePageCallback) => {
 		// Mod list couldn't be retrieved
 		const promise = showErrorMessageBox(
 			sprintf(translateWithContext("mod.io error message", "Mod List could not be retrieved.\n\n%(technicalDetails)s"), {
@@ -91,9 +91,9 @@ var g_ModIOState = {
 		if (!promise)
 			return;
 		if (await promise === 0)
-			cancelModListUpdate();
+			cancelModListUpdate(closePageCallback);
 		else
-			updateModList();
+			updateModList(closePageCallback);
 	},
 	"failed_downloading": async(progressData) => {
 		// File couldn't be retrieved
@@ -131,7 +131,7 @@ var g_ModIOState = {
 	}
 };
 
-async function init(data)
+function init(data)
 {
 	const promise = progressDialog(
 		translate("Initializing mod.io interface."),
@@ -142,11 +142,16 @@ async function init(data)
 	g_Failure = false;
 	Engine.ModIoStartGetGameId();
 
-	await promise;
-	closePage();
+	return Promise.race([
+		promise,
+		new Promise(closePageCallback => {
+			Engine.GetGUIObjectByName("backButton").onPress = closePageCallback;
+			Engine.GetGUIObjectByName("modio").onTick = onTick.bind(null, closePageCallback);
+		})
+	]);
 }
 
-function onTick()
+function onTick(closePageCallback)
 {
 	let progressData = Engine.ModIoGetDownloadProgress();
 
@@ -157,7 +162,7 @@ function onTick()
 		return;
 	}
 
-	handler(progressData);
+	handler(progressData, closePageCallback);
 	if (!progressData.status.startsWith("failed"))
 		Engine.ModIoAdvanceRequest();
 }
@@ -230,13 +235,13 @@ function showModDescription()
 	Engine.GetGUIObjectByName("modError").caption = isSelected && isInvalid ? sprintf(translate("Invalid mod: %(error)s"), {"error": g_ModsAvailableOnline[selected].error }) : "";
 }
 
-function cancelModListUpdate()
+function cancelModListUpdate(closePageCallback)
 {
 	cancelRequest();
 
 	if (!g_ModsAvailableOnline.length)
 	{
-		closePage();
+		closePageCallback();
 		return;
 	}
 
@@ -244,7 +249,7 @@ function cancelModListUpdate()
 	Engine.GetGUIObjectByName('refreshButton').enabled = true;
 }
 
-async function updateModList()
+async function updateModList(closePageCallback)
 {
 	clearModList();
 	Engine.GetGUIObjectByName("refreshButton").enabled = false;
@@ -260,7 +265,7 @@ async function updateModList()
 	Engine.ModIoStartListMods();
 
 	await promise;
-	cancelModListUpdate();
+	cancelModListUpdate(closePageCallback);
 }
 
 async function downloadMod()
@@ -294,11 +299,6 @@ function cancelRequest()
 	g_RequestCancelled = true;
 	Engine.ModIoCancelRequest();
 	hideDialog();
-}
-
-function closePage()
-{
-	Engine.PopGuiPage();
 }
 
 function showErrorMessageBox(caption, title, buttonCaptions)

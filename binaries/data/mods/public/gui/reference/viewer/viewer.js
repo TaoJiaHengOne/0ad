@@ -14,6 +14,7 @@ g_TooltipTextFormats.nameSecondary.font = "sans-bold-16";
  */
 function init(data)
 {
-	g_Page = new ViewerPage();
+	const promise = new Promise(closePageCallback => { g_Page = new ViewerPage(closePageCallback); });
 	g_Page.selectTemplate(data);
+	return promise;
 }
