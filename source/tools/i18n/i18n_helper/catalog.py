@@ -1,6 +1,6 @@
 """Wrapper around babel Catalog / .po handling."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from babel.messages.catalog import Catalog as BabelCatalog
 from babel.messages.pofile import read_po, write_po
@@ -10,7 +10,7 @@ class Catalog(BabelCatalog):
     """Wraps a BabelCatalog for convenience."""
 
     def __init__(self, *args, project=None, copyright_holder=None, **other_kwargs):
-        date = datetime.now()
+        date = datetime.now(tz=UTC)
         super().__init__(
             *args,
             header_comment=(

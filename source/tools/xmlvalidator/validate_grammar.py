@@ -201,7 +201,7 @@ class RelaxNGValidator:
             try:
                 doc = lxml.etree.parse(str(file[1]))
                 relaxng.assertValid(doc)
-            except Exception:
+            except (lxml.etree.DocumentInvalid, lxml.etree.XMLSyntaxError):
                 error_count = error_count + 1
                 self.logger.exception(file[1])
 

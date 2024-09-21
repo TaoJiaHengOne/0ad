@@ -1,7 +1,10 @@
 # Adapted from http://cairographics.org/freetypepython/
 
+# ruff: noqa: TRY002
+
 import ctypes
 import sys
+from typing import ClassVar
 
 import cairo
 
@@ -40,7 +43,7 @@ _surface = cairo.ImageSurface(cairo.FORMAT_A8, 0, 0)
 
 
 class PycairoContext(ctypes.Structure):
-    _fields_ = [
+    _fields_: ClassVar = [
         ("PyObject_HEAD", ctypes.c_byte * object.__basicsize__),
         ("ctx", ctypes.c_void_p),
         ("base", ctypes.c_void_p),

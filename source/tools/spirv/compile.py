@@ -46,7 +46,7 @@ def execute(command):
 def calculate_hash(path):
     assert os.path.isfile(path)
     with open(path, "rb") as handle:
-        return hashlib.sha1(handle.read()).hexdigest()
+        return hashlib.sha256(handle.read()).hexdigest()
 
 
 def resolve_if(defines, expression):

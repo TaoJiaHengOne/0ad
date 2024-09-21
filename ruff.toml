@@ -12,36 +12,29 @@ ignore = [
     "C90",
     "COM812",
     "D10",
-    "DTZ005",
     "EM",
     "FA",
     "FIX",
     "FBT",
     "ISC001",
     "N817",
-    "PERF203",
     "PERF401",
     "PLR0912",
-    "PLR0913",
     "PLR0915",
     "PLR2004",
     "PLW2901",
     "PT",
     "PTH",
-    "RUF012",
     "S101",
     "S310",
     "S314",
-    "S324",
     "S320",
     "S603",
     "S607",
     "T20",
     "TD002",
     "TD003",
-    "TRY002",
     "TRY003",
-    "TRY004",
     "UP038",
     "W505"
 ]
@@ -54,3 +47,6 @@ max-doc-length = 72
 
 [lint.pydocstyle]
 convention = "pep257"
+
+[lint.pylint]
+max-args = 8
