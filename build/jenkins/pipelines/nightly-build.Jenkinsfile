@@ -53,7 +53,10 @@ pipeline {
 
 		stage("Check for shader changes") {
 			when {
-				changeset 'binaries/data/mods/**/shaders/**/*.xml'
+				anyOf {
+					changeset 'binaries/data/mods/**/shaders/**/*.xml'
+					changeset 'source/tools/spirv/compile.py'
+				}
 			}
 			steps {
 				script { buildSPIRV = true }
