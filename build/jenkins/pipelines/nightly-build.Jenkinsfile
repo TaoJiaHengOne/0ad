@@ -127,6 +127,8 @@ pipeline {
 			}
 			steps {
 				ws("workspace/nightly-svn") {
+					bat "del /s /q binaries\\data\\mods\\mod\\shaders\\spirv"
+					bat "del /s /q binaries\\data\\mods\\public\\shaders\\spirv"
 					bat "python source/tools/spirv/compile.py -d binaries/data/mods/mod binaries/data/mods/mod source/tools/spirv/rules.json binaries/data/mods/mod"
 					bat "python source/tools/spirv/compile.py -d binaries/data/mods/mod binaries/data/mods/public source/tools/spirv/rules.json binaries/data/mods/public"
 				}
