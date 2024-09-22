@@ -51,6 +51,12 @@ def calculate_hash(path):
         return hashlib.sha256(handle.read()).hexdigest()
 
 
+def get_combination_hash(combination: list[dict[str, str]]) -> str:
+    """Turn combination information into a unique hash."""
+    hashable_combination = tuple([tuple(sorted(i.items())) for i in combination])
+    return hashlib.sha256(json.dumps(hashable_combination, sort_keys=True).encode()).hexdigest()
+
+
 def resolve_if(defines, expression):
     for item in expression.strip().split("||"):
         item = item.strip()
@@ -410,11 +416,10 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
     else:
         combinations = list(itertools.product(*defines))
 
-    hashed_cache = {}
+    for combination in combinations:
+        combination_hash = get_combination_hash(combination)
 
-    for index, combination in enumerate(combinations):
-        assert index < 10000
-        program_path = "spirv/" + program_name + ("_%04d" % index) + ".xml"
+        program_path = f"spirv/{program_name}_{combination_hash}.xml"
 
         programs_element = ET.SubElement(root, "program")
         programs_element.set("type", "spirv")
@@ -435,8 +440,8 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
         program_root.set("type", "spirv")
         for shader in shaders:
             extension = stage_extension[shader["type"]]
-            file_name = program_name + ("_%04d" % index) + extension + ".spv"
-            output_spirv_path = os.path.join(output_spirv_mod_path, file_name)
+            tmp_file_name = f"{program_name}_{combination_hash}{extension}.spv"
+            tmp_output_spirv_path = os.path.join(output_spirv_mod_path, tmp_file_name)
 
             input_glsl_path = os.path.join(input_mod_path, "shaders", shader["file"])
             # Some shader programs might use vs and fs shaders from different mods.
@@ -454,16 +459,20 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
                 dependencies,
                 shader["type"],
                 input_glsl_path,
-                output_spirv_path,
+                tmp_output_spirv_path,
                 combination + program_defines,
             )
 
-            spirv_hash = calculate_hash(output_spirv_path)
-            if spirv_hash not in hashed_cache:
-                hashed_cache[spirv_hash] = file_name
+            spirv_hash = calculate_hash(tmp_output_spirv_path)
+            file_name = f"{program_name}_{spirv_hash}{extension}.spv"
+            output_spirv_path = os.path.join(output_spirv_mod_path, file_name)
+            if not os.path.exists(output_spirv_path):
+                try:
+                    os.rename(tmp_output_spirv_path, output_spirv_path)
+                except FileExistsError:
+                    os.remove(tmp_output_spirv_path)
             else:
-                file_name = hashed_cache[spirv_hash]
-                os.remove(output_spirv_path)
+                os.remove(tmp_output_spirv_path)
 
             shader_element = ET.SubElement(program_root, shader["type"])
             shader_element.set("file", "spirv/" + file_name)
