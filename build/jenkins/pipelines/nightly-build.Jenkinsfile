@@ -78,6 +78,12 @@ pipeline {
 			}
 		}
 
+		stage("Generate entity XML schema") {
+			steps {
+				bat "cd binaries\\system && pyrogenesis.exe -mod=public -dumpSchema"
+			}
+		}
+
 		stage("Check-in SPIRV generation rules") {
 			when {
 				expression { env.spirv_rules_FILENAME }

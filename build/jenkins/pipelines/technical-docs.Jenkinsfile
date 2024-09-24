@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,61 +19,51 @@
 
 pipeline {
 	agent {
-		node {
-			label 'LinuxSlave'
+		dockerfile {
+			label 'LinuxAgent'
+			customWorkspace "workspace/technical-docs"
+			dir 'build/jenkins/dockerfiles'
+			filename "docs-tools.Dockerfile"
 		}
 	}
+
 	stages {
-		stage("Setup") {
+		stage("Pull documentation assets") {
 			steps {
-				sh "sudo zfs clone zpool0/gcc7@latest zpool0/entity-docs"
+				sh "git lfs pull -I docs/doxygen"
 			}
 		}
+
 		stage("Engine docs") {
 			steps {
-				ws("/zpool0/entity-docs"){
-					sh "cd docs/doxygen/ && doxygen config"
-				}
+				sh "cd docs/doxygen/ && doxygen config"
 			}
 		}
-		stage("Build") {
-			steps {
-				ws("/zpool0/entity-docs"){
-					sh "build/workspaces/update-workspaces.sh --disable-atlas --without-tests -j1"
-					sh "cd build/workspaces/gcc/ && make pyrogenesis -j1"
-				}
-			}
-		}
+
 		stage("Entity docs") {
 			steps {
-				ws("/zpool0/entity-docs"){
-					sh "cd binaries/system/ && ./pyrogenesis -mod=public -dumpSchema"
-					sh "cd source/tools/entdocs/ && ./build.sh"
-				}
+				sh "cd binaries/system/ && svn export --force https://svn.wildfiregames.com/nightly-build/trunk/binaries/system/entity.rng"
+				sh "cd source/tools/entdocs/ && ./build.sh"
+				sh "cd source/tools/entdocs/ && mv entity-docs.html nightly.html"
 			}
 		}
+
 		stage("Template Analyzer") {
 			steps {
-				ws("/zpool0/entity-docs"){
-					sh "cd source/tools/templatesanalyzer/ && python3 unit_tables.py"
-				}
+				sh "cd source/tools/templatesanalyzer/ && python3 unit_tables.py"
+				sh "mv source/tools/templatesanalyzer/unit_summary_table.html source/tools/templatesanalyzer/index.html"
 			}
 		}
+
 		stage("Upload") {
 			steps {
-				ws("/zpool0/entity-docs"){
-					sh "rsync -rti --delete-after --progress docs/doxygen/html/ docs.wildfiregames.com:~/www/pyrogenesis/"
-					sh "rsync -ti --progress source/tools/entdocs/entity-docs.html docs.wildfiregames.com:~/www/entity-docs/trunk.html"
-					sh "rsync -ti --progress source/tools/templatesanalyzer/unit_summary_table.html docs.wildfiregames.com:~/www/templatesanalyzer/index.html"
-				}
-			}
-		}
-	}
-	post {
-		always {
-			ws("/zpool0/trunk") {
-				sleep 10
-				sh "sudo zfs destroy zpool0/entity-docs"
+				sshPublisher alwaysPublishFromMaster: true, failOnError: true, publishers: [
+					sshPublisherDesc(configName: 'docs.wildfiregames.com', transfers: [
+						sshTransfer(sourceFiles: 'docs/doxygen/html/**', removePrefix: 'docs/doxygen/html', remoteDirectory: 'pyrogenesis'),
+						sshTransfer(sourceFiles: 'source/tools/entdocs/nightly.html', removePrefix: 'source/tools/entdocs', remoteDirectory: 'entity-docs'),
+						sshTransfer(sourceFiles: 'source/tools/templatesanalyzer/index.html', removePrefix: 'source/tools/templatesanalyzer', remoteDirectory: 'templatesanalyzer'),
+					]
+				)]
 			}
 		}
 	}
