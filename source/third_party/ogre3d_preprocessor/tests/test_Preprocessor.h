@@ -19,6 +19,7 @@
 
 #include "graphics/PreprocessorWrapper.h"
 #include "lib/timer.h"
+#include "ps/CLogger.h"
 #include "ps/CStr.h"
 #include "third_party/ogre3d_preprocessor/OgreGLSLPreprocessor.h"
 

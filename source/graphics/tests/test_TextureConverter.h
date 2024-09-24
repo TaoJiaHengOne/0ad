@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 #include "lib/external_libraries/libsdl.h"
 #include "lib/file/vfs/vfs.h"
 #include "lib/tex/tex.h"
+#include "ps/CLogger.h"
 #include "ps/XML/Xeromyces.h"
 
 class TestTextureConverter : public CxxTest::TestSuite

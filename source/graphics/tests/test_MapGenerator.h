@@ -16,6 +16,7 @@
  */
 
 #include "graphics/MapGenerator.h"
+#include "ps/CLogger.h"
 #include "ps/Filesystem.h"
 #include "simulation2/system/ComponentTest.h"
 

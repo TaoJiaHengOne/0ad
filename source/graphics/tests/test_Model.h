@@ -30,6 +30,7 @@
 #include "graphics/Unit.h"
 #include "graphics/UnitManager.h"
 #include "lib/file/io/io.h"
+#include "ps/CLogger.h"
 #include "ps/ConfigDB.h"
 #include "ps/CStrInternStatic.h"
 #include "ps/Filesystem.h"

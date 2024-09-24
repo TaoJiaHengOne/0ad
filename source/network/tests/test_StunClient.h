@@ -20,6 +20,7 @@
 #include "network/StunClient.h"
 
 #include "lib/external_libraries/enet.h"
+#include "ps/CLogger.h"
 #include "ps/ConfigDB.h"
 #include "ps/CStr.h"
 
