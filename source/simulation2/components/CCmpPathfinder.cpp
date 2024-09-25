@@ -797,10 +797,9 @@ void CCmpPathfinder::SendRequestedPaths()
 		m_ShortPathRequests.Compute(*this, m_VertexPathfinders.front());
 		m_LongPathRequests.Compute(*this, *m_LongPathfinder);
 	}
-	// We're done, clear futures.
-	// Use CancelOrWait instead of just Cancel to ensure determinism.
+	// We're done, get the exceptions from the futures.
 	for (Future<void>& future : m_Futures)
-		future.CancelOrWait();
+		future.Get();
 
 	{
 		PROFILE2("PostMessages");

@@ -445,29 +445,17 @@ Script::StructuredClone RunMapGenerationScript(std::atomic<int>& progress, Scrip
 		return mapData;
 	}
 
-	try
-	{
-		JS::RootedValue map{rq.cx, ScriptFunction::RunGenerator(rq, global, GENERATOR_NAME, settingsVal,
-			[&](const JS::HandleValue value)
-			{
-				int tempProgress;
-				if (!Script::FromJSVal(rq, value, tempProgress))
-					throw std::runtime_error{"Failed to convert the yielded value to an "
-						"integer."};
-				progress.store(tempProgress);
-			})};
+	JS::RootedValue map{rq.cx, ScriptFunction::RunGenerator(rq, global, GENERATOR_NAME, settingsVal,
+		[&](const JS::HandleValue value)
+		{
+			int tempProgress;
+			if (!Script::FromJSVal(rq, value, tempProgress))
+				throw std::runtime_error{"Failed to convert the yielded value to an "
+					"integer."};
+			progress.store(tempProgress);
+		})};
 
-		JS::RootedValue exportedMap{rq.cx};
-		const bool exportSuccess{ScriptFunction::Call(rq, map, "MakeExportable", &exportedMap)};
-		return Script::WriteStructuredClone(rq, exportSuccess ? exportedMap : map);
-	}
-	catch(const std::exception& e)
-	{
-		LOGERROR("%s", e.what());
-		return nullptr;
-	}
-	catch(...)
-	{
-		return nullptr;
-	}
+	JS::RootedValue exportedMap{rq.cx};
+	const bool exportSuccess{ScriptFunction::Call(rq, map, "MakeExportable", &exportedMap)};
+	return Script::WriteStructuredClone(rq, exportSuccess ? exportedMap : map);
 }

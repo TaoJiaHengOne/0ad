@@ -22,6 +22,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <exception>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -47,13 +48,11 @@ using ResultHolder = std::conditional_t<std::is_void_v<T>, std::nullopt_t, std::
  * Responsible for syncronization between the task and the receiving thread.
  */
 template<typename ResultType>
-class Receiver : public ResultHolder<ResultType>
+class Receiver
 {
 	static constexpr bool VoidResult = std::is_same_v<ResultType, void>;
 public:
-	Receiver() :
-		ResultHolder<ResultType>{std::nullopt}
-	{}
+	Receiver() = default;
 	~Receiver()
 	{
 		ENSURE(IsDoneOrCanceled());
@@ -91,7 +90,7 @@ public:
 			if (m_Status == Status::DONE)
 				m_Status = Status::CANCELED;
 			if constexpr (!VoidResult)
-				this->reset();
+				std::get<ResultHolder<ResultType>>(m_Outcome).reset();
 			m_ConditionVariable.notify_all();
 			return cancelled;
 		}
@@ -101,20 +100,35 @@ public:
 	/**
 	 * Move the result away from the shared state, mark the future invalid.
 	 */
-	template<typename _ResultType = ResultType>
-	std::enable_if_t<!std::is_same_v<_ResultType, void>, ResultType> GetResult()
+	ResultType GetResult()
 	{
 		// The caller must ensure that this is only called if we have a result.
-		ENSURE(this->has_value());
+		if constexpr (!std::is_void_v<ResultType>)
+			ENSURE(std::get<ResultHolder<ResultType>>(m_Outcome).has_value() ||
+				std::get<std::exception_ptr>(m_Outcome));
+
 		m_Status = Status::CANCELED;
-		ResultType ret = std::move(**this);
-		this->reset();
-		return ret;
+
+		if (std::get<std::exception_ptr>(m_Outcome))
+			std::rethrow_exception(std::get<std::exception_ptr>(m_Outcome));
+
+		if constexpr (std::is_void_v<ResultType>)
+			return;
+		else
+		{
+			ResultType ret = std::move(*std::get<ResultHolder<ResultType>>(m_Outcome));
+			std::get<ResultHolder<ResultType>>(m_Outcome).reset();
+			return ret;
+		}
 	}
 
 	std::atomic<Status> m_Status = Status::PENDING;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
+
+	// There can't be a result and an exception.
+	std::tuple<ResultHolder<ResultType>, std::exception_ptr> m_Outcome{std::nullopt,
+		std::exception_ptr{}};
 };
 
 /**
@@ -181,21 +195,14 @@ public:
 	 * If the future is not complete, calls Wait().
 	 * If the future is canceled, asserts.
 	 */
-	template<typename SfinaeType = ResultType>
-	std::enable_if_t<!std::is_same_v<SfinaeType, void>, ResultType> Get()
+	ResultType Get()
 	{
 		ENSURE(!!m_Receiver);
 
 		Wait();
-		if constexpr (VoidResult)
-			return;
-		else
-		{
-			ENSURE(m_Receiver->m_Status != Status::CANCELED);
-
-			// This mark the state invalid - can't call Get again.
-			return m_Receiver->GetResult();
-		}
+		ENSURE(m_Receiver->m_Status != Status::CANCELED);
+		// This mark the state invalid - can't call Get again.
+		return m_Receiver->GetResult();
 	}
 
 	/**
@@ -262,10 +269,20 @@ public:
 			return;
 		}
 
-		if constexpr (std::is_void_v<std::invoke_result_t<Callback>>)
-			m_SharedState->callback();
-		else
-			m_SharedState->receiver.emplace(m_SharedState->callback());
+		try
+		{
+			using ResultType = std::invoke_result_t<Callback>;
+			if constexpr (std::is_void_v<ResultType>)
+				m_SharedState->callback();
+			else
+				std::get<FutureSharedStateDetail::ResultHolder<ResultType>>(
+					m_SharedState->receiver.m_Outcome).emplace(m_SharedState->callback());
+		}
+		catch(...)
+		{
+			std::get<std::exception_ptr>(m_SharedState->receiver.m_Outcome) =
+				std::current_exception();
+		}
 
 		// Because we might have threads waiting on us, we need to make sure that they either:
 		// - don't wait on our condition variable

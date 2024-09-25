@@ -19,6 +19,7 @@
 
 #include "ps/Future.h"
 
+#include <exception>
 #include <functional>
 #include <type_traits>
 
@@ -133,5 +134,62 @@ public:
 		task();
 
 		TS_ASSERT_EQUALS(future.Get(), 7);
+	}
+
+	struct TestException : std::exception
+	{
+		using std::exception::exception;
+	};
+
+	void test_exception()
+	{
+		Future<int> future;
+		auto packedTask = future.Wrap([]() -> int
+		{
+			throw TestException{};
+		});
+
+		packedTask();
+		TS_ASSERT(future.IsReady());
+		TS_ASSERT_THROWS(future.Get(), const TestException&);
+	}
+
+	void test_voidException()
+	{
+		Future<void> future;
+		auto packedTask = future.Wrap([]
+		{
+			throw TestException{};
+		});
+
+		packedTask();
+		TS_ASSERT(future.IsReady());
+		TS_ASSERT_THROWS(future.Get(), const TestException&);
+	}
+
+	void test_implicitException()
+	{
+		// If the function does not throw but it's the cause something is thrown the exception should
+		// also be reported to the code receiving the result.
+
+		class ThrowsOnMove
+		{
+		public:
+			ThrowsOnMove() = default;
+			ThrowsOnMove(ThrowsOnMove&&)
+			{
+				throw TestException{};
+			}
+		};
+
+		Future<ThrowsOnMove> future;
+		auto packedTask = future.Wrap([]
+		{
+			return ThrowsOnMove{};
+		});
+
+		packedTask();
+		TS_ASSERT(future.IsReady());
+		TS_ASSERT_THROWS(future.Get(), const TestException&);
 	}
 };
