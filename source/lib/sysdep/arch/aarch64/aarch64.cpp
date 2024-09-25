@@ -27,8 +27,35 @@
 #include "precompiled.h"
 
 #include "lib/sysdep/cpu.h"
+#include "lib/sysdep/os.h"
+
+#if defined OS_MAC
+#include <cstdlib>
+#include <cstddef>
+#include <sys/sysctl.h>
+#endif
 
 const char* cpu_IdentifierString()
 {
+#if defined(OS_MAC)
+	size_t bufferSize = 0;
+
+	if (sysctlbyname("machdep.cpu.brand_string", nullptr, &bufferSize, nullptr, 0) != 0) {
+		return "unknown";
+	}
+
+	char* result = static_cast<char*>(malloc(bufferSize));
+	if (!result) {
+		return "unknown";
+	}
+
+	if (sysctlbyname("machdep.cpu.brand_string", result, &bufferSize, nullptr, 0) != 0) {
+		free(result);
+		return "unknown";
+	}
+
+	return result;
+#else
 	return "unknown"; // TODO
+#endif
 }
