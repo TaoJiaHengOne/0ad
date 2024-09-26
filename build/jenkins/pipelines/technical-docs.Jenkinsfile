@@ -36,7 +36,7 @@ pipeline {
 
 		stage("Engine docs") {
 			steps {
-				sh "cd docs/doxygen/ && doxygen config"
+				sh "cd docs/doxygen/ && cmake -S . -B build-docs && cmake --build build-docs"
 			}
 		}
 
@@ -59,7 +59,7 @@ pipeline {
 			steps {
 				sshPublisher alwaysPublishFromMaster: true, failOnError: true, publishers: [
 					sshPublisherDesc(configName: 'docs.wildfiregames.com', transfers: [
-						sshTransfer(sourceFiles: 'docs/doxygen/html/**', removePrefix: 'docs/doxygen/html', remoteDirectory: 'pyrogenesis'),
+						sshTransfer(sourceFiles: 'docs/doxygen/output/html/**', removePrefix: 'docs/doxygen/output/html/', remoteDirectory: 'pyrogenesis'),
 						sshTransfer(sourceFiles: 'source/tools/entdocs/nightly.html', removePrefix: 'source/tools/entdocs', remoteDirectory: 'entity-docs'),
 						sshTransfer(sourceFiles: 'source/tools/templatesanalyzer/index.html', removePrefix: 'source/tools/templatesanalyzer', remoteDirectory: 'templatesanalyzer'),
 					]

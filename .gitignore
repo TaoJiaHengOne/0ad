@@ -49,6 +49,9 @@ build/premake/.already-built
 build/premake/.gccmachine.tmp
 build/premake/.gccver.tmp
 
+# Docs build folder
+docs/doxygen/output/
+
 # Build files (cpp)
 *.a
 *.dylib
