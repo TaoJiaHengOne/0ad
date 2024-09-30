@@ -457,7 +457,7 @@
                 "filemasks": [
                     "gui/gamesetup/**.txt",
                     "gui/splashscreen/splashscreen.txt",
-                    "gui/text/tips/**.txt"
+                    "gui/reference/tips/texts/**.txt"
                 ],
                 "options": {
                 }
