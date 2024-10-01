@@ -200,6 +200,9 @@ void CNetServerTurnManager::UninitialiseClient(int client)
 	bool checkOOS = m_ClientsData[client].isOOS;
 	m_ClientsData.erase(client);
 
+	for (std::pair<const u32, std::map<int, std::string>>& clientStateHash : m_ClientStateHashes)
+		clientStateHash.second.erase(client);
+
 	// Check whether we're ready for the next turn now that we're not
 	// waiting for this client any more
 	CheckClientsReady();
