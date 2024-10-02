@@ -30,9 +30,18 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from enum import Enum
+from multiprocessing import Pool
 from pathlib import Path
 
 import yaml
+
+
+STAGE_EXTENSIONS = {
+    "vertex": ".vs",
+    "fragment": ".fs",
+    "geometry": ".gs",
+    "compute": ".cs",
+}
 
 
 def execute(command):
@@ -330,7 +339,121 @@ def output_xml_tree(tree, path):
         output_xml_node(tree.getroot(), handle, 0)
 
 
-def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
+def build_combination(
+    combination,
+    program_defines,
+    shaders,
+    dependencies,
+    program_name,
+    input_mod_path,
+    output_mod_path,
+    output_spirv_mod_path,
+):
+    combination_hash = get_combination_hash(combination)
+
+    program_path = f"spirv/{program_name}_{combination_hash}.xml"
+
+    program_root = ET.Element("program")
+    program_root.set("type", "spirv")
+    for shader in shaders:
+        extension = STAGE_EXTENSIONS[shader["type"]]
+        tmp_file_name = f"{program_name}_{combination_hash}{extension}.spv"
+        tmp_output_spirv_path = os.path.join(output_spirv_mod_path, tmp_file_name)
+
+        input_glsl_path = os.path.join(input_mod_path, "shaders", shader["file"])
+        # Some shader programs might use vs and fs shaders from different mods.
+        if not os.path.isfile(input_glsl_path):
+            input_glsl_path = None
+            for dependency in dependencies:
+                fallback_input_path = os.path.join(dependency, "shaders", shader["file"])
+                if os.path.isfile(fallback_input_path):
+                    input_glsl_path = fallback_input_path
+                    break
+        assert input_glsl_path is not None
+
+        reflection = compile_and_reflect(
+            input_mod_path,
+            dependencies,
+            shader["type"],
+            input_glsl_path,
+            tmp_output_spirv_path,
+            combination + program_defines,
+        )
+
+        # Deduplicate identical shaders, by moving them to a
+        # destination where their file name contains a hash over their
+        # content. To avoid file corruption by race conditions when
+        # multiple processes write the same shader file concurrently,
+        # this intentionally renames the files instead of copying them.
+        spirv_hash = calculate_hash(tmp_output_spirv_path)
+        file_name = f"{program_name}_{spirv_hash}{extension}.spv"
+        output_spirv_path = os.path.join(output_spirv_mod_path, file_name)
+        if not os.path.exists(output_spirv_path):
+            try:
+                os.rename(tmp_output_spirv_path, output_spirv_path)
+            except FileExistsError:
+                os.remove(tmp_output_spirv_path)
+        else:
+            os.remove(tmp_output_spirv_path)
+
+        shader_element = ET.SubElement(program_root, shader["type"])
+        shader_element.set("file", "spirv/" + file_name)
+        if shader["type"] == "vertex":
+            for stream in shader["streams"]:
+                if "if" in stream and not resolve_if(combination, stream["if"]):
+                    continue
+
+                found_vertex_attribute = False
+                for vertex_attribute in reflection["vertex_attributes"]:
+                    if vertex_attribute["name"] == stream["attribute"]:
+                        found_vertex_attribute = True
+                        break
+                if not found_vertex_attribute and stream["attribute"] == "a_tangent":
+                    continue
+                if not found_vertex_attribute:
+                    sys.stderr.write(
+                        "Vertex attribute not found: {}\n".format(stream["attribute"])
+                    )
+                assert found_vertex_attribute
+
+                stream_element = ET.SubElement(shader_element, "stream")
+                stream_element.set("name", stream["name"])
+                stream_element.set("attribute", stream["attribute"])
+                for vertex_attribute in reflection["vertex_attributes"]:
+                    if vertex_attribute["name"] == stream["attribute"]:
+                        stream_element.set("location", vertex_attribute["location"])
+                        break
+
+        for push_constant in reflection["push_constants"]:
+            push_constant_element = ET.SubElement(shader_element, "push_constant")
+            push_constant_element.set("name", push_constant["name"])
+            push_constant_element.set("size", push_constant["size"])
+            push_constant_element.set("offset", push_constant["offset"])
+        descriptor_sets_element = ET.SubElement(shader_element, "descriptor_sets")
+        for descriptor_set in reflection["descriptor_sets"]:
+            descriptor_set_element = ET.SubElement(descriptor_sets_element, "descriptor_set")
+            descriptor_set_element.set("set", descriptor_set["set"])
+            for binding in descriptor_set["bindings"]:
+                binding_element = ET.SubElement(descriptor_set_element, "binding")
+                binding_element.set("type", binding["type"])
+                binding_element.set("binding", binding["binding"])
+                if binding["type"] == "uniform":
+                    binding_element.set("size", binding["size"])
+                    for member in binding["members"]:
+                        member_element = ET.SubElement(binding_element, "member")
+                        member_element.set("name", member["name"])
+                        member_element.set("size", member["size"])
+                        member_element.set("offset", member["offset"])
+                elif binding["type"].startswith("sampler") or binding["type"].startswith(
+                    "storage"
+                ):
+                    binding_element.set("name", binding["name"])
+
+        program_tree = ET.ElementTree(program_root)
+        output_xml_tree(program_tree, os.path.join(output_mod_path, "shaders", program_path))
+
+
+def build(rules, input_mod_path, output_mod_path, dependencies, program_name, process_pool):
     sys.stdout.write(f'Program "{program_name}"\n')
     if rules and program_name not in rules:
         sys.stdout.write("  Skip.\n")
@@ -398,23 +521,45 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
         else:
             raise ValueError(f'Unsupported element tag: "{element_tag}"')
 
-    stage_extension = {
-        "vertex": ".vs",
-        "fragment": ".fs",
-        "geometry": ".gs",
-        "compute": ".cs",
-    }
-
     output_spirv_mod_path = os.path.join(output_mod_path, "shaders", "spirv")
     if not os.path.isdir(output_spirv_mod_path):
         os.mkdir(output_spirv_mod_path)
-
-    root = ET.Element("programs")
 
     if "combinations" in rules[program_name]:
         combinations = rules[program_name]["combinations"]
     else:
         combinations = list(itertools.product(*defines))
+
+    results = []
+
+    for combination in combinations:
+        combination_hash = get_combination_hash(combination)
+
+        program_path = f"spirv/{program_name}_{combination_hash}.xml"
+
+        if not rebuild and os.path.isfile(os.path.join(output_mod_path, "shaders", program_path)):
+            continue
+
+        results.append(
+            process_pool.apply_async(
+                build_combination,
+                [
+                    combination,
+                    program_defines,
+                    shaders,
+                    dependencies,
+                    program_name,
+                    input_mod_path,
+                    output_mod_path,
+                    output_spirv_mod_path,
+                ],
+            )
+        )
+
+    for result in results:
+        result.get()
+
+    root = ET.Element("programs")
 
     for combination in combinations:
         combination_hash = get_combination_hash(combination)
@@ -433,107 +578,16 @@ def build(rules, input_mod_path, output_mod_path, dependencies, program_name):
             define_element.set("name", define["name"])
             define_element.set("value", define["value"])
 
-        if not rebuild and os.path.isfile(os.path.join(output_mod_path, "shaders", program_path)):
-            continue
-
-        program_root = ET.Element("program")
-        program_root.set("type", "spirv")
-        for shader in shaders:
-            extension = stage_extension[shader["type"]]
-            tmp_file_name = f"{program_name}_{combination_hash}{extension}.spv"
-            tmp_output_spirv_path = os.path.join(output_spirv_mod_path, tmp_file_name)
-
-            input_glsl_path = os.path.join(input_mod_path, "shaders", shader["file"])
-            # Some shader programs might use vs and fs shaders from different mods.
-            if not os.path.isfile(input_glsl_path):
-                input_glsl_path = None
-                for dependency in dependencies:
-                    fallback_input_path = os.path.join(dependency, "shaders", shader["file"])
-                    if os.path.isfile(fallback_input_path):
-                        input_glsl_path = fallback_input_path
-                        break
-            assert input_glsl_path is not None
-
-            reflection = compile_and_reflect(
-                input_mod_path,
-                dependencies,
-                shader["type"],
-                input_glsl_path,
-                tmp_output_spirv_path,
-                combination + program_defines,
-            )
-
-            spirv_hash = calculate_hash(tmp_output_spirv_path)
-            file_name = f"{program_name}_{spirv_hash}{extension}.spv"
-            output_spirv_path = os.path.join(output_spirv_mod_path, file_name)
-            if not os.path.exists(output_spirv_path):
-                try:
-                    os.rename(tmp_output_spirv_path, output_spirv_path)
-                except FileExistsError:
-                    os.remove(tmp_output_spirv_path)
-            else:
-                os.remove(tmp_output_spirv_path)
-
-            shader_element = ET.SubElement(program_root, shader["type"])
-            shader_element.set("file", "spirv/" + file_name)
-            if shader["type"] == "vertex":
-                for stream in shader["streams"]:
-                    if "if" in stream and not resolve_if(combination, stream["if"]):
-                        continue
-
-                    found_vertex_attribute = False
-                    for vertex_attribute in reflection["vertex_attributes"]:
-                        if vertex_attribute["name"] == stream["attribute"]:
-                            found_vertex_attribute = True
-                            break
-                    if not found_vertex_attribute and stream["attribute"] == "a_tangent":
-                        continue
-                    if not found_vertex_attribute:
-                        sys.stderr.write(
-                            "Vertex attribute not found: {}\n".format(stream["attribute"])
-                        )
-                    assert found_vertex_attribute
-
-                    stream_element = ET.SubElement(shader_element, "stream")
-                    stream_element.set("name", stream["name"])
-                    stream_element.set("attribute", stream["attribute"])
-                    for vertex_attribute in reflection["vertex_attributes"]:
-                        if vertex_attribute["name"] == stream["attribute"]:
-                            stream_element.set("location", vertex_attribute["location"])
-                            break
-
-            for push_constant in reflection["push_constants"]:
-                push_constant_element = ET.SubElement(shader_element, "push_constant")
-                push_constant_element.set("name", push_constant["name"])
-                push_constant_element.set("size", push_constant["size"])
-                push_constant_element.set("offset", push_constant["offset"])
-            descriptor_sets_element = ET.SubElement(shader_element, "descriptor_sets")
-            for descriptor_set in reflection["descriptor_sets"]:
-                descriptor_set_element = ET.SubElement(descriptor_sets_element, "descriptor_set")
-                descriptor_set_element.set("set", descriptor_set["set"])
-                for binding in descriptor_set["bindings"]:
-                    binding_element = ET.SubElement(descriptor_set_element, "binding")
-                    binding_element.set("type", binding["type"])
-                    binding_element.set("binding", binding["binding"])
-                    if binding["type"] == "uniform":
-                        binding_element.set("size", binding["size"])
-                        for member in binding["members"]:
-                            member_element = ET.SubElement(binding_element, "member")
-                            member_element.set("name", member["name"])
-                            member_element.set("size", member["size"])
-                            member_element.set("offset", member["offset"])
-                    elif binding["type"].startswith("sampler") or binding["type"].startswith(
-                        "storage"
-                    ):
-                        binding_element.set("name", binding["name"])
-        program_tree = ET.ElementTree(program_root)
-        output_xml_tree(program_tree, os.path.join(output_mod_path, "shaders", program_path))
-
     tree = ET.ElementTree(root)
     output_xml_tree(tree, os.path.join(output_mod_path, "shaders", "spirv", program_name + ".xml"))
 
 
 def run():
+    def positive_int(arg):
+        if int(arg) <= 0:
+            raise argparse.ArgumentTypeError("must be a positive number")
+        return int(arg)
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "input_mod_path",
@@ -560,6 +614,13 @@ def run():
         help="a shader program name (in case of presence the only program will be compiled)",
         default=None,
     )
+    parser.add_argument(
+        "-j",
+        "--jobs",
+        type=positive_int,
+        help="Number of jobs to run in parallel. Defaults to the number of available CPU cores.",
+        default=os.cpu_count(),
+    )
     args = parser.parse_args()
 
     if not os.path.isfile(args.rules_path):
@@ -583,13 +644,29 @@ def run():
 
     mod_name = os.path.basename(os.path.normpath(args.input_mod_path))
     sys.stdout.write(f'Building SPIRV for "{mod_name}"\n')
-    if not args.program_name:
-        for file_name in os.listdir(mod_shaders_path):
-            name, ext = os.path.splitext(file_name)
-            if ext.lower() == ".xml":
-                build(rules, args.input_mod_path, args.output_mod_path, args.dependency, name)
-    else:
-        build(rules, args.input_mod_path, args.output_mod_path, args.dependency, args.program_name)
+
+    with Pool(processes=args.jobs) as process_pool:
+        if not args.program_name:
+            for file_name in os.listdir(mod_shaders_path):
+                name, ext = os.path.splitext(file_name)
+                if ext.lower() == ".xml":
+                    build(
+                        rules,
+                        args.input_mod_path,
+                        args.output_mod_path,
+                        args.dependency,
+                        name,
+                        process_pool,
+                    )
+        else:
+            build(
+                rules,
+                args.input_mod_path,
+                args.output_mod_path,
+                args.dependency,
+                args.program_name,
+                process_pool,
+            )
 
 
 if __name__ == "__main__":
