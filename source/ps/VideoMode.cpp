@@ -668,6 +668,20 @@ bool CVideoMode::TryCreateBackendDevice(SDL_Window* window)
 		break;
 	case Renderer::Backend::Backend::VULKAN:
 		m_BackendDevice = Renderer::Backend::Vulkan::CreateDevice(window);
+		// HACK: the svn doesn't have prebuilt SPIR-V shaders to avoid too
+		// frequent and massive changes. So it requires a separate mod. Also
+		// not all players have a library in their repos to compile GLSL to
+		// SPIR-V.
+		if (m_BackendDevice)
+		{
+			// We must not use CShaderManager here to avoid caching.
+			std::unique_ptr<Renderer::Backend::IShaderProgram> shaderProgram =
+				m_BackendDevice->CreateShaderProgram("spirv/canvas2d", CShaderDefines{});
+			if (!shaderProgram)
+			{
+				m_BackendDevice.reset();
+			}
+		}
 		break;
 	}
 	return static_cast<bool>(m_BackendDevice);
