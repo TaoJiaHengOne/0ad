@@ -139,6 +139,19 @@ ATLASDLLIMPEXP void Atlas_StartWindow(const wchar_t* type)
 	{
 		fprintf(stderr, "Error enabling thread-safety via XInitThreads\n");
 	}
+#if defined(wxUSE_GLCANVAS_EGL) && wxUSE_GLCANVAS_EGL == 0
+	// The glcanvas is currently either built with support for GLX or EGL, if
+	// built with GLX support on Wayland we need to use XWayland.
+	// https://github.com/wxWidgets/wxWidgets/issues/22325
+	const wxString xdgSessionType{wxGetenv("XDG_SESSION_TYPE")};
+	const wxString waylandDisplay{wxGetenv("WAYLAND_DISPLAY")};
+	if (xdgSessionType == "wayland" || waylandDisplay.Contains("wayland"))
+	{
+		// GTK has an API to set allowed backends but would require to add it
+		// as a direct dependency, so just force it using an envvar.
+		wxSetEnv("GDK_BACKEND", "x11");
+	}
+#endif
 #endif
 	int argc = 1;
 	char atlas[] = "atlas";
