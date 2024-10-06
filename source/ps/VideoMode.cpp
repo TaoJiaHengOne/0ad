@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -668,10 +668,8 @@ bool CVideoMode::TryCreateBackendDevice(SDL_Window* window)
 		break;
 	case Renderer::Backend::Backend::VULKAN:
 		m_BackendDevice = Renderer::Backend::Vulkan::CreateDevice(window);
-		// HACK: the svn doesn't have prebuilt SPIR-V shaders to avoid too
-		// frequent and massive changes. So it requires a separate mod. Also
-		// not all players have a library in their repos to compile GLSL to
-		// SPIR-V.
+		// HACK: the repository doesn't have prebuilt SPIR-V shaders. So some
+		// users might get an error in case of missing shaders.
 		if (m_BackendDevice)
 		{
 			// We must not use CShaderManager here to avoid caching.
