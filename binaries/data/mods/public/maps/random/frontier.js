@@ -25,12 +25,12 @@ function* GenerateMap(mapSettings)
 	{
 		createBases(
 			...playerPlacementByPattern(
-				mapSettings.TeamPlacement,
+				mapSettings.PlayerPlacement,
 				fractionToTiles(randFloat(0.2, 0.35)),
 				fractionToTiles(randFloat(0.08, 0.1)),
 				randomAngle(),
 				undefined),
-			g_PlayerbaseTypes[mapSettings.TeamPlacement].walls);
+			g_PlayerbaseTypes[mapSettings.PlayerPlacement].walls);
 	}
 	yield 40;
 

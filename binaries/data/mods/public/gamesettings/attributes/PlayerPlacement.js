@@ -1,4 +1,4 @@
-GameSettings.prototype.Attributes.TeamPlacement = class TeamPlacement extends GameSetting
+GameSettings.prototype.Attributes.PlayerPlacement = class PlayerPlacement extends GameSetting
 {
 	init()
 	{
@@ -10,25 +10,25 @@ GameSettings.prototype.Attributes.TeamPlacement = class TeamPlacement extends Ga
 	toInitAttributes(attribs)
 	{
 		if (this.value !== undefined)
-			attribs.settings.TeamPlacement = this.value;
+			attribs.settings.PlayerPlacement = this.value;
 	}
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "TeamPlacement"))
-			this.value = this.getLegacySetting(attribs, "TeamPlacement");
+		if (!!this.getLegacySetting(attribs, "PlayerPlacement"))
+			this.value = this.getLegacySetting(attribs, "PlayerPlacement");
 	}
 
 	onMapChange()
 	{
-		if (!this.getMapSetting("TeamPlacements"))
+		if (!this.getMapSetting("PlayerPlacements"))
 		{
 			this.value = undefined;
 			this.available = undefined;
 			return;
 		}
 		// TODO: should probably validate that they fit one of the known schemes.
-		this.available = this.getMapSetting("TeamPlacements");
+		this.available = this.getMapSetting("PlayerPlacements");
 		this.value = "random";
 	}
 
@@ -49,25 +49,25 @@ GameSettings.prototype.Attributes.TeamPlacement = class TeamPlacement extends Ga
 };
 
 
-GameSettings.prototype.Attributes.TeamPlacement.prototype.StartingPositions = [
+GameSettings.prototype.Attributes.PlayerPlacement.prototype.StartingPositions = [
 	{
 		"Id": "radial",
-		"Name": translateWithContext("team placement", "Circle"),
+		"Name": translateWithContext("player placement", "Circle"),
 		"Description": translate("Allied players are grouped and placed with opposing players on one circle spanning the map.")
 	},
 	{
 		"Id": "line",
-		"Name": translateWithContext("team placement", "Line"),
+		"Name": translateWithContext("player placement", "Line"),
 		"Description": translate("Allied players are placed in a linear pattern."),
 	},
 	{
 		"Id": "randomGroup",
-		"Name": translateWithContext("team placement", "Random Group"),
+		"Name": translateWithContext("player placement", "Random Group"),
 		"Description": translate("Allied players are grouped, but otherwise placed randomly on the map."),
 	},
 	{
 		"Id": "stronghold",
-		"Name": translateWithContext("team placement", "Stronghold"),
+		"Name": translateWithContext("player placement", "Stronghold"),
 		"Description": translate("Allied players are grouped in one random place of the map."),
 	}
 ];

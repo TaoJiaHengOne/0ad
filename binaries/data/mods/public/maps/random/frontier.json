@@ -6,6 +6,6 @@
     "Preview" : "frontier.png",
     "SupportedBiomes": "generic/",
     "CircularMap" : true,
-    "TeamPlacements": ["radial", "line", "randomGroup", "stronghold"]
+    "PlayerPlacements": ["radial", "line", "randomGroup", "stronghold"]
   }
 }

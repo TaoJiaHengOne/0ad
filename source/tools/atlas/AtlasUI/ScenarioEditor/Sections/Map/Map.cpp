@@ -64,7 +64,7 @@ enum
 	ID_SimSlow,
 	ID_SimPause,
 	ID_SimReset,
-	ID_TeamPlacement,
+	ID_PlayerPlacement,
 	ID_OpenPlayerPanel
 };
 
@@ -476,9 +476,9 @@ MapSidebar::MapSidebar(ScenarioEditor& scenarioEditor, wxWindow* sidebarContaine
 			wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
 		gridSizer->Add(new wxChoice(scrolledWindow, ID_RandomBiome), wxSizerFlags().Expand());
 
-		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Team Placement")),
+		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Player Placement")),
 			wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
-		gridSizer->Add(new wxChoice(scrolledWindow, ID_TeamPlacement), wxSizerFlags().Expand());
+		gridSizer->Add(new wxChoice(scrolledWindow, ID_PlayerPlacement), wxSizerFlags().Expand());
 
 		wxChoice* sizeChoice = new wxChoice(scrolledWindow, ID_RandomSize);
 		gridSizer->Add(new wxStaticText(scrolledWindow, wxID_ANY, _("Map size")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT));
@@ -722,11 +722,11 @@ void MapSidebar::OnRandomScript(wxCommandEvent& WXUNUSED(evt))
 
 	biomeChoice->SetSelection(0);
 
-	wxChoice* teamPlacementChoice = wxDynamicCast(FindWindow(ID_TeamPlacement), wxChoice);
-	teamPlacementChoice->Clear();
-	for (AtIter it = mapSettings["TeamPlacements"]["item"]; it.defined(); ++it)
-		teamPlacementChoice->Append(wxString::FromUTF8(static_cast<const char*>(*it)));
-	teamPlacementChoice->SetSelection(0);
+	wxChoice* playerPlacementChoice = wxDynamicCast(FindWindow(ID_PlayerPlacement), wxChoice);
+	playerPlacementChoice->Clear();
+	for (AtIter it = mapSettings["PlayerPlacements"]["item"]; it.defined(); ++it)
+		playerPlacementChoice->Append(wxString::FromUTF8(static_cast<const char*>(*it)));
+	playerPlacementChoice->SetSelection(0);
 }
 
 void MapSidebar::OnRandomReseed(wxCommandEvent& WXUNUSED(evt))
@@ -772,10 +772,10 @@ void MapSidebar::OnRandomGenerate(wxCommandEvent& WXUNUSED(evt))
 	if (!biome.IsEmpty())
 		settings.set("Biome", biome.utf8_str());
 
-	const wxString teamPlacement{
-		wxDynamicCast(FindWindow(ID_TeamPlacement), wxChoice)->GetStringSelection()};
-	if (!teamPlacement.empty())
-		settings.set("TeamPlacement", teamPlacement.utf8_str());
+	const wxString playerPlacement{
+		wxDynamicCast(FindWindow(ID_PlayerPlacement), wxChoice)->GetStringSelection()};
+	if (!playerPlacement.empty())
+		settings.set("PlayerPlacement", playerPlacement.utf8_str());
 
 	std::string json = AtlasObject::SaveToJSON(settings);
 

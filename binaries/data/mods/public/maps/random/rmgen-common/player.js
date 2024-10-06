@@ -610,7 +610,7 @@ function getTeamsArray()
 function playerPlacementByPattern(patternName, distance = undefined, groupedDistance = undefined, angle = undefined, center = undefined)
 {
 	if (patternName === undefined)
-		patternName = g_MapSettings.TeamPlacement;
+		patternName = g_MapSettings.PlayerPlacement;
 
 	switch (patternName)
 	{

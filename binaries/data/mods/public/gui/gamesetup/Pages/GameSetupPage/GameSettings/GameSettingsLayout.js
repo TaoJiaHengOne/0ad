@@ -11,7 +11,7 @@ var g_GameSettingsLayout = [
 			"MapSelection",
 			"MapBrowser",
 			"MapSize",
-			"TeamPlacement",
+			"PlayerPlacement",
 			"Landscape",
 			"Biome",
 			"WaterLevel",
