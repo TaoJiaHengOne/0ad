@@ -2061,7 +2061,7 @@ GuiInterface.prototype.OnGlobalEntityRenamed = function(msg)
  * trusted and indicates the player associated with the current client; no data should
  * be returned unless this player is meant to be able to see it.)
  */
-let exposedFunctions = {
+GuiInterface.prototype.exposedFunctions = {
 
 	"GetSimulationState": 1,
 	"GetExtendedSimulationState": 1,
@@ -2129,7 +2129,7 @@ let exposedFunctions = {
 
 GuiInterface.prototype.ScriptCall = function(player, name, args)
 {
-	if (exposedFunctions[name])
+	if (this.exposedFunctions[name])
 		return this[name](player, args);
 
 	throw new Error("Invalid GuiInterface Call name \"" + name + "\"");
