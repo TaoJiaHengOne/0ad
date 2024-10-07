@@ -410,23 +410,17 @@ void CDeviceCommandContext::SetGraphicsPipelineState(
 void CDeviceCommandContext::SetComputePipelineState(
 	IComputePipelineState* pipelineState)
 {
-	if (m_ShaderProgram)
-		m_ShaderProgram->Unbind();
-
 	ENSURE(pipelineState);
-	CComputePipelineState* computePipelineState = pipelineState->As<CComputePipelineState>();
-	m_ShaderProgram = computePipelineState->GetShaderProgram()->As<CShaderProgram>();
-	m_ShaderProgram->Bind();
-	vkCmdBindPipeline(
-		m_CommandContext->GetCommandBuffer(), m_ShaderProgram->GetPipelineBindPoint(), computePipelineState->GetPipeline());
+	m_ComputePipelineState = pipelineState->As<CComputePipelineState>();
 
-	if (m_Device->GetDescriptorManager().UseDescriptorIndexing())
+	CShaderProgram* shaderProgram = m_ComputePipelineState->GetShaderProgram()->As<CShaderProgram>();
+	if (m_ShaderProgram != shaderProgram)
 	{
-		vkCmdBindDescriptorSets(
-			m_CommandContext->GetCommandBuffer(), m_ShaderProgram->GetPipelineBindPoint(),
-			m_ShaderProgram->GetPipelineLayout(), 0,
-			1, &m_Device->GetDescriptorManager().GetDescriptorIndexingSet(), 0, nullptr);
+		if (m_ShaderProgram)
+			m_ShaderProgram->Unbind();
+		m_ShaderProgram = shaderProgram;
 	}
+	m_IsPipelineStateDirty = true;
 }
 
 void CDeviceCommandContext::BlitFramebuffer(
@@ -697,6 +691,7 @@ void CDeviceCommandContext::EndFramebufferPass()
 	if (m_ShaderProgram)
 		m_ShaderProgram->Unbind();
 	m_ShaderProgram = nullptr;
+	m_GraphicsPipelineState = nullptr;
 
 	if (m_DebugBarrierAfterFramebufferPass)
 		Utilities::SubmitDebugSyncMemoryBarrier(m_CommandContext->GetCommandBuffer());
@@ -932,6 +927,8 @@ void CDeviceCommandContext::EndComputePass()
 		m_ShaderProgram->Unbind();
 		m_ShaderProgram = nullptr;
 	}
+	m_LastBoundPipeline = VK_NULL_HANDLE;
+	m_ComputePipelineState = nullptr;
 
 	ENSURE(m_InsideComputePass);
 	m_InsideComputePass = false;
@@ -943,6 +940,7 @@ void CDeviceCommandContext::Dispatch(
 	const uint32_t groupCountZ)
 {
 	ENSURE(m_InsideComputePass);
+	ApplyPipelineStateIfDirty();
 	m_ShaderProgram->PreDispatch(*m_CommandContext);
 	UpdateOutdatedConstants();
 	vkCmdDispatch(
@@ -1172,12 +1170,16 @@ void CDeviceCommandContext::ApplyPipelineStateIfDirty()
 		return;
 	m_IsPipelineStateDirty = false;
 
-	ENSURE(m_GraphicsPipelineState);
-	ENSURE(m_VertexInputLayout);
-	ENSURE(m_Framebuffer);
+	ENSURE(m_GraphicsPipelineState || m_ComputePipelineState);
+	if (m_GraphicsPipelineState)
+	{
+		ENSURE(m_VertexInputLayout);
+		ENSURE(m_Framebuffer);
+	}
 
-	VkPipeline pipeline = m_GraphicsPipelineState->GetOrCreatePipeline(
-		m_VertexInputLayout, m_Framebuffer);
+	VkPipeline pipeline{m_GraphicsPipelineState
+		? m_GraphicsPipelineState->GetOrCreatePipeline(m_VertexInputLayout, m_Framebuffer)
+		: m_ComputePipelineState->GetPipeline()};
 	ENSURE(pipeline != VK_NULL_HANDLE);
 
 	if (m_LastBoundPipeline != pipeline)

@@ -36,6 +36,7 @@ namespace Vulkan
 {
 
 class CBuffer;
+class CComputePipelineState;
 class CDevice;
 class CFramebuffer;
 class CGraphicsPipelineState;
@@ -172,6 +173,7 @@ private:
 	CGraphicsPipelineState* m_GraphicsPipelineState = nullptr;
 	CVertexInputLayout* m_VertexInputLayout = nullptr;
 	CFramebuffer* m_Framebuffer = nullptr;
+	CComputePipelineState* m_ComputePipelineState = nullptr;
 	CShaderProgram* m_ShaderProgram = nullptr;
 	bool m_IsPipelineStateDirty = true;
 	VkPipeline m_LastBoundPipeline = VK_NULL_HANDLE;
