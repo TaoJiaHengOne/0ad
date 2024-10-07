@@ -88,6 +88,8 @@ public:
 	void ResolveMultisampleFramebuffer(
 		Renderer::Backend::IDeviceCommandContext* deviceCommandContext);
 
+	float GetScale() const { return m_Scale; }
+
 private:
 	void CreateMultisampleBuffer();
 	void DestroyMultisampleBuffer();

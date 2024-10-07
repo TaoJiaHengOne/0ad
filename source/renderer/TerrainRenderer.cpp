@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -43,6 +43,7 @@
 #include "renderer/backend/PipelineState.h"
 #include "renderer/DecalRData.h"
 #include "renderer/PatchRData.h"
+#include "renderer/PostprocManager.h"
 #include "renderer/Renderer.h"
 #include "renderer/RenderingOptions.h"
 #include "renderer/SceneRenderer.h"
@@ -606,10 +607,11 @@ bool TerrainRenderer::RenderFancyWater(
 		lightEnv.m_FogFactor, lightEnv.m_FogMax);
 	deviceCommandContext->SetUniform(
 		fancyWaterShader->GetBindingSlot(str_time), static_cast<float>(time));
+	const float scale{g_Renderer.GetPostprocManager().IsEnabled()
+		? g_Renderer.GetPostprocManager().GetScale() : 1.0f};
 	deviceCommandContext->SetUniform(
 		fancyWaterShader->GetBindingSlot(str_screenSize),
-		static_cast<float>(g_Renderer.GetWidth()),
-		static_cast<float>(g_Renderer.GetHeight()));
+		g_Renderer.GetWidth() * scale, g_Renderer.GetHeight() * scale);
 
 	if (waterManager.m_WaterType == L"clap")
 	{

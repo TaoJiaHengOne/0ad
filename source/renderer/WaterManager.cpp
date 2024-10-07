@@ -30,6 +30,7 @@
 #include "ps/Game.h"
 #include "ps/World.h"
 #include "renderer/backend/IDevice.h"
+#include "renderer/PostprocManager.h"
 #include "renderer/Renderer.h"
 #include "renderer/RenderingOptions.h"
 #include "renderer/SceneRenderer.h"
@@ -320,8 +321,10 @@ void WaterManager::RecreateOrLoadTexturesIfNeeded()
 		}
 	}
 
-	const uint32_t newWidth = static_cast<uint32_t>(g_Renderer.GetWidth());
-	const uint32_t newHeight = static_cast<uint32_t>(g_Renderer.GetHeight());
+	const float scale{g_Renderer.GetPostprocManager().IsEnabled()
+		? g_Renderer.GetPostprocManager().GetScale() : 1.0f};
+	const uint32_t newWidth{static_cast<uint32_t>(g_Renderer.GetWidth() * scale)};
+	const uint32_t newHeight{static_cast<uint32_t>(g_Renderer.GetHeight() * scale)};
 	if (m_FancyTexture && (m_FancyTexture->GetWidth() != newWidth || m_FancyTexture->GetHeight() != newHeight))
 	{
 		m_FancyEffectsFramebuffer.reset();
@@ -339,14 +342,14 @@ void WaterManager::RecreateOrLoadTexturesIfNeeded()
 		m_FancyTexture = m_Device->CreateTexture2D("WaterFancyTexture",
 			Renderer::Backend::ITexture::Usage::SAMPLED |
 				Renderer::Backend::ITexture::Usage::COLOR_ATTACHMENT,
-			Renderer::Backend::Format::R8G8B8A8_UNORM, g_Renderer.GetWidth(), g_Renderer.GetHeight(),
+			Renderer::Backend::Format::R8G8B8A8_UNORM, newWidth, newHeight,
 			Renderer::Backend::Sampler::MakeDefaultSampler(
 				Renderer::Backend::Sampler::Filter::LINEAR,
 				Renderer::Backend::Sampler::AddressMode::REPEAT));
 
 		m_FancyTextureDepth = m_Device->CreateTexture2D("WaterFancyDepthTexture",
 			Renderer::Backend::ITexture::Usage::DEPTH_STENCIL_ATTACHMENT,
-			depthFormat, g_Renderer.GetWidth(), g_Renderer.GetHeight(),
+			depthFormat, newWidth, newHeight,
 			Renderer::Backend::Sampler::MakeDefaultSampler(
 				Renderer::Backend::Sampler::Filter::LINEAR,
 				Renderer::Backend::Sampler::AddressMode::REPEAT));
