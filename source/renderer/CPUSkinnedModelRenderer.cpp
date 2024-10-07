@@ -17,7 +17,7 @@
 
 #include "precompiled.h"
 
-#include "renderer/HWLightingModelRenderer.h"
+#include "renderer/CPUSkinnedModelRenderer.h"
 
 #include "graphics/Color.h"
 #include "graphics/LightEnv.h"
@@ -32,6 +32,8 @@
 #include "renderer/RenderModifiers.h"
 #include "renderer/VertexArray.h"
 
+#include <vector>
+
 namespace
 {
 
@@ -39,9 +41,7 @@ constexpr uint32_t MODEL_VERTEX_ATTRIBUTE_STRIDE = 32;
 constexpr uint32_t MODEL_VERTEX_ATTRIBUTE_POSITION_OFFSET = 16;
 constexpr uint32_t MODEL_VERTEX_ATTRIBUTE_NORMAL_OFFSET = 0;
 
-} // anonymous namespace
-
-struct ShaderModelDef : public CModelDefRPrivate
+struct ModelDefRData : public CModelDefRPrivate
 {
 	/// Indices are the same for all models, so share them
 	VertexIndexArray m_IndexArray;
@@ -54,11 +54,10 @@ struct ShaderModelDef : public CModelDefRPrivate
 
 	Renderer::Backend::IVertexInputLayout* m_VertexInputLayout = nullptr;
 
-	ShaderModelDef(const CModelDefPtr& mdef);
+	ModelDefRData(const CModelDefPtr& mdef);
 };
 
-
-ShaderModelDef::ShaderModelDef(const CModelDefPtr& mdef)
+ModelDefRData::ModelDefRData(const CModelDefPtr& mdef)
 	: m_IndexArray(Renderer::Backend::IBuffer::Usage::TRANSFER_DST),
 	m_Array(Renderer::Backend::IBuffer::Type::VERTEX,
 		Renderer::Backend::IBuffer::Usage::TRANSFER_DST)
@@ -116,8 +115,7 @@ ShaderModelDef::ShaderModelDef(const CModelDefPtr& mdef)
 	m_VertexInputLayout = g_Renderer.GetVertexInputLayout({attributes.begin(), attributes.end()});
 }
 
-
-struct ShaderModel : public CModelRData
+struct ModelRData : public CModelRData
 {
 	/// Dynamic per-CModel vertex array
 	VertexArray m_Array;
@@ -126,152 +124,144 @@ struct ShaderModel : public CModelRData
 	VertexArray::Attribute m_Position;
 	VertexArray::Attribute m_Normal;
 
-	ShaderModel(const void* key)
+	ModelRData(const void* key)
 		: CModelRData(key),
 		m_Array(Renderer::Backend::IBuffer::Type::VERTEX,
 			Renderer::Backend::IBuffer::Usage::DYNAMIC | Renderer::Backend::IBuffer::Usage::TRANSFER_DST)
 	{}
 };
 
+} // anonymous namespace
 
-struct ShaderModelVertexRenderer::ShaderModelRendererInternals
+struct CPUSkinnedModelVertexRenderer::Internals
 {
-	/// Previously prepared modeldef
-	ShaderModelDef* shadermodeldef;
+	// Previously prepared modeldef
+	ModelDefRData* modelDefRData{nullptr};
 };
 
-
 // Construction and Destruction
-ShaderModelVertexRenderer::ShaderModelVertexRenderer()
+CPUSkinnedModelVertexRenderer::CPUSkinnedModelVertexRenderer()
+	: m(std::make_unique<Internals>())
 {
-	m = new ShaderModelRendererInternals;
-	m->shadermodeldef = nullptr;
 }
 
-ShaderModelVertexRenderer::~ShaderModelVertexRenderer()
-{
-	delete m;
-}
-
+CPUSkinnedModelVertexRenderer::~CPUSkinnedModelVertexRenderer() = default;
 
 // Build model data (and modeldef data if necessary)
-CModelRData* ShaderModelVertexRenderer::CreateModelData(const void* key, CModel* model)
+CModelRData* CPUSkinnedModelVertexRenderer::CreateModelData(const void* key, CModel* model)
 {
 	CModelDefPtr mdef = model->GetModelDef();
-	ShaderModelDef* shadermodeldef = (ShaderModelDef*)mdef->GetRenderData(m);
+	ModelDefRData* modelDefRData = static_cast<ModelDefRData*>(mdef->GetRenderData(m.get()));
 
-	if (!shadermodeldef)
+	if (!modelDefRData)
 	{
-		shadermodeldef = new ShaderModelDef(mdef);
-		mdef->SetRenderData(m, shadermodeldef);
+		modelDefRData = new ModelDefRData(mdef);
+		mdef->SetRenderData(m.get(), modelDefRData);
 	}
 
 	// Build the per-model data
-	ShaderModel* shadermodel = new ShaderModel(key);
+	ModelRData* modelRData = new ModelRData(key);
 
 	// Positions and normals must be 16-byte aligned for SSE writes.
 
-	shadermodel->m_Position.format = Renderer::Backend::Format::R32G32B32A32_SFLOAT;
-	shadermodel->m_Array.AddAttribute(&shadermodel->m_Position);
+	modelRData->m_Position.format = Renderer::Backend::Format::R32G32B32A32_SFLOAT;
+	modelRData->m_Array.AddAttribute(&modelRData->m_Position);
 
-	shadermodel->m_Normal.format = Renderer::Backend::Format::R32G32B32A32_SFLOAT;
-	shadermodel->m_Array.AddAttribute(&shadermodel->m_Normal);
+	modelRData->m_Normal.format = Renderer::Backend::Format::R32G32B32A32_SFLOAT;
+	modelRData->m_Array.AddAttribute(&modelRData->m_Normal);
 
-	shadermodel->m_Array.SetNumberOfVertices(mdef->GetNumVertices());
-	shadermodel->m_Array.Layout();
+	modelRData->m_Array.SetNumberOfVertices(mdef->GetNumVertices());
+	modelRData->m_Array.Layout();
 
 	// Verify alignment
-	ENSURE(shadermodel->m_Position.offset % 16 == 0);
-	ENSURE(shadermodel->m_Normal.offset % 16 == 0);
-	ENSURE(shadermodel->m_Array.GetStride() % 16 == 0);
+	ENSURE(modelRData->m_Position.offset % 16 == 0);
+	ENSURE(modelRData->m_Normal.offset % 16 == 0);
+	ENSURE(modelRData->m_Array.GetStride() % 16 == 0);
 
 	// We assume that the vertex input layout is the same for all models with the
-	// same ShaderModelDef.
+	// same ModelDefRData.
 	// TODO: we need a more strict way to guarantee that.
-	ENSURE(shadermodel->m_Array.GetStride() == MODEL_VERTEX_ATTRIBUTE_STRIDE);
-	ENSURE(shadermodel->m_Position.offset == MODEL_VERTEX_ATTRIBUTE_POSITION_OFFSET);
-	ENSURE(shadermodel->m_Normal.offset == MODEL_VERTEX_ATTRIBUTE_NORMAL_OFFSET);
+	ENSURE(modelRData->m_Array.GetStride() == MODEL_VERTEX_ATTRIBUTE_STRIDE);
+	ENSURE(modelRData->m_Position.offset == MODEL_VERTEX_ATTRIBUTE_POSITION_OFFSET);
+	ENSURE(modelRData->m_Normal.offset == MODEL_VERTEX_ATTRIBUTE_NORMAL_OFFSET);
 
-	return shadermodel;
+	return modelRData;
 }
 
-
 // Fill in and upload dynamic vertex array
-void ShaderModelVertexRenderer::UpdateModelData(CModel* model, CModelRData* data, int updateflags)
+void CPUSkinnedModelVertexRenderer::UpdateModelData(CModel* model, CModelRData* data, int updateflags)
 {
-	ShaderModel* shadermodel = static_cast<ShaderModel*>(data);
+	ModelRData* modelRData = static_cast<ModelRData*>(data);
 
 	if (updateflags & RENDERDATA_UPDATE_VERTICES)
 	{
 		// build vertices
-		VertexArrayIterator<CVector3D> Position = shadermodel->m_Position.GetIterator<CVector3D>();
-		VertexArrayIterator<CVector3D> Normal = shadermodel->m_Normal.GetIterator<CVector3D>();
+		VertexArrayIterator<CVector3D> Position = modelRData->m_Position.GetIterator<CVector3D>();
+		VertexArrayIterator<CVector3D> Normal = modelRData->m_Normal.GetIterator<CVector3D>();
 
 		ModelRenderer::BuildPositionAndNormals(model, Position, Normal);
 
 		// upload everything to vertex buffer
-		shadermodel->m_Array.Upload();
+		modelRData->m_Array.Upload();
 	}
 
-	shadermodel->m_Array.PrepareForRendering();
+	modelRData->m_Array.PrepareForRendering();
 }
 
-void ShaderModelVertexRenderer::UploadModelData(
+void CPUSkinnedModelVertexRenderer::UploadModelData(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	CModel* model, CModelRData* data)
 {
-	ShaderModelDef* shaderModelDef = static_cast<ShaderModelDef*>(model->GetModelDef()->GetRenderData(m));
-	ENSURE(shaderModelDef);
+	ModelDefRData* modelDefRData = static_cast<ModelDefRData*>(model->GetModelDef()->GetRenderData(m.get()));
+	ENSURE(modelDefRData);
 
-	shaderModelDef->m_Array.UploadIfNeeded(deviceCommandContext);
-	shaderModelDef->m_IndexArray.UploadIfNeeded(deviceCommandContext);
+	modelDefRData->m_Array.UploadIfNeeded(deviceCommandContext);
+	modelDefRData->m_IndexArray.UploadIfNeeded(deviceCommandContext);
 
-	ShaderModel* shaderModel = static_cast<ShaderModel*>(data);
+	ModelRData* modelRData = static_cast<ModelRData*>(data);
 
-	shaderModel->m_Array.UploadIfNeeded(deviceCommandContext);
+	modelRData->m_Array.UploadIfNeeded(deviceCommandContext);
 }
 
 // Prepare UV coordinates for this modeldef
-void ShaderModelVertexRenderer::PrepareModelDef(
+void CPUSkinnedModelVertexRenderer::PrepareModelDef(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CModelDef& def)
 {
-	m->shadermodeldef = (ShaderModelDef*)def.GetRenderData(m);
+	m->modelDefRData = static_cast<ModelDefRData*>(def.GetRenderData(m.get()));
+	ENSURE(m->modelDefRData);
 
-	ENSURE(m->shadermodeldef);
+	deviceCommandContext->SetVertexInputLayout(m->modelDefRData->m_VertexInputLayout);
 
-	deviceCommandContext->SetVertexInputLayout(m->shadermodeldef->m_VertexInputLayout);
-
-	const uint32_t stride = m->shadermodeldef->m_Array.GetStride();
-	const uint32_t firstVertexOffset = m->shadermodeldef->m_Array.GetOffset() * stride;
+	const uint32_t stride = m->modelDefRData->m_Array.GetStride();
+	const uint32_t firstVertexOffset = m->modelDefRData->m_Array.GetOffset() * stride;
 
 	deviceCommandContext->SetVertexBuffer(
-		0, m->shadermodeldef->m_Array.GetBuffer(), firstVertexOffset);
+		0, m->modelDefRData->m_Array.GetBuffer(), firstVertexOffset);
 }
 
 // Render one model
-void ShaderModelVertexRenderer::RenderModel(
+void CPUSkinnedModelVertexRenderer::RenderModel(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	Renderer::Backend::IShaderProgram* UNUSED(shader), CModel* model, CModelRData* data)
 {
 	const CModelDefPtr& mdldef = model->GetModelDef();
-	ShaderModel* shadermodel = static_cast<ShaderModel*>(data);
+	ModelRData* modelRData = static_cast<ModelRData*>(data);
 
-	const uint32_t stride = shadermodel->m_Array.GetStride();
-	const uint32_t firstVertexOffset = shadermodel->m_Array.GetOffset() * stride;
+	const uint32_t stride = modelRData->m_Array.GetStride();
+	const uint32_t firstVertexOffset = modelRData->m_Array.GetOffset() * stride;
 
 	deviceCommandContext->SetVertexBuffer(
-		1, shadermodel->m_Array.GetBuffer(), firstVertexOffset);
-	deviceCommandContext->SetIndexBuffer(m->shadermodeldef->m_IndexArray.GetBuffer());
+		1, modelRData->m_Array.GetBuffer(), firstVertexOffset);
+	deviceCommandContext->SetIndexBuffer(m->modelDefRData->m_IndexArray.GetBuffer());
 
 	// Render the lot.
 	const size_t numberOfFaces = mdldef->GetNumFaces();
 
 	deviceCommandContext->DrawIndexedInRange(
-		m->shadermodeldef->m_IndexArray.GetOffset(), numberOfFaces * 3, 0, mdldef->GetNumVertices() - 1);
+		m->modelDefRData->m_IndexArray.GetOffset(), numberOfFaces * 3, 0, mdldef->GetNumVertices() - 1);
 
 	// Bump stats.
 	g_Renderer.m_Stats.m_DrawCalls++;
 	g_Renderer.m_Stats.m_ModelTris += numberOfFaces;
 }
-

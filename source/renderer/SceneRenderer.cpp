@@ -44,8 +44,8 @@
 #include "ps/Profile.h"
 #include "ps/World.h"
 #include "renderer/backend/IDevice.h"
+#include "renderer/CPUSkinnedModelRenderer.h"
 #include "renderer/DebugRenderer.h"
-#include "renderer/HWLightingModelRenderer.h"
 #include "renderer/InstancingModelRenderer.h"
 #include "renderer/ModelRenderer.h"
 #include "renderer/OverlayRenderer.h"
@@ -245,7 +245,7 @@ void CSceneRenderer::ReloadShaders(Renderer::Backend::IDevice* device)
 	m->Model.ModShader = LitRenderModifierPtr(new ShaderRenderModifier());
 
 	ENSURE(g_RenderingOptions.GetRenderPath() != RenderPath::FIXED);
-	m->Model.VertexRendererShader = ModelVertexRendererPtr(new ShaderModelVertexRenderer());
+	m->Model.VertexRendererShader = ModelVertexRendererPtr(new CPUSkinnedModelVertexRenderer());
 	m->Model.VertexInstancingShader = ModelVertexRendererPtr(new InstancingModelRenderer(false, device->GetBackend() != Renderer::Backend::Backend::GL_ARB));
 
 	if (g_RenderingOptions.GetGPUSkinning()) // TODO: should check caps and GLSL etc too

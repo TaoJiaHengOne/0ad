@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -148,12 +148,11 @@ public:
 		const PS::span<const Renderer::Backend::SVertexAttributeFormat> attributes);
 
 protected:
-	friend class CPatchRData;
 	friend class CDecalRData;
-	friend class HWLightingModelRenderer;
-	friend class ShaderModelVertexRenderer;
-	friend class InstancingModelRenderer;
+	friend class CPatchRData;
+	friend class CPUSkinnedModelVertexRenderer;
 	friend class CRenderingOptions;
+	friend class InstancingModelRenderer;
 
 	bool ShouldRender() const;
 
