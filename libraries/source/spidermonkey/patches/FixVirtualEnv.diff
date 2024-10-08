@@ -1,0 +1,16 @@
+--- a/python/mozbuild/mozbuild/virtualenv.py
++++ b/python/mozbuild/mozbuild/virtualenv.py
+@@ -246,11 +246,12 @@
+         if os.path.exists(self.virtualenv_root):
+             shutil.rmtree(self.virtualenv_root)
+ 
+         args = [
+             python,
+-            self.virtualenv_script_path,
++            "-m",
++            "virtualenv",
+             # Without this, virtualenv.py may attempt to contact the outside
+             # world and search for or download a newer version of pip,
+             # setuptools, or wheel. This is bad for security, reproducibility,
+             # and speed.
+             "--no-download",

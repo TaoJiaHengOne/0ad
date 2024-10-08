@@ -642,23 +642,18 @@ extern_lib_defs = {
 					pkgconfig.add_includes_after("mozjs-91")
 				end
 			else
-				if os.istarget("windows") then
-					include_dir = "include-win32"
-				else
-					include_dir = "include-unix"
-				end
 				filter "Debug"
 					if externalincludedirs then
-						externalincludedirs { libraries_source_dir.."spidermonkey/"..include_dir.."-debug" }
+						externalincludedirs { libraries_source_dir.."spidermonkey/include-debug" }
 					else
-						sysincludedirs { libraries_source_dir.."spidermonkey/"..include_dir.."-debug" }
+						sysincludedirs { libraries_source_dir.."spidermonkey/include-debug" }
 					end
 					defines { "DEBUG" }
 				filter "Release"
 					if externalincludedirs then
-						externalincludedirs { libraries_source_dir.."spidermonkey/"..include_dir.."-release" }
+						externalincludedirs { libraries_source_dir.."spidermonkey/include-release" }
 					else
-						sysincludedirs { libraries_source_dir.."spidermonkey/"..include_dir.."-release" }
+						sysincludedirs { libraries_source_dir.."spidermonkey/include-release" }
 					end
 				filter { }
 			end
@@ -671,16 +666,12 @@ extern_lib_defs = {
 					pkgconfig.add_links("mozjs-91")
 				end
 			else
-				filter { "Debug", "action:vs*" }
-					links { "mozjs91-ps-debug" }
-					links { "mozjs91-ps-rust-debug" }
-				filter { "Debug", "action:not vs*" }
-					links { "mozjs91-ps-debug" }
-					links { "mozjs91-ps-rust" }
+				filter { "Debug" }
+					links { "mozjs91-debug" }
 				filter { "Release" }
-					links { "mozjs91-ps-release" }
-					links { "mozjs91-ps-rust" }
+					links { "mozjs91-release" }
 				filter { }
+				links { "mozjs91-rust" }
 				add_source_lib_paths("spidermonkey")
 			end
 		end,

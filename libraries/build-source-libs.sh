@@ -76,7 +76,7 @@ fi
 echo
 if [ "$with_system_mozjs" = "false" ]; then
 	./source/spidermonkey/build.sh || die "SpiderMonkey build failed"
-	cp source/spidermonkey/bin/* ../binaries/system/
+	cp source/spidermonkey/lib/* ../binaries/system/
 fi
 echo
 if [ "$with_spirv_reflect" = "true" ]; then
