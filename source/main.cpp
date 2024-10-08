@@ -658,7 +658,8 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 			CModInstaller installer(paths.UserData() / "mods", paths.Cache());
 
 			// Install the mods without deleting the pyromod files
-			for (const OsPath& modPath : modsToInstall)
+			// `modsToInstall` is cleared so we don't intstall the mods again on restart.
+			for (const OsPath& modPath : std::exchange(modsToInstall, {}))
 			{
 				CModInstaller::ModInstallationResult result = installer.Install(modPath, g_ScriptContext, true);
 				if (result != CModInstaller::ModInstallationResult::SUCCESS)
@@ -700,9 +701,6 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 			else
 				NonVisualFrame();
 		}
-
-		// Do not install mods again in case of restart (typically from the mod selector)
-		modsToInstall.clear();
 
 		ShutdownNetworkAndUI();
 		guiScriptInterface.reset();
