@@ -37,9 +37,9 @@ VkBufferUsageFlags ToVkBufferUsageFlags(const uint32_t usage)
 {
 	VkBufferUsageFlags usageFlags = 0;
 	if (usage & IBuffer::Usage::TRANSFER_SRC)
-		usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+		usageFlags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 	if (usage & IBuffer::Usage::TRANSFER_DST)
-		usageFlags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		usageFlags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 	return usageFlags;
 }
 
