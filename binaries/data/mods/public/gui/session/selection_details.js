@@ -317,9 +317,31 @@ function displaySingle(entState)
 		});
 	secondaryObject.hidden = hideSecondary;
 
-	let isGaia = playerState.civ == "gaia";
+	const isGaia = playerState.civ == "gaia";
 	Engine.GetGUIObjectByName("playerCivIcon").sprite = isGaia ? "" : "cropped:1.0, 0.15625 center:grayscale:" + civEmblem;
-	Engine.GetGUIObjectByName("civilizationTooltip").tooltip = isGaia ? "" : civName;
+
+	if (isGaia)
+	{
+		Engine.GetGUIObjectByName("phaseEmblems").sprite = "";
+		Engine.GetGUIObjectByName("civilizationTooltip").tooltip = "";
+	}
+	else
+	{
+		let civilizationTooltip = civName;
+		let civPhaseEmblems = "session/panel_phase_emblems_hidden.png";
+
+		// Reveal phases to mutual allies and observers
+		if (g_ViewedPlayer == -1 || playerState.isMutualAlly[g_ViewedPlayer])
+		{
+			const civPhase = g_SimState.players[entState.player].phase
+			civPhaseEmblems = "session/panel_phase_emblems_" + civPhase + ".png";
+			const civPhaseData = GetTechnologyData("phase_" + civPhase + "_" + playerState.civ, playerState.civ) ||
+				GetTechnologyData("phase_" + civPhase, playerState.civ);
+			civilizationTooltip += " — " + getEntityNames(civPhaseData);
+		}
+		Engine.GetGUIObjectByName("phaseEmblems").sprite = "cropped:1.0, 1.0 center:" + civPhaseEmblems;
+		Engine.GetGUIObjectByName("civilizationTooltip").tooltip = civilizationTooltip;
+	}
 
 	// TODO: we should require all entities to have icons
 	Engine.GetGUIObjectByName("icon").sprite = template.icon ? ("stretched:session/portraits/" + template.icon) : "BackgroundBlack";

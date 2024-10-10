@@ -12,6 +12,8 @@
 			<object size="50%-64 50%-10 50%+64 50%+10" name="playerCivIcon" type="image" ghost="true"/>
 			<!-- Player color band. -->
 			<object name="playerColorBackground" type="image" sprite="playerColorBackground" ghost="true"/>
+			<!-- Phase emblems. -->
+			<object size="0 0 100% 100%" name="phaseEmblems" type="image" ghost="true"/>
 			<object type="image" sprite="bottomEdgedPanelShader" ghost="true"/>
 			<!-- Player name. -->
 			<object size="0 50%-10 100% 50%+10" name="player" type="text" style="largeCenteredOutlinedText"/>
