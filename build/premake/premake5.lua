@@ -395,7 +395,7 @@ function project_set_build_flags()
 				end
 
 				-- Adding the executable path and taking care of correct escaping
-				if _ACTION == "gmake" then
+				if _ACTION == "gmake2" then
 					linkoptions { "-Wl,-rpath,'$$ORIGIN'" }
 				elseif _ACTION == "codeblocks" then
 					linkoptions { "-Wl,-R\\\\$$$ORIGIN" }

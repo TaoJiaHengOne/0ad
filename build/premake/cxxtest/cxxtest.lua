@@ -39,15 +39,15 @@ function m.init(source_root, have_std, runner, includes, root_includes)
 
 	-- With gmake, create a Utility project that generates the test root file
 	-- This is a workaround for https://github.com/premake/premake-core/issues/286
-	if _ACTION == "gmake" then
+	if _ACTION == "gmake2" then
 		project "cxxtestroot"
-		kind "Utility"
+		kind "Makefile"
 
 		-- Note: this command is not silent and clutters the output
 		-- Reported upstream: https://github.com/premake/premake-core/issues/954
-		prebuildmessage 'Generating test root file'
-		prebuildcommands { m.exepath.." --root "..m.rootoptions.." --runner="..m.runner.." -o "..path.getabsolute(m.rootfile) }
-		buildoutputs { m.rootfile }
+		buildmessage 'Generating test root file'
+		buildcommands { m.exepath.." --root "..m.rootoptions.." --runner="..m.runner.." -o "..path.getabsolute(m.rootfile) }
+		cleancommands { "rm " .. path.getabsolute(m.rootfile) }
 	end
 end
 
@@ -56,7 +56,7 @@ function m.configure_project(hdrfiles)
 
 	-- Generate the root file, or make sure the utility for generating
 	-- it is a dependancy with gmake.
-	if _ACTION == "gmake" then
+	if _ACTION == "gmake2" then
 		dependson { "cxxtestroot" }
 	else
 		prebuildmessage 'Generating test root file'
@@ -78,9 +78,11 @@ function m.configure_project(hdrfiles)
 
 	-- Add source files
 	files { m.rootfile }
-	for _,hdrfile in ipairs(hdrfiles) do
-		local srcfile = string.sub(hdrfile, 1, -3) .. ".cpp"
-		files { srcfile }
+	if not (_ACTION == "gmake2") then
+		for _,hdrfile in ipairs(hdrfiles) do
+			local srcfile = string.sub(hdrfile, 1, -3) .. ".cpp"
+			files { srcfile }
+		end
 	end
 end
 
