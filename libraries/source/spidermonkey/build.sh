@@ -50,15 +50,6 @@ tar xfJ "${FOLDER}.tar.xz"
 	# user-installed python packages.
 	PYTHONNOUSERSITE=true
 
-	# Use Mozilla make on Windows
-	if [ "${OS}" = "Windows_NT" ]; then
-		MAKE="mozmake"
-	else
-		MAKE=${MAKE:="make"}
-	fi
-
-	MAKE_OPTS="${JOBS}"
-
 	# Standalone SpiderMonkey can not use jemalloc (see https://bugzilla.mozilla.org/show_bug.cgi?id=1465038)
 	# Jitspew doesn't compile on VS17 in the zydis disassembler - since we don't use it, deactivate it.
 	# Trace-logging doesn't compile for now.
@@ -101,15 +92,6 @@ tar xfJ "${FOLDER}.tar.xz"
 		fi
 	fi
 
-	LLVM_OBJDUMP=${LLVM_OBJDUMP:=$(command -v llvm-objdump || command -v objdump)}
-
-	# Quick sanity check to print explicit error messages
-	# (Don't run this on windows as it would likely fail spuriously)
-	if [ "${OS}" != "Windows_NT" ]; then
-		[ -n "$(command -v rustc)" ] || (echo "Error: rustc is not available. Install the rust toolchain (rust + cargo) before proceeding." && exit 1)
-		[ -n "${LLVM_OBJDUMP}" ] || (echo "Error: LLVM objdump is not available. Install it (likely via LLVM-clang) before proceeding." && exit 1)
-	fi
-
 	# If Valgrind looks like it's installed, then set up SM to support it
 	# (else the JITs will interact poorly with it)
 	if [ -e /usr/include/valgrind/valgrind.h ]; then
@@ -122,35 +104,25 @@ tar xfJ "${FOLDER}.tar.xz"
 		${CHOST:+--host=${CHOST}} \
 		${CTARGET:+--target=${CTARGET}}"
 
-	echo "SpiderMonkey build options: ${CONF_OPTS}"
-
 	# Build
+	./mach create-mach-environment
+
 	# Debug (broken on FreeBSD)
 	if [ "${OS}" != "FreeBSD" ]; then
-		mkdir -p build-debug
-		(
-			cd build-debug
-			# llvm-objdump is searched for with the complete name, not simply 'objdump', account for that.
-			CXXFLAGS="${CXXFLAGS}" ../js/src/configure \
-				LLVM_OBJDUMP="${LLVM_OBJDUMP}" \
-				${CONF_OPTS} \
-				--enable-debug \
-				--disable-optimize \
-				--enable-gczeal
-			${MAKE} ${MAKE_OPTS}
-		)
+		MOZCONFIG="$(pwd)/../mozconfig" \
+			OPTIONS="${CONF_OPTS} \
+			--enable-debug \
+			--disable-optimize \
+			--enable-gczeal" \
+			BUILD_DIR="build-debug" \
+			./mach build "${JOBS}"
 	fi
 	# Release
-	mkdir -p build-release
-	(
-		cd build-release
-		CXXFLAGS="${CXXFLAGS}" ../js/src/configure \
-			LLVM_OBJDUMP="${LLVM_OBJDUMP}" \
-			${CONF_OPTS} \
-			--enable-optimize
-		${MAKE} ${MAKE_OPTS}
-	)
-	
+	MOZCONFIG="$(pwd)/../mozconfig" \
+		OPTIONS="${CONF_OPTS} \
+		--enable-optimize" \
+		BUILD_DIR="build-release" \
+		./mach build "${JOBS}"
 )
 
 # install

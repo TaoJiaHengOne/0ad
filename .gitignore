@@ -18,6 +18,7 @@ libraries/source/fcollada/*
 libraries/source/nvtt/*
 libraries/source/premake-core/*
 libraries/source/spidermonkey/*
+!libraries/source/spidermonkey/mozconfig
 libraries/source/spirv-reflect/*
 !libraries/source/**/build.sh
 !libraries/source/**/patches/

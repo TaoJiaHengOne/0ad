@@ -27,6 +27,7 @@ RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends \
       libvorbis-dev \
       libwxgtk3.0-dev \
       libxml2-dev \
+      llvm \
       make \
       m4 \
       patch \

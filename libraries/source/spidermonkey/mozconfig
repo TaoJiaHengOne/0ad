@@ -1,0 +1,7 @@
+# Pass options to configure
+for option in ${OPTIONS}; do
+	ac_add_options "$option"
+done
+
+# Setup output dir
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/${BUILD_DIR}
