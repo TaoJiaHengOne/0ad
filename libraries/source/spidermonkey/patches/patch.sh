@@ -14,9 +14,17 @@ patch -p1 <"${PATCHES}"/FixRustLinkage.diff
 # Differentiate debug/release library names.
 patch -p1 <"${PATCHES}"/FixLibNames.diff
 
+# Fix Windows build environment under MozillaBuild 4, fixed in ESR 115
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1790540
+patch -p1 <"${PATCHES}"/FixMozillaBuild4.diff
+
 # Fix Windows build, fixed in ESR 115
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1802675
 patch -p1 <"${PATCHES}"/FixWinHeap.diff
+
+# Fix linking on Windows with mozglue, fixed in ESR 115
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1751561
+patch -p1 <"${PATCHES}"/FixDllMain.diff
 
 # There is an issue on 32-bit linux builds sometimes.
 # NB: the patch here is Comment 21 modified by Comment 25
@@ -26,34 +34,3 @@ patch -p1 <"${PATCHES}"/FixWinHeap.diff
 if [ "$(uname -m)" = "i686" ] && [ "${OS}" != "Windows_NT" ]; then
 	patch -p1 <"${PATCHES}"/FixFpNormIssue.diff
 fi
-
-if [ "$OS" = "Darwin" ]; then
-	# The bundled virtualenv version is not working on MacOS
-	# with recent homebrew and needs to be upgraded.
-	# Install it locally to not pollute anything.
-	pip3 install --upgrade -t virtualenv virtualenv
-	export PYTHONPATH="$(pwd)/virtualenv:$PYTHONPATH"
-	patch -p1 <"${PATCHES}"/FixVirtualEnv.diff
-fi
-
-if [ "$OS" = "Linux" ]; then
-	# Use sysconfig instead of distutils with the bundled virtualenv
-	# This fixes an issue with install schemes on recent Debian and Fedora
-	# Furthermore, distutils is going to be deprecated and is replaced
-	# by sysconfig in ESR102
-	patch -p1 <"${PATCHES}"/FixInstallScheme.diff
-
-	# Extend the previous fix with a portion of the following commit
-	# https://phabricator.services.mozilla.com/D130410
-	# This will prevent bug 1739486 from happening on Fedora
-	patch -p1 <"${PATCHES}"/FixFedoraVirtualEnv.diff
-fi
-
-# Python >= 3.11 support
-PYTHON_MINOR_VERSION="$(python3 -c 'import sys; print(sys.version_info.minor)')"
-if [ "$PYTHON_MINOR_VERSION" -ge 11 ]; then
-	patch -p1 <"${PATCHES}"/FixUnicodePython311.diff
-fi
-
-# fixed in SM102
-patch -p1 <"${PATCHES}"/FixClang16Build.diff

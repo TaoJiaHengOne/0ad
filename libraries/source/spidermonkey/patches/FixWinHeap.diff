@@ -33,9 +33,9 @@ diff --git a/memory/mozalloc/moz.build b/memory/mozalloc/moz.build
  
  UNIFIED_SOURCES += [
      "mozalloc.cpp",
+     "mozalloc_abort.cpp",
      "mozalloc_oom.cpp",
  ]
  
- SOURCES += [
-     "mozalloc_abort.cpp",
+ if CONFIG["MOZ_MEMORY"]:
 

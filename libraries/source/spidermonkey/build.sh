@@ -4,10 +4,10 @@ set -e
 cd "$(dirname "$0")"
 
 # This should match the version in config/milestone.txt
-FOLDER="mozjs-91.13.1"
+FOLDER="mozjs-102.15.1"
 # If same-version changes are needed, increment this.
-LIB_VERSION="91.13.1+2"
-LIB_NAME="mozjs91"
+LIB_VERSION="102.15.1+0"
+LIB_NAME="mozjs102"
 
 if [ -e .already-built ] && [ "$(cat .already-built)" = "${LIB_VERSION}" ]; then
 	echo "Spidermonkey is already up to date."
@@ -17,9 +17,11 @@ fi
 OS="${OS:=$(uname -s)}"
 
 # fetch
+# This tarball is built from https://ftp.mozilla.org/pub/firefox/releases/102.15.1esr/source
+# by running js/src/make-source-package.py
 if [ ! -e "${FOLDER}.tar.xz" ]; then
 	curl -fLo "${FOLDER}.tar.xz" \
-		"https://svn.wildfiregames.com/public/source-libs/trunk/spidermonkey/${FOLDER}.tar.xz"
+		"https://releases.wildfiregames.com/libs/${FOLDER}.tar.xz"
 fi
 
 # unpack
@@ -46,18 +48,16 @@ tar xfJ "${FOLDER}.tar.xz"
 (
 	cd "${FOLDER}"
 
-	# Prevent the SpiderMonkey build system from reading dependencies from
-	# user-installed python packages.
-	PYTHONNOUSERSITE=true
+	# Silence notifications and warnings from the Mozilla build system
+	export MOZ_NOSPAM=1
+	export CFLAGS="${CFLAGS} -w"
+	export CXXFLAGS="${CXXFLAGS} -w"
 
-	# Standalone SpiderMonkey can not use jemalloc (see https://bugzilla.mozilla.org/show_bug.cgi?id=1465038)
-	# Jitspew doesn't compile on VS17 in the zydis disassembler - since we don't use it, deactivate it.
-	# Trace-logging doesn't compile for now.
-	CONF_OPTS="--disable-tests
-	           --disable-jemalloc
-	           --disable-js-shell
-	           --without-intl-api
-	           --enable-shared-js"
+	# Do not let mach fetch python and rust packages online: use vendored content
+	export MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE="none"
+
+	# Do not let mach install tools in the user's home, create a disposable folder
+	export MOZBUILD_STATE_PATH="${MOZBUILD_STATE_PATH:=$(pwd)/mozbuild-state}"
 
 	if [ -n "$PROFILE" ]; then
 		CONF_OPTS="$CONF_OPTS --enable-profiling
@@ -105,23 +105,21 @@ tar xfJ "${FOLDER}.tar.xz"
 		${CTARGET:+--target=${CTARGET}}"
 
 	# Build
-	./mach create-mach-environment
-
 	# Debug (broken on FreeBSD)
 	if [ "${OS}" != "FreeBSD" ]; then
 		MOZCONFIG="$(pwd)/../mozconfig" \
-			OPTIONS="${CONF_OPTS} \
+		MOZCONFIG_OPTIONS="${CONF_OPTS} \
 			--enable-debug \
 			--disable-optimize \
 			--enable-gczeal" \
-			BUILD_DIR="build-debug" \
+		BUILD_DIR="build-debug" \
 			./mach build "${JOBS}"
 	fi
 	# Release
 	MOZCONFIG="$(pwd)/../mozconfig" \
-		OPTIONS="${CONF_OPTS} \
+	MOZCONFIG_OPTIONS="${CONF_OPTS} \
 		--enable-optimize" \
-		BUILD_DIR="build-release" \
+	BUILD_DIR="build-release" \
 		./mach build "${JOBS}"
 )
 
@@ -157,6 +155,12 @@ if [ "${OS}" = "Windows_NT" ]; then
 		cd "${FOLDER}"/build-release/dist/include
 		rm -f mozzconf.h zconf.h zlib.h
 	)
+
+	# SpiderMonkey can be linked/included in projects built with MSVC, however, since clang is now the only
+	# supported compiler on Windows, the codebase has accumulated some divergences with MSVC.
+	# Upstream tries on a best-effort basis to keep the SM headers MSVC-compatible.
+	patch -d "${FOLDER}"/build-debug/dist/include -p1 <patches/FixHeadersForMSVC.diff
+	patch -d "${FOLDER}"/build-release/dist/include -p1 <patches/FixHeadersForMSVC.diff
 fi
 
 # js-config.h is different for debug and release builds, so we need different include directories for both

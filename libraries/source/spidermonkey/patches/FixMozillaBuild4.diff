@@ -1,0 +1,36 @@
+
+# HG changeset patch
+# User Mike Hommey <mh+mozilla@glandium.org>
+# Date 1663730995 0
+# Node ID 8e4ceab106b12c3816163829494ac5e7938a6be6
+# Parent  ef44d7041454440fdd144b79c115c8d6439ec31a
+Bug 1790540 - Gracefully handle when topobjdir is not set in MozbuildObject.mozconfig. r=firefox-build-system-reviewers,nalexander
+
+This is a condition that happens when going through the js/src code path
+in build/moz.configure/init.configure:mozconfig.
+
+Differential Revision: https://phabricator.services.mozilla.com/D157769
+
+diff --git a/python/mozbuild/mozbuild/base.py b/python/mozbuild/mozbuild/base.py
+--- a/python/mozbuild/mozbuild/base.py
++++ b/python/mozbuild/mozbuild/base.py
+@@ -193,17 +193,17 @@ class MozbuildObject(ProcessExecutionMix
+ 
+         # If we can't resolve topobjdir, oh well. We'll figure out when we need
+         # one.
+         return cls(
+             topsrcdir, None, None, topobjdir=topobjdir, mozconfig=mozconfig, **kwargs
+         )
+ 
+     def resolve_mozconfig_topobjdir(self, default=None):
+-        topobjdir = self.mozconfig["topobjdir"] or default
++        topobjdir = self.mozconfig.get("topobjdir") or default
+         if not topobjdir:
+             return None
+ 
+         if "@CONFIG_GUESS@" in topobjdir:
+             topobjdir = topobjdir.replace("@CONFIG_GUESS@", self.resolve_config_guess())
+ 
+         if not os.path.isabs(topobjdir):
+             topobjdir = os.path.abspath(os.path.join(self.topsrcdir, topobjdir))
+

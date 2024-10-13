@@ -1,0 +1,38 @@
+diff --git a/jspubtd.h b/jspubtd.h
+index 97de470db..1507b6b6b 100644
+--- a/jspubtd.h
++++ b/jspubtd.h
+@@ -51,6 +51,11 @@ enum JSType {
+ enum JSProtoKey {
+ #define PROTOKEY_AND_INITIALIZER(name, clasp) JSProto_##name,
+   JS_FOR_EACH_PROTOTYPE(PROTOKEY_AND_INITIALIZER)
++// Workaround MSVC's __VA_ARGS__ quirk, until bug 1768634 is solved
++// https://bugzilla.mozilla.org/show_bug.cgi?id=1768634
++#ifdef _MSC_VER
++  ,
++#endif
+ #undef PROTOKEY_AND_INITIALIZER
+       JSProto_LIMIT
+ };
+
+diff --git a/mozilla/Result.h b/mozilla/Result.h
+index cc4f87826..0e763a300 100644
+--- a/mozilla/Result.h
++++ b/mozilla/Result.h
+@@ -212,10 +212,16 @@ using UnsignedIntType = std::conditional_t<
+  */
+ template <typename V, typename E>
+ class ResultImplementation<V, E, PackingStrategy::LowBitTagIsError> {
++// These assertions fail with MSVC 14.1. Similar bugs:
++// https://bugzilla.mozilla.org/show_bug.cgi?id=1778246
++// https://bugzilla.mozilla.org/show_bug.cgi?id=1778247
++// TODO: test with recent MSVC before reporting a bug
++#ifndef _MSC_VER
+   static_assert(std::is_trivially_copyable_v<V> &&
+                 std::is_trivially_destructible_v<V>);
+   static_assert(std::is_trivially_copyable_v<E> &&
+                 std::is_trivially_destructible_v<E>);
++#endif
+ 
+   static constexpr size_t kRequiredSize = std::max(sizeof(V), sizeof(E));
+ 

@@ -1,0 +1,35 @@
+
+# HG changeset patch
+# User Mike Hommey <mh+mozilla@glandium.org>
+# Date 1684789421 0
+# Node ID 888d869b7f7534934ec2d0f63beeb4cb55860661
+# Parent  b15de32be05d9c1ef2e783b468e6e0c3601217ff
+Bug 1751561 - Don't include DllMain when mozglue is linked statically. r=jandem
+
+mozglue has its own DllMain, which conflicts with this one.
+
+Differential Revision: https://phabricator.services.mozilla.com/D178410
+
+diff --git a/js/src/jsapi.cpp b/js/src/jsapi.cpp
+--- a/js/src/jsapi.cpp
++++ b/js/src/jsapi.cpp
+@@ -4224,17 +4224,17 @@ #else
+   *valueOut = 0;
+ #endif
+   return true;
+ }
+ 
+ /************************************************************************/
+ 
+ #if !defined(STATIC_EXPORTABLE_JS_API) && !defined(STATIC_JS_API) && \
+-    defined(XP_WIN)
++    defined(XP_WIN) && (defined(MOZ_MEMORY) || !defined(JS_STANDALONE))
+ 
+ #  include "util/WindowsWrapper.h"
+ 
+ /*
+  * Initialization routine for the JS DLL.
+  */
+ BOOL WINAPI DllMain(HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved) {
+   return TRUE;
+
