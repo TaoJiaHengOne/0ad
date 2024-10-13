@@ -14,6 +14,10 @@ patch -p1 <"${PATCHES}"/FixRustLinkage.diff
 # Differentiate debug/release library names.
 patch -p1 <"${PATCHES}"/FixLibNames.diff
 
+# Fix Windows build, fixed in ESR 115
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1802675
+patch -p1 <"${PATCHES}"/FixWinHeap.diff
+
 # There is an issue on 32-bit linux builds sometimes.
 # NB: the patch here is Comment 21 modified by Comment 25
 # but that seems to imperfectly fix the issue with GCC.
