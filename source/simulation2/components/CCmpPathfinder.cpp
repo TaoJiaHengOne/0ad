@@ -799,7 +799,8 @@ void CCmpPathfinder::SendRequestedPaths()
 	}
 	// We're done, get the exceptions from the futures.
 	for (Future<void>& future : m_Futures)
-		future.Get();
+		if (future.Valid())
+			future.Get();
 
 	{
 		PROFILE2("PostMessages");
