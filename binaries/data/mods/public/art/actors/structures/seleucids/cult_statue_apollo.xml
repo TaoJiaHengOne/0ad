@@ -2,14 +2,18 @@
 <actor version="1">
   <castshadow/>
   <group>
-    <variant name="Statue Apollo">
-      <mesh>props/sele_wonder_statue.dae</mesh>
+    <variant frequency="1" name="Statue Apollo">
+      <mesh>structural/sele_cult_statue.dae</mesh>
       <textures>
         <texture file="structural/sele_cult_statue_diffuse.png" name="baseTex"/>
-        <texture file="props/bronze_01_spec.png" name="specTex"/>
+        <texture file="structural/sele_cult_statue_diffuse.png" name="specTex"/>
         <texture file="structural/sele_cult_statue_norm.png" name="normTex"/>
       </textures>
     </variant>
+  </group>
+  <group>
+    <variant frequency="1" name="alive"/>
+    <variant file="structures/destruction_small.xml"/>
   </group>
   <material>no_trans_norm_spec.xml</material>
 </actor>
