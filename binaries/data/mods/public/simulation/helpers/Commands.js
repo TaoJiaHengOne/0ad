@@ -881,6 +881,7 @@ var g_Commands = {
 		cmpGuiInterface.PushNotification({
 			"type": "map-flare",
 			"players": [player],
+			"guid": cmd.guid,
 			"position": cmd.position
 		});
 	},

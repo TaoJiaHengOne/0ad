@@ -305,7 +305,7 @@ var g_NotificationsTypes =
 			}
 			g_FlareRateLimitLastTimes.push(now);
 
-			displayFlare(notification.position, player);
+			displayFlare(notification.position, notification.guid);
 			Engine.PlayUISound(g_FlareSound, false);
 		}
 	}

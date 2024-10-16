@@ -174,3 +174,24 @@ ChatMessageFormatSimulation.tribute = class
 		};
 	}
 };
+
+ChatMessageFormatSimulation.flare = class
+{
+	// We don't need to check whether the player is supposed to see the flare as this function is only ever called in that case
+	parse(msg)
+	{
+		if (Engine.ConfigDB_GetValue("user", "gui.session.notifications.flare") != "true")
+			return "";
+
+		return {
+			"text": sprintf(translate("%(icon)s%(player)s has sent a flare."), {
+				"icon": "[icon=\"icon_focusflare\" displace=\"0 1\"]",
+				"player": colorizePlayernameByGUID(msg.guid)
+			}),
+			"callback": ((position) => function() {
+				Engine.CameraMoveTo(position.x, position.z);
+			})(msg.position),
+			"tooltip": translate("Click to focus on the flare's location.")
+		};
+	}
+};

@@ -595,6 +595,12 @@
 				"config": "gui.session.notifications.barter"
 			},
 			{
+				"type": "boolean",
+				"label": "Chat notification flare",
+				"tooltip": "Show a chat notification when you or an ally sends a flare.",
+				"config": "gui.session.notifications.flare"
+			},
+			{
 				"type": "dropdown",
 				"label": "Chat notification phase",
 				"tooltip": "Show a chat notification if you or an ally have started, aborted or completed a new phase, and phases of all players in observer mode.",

@@ -1266,11 +1266,14 @@ function triggerFlareAction(position)
 		return;
 
 	g_LastFlareTime = now;
-	displayFlare(position, Engine.GetPlayerID());
+
+	const guid = Engine.GetPlayerGUID();
+	displayFlare(position, guid);
 	Engine.PlayUISound(g_FlareSound, false);
 	Engine.PostNetworkCommand({
 		"type": "map-flare",
-		"position": position
+		"position": position,
+		"guid": guid
 	});
 }
 
