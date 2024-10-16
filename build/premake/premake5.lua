@@ -1182,7 +1182,7 @@ function setup_atlas_project(project_name, target_type, rel_source_dirs, rel_inc
 			buildoptions { "-fPIC" }
 			linkoptions { "-fPIC" }
 		else
-			buildoptions { "-rdynamic", "-fPIC" }
+			buildoptions { "-fPIC" }
 			linkoptions { "-fPIC", "-rdynamic" }
 		end
 
@@ -1339,7 +1339,6 @@ function setup_collada_project(project_name, target_type, rel_source_dirs, rel_i
 		-- (TODO: It'd be nice to fix FCollada, but that looks hard)
 		buildoptions { "-fno-strict-aliasing" }
 		if os.getversion().description ~= "FreeBSD" then
-			buildoptions { "-rdynamic" }
 			linkoptions { "-rdynamic" }
 		end
 
@@ -1356,7 +1355,6 @@ function setup_collada_project(project_name, target_type, rel_source_dirs, rel_i
 
 		buildoptions { "-fno-strict-aliasing" }
 
-		buildoptions { "-rdynamic" }
 		linkoptions { "-rdynamic" }
 
 	elseif os.istarget("macosx") then
