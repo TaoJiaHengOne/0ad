@@ -6,6 +6,6 @@
     "Preview" : "ambush.png",
     "SupportedBiomes": "generic/",
     "CircularMap" : true,
-    "PlayerPlacements": ["radial", "line", "randomGroup", "stronghold"]
+    "PlayerPlacements": ["circle", "river", "groupedLines", "randomGroup", "stronghold"]
   }
 }

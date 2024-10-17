@@ -51,14 +51,19 @@ GameSettings.prototype.Attributes.PlayerPlacement = class PlayerPlacement extend
 
 GameSettings.prototype.Attributes.PlayerPlacement.prototype.StartingPositions = [
 	{
-		"Id": "radial",
+		"Id": "circle",
 		"Name": translateWithContext("player placement", "Circle"),
-		"Description": translate("Allied players are grouped and placed with opposing players on one circle spanning the map.")
+		"Description": translate("Players are placed in a circle spanning the map.")
 	},
 	{
-		"Id": "line",
-		"Name": translateWithContext("player placement", "Line"),
-		"Description": translate("Allied players are placed in a linear pattern."),
+		"Id": "river",
+		"Name": translateWithContext("player placement", "River"),
+		"Description": translate("Allied players are placed on two parallel lines.")
+	},
+	{
+		"Id": "groupedLines",
+		"Name": translateWithContext("player placement", "Grouped lines"),
+		"Description": translate("Allied players are placed along opposing radial lines"),
 	},
 	{
 		"Id": "randomGroup",

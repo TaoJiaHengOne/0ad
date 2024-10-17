@@ -30,7 +30,7 @@ function* GenerateMap(mapSettings)
 	const [playerIDs, playerPosition] =
 		createBases(
 			...playerPlacementByPattern(
-				"radial",
+				"circle",
 				fractionToTiles(0.38),
 				fractionToTiles(0.05),
 				startAngle,

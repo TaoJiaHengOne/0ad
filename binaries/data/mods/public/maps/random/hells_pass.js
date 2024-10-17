@@ -26,7 +26,7 @@ function* GenerateMap(mapSettings)
 	const startAngle = randomAngle();
 	createBases(
 		...playerPlacementByPattern(
-			"line",
+			"groupedLines",
 			fractionToTiles(0.2),
 			fractionToTiles(0.08),
 			startAngle,

@@ -29,7 +29,7 @@ function* GenerateMap(mapSettings)
 
 	createBases(
 		...playerPlacementByPattern(
-			"radial",
+			"circle",
 			fractionToTiles(0.4),
 			fractionToTiles(randFloat(0.05, 0.1)),
 			startAngle,

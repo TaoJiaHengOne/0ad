@@ -55,13 +55,19 @@ var g_DefaultTileClasses = [
 var g_TileClasses;
 
 var g_PlayerbaseTypes = {
-	"line": {
+	"groupedLines": {
 		"getPosition": (distance, groupedDistance, startAngle) => placeLine(getTeamsArray(), distance, groupedDistance, startAngle),
 		"distance": fractionToTiles(randFloat(0.2, 0.35)),
 		"groupedDistance": fractionToTiles(randFloat(0.08, 0.1)),
 		"walls": false
 	},
-	"radial": {
+	"river": {
+		"getPosition": (distance, groupedDistance, startAngle) => playerPlacementRiver(startAngle, distance),
+		"distance": fractionToTiles(randFloat(0.25, 0.35)),
+		"groupedDistance": fractionToTiles(randFloat(0.08, 0.1)),
+		"walls": true
+	},
+	"circle": {
 		"getPosition": (distance, groupedDistance, startAngle) => playerPlacementCircle(distance, startAngle),
 		"distance": fractionToTiles(randFloat(0.25, 0.35)),
 		"groupedDistance": fractionToTiles(randFloat(0.08, 0.1)),
