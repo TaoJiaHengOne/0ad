@@ -7,6 +7,7 @@
     ```
 
 - Install `glslc` and spirv-tools 2023+ (the easiest way is to install Vulkan SDK)
+- For improved performance you may also install [libyaml](https://github.com/yaml/libyaml)
 
 - Run the compile.py script
 

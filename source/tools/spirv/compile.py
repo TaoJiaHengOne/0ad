@@ -25,6 +25,7 @@ import hashlib
 import itertools
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -36,12 +37,19 @@ from pathlib import Path
 import yaml
 
 
+try:
+    from yaml import CSafeLoader as SafeLoader
+except ImportError:
+    from yaml import SafeLoader
+
 STAGE_EXTENSIONS = {
     "vertex": ".vs",
     "fragment": ".fs",
     "geometry": ".gs",
     "compute": ".cs",
 }
+
+YAML_DIRECTIVE_PATTERN = re.compile(b"^%YAML 1.0\n")
 
 
 def execute(command):
@@ -158,8 +166,12 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
             "Error: {}\n".format(ret, " ".join(command), input_path, output_path, err)
         )
         raise ValueError(err)
+
     # Reflect the result SPIRV.
-    data = yaml.safe_load(out)
+
+    # libyaml doesn't support files with a YAML 1.0 directive, so
+    # let's strip the directive out before loading the data.
+    data = yaml.load(YAML_DIRECTIVE_PATTERN.sub(b"", out), Loader=SafeLoader)
     module = data["module"]
     interface_variables = []
     if data.get("all_interface_variables"):
