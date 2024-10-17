@@ -386,7 +386,7 @@ def build_combination(
         # multiple processes write the same shader file concurrently,
         # this intentionally renames the files instead of copying them.
         spirv_hash = calculate_hash(tmp_output_spirv_path)
-        file_name = f"{program_name}_{spirv_hash}{extension}.spv"
+        file_name = f"{spirv_hash}{extension}.spv"
         output_spirv_path = os.path.join(output_spirv_mod_path, file_name)
         if not os.path.exists(output_spirv_path):
             try:
