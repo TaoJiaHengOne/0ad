@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap()
+function* GenerateMap(mapSettings)
 {
 	setBiome("generic/temperate");
 
@@ -104,7 +104,13 @@ function* GenerateMap()
 			}
 		}
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.3));
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			mapSettings.PlayerPlacement,
+			fractionToTiles(0.35),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	function distanceToPlayers(x, z)
 	{

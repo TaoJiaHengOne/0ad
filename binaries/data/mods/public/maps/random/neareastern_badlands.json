@@ -6,6 +6,10 @@
 		"SupportedBiomes": ["generic/sahara", "generic/nubia", "generic/savanna"],
 		"Keywords": ["multiplayer"],
 		"Preview" : "neareastern_badlands.png",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements" : [
+			"circle",
+			"river"
+		]
 	}
 }

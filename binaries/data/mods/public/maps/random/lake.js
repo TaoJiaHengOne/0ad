@@ -71,7 +71,15 @@ function* GenerateMap(mapSettings)
 	const clFood = g_Map.createTileClass();
 	const clBaseResource = g_Map.createTileClass();
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.35));
+	const pattern = mapSettings.PlayerPlacement;
+	const teamDist = (pattern == 'river') ? .55 : .35;
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			pattern,
+			fractionToTiles(teamDist),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	g_Map.log("Preventing water in player territory");
 	for (let i = 0; i < numPlayers; ++i)

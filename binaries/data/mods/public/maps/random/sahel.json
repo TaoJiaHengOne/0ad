@@ -4,6 +4,13 @@
 		"Script" : "sahel.js",
 		"Description" : "A somewhat open map with an abundance of food and mineral resources, while wood is somewhat scarce.",
 		"Preview" : "sahel.png",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"groupedLines",
+			"randomGroup",
+			"stronghold"
+		]
 	}
 }

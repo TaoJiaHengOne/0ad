@@ -4,6 +4,13 @@
 		"Script" : "anatolian_plateau.js",
 		"Description" : "An indefensible open land with little wood and stone, representing the central basin of Asia Minor.",
 		"Preview" : "anatolian_plateau.png",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"groupedLines",
+			"randomGroup",
+			"stronghold"
+		]
 	}
 }

@@ -4,6 +4,13 @@
 		"Script" : "rhine_marshlands.js",
 		"Description" : "Shallow, passable wetlands with little room for building. Represents the lowlands of the Rhine basin in Europe.",
 		"Preview" : "rhine_marshlands.png",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"groupedLines",
+			"randomGroup",
+			"stronghold"
+		]
 	}
 }

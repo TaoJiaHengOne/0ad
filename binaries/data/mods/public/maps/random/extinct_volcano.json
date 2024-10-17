@@ -6,6 +6,11 @@
 		"Keywords": ["trigger"],
 		"CircularMap" : true,
 		"Preview" : "extinctvolcano.png",
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"randomGroup"
+		],
 		"SeaLevelRise": {
 			"Min": 0,
 			"Max": 60,

@@ -6,6 +6,10 @@
 		"Keywords": ["multiplayer"],
 		"Preview" : "lake.png",
 		"SupportedBiomes": "generic/",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river"
+		]
 	}
 }

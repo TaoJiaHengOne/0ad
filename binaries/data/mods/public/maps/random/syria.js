@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+function* GenerateMap(mapSettings)
 {
 	const tMainDirt = ["desert_dirt_rocks_1", "desert_dirt_cracks"];
 	const tForestFloor1 = "forestfloor_dirty";
@@ -52,7 +52,13 @@ function* GenerateMap()
 	const clBaseResource = g_Map.createTileClass();
 	const clGrass = g_Map.createTileClass();
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.35));
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			mapSettings.PlayerPlacement,
+			fractionToTiles(0.35),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	g_Map.log("Creating big grass patches around the playerbases");
 	for (let i = 0; i < numPlayers; ++i)

@@ -6,6 +6,13 @@
 		"Keywords": ["naval"],
 		"Preview" : "archipelago.png",
 		"SupportedBiomes": "generic/",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements" : [
+			"circle",
+			"river",
+			"groupedLines",
+			"randomGroup",
+			"stronghold"
+		]
 	}
 }

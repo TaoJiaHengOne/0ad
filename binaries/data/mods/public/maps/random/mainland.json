@@ -6,6 +6,13 @@
 		"Preview" : "mainland.png",
 		"Keywords": ["multiplayer"],
 		"SupportedBiomes": "generic/",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"groupedLines",
+			"randomGroup",
+			"stronghold"
+		]
 	}
 }

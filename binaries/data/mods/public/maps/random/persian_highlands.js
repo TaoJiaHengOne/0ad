@@ -59,8 +59,18 @@ function* GenerateMap(mapSettings)
 	const clBaseResource = g_Map.createTileClass();
 	const clCP = g_Map.createTileClass();
 
+	const pattern = mapSettings.PlayerPlacement;
+	const teamDist = (pattern == "river") ? .50 : .35;
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			pattern,
+			fractionToTiles(teamDist),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
+
 	placePlayerBases({
-		"PlayerPlacement": playerPlacementCircle(fractionToTiles(0.35)),
+		"PlayerPlacement": [playerIDs, playerPosition],
 		"BaseResourceClass": clBaseResource,
 		"CityPatch": {
 			"outerTerrain": tCity,

@@ -6,6 +6,11 @@
 		"Keywords": ["multiplayer"],
 		"Preview" : "persian_highlands_summer.png",
 		"CircularMap" : true,
-		"SupportedBiomes": "persian_highlands/"
+		"SupportedBiomes": "persian_highlands/",
+		"PlayerPlacements" : [
+			"circle",
+			"river",
+			"stronghold"
+		]
 	}
 }

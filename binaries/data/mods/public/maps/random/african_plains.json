@@ -5,6 +5,13 @@
 		"Description" : "The central region of the vast continent of Africa, birthplace of humanity. Players start in a lush area teeming with vegetation and wildlife.",
 		"SupportedBiomes": ["generic/savanna", "generic/sahara", "generic/nubia"],
 		"Preview" : "african_plains.png",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements" : [
+			"circle",
+			"river",
+			"groupedLines",
+			"randomGroup",
+			"stronghold"
+		]
 	}
 }

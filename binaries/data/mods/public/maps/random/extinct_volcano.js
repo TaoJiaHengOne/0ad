@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+function* GenerateMap(mapSettings)
 {
 	const tHillDark = "cliff volcanic light";
 	const tHillMedium1 = "ocean_rock_a";
@@ -79,7 +79,13 @@ function* GenerateMap()
 
 	const playerMountainSize = defaultPlayerBaseRadius();
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.35));
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			mapSettings.PlayerPlacement,
+			fractionToTiles(0.35),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	g_Map.log("Creating CC mountains");
 	if (!isNomad())

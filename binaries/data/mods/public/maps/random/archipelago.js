@@ -76,7 +76,13 @@ function* GenerateMap(mapSettings)
 
 	const islandRadius = scaleByMapSize(22, 31);
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.35));
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			mapSettings.PlayerPlacement,
+			fractionToTiles(0.35),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	g_Map.log("Creating player islands");
 	for (let i = 0; i < numPlayers; ++i)

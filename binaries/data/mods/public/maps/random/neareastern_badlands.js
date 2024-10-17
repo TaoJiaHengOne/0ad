@@ -79,7 +79,13 @@ function* GenerateMap(mapSettings)
 
 	const oasisRadius = scaleByMapSize(14, 40);
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.35));
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			mapSettings.PlayerPlacement,
+			fractionToTiles(0.35),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	if (!isNomad())
 		for (let i = 0; i < numPlayers; ++i)

@@ -86,7 +86,13 @@ function* GenerateMap(mapSettings)
 			new TileClassPainter(clLand)
 		]);
 
-	const [playerIDs, playerPosition] = playerPlacementCircle(fractionToTiles(0.25));
+	const [playerIDs, playerPosition] =
+		playerPlacementByPattern(
+			mapSettings.PlayerPlacement,
+			fractionToTiles(0.25),
+			fractionToTiles(0.1),
+			randomAngle(),
+			undefined);
 
 	g_Map.log("Ensuring initial player land");
 	for (let i = 0; i < numPlayers; ++i)

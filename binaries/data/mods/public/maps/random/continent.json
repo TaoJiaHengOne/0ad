@@ -6,6 +6,11 @@
 		"Preview" : "continent.png",
 		"Keywords": ["multiplayer"],
 		"SupportedBiomes": "generic/",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"stronghold"
+		]
 	}
 }
