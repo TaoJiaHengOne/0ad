@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -508,7 +508,7 @@ ScenarioEditor::ScenarioEditor(wxWindow* parent)
 			wxFFile helpFile(helpPath.GetFullPath());
 			wxString helpData;
 			helpFile.ReadAll(&helpData);
-			AtObj data = AtlasObject::LoadFromJSON(std::string(helpData));
+			AtObj data = AtlasObject::LoadFromJSON(std::string{helpData.ToUTF8().data()});
 #define ADD_HELP_ITEM(id) \
 				do { \
 					if (!data[#id].hasContent()) \
