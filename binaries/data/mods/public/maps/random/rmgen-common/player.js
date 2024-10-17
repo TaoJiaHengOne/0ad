@@ -641,7 +641,7 @@ function playerPlacementCircle(radius, startingAngle = undefined, center = undef
 {
 	const startAngle = startingAngle !== undefined ? startingAngle : randomAngle();
 	const [playerPosition, playerAngle] = distributePointsOnCircle(getNumPlayers(), startAngle, radius, center || g_Map.getCenter());
-	return [sortAllPlayers(), playerPosition.map(p => p.round()), playerAngle, startAngle];
+	return [getPlayerIDs(), playerPosition.map(p => p.round()), playerAngle, startAngle];
 }
 
 /**
