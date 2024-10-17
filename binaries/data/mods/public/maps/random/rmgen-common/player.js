@@ -461,7 +461,7 @@ function placePlayersNomad(playerClass, constraints)
 	const constraint = new StaticConstraint(constraints);
 
 	const numPlayers = getNumPlayers();
-	const playerIDs = shuffleArray(sortAllPlayers());
+	const playerIDs = shuffleArray(getPlayerIDs());
 	const playerPosition = [];
 
 	for (let i = 0; i < numPlayers; ++i)
@@ -501,7 +501,16 @@ function placePlayersNomad(playerClass, constraints)
 }
 
 /**
- * Sorts an array of player IDs by team index. Players without teams come first.
+ * Get the player IDs
+ *
+ * @returns {Array} - an array with sequential integers from 1 to the number of players
+ */
+function getPlayerIDs()
+{
+	return Array.from(Array(getNumPlayers()), (_, index) => index + 1);
+}
+
+/*** Sorts an array of player IDs by team index. Players without teams come first.
  * Randomize order for players of the same team.
  */
 function sortPlayers(playerIDs)
@@ -516,11 +525,7 @@ function sortPlayers(playerIDs)
  */
 function sortAllPlayers()
 {
-	const playerIDs = [];
-	for (let i = 0; i < getNumPlayers(); ++i)
-		playerIDs.push(i+1);
-
-	return sortPlayers(playerIDs);
+	return sortPlayers(getPlayerIDs());
 }
 
 /**
@@ -578,7 +583,7 @@ function partitionPlayers(playerIDs)
  */
 function getTeamsArray()
 {
-	let playerIDs = sortAllPlayers();
+	const playerIDs = getPlayerIDs();
 	let numPlayers = getNumPlayers();
 
 	// Group players by team
@@ -623,7 +628,7 @@ function playerPlacementByPattern(patternName, distance = undefined, groupedDist
 		case "stronghold":
 			return placeStronghold(getTeamsArray(), distance, groupedDistance, angle);
 		case "randomGroup":
-			return playerPlacementRandom(sortAllPlayers(), undefined);
+			return playerPlacementRandom(getPlayerIDs(), undefined);
 		default:
 			throw new Error("Unknown placement pattern: " + patternName);
 	}
