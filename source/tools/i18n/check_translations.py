@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2022 Wildfire Games.
+# Copyright (C) 2024 Wildfire Games.
 # This file is part of 0 A.D.
 #
 # 0 A.D. is free software: you can redistribute it and/or modify
@@ -16,139 +16,248 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
-import multiprocessing
-import os
+"""Lint PO- and POT-files."""
+
+import logging
 import re
 import sys
+from collections.abc import Generator
+from itertools import chain
+from pathlib import Path
 
-from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY
-from i18n_helper.catalog import Catalog
-from i18n_helper.globber import get_catalogs
+import click
+from click import ClickException
+from dennis.linter import ERROR, LintedEntry, Linter, LintMessage, LintRule, get_lint_rules
+from dennis.templatelinter import TemplateLinter
+from dennis.templatelinter import get_lint_rules as get_template_lint_rules
+from dennis.tools import VariableTokenizer, get_available_formats, withlines
 
 
-VERBOSE = 0
+PROJECT_ROOT_DIRECTORY = Path(__file__).parent.parent.parent.parent
+L10N_FOLGER_NAME = "l10n"
+
+logger = logging.getLogger(__name__)
 
 
-class MessageChecker:
-    """Checks all messages in a catalog against a regex."""
+class URLSpamRule(LintRule):
+    num = "E901"
+    name = "urlspam"
+    desc = "msgstr contains URL not present in msgid"
 
-    def __init__(self, human_name, regex):
-        self.regex = re.compile(regex, re.IGNORECASE)
-        self.human_name = human_name
-
-    def check(self, input_file_path, template_message, translated_catalogs):
-        patterns = set(
-            self.regex.findall(
-                template_message.id[0] if template_message.pluralizable else template_message.id
-            )
+    def __init__(self):
+        super().__init__()
+        self.url_regex = re.compile(
+            r"https?://(?:[a-z0-9-_$@./&+]|(?:%[0-9a-fA-F][" r"0-9a-fA-F]))+", re.IGNORECASE
         )
 
-        # As a sanity check, verify that the template message is coherent.
-        # Note that these tend to be false positives.
-        # TODO: the pssible tags are usually comments, we ought be able to find them.
-        if template_message.pluralizable:
-            plural_urls = set(self.regex.findall(template_message.id[1]))
-            if plural_urls.difference(patterns):
-                print(
-                    f"{input_file_path} - Different {self.human_name} in "
-                    f"singular and plural source strings "
-                    f"for '{template_message}' in '{input_file_path}'"
-                )
+    def lint(self, _: VariableTokenizer, linted_entry: LintedEntry) -> list[LintMessage]:
+        msgs = []
 
-        for translation_catalog in translated_catalogs:
-            translation_message = translation_catalog.get(
-                template_message.id, template_message.context
-            )
-            if not translation_message:
+        for trstr in linted_entry.strs:
+            urls = self.url_regex.findall(trstr.msgstr_string)
+            if not urls:
                 continue
 
-            translated_patterns = set(
-                self.regex.findall(
-                    translation_message.string[0]
-                    if translation_message.pluralizable
-                    else translation_message.string
-                )
-            )
-            unknown_patterns = translated_patterns.difference(patterns)
-            if unknown_patterns:
-                print(
-                    f'{input_file_path} - {translation_catalog.locale}: '
-                    f'Found unknown {self.human_name} '
-                    f'{", ".join(["`" + x + "`" for x in unknown_patterns])} '
-                    f'in the translation which do not match any of the URLs '
-                    f'in the template: {", ".join(["`" + x + "`" for x in patterns])}'
+            for url in urls:
+                if url in linted_entry.msgid:
+                    continue
+
+                msgs.append(
+                    LintMessage(
+                        ERROR,
+                        linted_entry.poentry.linenum,
+                        0,
+                        self.num,
+                        f"translation contains spam URL: {url}",
+                        linted_entry.poentry,
+                    )
                 )
 
-            if template_message.pluralizable and translation_message.pluralizable:
-                for indx, val in enumerate(translation_message.string):
-                    if indx == 0:
-                        continue
-                    translated_patterns_multi = set(self.regex.findall(val))
-                    unknown_patterns_multi = translated_patterns_multi.difference(plural_urls)
-                    if unknown_patterns_multi:
-                        print(
-                            f'{input_file_path} - {translation_catalog.locale}: '
-                            f'Found unknown {self.human_name} '
-                            f'{", ".join(["`" + x + "`" for x in unknown_patterns_multi])} '
-                            f'in the pluralised translation which do not '
-                            f'match any of the URLs in the template: '
-                            f'{", ".join(["`" + x + "`" for x in plural_urls])}'
-                        )
+        return msgs
 
 
-def check_translations(input_file_path):
-    if VERBOSE:
-        print(f"Checking {input_file_path}")
-    template_catalog = Catalog.read_from(input_file_path)
+class MissingTagRule(LintRule):
+    num = "E902"
+    name = "missing-tag"
+    desc = "tags present in msgid aren't present in msgstr"
 
-    # If language codes were specified on the command line, filter by those.
-    filters = sys.argv[1:]
+    def __init__(self):
+        super().__init__()
+        self.tag_regex = re.compile(r"(?<![\\\\])\[[^]]+\]")
 
-    # Load existing translation catalogs.
-    existing_translation_catalogs = get_catalogs(input_file_path, filters)
+    def lint(self, _: VariableTokenizer, linted_entry: LintedEntry) -> list[LintMessage]:
+        msgs = []
 
-    spam = MessageChecker("url", r"https?://(?:[a-z0-9-_$@./&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
-    sprintf = MessageChecker("sprintf", r"%\([^)]+\)s")
-    tags = MessageChecker("tag", r"[^\\][^\\](\[[^]]+/?\])")
+        for trstr in linted_entry.strs:
+            msgid_tags = []
+            for s in trstr.msgid_strings:
+                msgid_tags += self.tag_regex.findall(s)
 
-    # Check that there are no spam URLs.
-    # Loop through all messages in the .POT catalog for URLs.
-    # For each, check for the corresponding key in the .PO catalogs.
-    # If found, check that URLS in the .PO keys are the same as those in the .POT key.
-    for template_message in template_catalog:
-        spam.check(input_file_path, template_message, existing_translation_catalogs)
-        sprintf.check(input_file_path, template_message, existing_translation_catalogs)
-        tags.check(input_file_path, template_message, existing_translation_catalogs)
+            msgstr_tags = self.tag_regex.findall(trstr.msgstr_string)
+            if not msgstr_tags:
+                continue
 
-    if VERBOSE:
-        print(f"Done checking {input_file_path}")
+            missing_in_msgstr = [tag for tag in msgid_tags if tag not in msgstr_tags]
+            if missing_in_msgstr:
+                msgs.append(
+                    LintMessage(
+                        ERROR,
+                        linted_entry.poentry.linenum,
+                        0,
+                        self.num,
+                        f"missing tags: {', '.join(sorted(missing_in_msgstr))}",
+                        linted_entry.poentry,
+                    )
+                )
+
+        return msgs
 
 
-def main():
-    print(
-        "\n\tWARNING: Remember to regenerate the POT files with “update_templates.py” "
-        "before you run this script.\n\tPOT files are not in the repository.\n"
-    )
-    found_pots = 0
-    for root, _folders, filenames in os.walk(PROJECT_ROOT_DIRECTORY):
-        for filename in filenames:
-            if (
-                len(filename) > 4
-                and filename[-4:] == ".pot"
-                and os.path.basename(root) == L10N_FOLDER_NAME
-            ):
-                found_pots += 1
-                multiprocessing.Process(
-                    target=check_translations, args=(os.path.join(root, filename),)
-                ).start()
-    if found_pots == 0:
-        print(
-            "This script did not work because no '.pot' files were found. "
-            "Please run 'update_templates.py' to generate the '.pot' files, "
-            "and run 'pull_translations.py' to pull the latest translations from Transifex. "
-            "Then you can run this script to check for spam in translations."
-        )
+class InvalidTagRule(LintRule):
+    num = "E903"
+    name = "invalid-tag"
+    desc = "tags not present in msgid are present in msgstr"
+
+    def __init__(self):
+        super().__init__()
+        self.tag_regex = re.compile(r"(?<![\\\\])\[[^]]+\]")
+
+    def lint(self, _: VariableTokenizer, linted_entry: LintedEntry) -> list[LintMessage]:
+        msgs = []
+
+        for trstr in linted_entry.strs:
+            msgid_tags = []
+            for s in trstr.msgid_strings:
+                msgid_tags += self.tag_regex.findall(s)
+
+            msgstr_tags = self.tag_regex.findall(trstr.msgstr_string)
+            if not msgstr_tags:
+                continue
+
+            not_in_msgid = [tag for tag in msgstr_tags if tag not in msgid_tags]
+            if not_in_msgid:
+                msgs.append(
+                    LintMessage(
+                        ERROR,
+                        linted_entry.poentry.linenum,
+                        0,
+                        self.num,
+                        f"invalid tags: {', '.join(sorted(not_in_msgid))}",
+                        linted_entry.poentry,
+                    )
+                )
+
+        return msgs
+
+
+def get_relative_path(path: Path) -> Path:
+    """Get relative path to project directory.
+
+    If the path isn't below the project directory, return the unchanged path.
+    """
+    try:
+        return path.relative_to(PROJECT_ROOT_DIRECTORY)
+    except ValueError:
+        return path
+
+
+def get_po_files() -> Generator[Path, None, None]:
+    """Return a list of PO- and POT-files in the project."""
+    for l10n_dir in Path(PROJECT_ROOT_DIRECTORY).glob(f"**/{L10N_FOLGER_NAME}"):
+        yield from chain(l10n_dir.glob("*.po"), l10n_dir.glob("*.pot"))
+
+
+def lint_files(paths: list[Path]) -> Generator[tuple[Path, LintMessage], None, None]:
+    """Lint files and return results."""
+    varformat = get_available_formats().keys()
+    lint_rules = get_lint_rules()
+    del lint_rules["W302"]
+    template_lint_rules = get_template_lint_rules()
+
+    linter = Linter(varformat, lint_rules)
+    template_linter = TemplateLinter(varformat, template_lint_rules)
+
+    for path in paths:
+        if path.suffix == ".po":
+            results = linter.verify_file(path)
+        elif path.suffix == ".pot":
+            results = template_linter.verify_file(path)
+        else:
+            raise ValueError(f"Unexpected file type for {path}")
+        for result in results:
+            yield path, result
+
+
+def print_results(
+    results: Generator[tuple[Path, LintMessage], None, None], num_files: int
+) -> None:
+    """Format results and print them to stdout."""
+    num_warnings = 0
+    num_errors = 0
+    for path, result in results:
+        if result.kind == "err":
+            code_color = "red"
+            num_errors += 1
+        elif result.kind == "warn":
+            code_color = "yellow"
+            num_warnings += 1
+        else:
+            raise ValueError(f"Unexpected lint result code {result.kind}")
+
+        click.secho(f"{click.format_filename(get_relative_path(path))}", bold=True, nl=False)
+        click.echo(f":{result.line}: ", nl=False)
+        click.echo(click.style(result.code, fg=code_color) + f" {result.msg}")
+        click.echo(withlines(result.poentry.linenum, result.poentry.original))
+        click.echo()
+
+    click.echo(f"Found {num_errors} errors and {num_warnings} warnings in {num_files} files.")
+    if num_errors > 0:
+        sys.exit(1)
+
+
+def run(
+    locale: str, files: list[Path]
+) -> tuple[Generator[tuple[Path, LintMessage], None, None], int]:
+    """Collect files to lint and run linting."""
+    if files:
+        po_files = []
+        for f in files:
+            if f.suffix in [".po", ".pot"]:
+                po_files.append(f)
+            else:
+                logger.warning(
+                    "%s is not a valid PO- or POT-file. Skipping.", get_relative_path(f)
+                )
+    else:
+        po_files = list(get_po_files())
+
+    if locale:
+        files_to_check = []
+        for f in po_files:
+            lang_code = f.stem.split(".")[0]
+            if lang_code == locale:
+                files_to_check.append(f)
+    else:
+        files_to_check = po_files
+
+    if len(files_to_check) == 0:
+        raise ClickException("Found no files to check.")
+
+    return lint_files(files_to_check), len(files_to_check)
+
+
+@click.command()
+@click.option("--locale", help="Only check translations for the given locale")
+@click.argument("files", nargs=-1, type=click.Path(exists=True, resolve_path=True, path_type=Path))
+def cli(locale, files):
+    """Lint PO- and POT-files.
+
+    Provide one or multiple FILES to check. If omitted all files in
+    the project will be checked.
+    """
+    lint_results, num_checked_files = run(locale, files)
+    print_results(lint_results, num_checked_files)
 
 
 if __name__ == "__main__":
-    main()
+    cli()
