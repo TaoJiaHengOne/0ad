@@ -757,8 +757,9 @@ function placeLine(teamsArray, distance, groupedDistance, startAngle)
 	const playerPosition = [];
 
 	const mapCenter = g_Map.getCenter();
-	const dist = fractionToTiles(0.45);
-
+	const numAcross = 2 * getNumPlayers() / teamsArray.length; // if its two teams, numAcross is the same as numPlayers.
+	const dist = fractionToTiles(numAcross == 2 ? 0.45 : 0.66 + (-0.01 * numAcross));
+	groupedDistance = groupedDistance * (3.00 + (-0.225 * numAcross));
 	for (let i = 0; i < teamsArray.length; ++i)
 	{
 		let safeDist = distance;
@@ -795,8 +796,8 @@ function placeStronghold(teamsArray, distance, groupedDistance, startAngle)
 	for (let i = 0; i < teamsArray.length; ++i)
 	{
 		let teamAngle = startAngle + (i + 1) * 2 * Math.PI / teamsArray.length;
-		let teamPosition = Vector2D.add(mapCenter, new Vector2D(distance, 0).rotate(-teamAngle));
-		let teamGroupDistance = groupedDistance;
+		let teamPosition = Vector2D.add(mapCenter, new Vector2D(distance * 0.8, 0).rotate(-teamAngle));
+		let teamGroupDistance = groupedDistance * 1.2;
 
 		// If we have a team of above average size, make sure they're spread out
 		if (teamsArray[i].length > 4)
