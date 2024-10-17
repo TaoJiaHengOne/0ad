@@ -24,7 +24,7 @@ function* GenerateMap(mapSettings)
 		createBases(
 			...playerPlacementByPattern(
 				mapSettings.PlayerPlacement,
-				fractionToTiles(randFloat(0.2, 0.35)),
+				fractionToTiles(randFloat(0.25, 0.35)),
 				fractionToTiles(randFloat(0.08, 0.1)),
 				randomAngle(),
 				undefined),
