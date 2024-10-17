@@ -18,6 +18,7 @@
 #include "graphics/MapGenerator.h"
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
+#include "ps/Future.h"
 #include "simulation2/system/ComponentTest.h"
 
 #include <atomic>
@@ -57,9 +58,10 @@ public:
 			ScriptTestSetup(scriptInterface);
 
 			std::atomic<int> progress{1};
-
-			const Script::StructuredClone result{RunMapGenerationScript(progress, scriptInterface,
-				path, "{\"Seed\": 0}", JSPROP_ENUMERATE | JSPROP_PERMANENT)};
+			std::atomic<bool> stopRequest{false};
+			const Script::StructuredClone result{RunMapGenerationScript(StopToken{stopRequest},
+				progress, scriptInterface, path, "{\"Seed\": 0}",
+				JSPROP_ENUMERATE | JSPROP_PERMANENT)};
 
 			TS_ASSERT_DIFFERS(result, nullptr);
 

@@ -67,11 +67,6 @@ public:
 			TS_ASSERT_EQUALS(future.Get().value, 1);
 		}
 		TS_ASSERT_EQUALS(destroyed, 1);
-		{
-			Future<NonDef> future;
-			std::function<void()> task = future.Wrap([]() { return NonDef{1}; });
-		}
-		TS_ASSERT_EQUALS(destroyed, 1);
 		/**
 		 * TODO: find a way to test this
 		{
@@ -103,16 +98,16 @@ public:
 		future = std::move(*f);
 		function = std::move(*c);
 
+		// Let's move the packaged task while at it.
+		std::function<void()> task2 = std::move(task);
+		task2();
+		TS_ASSERT_EQUALS(future.Get(), 7);
+
 		// Destroy and clear the memory
 		f->~Future();
 		c->~function();
 		memset(&futureStorage, 0xFF, sizeof(decltype(futureStorage)));
 		memset(&functionStorage, 0xFF, sizeof(decltype(functionStorage)));
-
-		// Let's move the packaged task while at it.
-		std::function<void()> task2 = std::move(task);
-		task2();
-		TS_ASSERT_EQUALS(future.Get(), 7);
 	}
 
 	void test_move_only_function()
@@ -150,7 +145,7 @@ public:
 		});
 
 		packedTask();
-		TS_ASSERT(future.IsReady());
+		TS_ASSERT(future.IsDone());
 		TS_ASSERT_THROWS(future.Get(), const TestException&);
 	}
 
@@ -163,7 +158,7 @@ public:
 		});
 
 		packedTask();
-		TS_ASSERT(future.IsReady());
+		TS_ASSERT(future.IsDone());
 		TS_ASSERT_THROWS(future.Get(), const TestException&);
 	}
 
@@ -189,7 +184,44 @@ public:
 		});
 
 		packedTask();
-		TS_ASSERT(future.IsReady());
+		TS_ASSERT(future.IsDone());
 		TS_ASSERT_THROWS(future.Get(), const TestException&);
+	}
+
+	void test_stop_token_overload()
+	{
+		{
+			class DifferentValues
+			{
+			public:
+				bool operator()()
+				{
+					return false;
+				}
+				bool operator()(StopToken)
+				{
+					return true;
+				}
+			};
+
+			Future<bool> future;
+			future.Wrap(DifferentValues{})();
+			TS_ASSERT_EQUALS(future.Get(), true);
+		}
+		{
+			class DifferentTypes
+			{
+			public:
+				void operator()()
+				{}
+				bool operator()(StopToken)
+				{
+					return true;
+				}
+			};
+
+			Future<bool> future;
+			future.Wrap(DifferentTypes{})();
+		}
 	}
 };

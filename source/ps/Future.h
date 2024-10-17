@@ -31,16 +31,27 @@
 template<typename Callback>
 class PackagedTask;
 
-namespace FutureSharedStateDetail
+class StopToken
 {
-enum class Status
-{
-	PENDING,
-	STARTED,
-	DONE,
-	CANCELED
+public:
+	explicit StopToken(const std::atomic<bool>& request) noexcept :
+		m_Request{request}
+	{}
+
+	bool IsStopRequested() const noexcept
+	{
+		return m_Request.load();
+	}
+private:
+	const std::atomic<bool>& m_Request;
 };
 
+template<typename Callback>
+using CallbackResult = typename std::conditional_t<std::is_invocable_v<Callback, StopToken>,
+	std::invoke_result<Callback, StopToken>, std::invoke_result<Callback>>::type;
+
+namespace FutureSharedStateDetail
+{
 template<typename T>
 using ResultHolder = std::conditional_t<std::is_void_v<T>, std::nullopt_t, std::optional<T>>;
 
@@ -50,51 +61,39 @@ using ResultHolder = std::conditional_t<std::is_void_v<T>, std::nullopt_t, std::
 template<typename ResultType>
 class Receiver
 {
-	static constexpr bool VoidResult = std::is_same_v<ResultType, void>;
 public:
 	Receiver() = default;
 	~Receiver()
 	{
-		ENSURE(IsDoneOrCanceled());
+		ENSURE(IsDone());
 	}
 
 	Receiver(const Receiver&) = delete;
 	Receiver(Receiver&&) = delete;
 
-	bool IsDoneOrCanceled() const
+	bool IsDone() const noexcept
 	{
-		return m_Status == Status::DONE || m_Status == Status::CANCELED;
+		return m_Done.load();
 	}
 
 	void Wait()
 	{
 		// Fast path: we're already done.
-		if (IsDoneOrCanceled())
+		if (IsDone())
 			return;
 		// Slow path: we aren't done when we run the above check. Lock and wait until we are.
 		std::unique_lock<std::mutex> lock(m_Mutex);
-		m_ConditionVariable.wait(lock, [this]() -> bool { return IsDoneOrCanceled(); });
+		m_ConditionVariable.wait(lock, [this]{ return IsDone(); });
 	}
 
 	/**
-	 * If the task is pending, cancel it: the status becomes CANCELED and if the task was completed, the result is destroyed.
-	 * @return true if the task was indeed cancelled, false otherwise (the task is running or already done).
+	 * Request the executing thread to stop as fast as possible. This is only
+	 * a request the execution therad might ignore it.
+	 * @see GetResult must not be called after a call to @p RequestStop.
 	 */
-	bool Cancel()
+	void RequestStop() noexcept
 	{
-		Status expected = Status::PENDING;
-		bool cancelled = m_Status.compare_exchange_strong(expected, Status::CANCELED);
-		// If we're done, invalidate, if we're pending, atomically cancel, otherwise fail.
-		if (cancelled || m_Status == Status::DONE)
-		{
-			if (m_Status == Status::DONE)
-				m_Status = Status::CANCELED;
-			if constexpr (!VoidResult)
-				std::get<ResultHolder<ResultType>>(m_Outcome).reset();
-			m_ConditionVariable.notify_all();
-			return cancelled;
-		}
-		return false;
+		m_StopRequest.store(true);
 	}
 
 	/**
@@ -102,15 +101,14 @@ public:
 	 */
 	ResultType GetResult()
 	{
-		// The caller must ensure that this is only called if we have a result.
+		// The caller must ensure that this is only called if there is a result.
+		ENSURE(IsDone());
 		if constexpr (!std::is_void_v<ResultType>)
 			ENSURE(std::get<ResultHolder<ResultType>>(m_Outcome).has_value() ||
 				std::get<std::exception_ptr>(m_Outcome));
 
-		m_Status = Status::CANCELED;
-
 		if (std::get<std::exception_ptr>(m_Outcome))
-			std::rethrow_exception(std::get<std::exception_ptr>(m_Outcome));
+			std::rethrow_exception(std::exchange(std::get<std::exception_ptr>(m_Outcome), {}));
 
 		if constexpr (std::is_void_v<ResultType>)
 			return;
@@ -122,7 +120,10 @@ public:
 		}
 	}
 
-	std::atomic<Status> m_Status = Status::PENDING;
+	// This is only set by the executing thread and read by the receiving thread. It is never reset.
+	std::atomic<bool> m_Done{false};
+	// This is only set by the receiving thread and read by the executing thread. It is never reset.
+	std::atomic<bool> m_StopRequest{false};
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 
@@ -142,7 +143,7 @@ struct SharedState
 	{}
 
 	Callback callback;
-	Receiver<std::invoke_result_t<Callback>> receiver;
+	Receiver<CallbackResult<Callback>> receiver;
 };
 
 } // namespace FutureSharedStateDetail
@@ -157,8 +158,6 @@ struct SharedState
  * Future is _not_ thread-safe. Call it from a single thread or ensure synchronization externally.
  *
  * The callback never runs after the @p Future is destroyed.
- * TODO:
- *  - Handle exceptions.
  */
 template<typename ResultType>
 class Future
@@ -166,9 +165,6 @@ class Future
 	template<typename T>
 	friend class PackagedTask;
 
-	static constexpr bool VoidResult = std::is_same_v<ResultType, void>;
-
-	using Status = FutureSharedStateDetail::Status;
 public:
 	Future() = default;
 	Future(const Future& o) = delete;
@@ -193,24 +189,23 @@ public:
 	/**
 	 * Move the result out of the future, and invalidate the future.
 	 * If the future is not complete, calls Wait().
-	 * If the future is canceled, asserts.
+	 * If the future is invalid, asserts.
 	 */
 	ResultType Get()
 	{
 		ENSURE(!!m_Receiver);
 
 		Wait();
-		ENSURE(m_Receiver->m_Status != Status::CANCELED);
 		// This mark the state invalid - can't call Get again.
-		return m_Receiver->GetResult();
+		return std::exchange(m_Receiver, nullptr)->GetResult();
 	}
 
 	/**
 	 * @return true if the shared state is valid and has a result (i.e. Get can be called).
 	 */
-	bool IsReady() const
+	bool IsDone() const
 	{
-		return !!m_Receiver && m_Receiver->m_Status == Status::DONE;
+		return !!m_Receiver && m_Receiver->IsDone();
 	}
 
 	/**
@@ -218,7 +213,7 @@ public:
 	 */
 	bool Valid() const
 	{
-		return !!m_Receiver && m_Receiver->m_Status != Status::CANCELED;
+		return !!m_Receiver;
 	}
 
 	void Wait()
@@ -227,17 +222,12 @@ public:
 			m_Receiver->Wait();
 	}
 
-	/**
-	 * Cancels the task, waiting if the task is currently started.
-	 * Use this function over Cancel() if you need to ensure determinism (i.e. in the simulation).
-	 * @see Cancel.
-	 */
 	void CancelOrWait()
 	{
 		if (!Valid())
 			return;
-		if (!m_Receiver->Cancel())
-			m_Receiver->Wait();
+		m_Receiver->RequestStop();
+		m_Receiver->Wait();
 		m_Receiver.reset();
 	}
 
@@ -262,26 +252,22 @@ public:
 
 	void operator()()
 	{
-		FutureSharedStateDetail::Status expected = FutureSharedStateDetail::Status::PENDING;
-		if (!m_SharedState->receiver.m_Status.compare_exchange_strong(expected,
-			FutureSharedStateDetail::Status::STARTED))
+		if (!m_SharedState->receiver.m_StopRequest.load())
 		{
-			return;
-		}
-
-		try
-		{
-			using ResultType = std::invoke_result_t<Callback>;
-			if constexpr (std::is_void_v<ResultType>)
-				m_SharedState->callback();
-			else
-				std::get<FutureSharedStateDetail::ResultHolder<ResultType>>(
-					m_SharedState->receiver.m_Outcome).emplace(m_SharedState->callback());
-		}
-		catch(...)
-		{
-			std::get<std::exception_ptr>(m_SharedState->receiver.m_Outcome) =
-				std::current_exception();
+			try
+			{
+				using ResultType = CallbackResult<Callback>;
+				if constexpr (std::is_void_v<ResultType>)
+					Invoke();
+				else
+					std::get<FutureSharedStateDetail::ResultHolder<ResultType>>(
+						m_SharedState->receiver.m_Outcome).emplace(Invoke());
+			}
+			catch(...)
+			{
+				std::get<std::exception_ptr>(m_SharedState->receiver.m_Outcome) =
+					std::current_exception();
+			}
 		}
 
 		// Because we might have threads waiting on us, we need to make sure that they either:
@@ -290,7 +276,7 @@ public:
 		// This requires locking the mutex (@see Wait).
 		{
 			std::lock_guard<std::mutex> lock(m_SharedState->receiver.m_Mutex);
-			m_SharedState->receiver.m_Status = FutureSharedStateDetail::Status::DONE;
+			m_SharedState->receiver.m_Done.store(true);
 		}
 
 		m_SharedState->receiver.m_ConditionVariable.notify_all();
@@ -299,13 +285,15 @@ public:
 		m_SharedState.reset();
 	}
 
-	void Cancel()
+private:
+	CallbackResult<Callback> Invoke()
 	{
-		m_SharedState->Cancel();
-		m_SharedState.reset();
+		if constexpr (std::is_invocable_v<Callback, StopToken>)
+			return m_SharedState->callback(StopToken{m_SharedState->receiver.m_StopRequest});
+		else
+			return m_SharedState->callback();
 	}
 
-private:
 	std::shared_ptr<FutureSharedStateDetail::SharedState<Callback>> m_SharedState;
 };
 
@@ -313,8 +301,10 @@ template<typename ResultType>
 template<typename Callback>
 PackagedTask<Callback> Future<ResultType>::Wrap(Callback&& callback)
 {
-	static_assert(std::is_same_v<std::invoke_result_t<Callback>, ResultType>,
+	static_assert(std::is_same_v<CallbackResult<Callback>, ResultType>,
 		"The return type of the wrapped function is not the same as the type the Future expects.");
+	static_assert(std::is_invocable_v<Callback, StopToken> || !std::is_invocable_v<Callback, StopToken&>,
+		"Consider taking the `StopToken` by value");
 	CancelOrWait();
 	auto temp = std::make_shared<FutureSharedStateDetail::SharedState<Callback>>(std::move(callback));
 	m_Receiver = {temp, &temp->receiver};

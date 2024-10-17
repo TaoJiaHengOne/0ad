@@ -28,6 +28,7 @@
 #include "maths/MathUtil.h"
 #include "ps/CLogger.h"
 #include "ps/FileIo.h"
+#include "ps/Future.h"
 #include "ps/scripting/JSInterface_VFS.h"
 #include "ps/TemplateLoader.h"
 #include "scriptinterface/FunctionWrapper.h"
@@ -43,23 +44,11 @@
 #include <string>
 #include <vector>
 
-extern bool IsQuitRequested();
-
 namespace
 {
 constexpr const char* GENERATOR_NAME{"GenerateMap"};
 
-bool MapGenerationInterruptCallback(JSContext* UNUSED(cx))
-{
-	// This may not use SDL_IsQuitRequested(), because it runs in a thread separate to SDL, see SDL_PumpEvents
-	if (IsQuitRequested())
-	{
-		LOGWARNING("Quit requested!");
-		return false;
-	}
-
-	return true;
-}
+bool MapGenerationInterruptCallback(JSContext* cx);
 
 /**
  * Provides callback's for the JavaScript.
@@ -69,8 +58,9 @@ class CMapGenerationCallbacks
 public:
 	// Only the constructor and the destructor are called by C++.
 
-	CMapGenerationCallbacks(std::atomic<int>& progress, ScriptInterface& scriptInterface,
-		Script::StructuredClone& mapData, const u16 flags) :
+	CMapGenerationCallbacks(const StopToken stopToken, std::atomic<int>& progress,
+		ScriptInterface& scriptInterface, Script::StructuredClone& mapData, const u16 flags) :
+		m_StopToken{stopToken},
 		m_Progress{progress},
 		m_ScriptInterface{scriptInterface},
 		m_MapData{mapData}
@@ -127,6 +117,8 @@ public:
 		JS_AddInterruptCallback(m_ScriptInterface.GetGeneralJSContext(), nullptr);
 		m_ScriptInterface.SetCallbackData(nullptr);
 	}
+
+	StopToken m_StopToken;
 
 private:
 
@@ -374,10 +366,16 @@ private:
 	 */
 	CTemplateLoader m_TemplateLoader;
 };
+
+bool MapGenerationInterruptCallback(JSContext* cx)
+{
+	return !ScriptInterface::ObjectFromCBData<CMapGenerationCallbacks>(
+		ScriptInterface::CmptPrivate::GetScriptInterface(cx))->m_StopToken.IsStopRequested();
+}
 } // anonymous namespace
 
-Script::StructuredClone RunMapGenerationScript(std::atomic<int>& progress, ScriptInterface& scriptInterface,
-	const VfsPath& script, const std::string& settings, const u16 flags)
+Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::atomic<int>& progress,
+	ScriptInterface& scriptInterface, const VfsPath& script, const std::string& settings, const u16 flags)
 {
 	ScriptRequest rq(scriptInterface);
 
@@ -406,7 +404,7 @@ Script::StructuredClone RunMapGenerationScript(std::atomic<int>& progress, Scrip
 	scriptInterface.ReplaceNondeterministicRNG(mapGenRNG);
 
 	Script::StructuredClone mapData;
-	CMapGenerationCallbacks callbackData{progress, scriptInterface, mapData, flags};
+	CMapGenerationCallbacks callbackData{stopToken, progress, scriptInterface, mapData, flags};
 
 	// Copy settings to global variable
 	JS::RootedValue global(rq.cx, rq.globalValue());

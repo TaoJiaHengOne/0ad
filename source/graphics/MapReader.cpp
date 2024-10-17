@@ -59,6 +59,8 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
+extern bool IsQuitRequested();
+
 #if defined(_MSC_VER) && _MSC_VER > 1900
 #pragma warning(disable: 4456) // Declaration hides previous local declaration.
 #pragma warning(disable: 4458) // Declaration hides class member.
@@ -1342,7 +1344,7 @@ int CMapReader::StartMapGeneration(const CStrW& scriptFile)
 	// The settings are stringified to pass them to the task.
 	m_GeneratorState->task = Threading::TaskManager::Instance().PushTask(
 		[&progress = m_GeneratorState->progress, scriptFile,
-			settings = Script::StringifyJSON(rq, &m_ScriptSettings)]
+			settings = Script::StringifyJSON(rq, &m_ScriptSettings)](const StopToken stopToken)
 		{
 			PROFILE2("Map Generation");
 
@@ -1352,7 +1354,7 @@ int CMapReader::StartMapGeneration(const CStrW& scriptFile)
 				MAP_GENERATION_CONTEXT_SIZE)};
 			ScriptInterface mapgenInterface{"Engine", "MapGenerator", mapgenContext};
 
-			return RunMapGenerationScript(progress, mapgenInterface, scriptPath, settings);
+			return RunMapGenerationScript(stopToken, progress, mapgenInterface, scriptPath, settings);
 		});
 
 	return 0;
@@ -1362,13 +1364,19 @@ int CMapReader::StartMapGeneration(const CStrW& scriptFile)
 {
 	throw PSERROR_Game_World_MapLoadFailed{
 		"Error generating random map.\nCheck application log for details."};
-};
+}
 
 int CMapReader::PollMapGeneration()
 {
 	ENSURE(m_GeneratorState);
 
-	if (!m_GeneratorState->task.IsReady())
+	if (IsQuitRequested())
+	{
+		LOGWARNING("Quit requested!");
+		return -1;
+	}
+
+	if (!m_GeneratorState->task.IsDone())
 		return m_GeneratorState->progress.load();
 
 	const Script::StructuredClone results{m_GeneratorState->task.Get()};

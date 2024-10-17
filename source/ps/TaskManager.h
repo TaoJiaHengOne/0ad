@@ -64,9 +64,9 @@ public:
 	 * Push a task to be executed.
 	 */
 	template<typename T>
-	Future<std::invoke_result_t<T>> PushTask(T&& func, TaskPriority priority = TaskPriority::NORMAL)
+	Future<CallbackResult<T>> PushTask(T&& func, TaskPriority priority = TaskPriority::NORMAL)
 	{
-		Future<std::invoke_result_t<T>> ret;
+		Future<CallbackResult<T>> ret;
 		DoPushTask(ret.Wrap(std::move(func)), priority);
 		return ret;
 	}

@@ -488,7 +488,7 @@ bool CTextureConverter::ConvertTexture(const CTexturePtr& texture, const VfsPath
 bool CTextureConverter::Poll(CTexturePtr& texture, VfsPath& dest, bool& ok)
 {
 #if CONFIG2_NVTT
-	if (m_ResultQueue.empty() || !m_ResultQueue.front().IsReady())
+	if (m_ResultQueue.empty() || !m_ResultQueue.front().IsDone())
 	{
 		// no work to do
 		return false;

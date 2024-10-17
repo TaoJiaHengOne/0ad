@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 #define INCLUDED_MAPGENERATOR
 
 #include "lib/file/vfs/vfs_path.h"
+#include "ps/Future.h"
 #include "scriptinterface/ScriptTypes.h"
 #include "scriptinterface/StructuredClone.h"
 
@@ -28,6 +29,8 @@
 /**
  * Generate the map. This does take a long time.
  *
+ * @param st request to fastly stop the function. The returned value is
+ *	unspecified.
  * @param progress Destination to write the function progress to. You must not
  *	write to it while `RunMapGenerationScript` is running.
  * @param script The VFS path for the script, e.g. "maps/random/latium.js".
@@ -38,7 +41,7 @@
  *	data, according to this format:
  *	https://trac.wildfiregames.com/wiki/Random_Map_Generator_Internals#Dataformat
  */
-Script::StructuredClone RunMapGenerationScript(std::atomic<int>& progress,
+Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::atomic<int>& progress,
 	ScriptInterface& scriptInterface, const VfsPath& script, const std::string& settings,
 	const u16 flags = JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT);
 
