@@ -49,7 +49,7 @@ STAGE_EXTENSIONS = {
     "compute": ".cs",
 }
 
-YAML_DIRECTIVE_PATTERN = re.compile(b"^%YAML 1.0\n")
+YAML_DIRECTIVE_PATTERN = re.compile(b"^%YAML 1.0\r?\n")
 
 
 def execute(command):
