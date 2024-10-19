@@ -395,6 +395,8 @@ void CDeviceCommandContext::SetGraphicsPipelineState(
 	IGraphicsPipelineState* pipelineState)
 {
 	ENSURE(pipelineState);
+	if (m_GraphicsPipelineState && m_GraphicsPipelineState->GetUID() == pipelineState->As<CGraphicsPipelineState>()->GetUID())
+		return;
 	m_GraphicsPipelineState = pipelineState->As<CGraphicsPipelineState>();
 
 	CShaderProgram* shaderProgram = m_GraphicsPipelineState->GetShaderProgram()->As<CShaderProgram>();
@@ -411,6 +413,8 @@ void CDeviceCommandContext::SetComputePipelineState(
 	IComputePipelineState* pipelineState)
 {
 	ENSURE(pipelineState);
+	if (m_ComputePipelineState && m_ComputePipelineState->GetUID() == pipelineState->As<CComputePipelineState>()->GetUID())
+		return;
 	m_ComputePipelineState = pipelineState->As<CComputePipelineState>();
 
 	CShaderProgram* shaderProgram = m_ComputePipelineState->GetShaderProgram()->As<CShaderProgram>();
