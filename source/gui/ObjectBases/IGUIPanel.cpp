@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 20244 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -17,21 +17,41 @@
 
 #include "precompiled.h"
 
-#include "CImage.h"
+#include "IGUIPanel.h"
 
 #include "gui/CGUI.h"
 
-CImage::CImage(CGUI& pGUI)
-	: IGUIObject(pGUI),
-	  m_Sprite(this, "sprite")
+IGUIPanel::IGUIPanel(CGUI& pGUI)
+	: IGUIObject(pGUI)
 {
 }
 
-CImage::~CImage()
+IGUIPanel::~IGUIPanel()
 {
 }
 
-void CImage::Draw(CCanvas2D& canvas)
+bool IGUIPanel::IsMouseOver() const
 {
-	m_pGUI.DrawSprite(m_Sprite, canvas, m_CachedActualSize, m_VisibleArea);
+	return m_CachedLayoutActualSize.PointInside(m_pGUI.GetMousePos());
+}
+
+void IGUIPanel::UpdateCachedSize()
+{
+	IGUIObject::UpdateCachedSize();
+	m_CachedLayoutActualSize = m_CachedActualSize;
+}
+
+CRect IGUIPanel::GetComputedSize()
+{
+	UpdateCachedSize();
+	return m_CachedLayoutActualSize;
+}
+
+const std::vector<IGUIObject*>& IGUIPanel::GetVisibleChildren() const
+{
+	if (m_Drawing)
+		return m_Children;
+
+	static std::vector<IGUIObject*> emptyVector;
+	return emptyVector;
 }

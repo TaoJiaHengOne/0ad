@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -147,12 +147,8 @@ void IGUIScrollBar::HandleMessage(SGUIMessage& Message)
 		{
 			if (GetOuterRect().PointInside(mouse))
 			{
-				// Scroll plus or minus a lot, this might change, it doesn't
-				//  have to be fancy though.
-				if (mouse.Y < GetBarRect().top)
-					ScrollMinusPlenty();
-				else
-					ScrollPlusPlenty();
+				SetScrollPlentyFromMousePos(mouse);
+				
 				// Simulate mouse movement to see if bar now is hovered
 				SGUIMessage msg(GUIM_MOUSE_MOTION);
 				HandleMessage(msg);
@@ -165,27 +161,6 @@ void IGUIScrollBar::HandleMessage(SGUIMessage& Message)
 		m_ButtonMinusPressed = false;
 		m_ButtonPlusPressed = false;
 		break;
-
-	case GUIM_MOUSE_WHEEL_UP:
-	{
-		ScrollMinus();
-		// Since the scroll was changed, let's simulate a mouse movement
-		//  to check if scrollbar now is hovered
-		SGUIMessage msg(GUIM_MOUSE_MOTION);
-		HandleMessage(msg);
-		break;
-	}
-
-	case GUIM_MOUSE_WHEEL_DOWN:
-	{
-		ScrollPlus();
-		// Since the scroll was changed, let's simulate a mouse movement
-		//  to check if scrollbar now is hovered
-		SGUIMessage msg(GUIM_MOUSE_MOTION);
-		HandleMessage(msg);
-		break;
-	}
-
 	default:
 		break;
 	}

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -164,6 +164,9 @@ void CDropDown::HandleMessage(SGUIMessage& Message)
 			if (m_List->m_Items.empty())
 				return;
 
+			if (m_VisibleArea && !m_VisibleArea.PointInside(m_pGUI.GetMousePos()))
+				return;
+
 			m_Open = true;
 			GetScrollBar(0).SetZ(GetBufferedZ());
 			m_ElementHighlight = m_Selected;
@@ -208,6 +211,8 @@ void CDropDown::HandleMessage(SGUIMessage& Message)
 		if (m_Open || !m_Enabled)
 			break;
 
+		Message.Skip(false);
+
 		m_ElementHighlight = m_Selected;
 
 		if (m_ElementHighlight + 1 >= (int)m_ItemsYPositions.size() - 1)
@@ -223,6 +228,8 @@ void CDropDown::HandleMessage(SGUIMessage& Message)
 		// Don't switch elements by scrolling when open, causes a confusing interaction between this and the scrollbar.
 		if (m_Open || !m_Enabled)
 			break;
+
+		Message.Skip(false);
 
 		m_ElementHighlight = m_Selected;
 		if (m_ElementHighlight - 1 < 0)
@@ -420,7 +427,7 @@ bool CDropDown::IsMouseOver() const
 		return rect.PointInside(m_pGUI.GetMousePos());
 	}
 	else
-		return m_CachedActualSize.PointInside(m_pGUI.GetMousePos());
+		return IGUIObject::IsMouseOver();
 }
 
 void CDropDown::Draw(CCanvas2D& canvas)
@@ -428,7 +435,7 @@ void CDropDown::Draw(CCanvas2D& canvas)
 	const CGUISpriteInstance& sprite = m_Enabled ? m_Sprite : m_SpriteDisabled;
 	const CGUISpriteInstance& spriteOverlay = m_Enabled ? m_SpriteOverlay : m_SpriteOverlayDisabled;
 
-	m_pGUI.DrawSprite(sprite, canvas, m_CachedActualSize);
+	m_pGUI.DrawSprite(sprite, canvas, m_CachedActualSize, m_VisibleArea);
 
 	if (m_ButtonWidth > 0.f)
 	{
@@ -437,24 +444,25 @@ void CDropDown::Draw(CCanvas2D& canvas)
 
 		if (!m_Enabled)
 		{
-			m_pGUI.DrawSprite(*m_Sprite2Disabled ? m_Sprite2Disabled : m_Sprite2, canvas, rect);
+			m_pGUI.DrawSprite(*m_Sprite2Disabled ? m_Sprite2Disabled : m_Sprite2, canvas, rect, m_VisibleArea);
 		}
 		else if (m_Open)
 		{
-			m_pGUI.DrawSprite(*m_Sprite2Pressed ? m_Sprite2Pressed : m_Sprite2, canvas, rect);
+			m_pGUI.DrawSprite(*m_Sprite2Pressed ? m_Sprite2Pressed : m_Sprite2, canvas, rect, m_VisibleArea);
 		}
 		else if (m_MouseHovering)
 		{
-			m_pGUI.DrawSprite(*m_Sprite2Over ? m_Sprite2Over : m_Sprite2, canvas, rect);
+			m_pGUI.DrawSprite(*m_Sprite2Over ? m_Sprite2Over : m_Sprite2, canvas, rect, m_VisibleArea);
 		}
 		else
-			m_pGUI.DrawSprite(m_Sprite2, canvas, rect);
+			m_pGUI.DrawSprite(m_Sprite2, canvas, rect, m_VisibleArea);
 	}
 
 	if (m_Selected != -1) // TODO: Maybe check validity completely?
 	{
-		CRect cliparea(m_CachedActualSize.left, m_CachedActualSize.top,
-					   m_CachedActualSize.right - m_ButtonWidth, m_CachedActualSize.bottom);
+		CRect cliparea = m_VisibleArea != CRect() ? m_VisibleArea : m_CachedActualSize;
+		if (cliparea.right > m_CachedActualSize.right - m_ButtonWidth)
+			cliparea.right = m_CachedActualSize.right - m_ButtonWidth;
 
 		CVector2D pos(m_CachedActualSize.left, m_CachedActualSize.top);
 		DrawText(canvas, m_Selected, m_Enabled ? m_TextColorSelected : m_TextColorDisabled, pos, cliparea);
@@ -474,7 +482,7 @@ void CDropDown::Draw(CCanvas2D& canvas)
 		if (m_HideScrollBar)
 			m_ScrollBar.Set(old, false);
 	}
-	m_pGUI.DrawSprite(spriteOverlay, canvas, m_CachedActualSize);
+	m_pGUI.DrawSprite(spriteOverlay, canvas, m_CachedActualSize, m_VisibleArea);
 }
 
 // When a dropdown list is opened, it needs to be visible above all the other

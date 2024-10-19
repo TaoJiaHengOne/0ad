@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -111,9 +111,9 @@ struct SGUIScrollBarStyle
 	CGUISpriteInstance m_SpriteButtonBottomDisabled;
 	CGUISpriteInstance m_SpriteButtonBottomOver;
 
-	CGUISpriteInstance m_SpriteBarVertical;
-	CGUISpriteInstance m_SpriteBarVerticalOver;
-	CGUISpriteInstance m_SpriteBarVerticalPressed;
+	CGUISpriteInstance m_SpriteSliderVertical;
+	CGUISpriteInstance m_SpriteSliderVerticalOver;
+	CGUISpriteInstance m_SpriteSliderVerticalPressed;
 
 	CGUISpriteInstance m_SpriteBackVertical;
 
@@ -126,13 +126,17 @@ struct SGUIScrollBarStyle
 	CGUISpriteInstance m_SpriteButtonLeft;
 	CGUISpriteInstance m_SpriteButtonLeftPressed;
 	CGUISpriteInstance m_SpriteButtonLeftDisabled;
+	CGUISpriteInstance m_SpriteButtonLeftOver;
 
 	CGUISpriteInstance m_SpriteButtonRight;
 	CGUISpriteInstance m_SpriteButtonRightPressed;
 	CGUISpriteInstance m_SpriteButtonRightDisabled;
+	CGUISpriteInstance m_SpriteButtonRightOver;
 
 	CGUISpriteInstance m_SpriteBackHorizontal;
-	CGUISpriteInstance m_SpriteBarHorizontal;
+	CGUISpriteInstance m_SpriteSliderHorizontal;
+	CGUISpriteInstance m_SpriteSliderHorizontalOver;
+	CGUISpriteInstance m_SpriteSliderHorizontalPressed;
 
 	//@}
 };
@@ -178,6 +182,8 @@ public:
 	 * Set m_Pos with g_mouse_x/y input, i.e. when draggin.
 	 */
 	virtual void SetPosFromMousePos(const CVector2D& mouse) = 0;
+
+	virtual void SetScrollPlentyFromMousePos(const CVector2D& mouse) = 0;
 
 	/**
 	 * Hovering the scroll minus button

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -50,7 +50,8 @@ const SGUIScrollBarStyle* IGUIScrollBarOwner::GetScrollBarStyle(const CStr& styl
 void IGUIScrollBarOwner::HandleMessage(SGUIMessage& msg)
 {
 	for (const std::unique_ptr<IGUIScrollBar>& scrollBar : m_ScrollBars)
-		scrollBar->HandleMessage(msg);
+		if (scrollBar->IsVisible())
+			scrollBar->HandleMessage(msg);
 }
 
 void IGUIScrollBarOwner::Draw(CCanvas2D& canvas)

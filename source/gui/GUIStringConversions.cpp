@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #include "precompiled.h"
 
 #include "gui/CGUI.h"
+#include "gui/SettingTypes/EScrollOrientation.h"
 #include "gui/SettingTypes/CGUIString.h"
 #include "ps/CLogger.h"
 
@@ -243,4 +244,19 @@ template <>
 bool CGUI::ParseString<CGUIList>(const CGUI* UNUSED(pGUI), const CStrW& UNUSED(Value), CGUIList& UNUSED(Output))
 {
 	return false;
+}
+
+template <>
+bool CGUI::ParseString<EScrollOrientation>(const CGUI* UNUSED(pGUI), const CStrW& Value, EScrollOrientation& Output)
+{
+	if (Value == L"vertical")
+		Output = EScrollOrientation::VERTICAL;
+	else if (Value == L"horizontal")
+		Output = EScrollOrientation::HORIZONTAL;
+	else if (Value == L"both")
+		Output = EScrollOrientation::BOTH;
+	else
+		return false;
+
+	return true;
 }

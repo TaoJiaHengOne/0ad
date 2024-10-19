@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -85,9 +85,10 @@ void CButton::Draw(CCanvas2D& canvas)
 	m_pGUI.DrawSprite(
 		GetButtonSprite(m_Sprite, m_SpriteOver, m_SpritePressed, m_SpriteDisabled),
 		canvas,
-		m_CachedActualSize);
+		m_CachedActualSize,
+		m_VisibleArea);
 
-	DrawText(canvas, 0, ChooseColor(), m_TextPos);
+	DrawText(canvas, 0, ChooseColor(), m_TextPos, m_VisibleArea);
 }
 
 bool CButton::IsMouseOver() const

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <string_view>
 #include <unordered_map>
+
 
 const CStr IGUIObject::EventNameMouseEnter = "MouseEnter";
 const CStr IGUIObject::EventNameMouseMove = "MouseMove";
@@ -135,11 +136,34 @@ void IGUIObject::SettingChanged(const CStr& Setting, const bool SendMessage)
 	{
 		SGUIMessage msg(GUIM_SETTINGS_UPDATED, Setting);
 		HandleMessage(msg);
+
+		// inform to parents until get to the root object
+		// for now only size and hidden settings are bubbled up
+		if (GetParent() && (Setting == "size" || Setting == "hidden"))
+		{
+			EGUIMessageType type = Setting == "size" ? GUIM_CHILD_RESIZED : GUIM_CHILD_TOGGLE_VISIBILITY;
+			SGUIMessage msg(type, GetName());
+			msg.Skip(true);
+
+			IGUIObject* parent = GetParent();
+			while (parent)
+			{
+				parent->HandleMessage(msg);
+
+				if (!msg.skipped)
+					break;
+
+				parent = parent->GetParent();
+			}
+		}
 	}
 }
 
 bool IGUIObject::IsMouseOver() const
 {
+	if (m_VisibleArea)
+		return m_VisibleArea.PointInside(m_pGUI.GetMousePos());
+
 	return m_CachedActualSize.PointInside(m_pGUI.GetMousePos());
 }
 
@@ -235,7 +259,6 @@ CRect IGUIObject::GetComputedSize()
 	UpdateCachedSize();
 	return m_CachedActualSize;
 }
-
 
 bool IGUIObject::ApplyStyle(const CStr& StyleName)
 {
@@ -362,6 +385,8 @@ InReaction IGUIObject::SendMouseEvent(EGUIMessageType type, const CStr& eventNam
 	PROFILE2_ATTR("object: %s", m_Name.c_str());
 
 	SGUIMessage msg(type);
+	if (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT)
+		msg.Skip(true);
 	HandleMessage(msg);
 
 	ScriptRequest rq(m_pGUI.GetScriptInterface());
@@ -380,6 +405,11 @@ InReaction IGUIObject::SendMouseEvent(EGUIMessageType type, const CStr& eventNam
 	JS::RootedValueVector paramData(rq.cx);
 	ignore_result(paramData.append(mouse));
 	ScriptEvent(eventName, paramData);
+
+	// inform to parents until get to the root object
+	// for now only wheel events are bubbled up
+	if (GetParent() && (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT) && msg.skipped)
+		msg.Skip(GetParent()->SendMouseEvent(type, eventName) == IN_PASS);
 
 	return msg.skipped ? IN_PASS : IN_HANDLED;
 }
@@ -499,4 +529,25 @@ void IGUIObject::TraceMember(JSTracer* trc)
 
 	for (std::pair<const CStr, JS::Heap<JSObject*>>& handler : m_ScriptHandlers)
 		JS::TraceEdge(trc, &handler.second, "IGUIObject::m_ScriptHandlers");
+}
+
+void IGUIObject::DrawInArea(CCanvas2D& canvas, CRect& area)
+{
+	bool isInsideBoundaries = false;
+	RecurseObject(nullptr, &IGUIObject::SetIsInsideBoundaries, isInsideBoundaries);
+	if (!area.IntersectWith(m_CachedActualSize))
+		return;
+
+	CRect intersection = area.Intersection(m_CachedActualSize);
+
+	m_VisibleArea = intersection;
+
+	Draw(canvas);
+
+	isInsideBoundaries = true;
+	RecurseObject(nullptr, &IGUIObject::SetIsInsideBoundaries, isInsideBoundaries);
+}
+
+bool IGUIObject::IsHiddenOrGhostOrOutOfBoundaries() const {
+	return !m_IsInsideBoundaries || IsHiddenOrGhost();
 }

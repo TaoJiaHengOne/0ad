@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -130,7 +130,8 @@ const CStrW& CText::GetTooltipText() const
 void CText::HandleMessage(SGUIMessage& Message)
 {
 	IGUIObject::HandleMessage(Message);
-	IGUIScrollBarOwner::HandleMessage(Message);
+	if (m_ScrollBar)
+		IGUIScrollBarOwner::HandleMessage(Message);
 	//IGUITextOwner::HandleMessage(Message); <== placed it after the switch instead!
 
 	switch (Message.type)
@@ -148,24 +149,6 @@ void CText::HandleMessage(SGUIMessage& Message)
 
 		break;
 
-	case GUIM_MOUSE_WHEEL_DOWN:
-	{
-		GetScrollBar(0).ScrollPlus();
-		// Since the scroll was changed, let's simulate a mouse movement
-		//  to check if scrollbar now is hovered
-		SGUIMessage msg(GUIM_MOUSE_MOTION);
-		HandleMessage(msg);
-		break;
-	}
-	case GUIM_MOUSE_WHEEL_UP:
-	{
-		GetScrollBar(0).ScrollMinus();
-		// Since the scroll was changed, let's simulate a mouse movement
-		//  to check if scrollbar now is hovered
-		SGUIMessage msg(GUIM_MOUSE_MOTION);
-		HandleMessage(msg);
-		break;
-	}
 	case GUIM_LOAD:
 	{
 		GetScrollBar(0).SetX(m_CachedActualSize.right);
@@ -185,18 +168,16 @@ void CText::HandleMessage(SGUIMessage& Message)
 
 void CText::Draw(CCanvas2D& canvas)
 {
-	m_pGUI.DrawSprite(m_Sprite, canvas, m_CachedActualSize);
+	m_pGUI.DrawSprite(m_Sprite, canvas, m_CachedActualSize, m_VisibleArea);
 
 	float scroll = 0.f;
 	if (m_ScrollBar)
 		scroll = GetScrollBar(0).GetPos();
 
 	// Clipping area (we'll have to subtract the scrollbar)
-	CRect cliparea;
+	CRect cliparea = m_VisibleArea ? m_VisibleArea : m_CachedActualSize;
 	if (m_Clip)
 	{
-		cliparea = m_CachedActualSize;
-
 		if (m_ScrollBar)
 		{
 			// subtract scrollbar from cliparea
@@ -222,5 +203,5 @@ void CText::Draw(CCanvas2D& canvas)
 		IGUIScrollBarOwner::Draw(canvas);
 
 	// Draw the overlays last
-	m_pGUI.DrawSprite(m_SpriteOverlay, canvas, m_CachedActualSize);
+	m_pGUI.DrawSprite(m_SpriteOverlay, canvas, m_CachedActualSize, m_VisibleArea);
 }

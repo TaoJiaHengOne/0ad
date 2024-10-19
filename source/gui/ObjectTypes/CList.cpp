@@ -155,7 +155,8 @@ void CList::UpdateCachedSize()
 void CList::HandleMessage(SGUIMessage& Message)
 {
 	IGUIObject::HandleMessage(Message);
-	IGUIScrollBarOwner::HandleMessage(Message);
+	if (m_ScrollBar)
+		IGUIScrollBarOwner::HandleMessage(Message);
 	//IGUITextOwner::HandleMessage(Message); <== placed it after the switch instead!
 
 	m_Modified = false;

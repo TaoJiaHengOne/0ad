@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,6 +29,8 @@
 #include "gui/SettingTypes/CGUIHotkey.h"
 #include "gui/SettingTypes/CGUISize.h"
 #include "gui/SGUIMessage.h"
+#include "lib/allocators/DynamicArena.h"
+#include "lib/allocators/STLAllocators.h"
 #include "lib/input.h" // just for IN_PASS
 #include "ps/CStr.h"
 #include "ps/XML/Xeromyces.h"
@@ -40,6 +42,7 @@
 class CCanvas2D;
 class CGUI;
 class CGUISize;
+class CGUIObjectEventBroadcaster;
 class IGUIObject;
 class IGUIProxyObject;
 class IGUISetting;
@@ -59,6 +62,7 @@ public: \
 class IGUIObject
 {
 	friend class CGUI;
+	friend class CGUIObjectEventBroadcaster;
 
 	// For triggering message update handlers.
 	friend class IGUISetting;
@@ -189,7 +193,7 @@ public:
 	/**
 	 * Updates and returns the size of the object.
 	 */
-	CRect GetComputedSize();
+	virtual CRect GetComputedSize();
 
 	virtual const CStrW& GetTooltipText() const { return m_Tooltip; }
 	virtual const CStr& GetTooltipStyle() const { return m_TooltipStyle; }
@@ -212,6 +216,10 @@ public:
 	 * Retrieves the JSObject representing this GUI object.
 	 */
 	JSObject* GetJSObject();
+
+	virtual const std::vector<IGUIObject*>& GetVisibleChildren() const { return m_Children; }
+	void SetIsInsideBoundaries(bool& isInsideBoundaries) { m_IsInsideBoundaries = isInsideBoundaries; }
+	bool IsHiddenOrGhostOrOutOfBoundaries() const;
 
 	//@}
 protected:
@@ -260,6 +268,8 @@ public:
 		for (IGUIObject* const& obj : m_Children)
 			obj->RecurseObject(isRestricted, callbackFunction, args...);
 	}
+
+	virtual void DrawInArea(CCanvas2D& canvas, CRect& area);
 
 protected:
 	/**
@@ -524,6 +534,9 @@ protected:
 
 	// Cached JSObject representing this GUI object.
 	std::unique_ptr<IGUIProxyObject> m_JSObject;
+
+	CRect m_VisibleArea;
+	bool m_IsInsideBoundaries = true;
 
 	CGUISimpleSetting<bool> m_Enabled;
 	CGUISimpleSetting<bool> m_Hidden;

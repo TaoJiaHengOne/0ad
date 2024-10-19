@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -58,6 +58,8 @@ public:
 	void operator-=(const CVector2D& a);
 	void operator-=(const CSize2D& a);
 
+	operator bool() const { return right - left > 0 && bottom - top > 0; }
+
 	/**
 	 * @return Width of Rectangle
 	 */
@@ -106,6 +108,10 @@ public:
 	bool PointInside(const CVector2D &point) const;
 
 	CRect Scale(float x, float y) const;
+
+	bool IntersectWith(const CRect& a) const;
+
+	CRect Intersection(const CRect& a) const;
 
 	/**
 	 * Returning CVector2D representing each corner.

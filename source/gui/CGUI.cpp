@@ -19,6 +19,8 @@
 
 #include "CGUI.h"
 
+#include "GUIObjectEventBroadcaster.h"
+
 #include "graphics/Canvas2D.h"
 #include "gui/IGUIScrollBar.h"
 #include "gui/ObjectBases/IGUIObject.h"
@@ -27,8 +29,6 @@
 #include "gui/Scripting/ScriptFunctions.h"
 #include "gui/Scripting/JSInterface_GUIProxy.h"
 #include "i18n/L10n.h"
-#include "lib/allocators/DynamicArena.h"
-#include "lib/allocators/STLAllocators.h"
 #include "lib/bits.h"
 #include "lib/input.h"
 #include "lib/sysdep/sysdep.h"
@@ -48,6 +48,7 @@
 #include "scriptinterface/ScriptInterface.h"
 
 #include <string>
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -63,37 +64,12 @@ const CStr CGUI::EventNameMouseRightPress = "MouseRightPress";
 const CStr CGUI::EventNameMouseLeftPress = "MouseLeftPress";
 const CStr CGUI::EventNameMouseWheelDown = "MouseWheelDown";
 const CStr CGUI::EventNameMouseWheelUp = "MouseWheelUp";
+const CStr CGUI::EventNameMouseWheelLeft = "MouseWheelLeft";
+const CStr CGUI::EventNameMouseWheelRight = "MouseWheelRight";
 const CStr CGUI::EventNameMouseLeftDoubleClick = "MouseLeftDoubleClick";
 const CStr CGUI::EventNameMouseLeftRelease = "MouseLeftRelease";
 const CStr CGUI::EventNameMouseRightDoubleClick = "MouseRightDoubleClick";
 const CStr CGUI::EventNameMouseRightRelease = "MouseRightRelease";
-
-namespace
-{
-
-struct VisibleObject
-{
-	IGUIObject* object;
-	// Index of the object in a depth-first search inside GUI tree.
-	u32 index;
-	// Cached value of GetBufferedZ to avoid recursive calls in a deep hierarchy.
-	float bufferedZ;
-};
-
-template<class Container>
-void CollectVisibleObjectsRecursively(const std::vector<IGUIObject*>& objects, Container* visibleObjects)
-{
-	for (IGUIObject* const& object : objects)
-	{
-		if (!object->IsHidden())
-		{
-			visibleObjects->emplace_back(VisibleObject{object, static_cast<u32>(visibleObjects->size()), 0.0f});
-			CollectVisibleObjectsRecursively(object->GetChildren(), visibleObjects);
-		}
-	}
-}
-
-} // anonynous namespace
 
 CGUI::CGUI(ScriptContext& context)
 	: m_BaseObject(std::make_unique<CGUIDummyObject>(*this)),
@@ -158,7 +134,7 @@ InReaction CGUI::HandleEvent(const SDL_Event_* ev)
 		m_MousePos = CVector2D((float)ev->ev.motion.x / g_VideoMode.GetScale(), (float)ev->ev.motion.y / g_VideoMode.GetScale());
 
 		SGUIMessage msg(GUIM_MOUSE_MOTION);
-		m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhost, &IGUIObject::HandleMessage, msg);
+		m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhostOrOutOfBoundaries, &IGUIObject::HandleMessage, msg);
 	}
 
 	// Update m_MouseButtons. (BUTTONUP is handled later.)
@@ -196,7 +172,7 @@ InReaction CGUI::HandleEvent(const SDL_Event_* ev)
 		// Now we'll call UpdateMouseOver on *all* objects,
 		// we'll input the one hovered, and they will each
 		// update their own data and send messages accordingly
-		m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhost, &IGUIObject::UpdateMouseOver, static_cast<IGUIObject* const&>(pNearest));
+		m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhostOrOutOfBoundaries, &IGUIObject::UpdateMouseOver, static_cast<IGUIObject* const&>(pNearest));
 
 		if (ev->ev.type == SDL_MOUSEBUTTONDOWN)
 		{
@@ -225,6 +201,11 @@ InReaction CGUI::HandleEvent(const SDL_Event_* ev)
 				ret = pNearest->SendMouseEvent(GUIM_MOUSE_WHEEL_DOWN, EventNameMouseWheelDown);
 			else if (ev->ev.wheel.y > 0)
 				ret = pNearest->SendMouseEvent(GUIM_MOUSE_WHEEL_UP, EventNameMouseWheelUp);
+
+			if (ev->ev.wheel.x < 0)
+				ret = pNearest->SendMouseEvent(GUIM_MOUSE_WHEEL_LEFT, EventNameMouseWheelLeft);
+			else if (ev->ev.wheel.x > 0)
+				ret = pNearest->SendMouseEvent(GUIM_MOUSE_WHEEL_RIGHT, EventNameMouseWheelRight);
 		}
 		else if (ev->ev.type == SDL_MOUSEBUTTONUP)
 		{
@@ -258,7 +239,7 @@ InReaction CGUI::HandleEvent(const SDL_Event_* ev)
 			m_BaseObject->RecurseObject(&IGUIObject::IsHidden, &IGUIObject::ResetStates);
 
 			// Since the hover state will have been reset, we reload it.
-			m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhost, &IGUIObject::UpdateMouseOver, static_cast<IGUIObject* const&>(pNearest));
+			m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhostOrOutOfBoundaries, &IGUIObject::UpdateMouseOver, static_cast<IGUIObject* const&>(pNearest));
 		}
 	}
 
@@ -298,7 +279,7 @@ InReaction CGUI::HandleEvent(const SDL_Event_* ev)
 
 void CGUI::TickObjects()
 {
-	m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhost, &IGUIObject::Tick);
+	m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhostOrOutOfBoundaries, &IGUIObject::Tick);
 	SendEventToAll(EventNameTick);
 	m_Tooltip.Update(FindObjectUnderMouse(), m_MousePos, *this);
 }
@@ -327,32 +308,18 @@ void CGUI::SendEventToAll(const CStr& eventName, const JS::HandleValueArray& par
 
 void CGUI::Draw(CCanvas2D& canvas)
 {
-	using Arena = Allocators::DynamicArena<128 * KiB>;
-	using ObjectListAllocator = ProxyAllocator<VisibleObject, Arena>;
-	Arena arena;
-
-	std::vector<VisibleObject, ObjectListAllocator> visibleObjects((ObjectListAllocator(arena)));
-	CollectVisibleObjectsRecursively(m_BaseObject->GetChildren(), &visibleObjects);
-	for (VisibleObject& visibleObject : visibleObjects)
-		visibleObject.bufferedZ = visibleObject.object->GetBufferedZ();
-
-	std::sort(visibleObjects.begin(), visibleObjects.end(), [](const VisibleObject& visibleObject1, const VisibleObject& visibleObject2) -> bool {
-		if (visibleObject1.bufferedZ != visibleObject2.bufferedZ)
-			return visibleObject1.bufferedZ < visibleObject2.bufferedZ;
-		return visibleObject1.index < visibleObject2.index;
-	});
-
-	for (const VisibleObject& visibleObject : visibleObjects)
-		visibleObject.object->Draw(canvas);
+	CGUIObjectEventBroadcaster::RecurseVisibleObject(m_BaseObject.get(), &IGUIObject::Draw, canvas);
 }
 
-void CGUI::DrawSprite(const CGUISpriteInstance& Sprite, CCanvas2D& canvas, const CRect& Rect, const CRect& UNUSED(Clipping))
+void CGUI::DrawSprite(const CGUISpriteInstance& Sprite, CCanvas2D& canvas, const CRect& Rect, const CRect& Clipping)
 {
 	// If the sprite doesn't exist (name == ""), don't bother drawing anything
 	if (!Sprite)
 		return;
 
-	// TODO: Clipping?
+	std::optional<CCanvas2D::ScopedScissor> scopedScissor;
+	if (Clipping != CRect())
+		scopedScissor.emplace(canvas, Clipping);
 
 	Sprite.Draw(*this, canvas, Rect, m_Sprites);
 }
@@ -414,7 +381,7 @@ IGUIObject* CGUI::FindObjectByName(const CStr& Name) const
 IGUIObject* CGUI::FindObjectUnderMouse()
 {
 	IGUIObject* pNearest = nullptr;
-	m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhost, &IGUIObject::ChooseMouseOverAndClosest, pNearest);
+	m_BaseObject->RecurseObject(&IGUIObject::IsHiddenOrGhostOrOutOfBoundaries, &IGUIObject::ChooseMouseOverAndClosest, pNearest);
 	return pNearest;
 }
 
@@ -1237,12 +1204,20 @@ void CGUI::Xeromyces_ReadScrollBarStyle(const XMBData& xmb, XMBElement element)
 			scrollbar.m_SpriteButtonBottomOver = attr_value;
 		else if (attr_name == "sprite_back_vertical")
 			scrollbar.m_SpriteBackVertical = attr_value;
-		else if (attr_name == "sprite_bar_vertical")
-			scrollbar.m_SpriteBarVertical = attr_value;
-		else if (attr_name == "sprite_bar_vertical_over")
-			scrollbar.m_SpriteBarVerticalOver = attr_value;
-		else if (attr_name == "sprite_bar_vertical_pressed")
-			scrollbar.m_SpriteBarVerticalPressed = attr_value;
+		else if (attr_name == "sprite_slider_vertical")
+			scrollbar.m_SpriteSliderVertical = attr_value;
+		else if (attr_name == "sprite_slider_vertical_over")
+			scrollbar.m_SpriteSliderVerticalOver = attr_value;
+		else if (attr_name == "sprite_slider_vertical_pressed")
+			scrollbar.m_SpriteSliderVerticalPressed = attr_value;
+		else if (attr_name == "sprite_back_horizontal")
+			scrollbar.m_SpriteBackHorizontal = attr_value;
+		else if (attr_name == "sprite_slider_horizontal")
+			scrollbar.m_SpriteSliderHorizontal = attr_value;
+		else if (attr_name == "sprite_slider_horizontal_over")
+			scrollbar.m_SpriteSliderHorizontalOver = attr_value;
+		else if (attr_name == "sprite_slider_horizontal_pressed")
+			scrollbar.m_SpriteSliderHorizontalPressed = attr_value;
 	}
 
 	m_ScrollBarStyles.erase(name);

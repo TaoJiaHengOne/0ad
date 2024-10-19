@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -119,7 +119,7 @@ void CGUIScrollBarVertical::Draw(CCanvas2D& canvas)
 		}
 
 		m_pGUI.DrawSprite(
-			GetStyle()->m_SpriteBarVertical,
+			GetStyle()->m_SpriteSliderVertical,
 			canvas,
 			GetBarRect()
 		);
@@ -128,7 +128,34 @@ void CGUIScrollBarVertical::Draw(CCanvas2D& canvas)
 
 void CGUIScrollBarVertical::HandleMessage(SGUIMessage& Message)
 {
-	IGUIScrollBar::HandleMessage(Message);
+	switch (Message.type)
+	{
+	case GUIM_MOUSE_WHEEL_UP:
+	{
+		ScrollMinus();
+		// Since the scroll was changed, let's simulate a mouse movement
+		//  to check if scrollbar now is hovered
+		SGUIMessage msg(GUIM_MOUSE_MOTION);
+		HandleMessage(msg);
+		Message.Skip(false);
+		break;
+	}
+
+	case GUIM_MOUSE_WHEEL_DOWN:
+	{
+		ScrollPlus();
+		// Since the scroll was changed, let's simulate a mouse movement
+		//  to check if scrollbar now is hovered
+		SGUIMessage msg(GUIM_MOUSE_MOTION);
+		HandleMessage(msg);
+		Message.Skip(false);
+		break;
+	}
+
+	default:
+		IGUIScrollBar::HandleMessage(Message);
+		break;
+	}
 }
 
 CRect CGUIScrollBarVertical::GetBarRect() const
@@ -193,4 +220,14 @@ bool CGUIScrollBarVertical::HoveringButtonPlus(const CVector2D& mouse)
 	       mouse.X < StartX + GetStyle()->m_Width &&
 	       mouse.Y > m_Y + m_Length - GetStyle()->m_Width &&
 	       mouse.Y < m_Y + m_Length;
+}
+
+void CGUIScrollBarVertical::SetScrollPlentyFromMousePos(const CVector2D& mouse)
+{
+	// Scroll plus or minus a lot, this might change, it doesn't
+	//  have to be fancy though.
+	if (mouse.Y < GetBarRect().top)
+		ScrollMinusPlenty();
+	else
+		ScrollPlusPlenty();
 }

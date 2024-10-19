@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -883,7 +883,8 @@ void CInput::ResetStates()
 void CInput::HandleMessage(SGUIMessage& Message)
 {
 	IGUIObject::HandleMessage(Message);
-	IGUIScrollBarOwner::HandleMessage(Message);
+	if (m_ScrollBar)
+		IGUIScrollBarOwner::HandleMessage(Message);
 
 	// Cleans up operator[] usage.
 	const CStrW& caption = *m_Caption;
@@ -1486,7 +1487,7 @@ void CInput::DrawContent(CCanvas2D& canvas)
 void CInput::Draw(CCanvas2D& canvas)
 {
 	// We'll have to setup clipping manually, since we're doing the rendering manually.
-	CRect cliparea(m_CachedActualSize);
+	CRect cliparea = m_VisibleArea ? m_VisibleArea : m_CachedActualSize;
 
 	// First we'll figure out the clipping area, which is the cached actual size
 	//  substracted by an optional scrollbar
@@ -1521,7 +1522,7 @@ void CInput::Draw(CCanvas2D& canvas)
 		IGUIScrollBarOwner::Draw(canvas);
 
 	// Draw the overlays last
-	m_pGUI.DrawSprite(m_SpriteOverlay, canvas, m_CachedActualSize);
+	m_pGUI.DrawSprite(m_SpriteOverlay, canvas, m_CachedActualSize, m_VisibleArea);
 }
 
 void CInput::DrawPlaceholderText(CCanvas2D& canvas, const CRect& clipping)

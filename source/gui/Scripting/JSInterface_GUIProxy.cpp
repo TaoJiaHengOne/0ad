@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include "gui/ObjectTypes/CButton.h"
 #include "gui/ObjectTypes/CList.h"
 #include "gui/ObjectTypes/CMiniMap.h"
+#include "gui/ObjectTypes/CScrollPanel.h"
 #include "gui/ObjectTypes/CText.h"
 
 // Called for every specialization - adds the common interface.
@@ -66,3 +67,10 @@ template<> void JSI_GUIProxy<CMiniMap>::CreateFunctions(const ScriptRequest& rq,
 	CreateFunction<&CMiniMap::Flare>(rq, cache, "flare");
 }
 DECLARE_GUIPROXY(CMiniMap);
+
+// CScrollPanel
+template<> void JSI_GUIProxy<CScrollPanel>::CreateFunctions(const ScriptRequest& rq, GUIProxyProps* cache)
+{
+	CreateFunction<&CScrollPanel::ResetScrollPosition>(rq, cache, "resetScrollPosition");
+}
+DECLARE_GUIPROXY(CScrollPanel);

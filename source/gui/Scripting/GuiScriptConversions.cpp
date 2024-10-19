@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #include "precompiled.h"
 
 #include "gui/ObjectBases/IGUIObject.h"
+#include "gui/SettingTypes/EScrollOrientation.h"
 #include "gui/SettingTypes/CGUIColor.h"
 #include "gui/SettingTypes/CGUIList.h"
 #include "gui/SettingTypes/CGUISeries.h"
@@ -307,6 +308,49 @@ template<> bool Script::FromJSVal<EAlign>(const ScriptRequest& rq, JS::HandleVal
 		LOGERROR("Invalid alignment (should be 'left', 'right' or 'center')");
 		return false;
 	}
+	return true;
+}
+
+template<> void Script::ToJSVal<EScrollOrientation>(const ScriptRequest& rq, JS::MutableHandleValue ret, const EScrollOrientation& val)
+{
+	std::string word;
+	switch (val)
+	{
+	case EScrollOrientation::HORIZONTAL:
+		word = "horizontal";
+		break;
+	case EScrollOrientation::VERTICAL:
+		word = "vertical";
+		break;
+	case EScrollOrientation::BOTH:
+		word = "both";
+		break;
+	default:
+		word = "error";
+		ScriptException::Raise(rq, "Invalid scroll orientation (should be 'vertical', 'horizontal' or 'both')");
+		break;
+	}
+	ToJSVal(rq, ret, word);
+}
+
+template <> bool Script::FromJSVal<EScrollOrientation>(const ScriptRequest& rq, JS::HandleValue v, EScrollOrientation& out)
+{
+	std::string word;
+	FromJSVal(rq, v, word);
+
+	if (word == "horizontal")
+		out = EScrollOrientation::HORIZONTAL;
+	else if (word == "vertical")
+		out = EScrollOrientation::VERTICAL;
+	else if (word == "both")
+		out = EScrollOrientation::BOTH;
+	else
+	{
+		out = EScrollOrientation::VERTICAL;
+		LOGERROR("Invalid scroll orientation (should be 'vertical', 'horizontal' or 'both')");
+		return false;
+	}
+
 	return true;
 }
 

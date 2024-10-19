@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include "gui/SettingTypes/CGUISize.h"
 #include "gui/SettingTypes/CGUIString.h"
 #include "gui/SettingTypes/EAlign.h"
+#include "gui/SettingTypes/EScrollOrientation.h"
 #include "ps/CLogger.h"
 #include "ps/CStr.h"
 #include "scriptinterface/ScriptConversions.h"
@@ -126,5 +127,6 @@ TYPE(EAlign)
 TYPE(EVAlign)
 TYPE(CGUIList)
 TYPE(CGUISeries)
+TYPE(EScrollOrientation)
 
 #undef TYPE

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 20244 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -15,23 +15,27 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "precompiled.h"
+#ifndef INCLUDED_IPANEL
+#define INCLUDED_IPANEL
 
-#include "CImage.h"
+#include "gui/ObjectBases/IGUIObject.h"
 
-#include "gui/CGUI.h"
-
-CImage::CImage(CGUI& pGUI)
-	: IGUIObject(pGUI),
-	  m_Sprite(this, "sprite")
+class IGUIPanel : public IGUIObject
 {
-}
+public:
+	IGUIPanel(CGUI& pGUI);
+	virtual ~IGUIPanel();
 
-CImage::~CImage()
-{
-}
+	virtual void UpdateCachedSize();
+	virtual CRect GetComputedSize();
 
-void CImage::Draw(CCanvas2D& canvas)
-{
-	m_pGUI.DrawSprite(m_Sprite, canvas, m_CachedActualSize, m_VisibleArea);
-}
+	virtual bool IsMouseOver() const;
+
+	virtual const std::vector<IGUIObject*>& GetVisibleChildren() const;
+
+protected:
+	CRect m_CachedLayoutActualSize;
+	bool m_Drawing = false;
+};
+
+#endif // INCLUDED_IPANEL

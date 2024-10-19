@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -15,36 +15,35 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
-	A GUI Scrollbar, this class doesn't present all functionality
-	to the scrollbar, it just controls the drawing and a wrapper
-	for interaction with it.
-*/
+ /*
+	 A GUI Scrollbar, this class doesn't present all functionality
+	 to the scrollbar, it just controls the drawing and a wrapper
+	 for interaction with it.
+ */
 
-#ifndef INCLUDED_CGUISCROLLBARVERTICAL
-#define INCLUDED_CGUISCROLLBARVERTICAL
+#ifndef INCLUDED_CGUISCROLLBARHORIZONTAL
+#define INCLUDED_CGUISCROLLBARHORIZONTAL
 
 #include "IGUIScrollBar.h"
 
-/**
- * Vertical implementation of IGUIScrollBar
- *
- * @see IGUIScrollBar
- */
-class CGUIScrollBarVertical : public IGUIScrollBar
+ /**
+  * Horizontal implementation of IGUIScrollBar
+  *
+  * @see IGUIScrollBar
+  */
+class CGUIScrollBarHorizontal : public IGUIScrollBar
 {
 public:
-	CGUIScrollBarVertical(CGUI& pGUI);
-	virtual ~CGUIScrollBarVertical();
+	CGUIScrollBarHorizontal(CGUI& pGUI);
+	virtual ~CGUIScrollBarHorizontal();
 
-public:
 	/**
 	 * Draw the scroll-bar
 	 */
 	virtual void Draw(CCanvas2D& canvas);
 
 	/**
-     * If an object that contains a scrollbar has got messages, send
+	 * If an object that contains a scrollbar has got messages, send
 	 * them to the scroll-bar and it will see if the message regarded
 	 * itself.
 	 *
@@ -73,7 +72,7 @@ public:
 	 * Set Right Aligned
 	 * @param align Alignment
 	 */
-	void SetRightAligned(const bool& align) { m_RightAligned = align; }
+	void SetBottomAligned(const bool& align) { m_BottomAligned = align; }
 
 	/**
 	 * Get the rectangle of the actual BAR.
@@ -90,10 +89,10 @@ public:
 
 protected:
 	/**
-	 * Should the scroll bar proceed to the left or to the right of the m_X value.
+	 * Should the scroll bar proceed to the top or to the bottom of the m_Y value.
 	 * Notice, this has nothing to do with where the owner places it.
 	 */
-	bool m_RightAligned;
+	bool m_BottomAligned;
 };
 
-#endif // INCLUDED_CGUISCROLLBARVERTICAL
+#endif // INCLUDED_CGUISCROLLBARHORIZONTAL

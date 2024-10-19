@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -218,4 +218,17 @@ bool CRect::PointInside(const CVector2D& point) const
 CRect CRect::Scale(float x, float y) const
 {
 	return CRect(left * x, top * y, right * x, bottom * y);
+}
+
+bool CRect::IntersectWith(const CRect& a) const
+{
+	return left < a.right && right > a.left && top < a.bottom && bottom > a.top;
+}
+
+CRect CRect::Intersection(const CRect& a) const
+{
+	if (!IntersectWith(a))
+		return CRect();
+
+	return CRect(std::max(left, a.left), std::max(top, a.top), std::min(right, a.right), std::min(bottom, a.bottom));
 }

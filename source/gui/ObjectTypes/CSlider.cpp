@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -78,6 +78,7 @@ void CSlider::HandleMessage(SGUIMessage& Message)
 	{
 		if (m_Pressed)
 			break;
+		Message.Skip(false);
 		IncrementallyChangeValue(-0.01f);
 		break;
 	}
@@ -85,6 +86,7 @@ void CSlider::HandleMessage(SGUIMessage& Message)
 	{
 		if (m_Pressed)
 			break;
+		Message.Skip(false);
 		IncrementallyChangeValue(0.01f);
 		break;
 	}
@@ -109,8 +111,8 @@ void CSlider::Draw(CCanvas2D& canvas)
 	CRect sliderLine(m_CachedActualSize);
 	sliderLine.left += m_ButtonSide / 2.0f;
 	sliderLine.right -= m_ButtonSide / 2.0f;
-	m_pGUI.DrawSprite(IsEnabled() ? m_SpriteBar : m_SpriteBarDisabled, canvas, sliderLine);
-	m_pGUI.DrawSprite(IsEnabled() ? m_Sprite : m_SpriteDisabled, canvas, GetButtonRect());
+	m_pGUI.DrawSprite(IsEnabled() ? m_SpriteBar : m_SpriteBarDisabled, canvas, sliderLine, m_VisibleArea);
+	m_pGUI.DrawSprite(IsEnabled() ? m_Sprite : m_SpriteDisabled, canvas, GetButtonRect(), m_VisibleArea);
 }
 
 void CSlider::UpdateValue()

@@ -15,23 +15,14 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "precompiled.h"
+#ifndef INCLUDED_ESCROLLORIENTATION
+#define INCLUDED_ESCROLLORIENTATION
 
-#include "CImage.h"
-
-#include "gui/CGUI.h"
-
-CImage::CImage(CGUI& pGUI)
-	: IGUIObject(pGUI),
-	  m_Sprite(this, "sprite")
+enum class EScrollOrientation
 {
-}
+	HORIZONTAL,
+	VERTICAL,
+	BOTH
+};
 
-CImage::~CImage()
-{
-}
-
-void CImage::Draw(CCanvas2D& canvas)
-{
-	m_pGUI.DrawSprite(m_Sprite, canvas, m_CachedActualSize, m_VisibleArea);
-}
+#endif // INCLUDED_ESCROLLORIENTATION

@@ -508,6 +508,21 @@
       <optional>
         <attribute name="tooltip_style"/>
       </optional>
+      <optional>
+        <attribute name="orientation">
+          <choice>
+            <value>horizontal</value>
+            <value>vertical</value>
+            <value>both</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="min_width"/>
+      </optional>
+      <optional>
+        <attribute name="min_height"/>
+      </optional>
     </interleave>
   </define>
   <define name="objects">
@@ -759,16 +774,28 @@
           <attribute name="sprite_button_bottom_over"/>
         </optional>
         <optional>
-          <attribute name="sprite_bar_vertical"/>
+          <attribute name="sprite_slider_vertical"/>
         </optional>
         <optional>
-          <attribute name="sprite_bar_vertical_over"/>
+          <attribute name="sprite_slider_vertical_over"/>
         </optional>
         <optional>
-          <attribute name="sprite_bar_vertical_pressed"/>
+          <attribute name="sprite_slider_vertical_pressed"/>
         </optional>
         <optional>
           <attribute name="sprite_back_vertical"/>
+        </optional>
+        <optional>
+          <attribute name="sprite_slider_horizontal"/>
+        </optional>
+        <optional>
+          <attribute name="sprite_slider_horizontal_over"/>
+        </optional>
+        <optional>
+          <attribute name="sprite_slider_horizontal_pressed"/>
+        </optional>
+        <optional>
+          <attribute name="sprite_back_horizontal"/>
         </optional>
       </interleave>
     </element>

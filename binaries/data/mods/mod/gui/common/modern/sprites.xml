@@ -6,7 +6,7 @@
 	- Scrollbar -
 	==========================================
 	-->
-	<sprite name = "ModernScrollBack">
+	<sprite name = "ModernScrollbarVerticalBackground">
 		<image backcolor="43 42 40"
 			size="0 0 100% 100%"
 		/>
@@ -14,12 +14,34 @@
 		<image backcolor="0 0 0" size="0 100%-1 100% 100%"/>
 		<image backcolor="0 0 0" size="0 0 1 100%"/>
 		<image backcolor="0 0 0" size="100%-1 0 100% 100%"/>
-		<image texture = "global/modern/scrollback.png"
+		<image texture = "global/modern/scroll-background-vertical.png"
 			real_texture_placement = "0 0 15 128"
 			size = "0 0 100% 100%"
 		/>
 	</sprite>
-	<sprite name = "ModernScrollBar">
+
+	<sprite name = "ModernScrollbarHorizontalBackground">
+		<image backcolor="43 42 40"
+			size="0 0 100% 100%"
+		/>
+		<image backcolor="0 0 0" size="0 0 100% 1"/>
+		<image backcolor="0 0 0" size="0 100%-1 100% 100%"/>
+		<image backcolor="0 0 0" size="0 0 1 100%"/>
+		<image backcolor="0 0 0" size="100%-1 0 100% 100%"/>
+		<image texture = "global/modern/scroll-background-horizontal.png"
+			real_texture_placement = "0 0 128 15"
+			size = "0 0 100% 100%"
+		/>
+	</sprite>
+
+	<sprite name = "ModernScrollbarVerticalSlider">
+		<image texture = "global/modern/scrollbar.png"
+			real_texture_placement = "0 0 15 15"
+			size = "0 0 100% 100%"
+		/>
+	</sprite>
+
+	<sprite name = "ModernScrollbarHorizontalSlider">
 		<image texture = "global/modern/scrollbar.png"
 			real_texture_placement = "0 0 15 15"
 			size = "0 0 100% 100%"

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include "ps/Profile.h"
 
 #include <cmath>
+#include <optional>
 
 CChart::CChart(CGUI& pGUI)
 	: IGUIObject(pGUI),
@@ -80,6 +81,10 @@ void CChart::Draw(CCanvas2D& canvas)
 	if (m_Series.empty())
 		return;
 
+	std::optional<CCanvas2D::ScopedScissor> scissor;
+	if (m_VisibleArea)
+		scissor.emplace(canvas, m_VisibleArea);
+
 	CRect rect = GetChartRect();
 	const float width = rect.GetWidth();
 	const float height = rect.GetHeight();
@@ -90,7 +95,7 @@ void CChart::Draw(CCanvas2D& canvas)
 	{
 		if (data.m_Points.empty())
 			continue;
-		
+
 		linePoints.clear();
 		for (const CVector2D& point : data.m_Points)
 		{
@@ -114,7 +119,7 @@ void CChart::Draw(CCanvas2D& canvas)
 		DrawAxes(canvas);
 
 	for (size_t i = 0; i < m_TextPositions.size(); ++i)
-		DrawText(canvas, i, CGUIColor(1.f, 1.f, 1.f, 1.f), m_TextPositions[i]);
+		DrawText(canvas, i, CGUIColor(1.f, 1.f, 1.f, 1.f), m_TextPositions[i], m_VisibleArea);
 }
 
 CRect CChart::GetChartRect() const
