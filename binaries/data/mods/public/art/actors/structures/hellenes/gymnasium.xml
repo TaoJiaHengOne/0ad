@@ -22,10 +22,10 @@
     <variant name="alive" frequency="1"/>
     <variant file="structures/destruction_large.xml">
       <props>
-        <prop actor="props/structures/hellenes/gym_shields.xml" attachpoint="root"/>
-        <prop actor="props/structures/hellenes/gym_props.xml" attachpoint="root"/>
-        <prop actor="props/structures/hellenes/gym_tiles.xml" attachpoint="root"/>
-        <prop actor="props/structures/hellenes/gym_trees.xml" attachpoint="root"/>
+        <prop actor="props/structures/hellenes/gym_shields.xml" attachpoint="root" selectable="false"/>
+        <prop actor="props/structures/hellenes/gym_props.xml" attachpoint="root" selectable="false"/>
+        <prop actor="props/structures/hellenes/gym_tiles.xml" attachpoint="root" selectable="false"/>
+        <prop actor="props/structures/hellenes/gym_trees.xml" attachpoint="root" selectable="false"/>
       </props>
     </variant>
   </group>

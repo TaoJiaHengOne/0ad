@@ -28,8 +28,8 @@
   <group>
     <variant frequency="0" name="garrisoned">
       <props>
-        <prop actor="props/special/common/garrison_flag_maur.xml" attachpoint="garrisoned_01"/>
-        <prop actor="props/special/common/garrison_flag_maur.xml" attachpoint="garrisoned_02"/>
+        <prop actor="props/special/common/garrison_flag_maur.xml" attachpoint="garrisoned_01" selectable="false"/>
+        <prop actor="props/special/common/garrison_flag_maur.xml" attachpoint="garrisoned_02" selectable="false"/>
       </props>
     </variant>
     <variant frequency="1" name="ungarrisoned"/>

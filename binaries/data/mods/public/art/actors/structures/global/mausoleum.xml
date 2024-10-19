@@ -30,7 +30,7 @@
     <variant frequency="1" name="ungarrisoned"/>
     <variant frequency="0" name="garrisoned">
       <props>
-        <prop actor="props/special/common/garrison_flag_hele.xml" attachpoint="garrisoned_01"/>
+        <prop actor="props/special/common/garrison_flag_hele.xml" attachpoint="garrisoned_01" selectable="false"/>
       </props>
     </variant>
   </group>

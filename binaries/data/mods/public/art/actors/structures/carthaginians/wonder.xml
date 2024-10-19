@@ -38,10 +38,10 @@
     <variant frequency="1" name="ungarrisoned"/>
     <variant name="garrisoned">
       <props>
-        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned"/>
-        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned_1"/>
-        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned_2"/>
-        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned_3"/>
+        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned" selectable="false"/>
+        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned_1" selectable="false"/>
+        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned_2" selectable="false"/>
+        <prop actor="props/special/common/garrison_flag_kart.xml" attachpoint="garrisoned_3" selectable="false"/>
       </props>
     </variant>
   </group>
