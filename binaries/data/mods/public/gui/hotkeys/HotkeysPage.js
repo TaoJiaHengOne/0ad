@@ -135,15 +135,6 @@ class HotkeysPage
 		picker.combinations = picker.combinations.filter(x => x.length);
 
 		this.hotkeys[picker.name] = picker.combinations;
-		// Have to find the correct line.
-		let panel = Engine.GetGUIObjectByName("hotkeyList");
-		for (let cat in this.categories)
-		{
-			let idx = this.categories[cat].hotkeys.findIndex(([name, _]) => name == picker.name);
-			if (idx === -1)
-				continue;
-			this.categories[cat].hotkeys[idx][1] = picker.combinations;
-		}
 
 		this.saveButton.enabled = true;
 		this.setupHotkeyList();
@@ -160,7 +151,7 @@ class HotkeysPage
 			return;
 
 		for (const cat in this.categories)
-			this.categories[cat].hotkeys.forEach(([name, _]) => {
+			this.categories[cat].hotkeys.forEach((name) => {
 				Engine.ConfigDB_RemoveValue("user", "hotkey." + name);
 			});
 		Engine.ConfigDB_SaveChanges("user");
