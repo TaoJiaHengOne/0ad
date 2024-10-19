@@ -25,6 +25,7 @@ without_nvtt=false
 with_system_cxxtest=false
 with_system_nvtt=false
 with_system_mozjs=false
+with_system_premake=false
 with_spirv_reflect=false
 
 JOBS=${JOBS:="-j2"}
@@ -35,6 +36,7 @@ for i in "$@"; do
 		--with-system-cxxtest) with_system_cxxtest=true ;;
 		--with-system-nvtt) with_system_nvtt=true ;;
 		--with-system-mozjs) with_system_mozjs=true ;;
+		--with-system-premake) with_system_mozjs=true ;;
 		--with-spirv-reflect) with_spirv_reflect=true ;;
 		-j*) JOBS=$i ;;
 	esac
@@ -66,6 +68,10 @@ echo
 if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
 	./source/nvtt/build.sh || die "NVTT build failed"
 	cp source/nvtt/bin/* ../binaries/system/
+fi
+echo
+if [ "$with_system_premake" = "false" ]; then
+	./source/premake-core/build.sh || die "Premake build failed"
 fi
 echo
 if [ "$with_system_mozjs" = "false" ]; then

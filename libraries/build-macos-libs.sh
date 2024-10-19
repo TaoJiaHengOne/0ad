@@ -1143,6 +1143,11 @@ echo "Building nvtt..."
 ./../source/nvtt/build.sh || die "NVTT build failed"
 
 # --------------------------------------------------------------
+echo "Building Premake..."
+
+./../source/premake-core/build.sh || die "Premake build failed"
+
+# --------------------------------------------------------------
 echo "Building Spidermonkey..."
 
 ./../source/spidermonkey/build.sh || die "SpiderMonkey build failed"

@@ -1,0 +1,25 @@
+From dca8ff71fc9ec29761d98ec0cdb5bd352ec8d295 Mon Sep 17 00:00:00 2001
+From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Date: Mon, 30 Sep 2024 22:08:13 +0200
+Subject: [PATCH] Forceinclude unistd.h on all Unixes
+
+https://github.com/premake/premake-core/issues/2276
+---
+ contrib/libzip/premake5.lua | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/contrib/libzip/premake5.lua b/contrib/libzip/premake5.lua
+index c35592a5..f0b91b56 100644
+--- a/contrib/libzip/premake5.lua
++++ b/contrib/libzip/premake5.lua
+@@ -13,6 +13,7 @@ project "zip-lib"
+ 
+ 	filter "system:linux or bsd or solaris or haiku"
+ 		defines { "HAVE_SSIZE_T_LIBZIP", "HAVE_CONFIG_H" }
++		forceincludes { "unistd.h" }
+ 
+ 	filter "system:windows"
+ 		defines { "_WINDOWS" }
+-- 
+2.45.2
+

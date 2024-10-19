@@ -19,6 +19,7 @@ libraries/win32
 libraries/source/cxxtest-4.4/*
 libraries/source/fcollada/*
 libraries/source/nvtt/*
+libraries/source/premake-core/*
 libraries/source/spidermonkey/*
 libraries/source/spirv-reflect/*
 !libraries/source/**/build.sh

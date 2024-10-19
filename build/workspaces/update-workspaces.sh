@@ -72,10 +72,7 @@ cd ../premake || die
 premake_command="premake5"
 
 if [ "$with_system_premake5" = "false" ]; then
-	# Build bundled premake
-	MAKE=${MAKE} JOBS=${JOBS} ./build.sh || die "Premake 5 build failed"
-
-	premake_command="premake5/bin/release/premake5"
+	premake_command="../../libraries/source/premake-core/bin/premake5"
 fi
 
 echo
