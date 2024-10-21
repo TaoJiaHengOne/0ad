@@ -16,16 +16,19 @@
 		<object name="lobbyPanels" size="0 40 100% 100%-20">
 
 			<object name="leftPanel" size="20 0 20% 100%+20">
-				<object size="0 0 100% 100%-315">
+				<object size="0 0 100% 100%-342">
 					<include file="gui/lobby/LobbyPage/PlayerList.xml"/>
 				</object>
-				<object size="0 100%-310 100% 100%-104">
+				<object size="0 100%-337 100% 100%-131">
 					<include file="gui/lobby/LobbyPage/ProfilePanel.xml"/>
 				</object>
-				<object size="0 100%-98 100% 100%">
+				<object size="0 100%-125 100% 100%">
 					<object name="toggleBuddyButton" type="button" style="ModernButtonRed" size="0 0 100% 25"/>
-					<object name="leaderboardButton" type="button" style="ModernButtonRed" size="0 27 100% 52"/>
-					<object name="profileButton" type="button" style="ModernButtonRed" size="0 54 100% 79"/>
+					<object name="accountSettingsButton" type="button" style="ModernButtonRed" size="0 27 100% 52">
+						<translatableAttribute id="caption">Account settings</translatableAttribute>
+					</object>
+					<object name="leaderboardButton" type="button" style="ModernButtonRed" size="0 54 100% 79"/>
+					<object name="profileButton" type="button" style="ModernButtonRed" size="0 81 100% 106"/>
 				</object>
 			</object>
 

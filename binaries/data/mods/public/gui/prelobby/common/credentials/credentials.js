@@ -19,7 +19,7 @@ function checkPassword(register)
 			translateWithContext("register", "Please enter your password") :
 			translateWithContext("login", "Please enter your password");
 
-	if (register && password.length < 8)
+	if (register && password.length < minimumPasswordLength)
 		return translate("Please choose a longer password");
 
 	return "";

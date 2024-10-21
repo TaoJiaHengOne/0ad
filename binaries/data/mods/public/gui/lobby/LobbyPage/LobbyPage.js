@@ -9,12 +9,15 @@ class LobbyPage
 		Engine.ProfileStart("Create LobbyPage");
 		let mapCache = new MapCache();
 		let buddyButton = new BuddyButton(xmppMessages);
+		const accountSettingsButton = Engine.GetGUIObjectByName("accountSettingsButton");
+		accountSettingsButton.onPress = AccountSettingsPage.openPage.bind(null, xmppMessages);
 		let gameList = new GameList(xmppMessages, buddyButton, mapCache);
 		let playerList = new PlayerList(xmppMessages, buddyButton, gameList);
 
 		this.lobbyPage = {
 			"buttons": {
 				"buddyButton": buddyButton,
+				"accountSettingsButton": accountSettingsButton,
 				"hostButton": new HostButton(dialog, xmppMessages),
 				"joinButton": new JoinButton(dialog, gameList),
 				"leaderboardButton": new LeaderboardButton(xmppMessages, leaderboardPage),

@@ -6,6 +6,7 @@
 	<script directory="gui/prelobby/common/feedback/"/>
 	<script directory="gui/prelobby/common/terms/"/>
 	<script directory="gui/prelobby/login/"/>
+	<script file="gui/lobby/password.js"/>
 
 	<object type="image" style="ModernDialog" size="50%-230 50%-190 50%+230 50%+190">
 

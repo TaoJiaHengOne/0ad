@@ -73,6 +73,7 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 	  m_client(nullptr),
 	  m_mucRoom(nullptr),
 	  m_registration(nullptr),
+	  m_regOpt(regOpt),
 	  m_username(sUsername),
 	  m_password(sPassword),
 	  m_room(sRoom),
@@ -143,6 +144,9 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 
 	m_client->registerMessageHandler(this);
 
+	m_registration = new gloox::Registration(m_client);
+	m_registration->registerRegistrationHandler(this);
+
 	// Uncomment to see the raw stanzas
 	// m_client->logInstance().registerLogHandler(gloox::LogLevelDebug, gloox::LogAreaAll, this);
 
@@ -152,12 +156,6 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 		m_mucRoom = new gloox::MUCRoom(m_client, roomJid, this, 0);
 		// Get room history.
 		m_mucRoom->setRequestHistory(historyRequestSize, gloox::MUCRoom::HistoryMaxStanzas);
-	}
-	else
-	{
-		// Registration
-		m_registration = new gloox::Registration(m_client);
-		m_registration->registerRegistrationHandler(this);
 	}
 
 	m_sessionManager = new gloox::Jingle::SessionManager(m_client, this);
@@ -247,7 +245,7 @@ void XmppClient::onConnect()
 		m_mucRoom->join();
 	}
 
-	if (m_registration)
+	if (m_regOpt)
 		m_registration->fetchRegistrationFields();
 }
 
@@ -535,8 +533,6 @@ void XmppClient::handleRegistrationResult(const gloox::JID&, gloox::Registration
 		CreateGUIMessage("system", "registered", std::time(nullptr));
 	else
 		CreateGUIMessage("system", "error", std::time(nullptr), "text", result);
-
-	disconnect();
 }
 
 void XmppClient::handleAlreadyRegistered(const gloox::JID&)
@@ -1207,6 +1203,16 @@ std::string XmppClient::GetNick() const
 std::string XmppClient::GetJID() const
 {
 	return m_client->jid().full();
+}
+
+/**
+ * Change password for authenticated user.
+ *
+ * @param newPassword New password
+ */
+void XmppClient::ChangePassword(const std::string& newPassword)
+{
+	m_registration->changePassword(m_username, newPassword);
 }
 
 /**

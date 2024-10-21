@@ -218,6 +218,7 @@ void RegisterScriptFunctions(const ScriptRequest& rq)
 	REGISTER_XMPP(SetNick, "LobbySetNick");
 	REGISTER_XMPP(GetNick, "LobbyGetNick");
 	REGISTER_XMPP(GetJID, "LobbyGetJID");
+	REGISTER_XMPP(ChangePassword, "LobbyChangePassword");
 	REGISTER_XMPP(kick, "LobbyKick");
 	REGISTER_XMPP(ban, "LobbyBan");
 	REGISTER_XMPP(GetPresence, "LobbyGetPlayerPresence");
