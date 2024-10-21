@@ -52,6 +52,13 @@ STAGE_EXTENSIONS = {
 YAML_DIRECTIVE_PATTERN = re.compile(b"^%YAML 1.0\r?\n")
 
 
+class VkDescriptorType(Enum):
+    COMBINED_IMAGE_SAMPLER = 1
+    STORAGE_IMAGE = 3
+    UNIFORM_BUFFER = 6
+    STORAGE_BUFFER = 7
+
+
 def execute(command):
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -200,13 +207,6 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
         add_push_constants(module["push_constants"][0], push_constants)
     descriptor_sets = []
     if module.get("descriptor_sets"):
-
-        class VkDescriptorType(Enum):
-            COMBINED_IMAGE_SAMPLER = 1
-            STORAGE_IMAGE = 3
-            UNIFORM_BUFFER = 6
-            STORAGE_BUFFER = 7
-
         for descriptor_set in module["descriptor_sets"]:
             uniform_set = 1 if use_descriptor_indexing else 0
             storage_set = 2
