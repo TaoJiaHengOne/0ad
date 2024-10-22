@@ -5,6 +5,7 @@
   </Identity>
   <ResourceSupply>
     <Max>100</Max>
+    <MaxGatherers>6</MaxGatherers>
   </ResourceSupply>
   <VisualActor>
     <Actor>flora/trees/palm_cretan_date_short.xml</Actor>

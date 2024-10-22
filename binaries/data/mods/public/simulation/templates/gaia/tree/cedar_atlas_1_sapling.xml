@@ -5,6 +5,7 @@
   </Identity>
   <ResourceSupply>
     <Max>50</Max>
+    <MaxGatherers>4</MaxGatherers>
   </ResourceSupply>
   <VisualActor>
     <Actor>flora/trees/cedar_atlas_sapling.xml</Actor>

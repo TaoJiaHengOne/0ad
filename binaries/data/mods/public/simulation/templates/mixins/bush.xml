@@ -12,6 +12,7 @@
   </Obstruction>
   <ResourceSupply>
     <Max>100</Max>
+    <MaxGatherers>4</MaxGatherers>
   </ResourceSupply>
   <StatusBars>
     <HeightOffset>8</HeightOffset>
