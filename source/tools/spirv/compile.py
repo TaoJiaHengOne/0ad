@@ -315,11 +315,20 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
                 )
     # Compile the final version without debug information.
     if not keep_debug:
-        ret, out, err = execute(command)
+        strip_command = [
+            "spirv-opt",
+            "--strip-debug",
+            "--compact-ids",
+            output_path,
+            "-o",
+            output_path,
+        ]
+        ret, out, err = execute(strip_command)
         if ret:
             sys.stderr.write(
-                "Command returned {}:\nCommand: {}\nInput path: {}\nOutput path: {}\n"
-                "Error: {}\n".format(ret, " ".join(command), input_path, output_path, err)
+                "Command returned {}:\nCommand: {}\nError: {}\n".format(
+                    ret, " ".join(strip_command), err
+                )
             )
             raise ValueError(err)
     return {
