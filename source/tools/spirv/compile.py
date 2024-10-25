@@ -31,6 +31,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from enum import Enum
+from functools import cache
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -57,6 +58,17 @@ class VkDescriptorType(Enum):
     STORAGE_IMAGE = 3
     UNIFORM_BUFFER = 6
     STORAGE_BUFFER = 7
+
+
+@cache
+def get_spirv_reflect_location():
+    spirv_reflect = os.getenv("SPIRV_REFLECT", "spirv-reflect")
+    if shutil.which(spirv_reflect) is None:
+        spirv_reflect = (
+            Path(__file__).resolve().parent.parent.parent.parent
+            / "libraries/source/spirv-reflect/bin/spirv-reflect"
+        )
+    return spirv_reflect
 
 
 def execute(command):
@@ -156,16 +168,8 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
         )
         execute(command[:-2] + ["-g", "-E", "-o", preprocessor_output_path])
         raise ValueError(err)
-    spirv_reflect = os.getenv("SPIRV_REFLECT", "spirv-reflect")
-    if shutil.which(spirv_reflect) is None:
-        spirv_reflect = (
-            Path(__file__).resolve().parent.parent.parent.parent
-            / "libraries"
-            / "source"
-            / "spirv-reflect"
-            / "bin"
-            / "spirv-reflect"
-        )
+
+    spirv_reflect = get_spirv_reflect_location()
     ret, out, err = execute([spirv_reflect, "-y", "-v", "1", output_path])
     if ret:
         sys.stderr.write(
