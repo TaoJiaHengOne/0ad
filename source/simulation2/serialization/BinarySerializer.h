@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -94,7 +94,7 @@ private:
 	const ScriptInterface& m_ScriptInterface;
 	ISerializer& m_Serializer;
 
-	using ObjectTagMap = JS::GCHashMap<JS::Heap<JSObject*>, u32, js::MovableCellHasher<JSObject*>, js::SystemAllocPolicy>;
+	using ObjectTagMap = JS::GCHashMap<JS::Heap<JSObject*>, u32, js::StableCellHasher<JSObject*>, js::SystemAllocPolicy>;
 	ObjectTagMap m_ScriptBackrefTags;
 	u32 m_ScriptBackrefsNext;
 	u32 GetScriptBackrefTag(JS::HandleObject obj);

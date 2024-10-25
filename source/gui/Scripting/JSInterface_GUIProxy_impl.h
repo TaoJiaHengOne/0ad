@@ -269,7 +269,7 @@ bool JSI_GUIProxy<T>::set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id
 	// Use onWhatever to set event handlers
 	if (propName.substr(0, 2) == "on")
 	{
-		if (vp.isPrimitive() || vp.isNull() || !JS_ObjectIsFunction(&vp.toObject()))
+		if (vp.isPrimitive() || vp.isNull() || !JS::IsCallable(&vp.toObject()))
 		{
 			LOGERROR("on- event-handlers must be functions");
 			return result.fail(JSMSG_NOT_FUNCTION);

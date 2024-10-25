@@ -496,8 +496,8 @@ void ScriptInterface::DefineCustomObjectType(JSClass *clasp, JSNative constructo
 	}
 
 	JS::RootedObject global(rq.cx, rq.glob);
-	JS::RootedObject obj(rq.cx, JS_InitClass(rq.cx, global, nullptr,
-	                                           clasp,
+	JS::RootedObject obj(rq.cx, JS_InitClass(rq.cx, global,
+	                                           clasp, nullptr, clasp->name,
 	                                           constructor, minArgs,     // Constructor, min args
 	                                           ps, fs,                   // Properties, methods
 	                                           static_ps, static_fs));   // Constructor properties, methods

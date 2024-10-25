@@ -2,7 +2,7 @@ rem **Download sources and binaries of libraries**
 
 rem **SVN revision to checkout for windows-libs**
 rem **Update this line when you commit an update to windows-libs**
-set "svnrev=28234"
+set "svnrev=28235"
 
 svn co https://svn.wildfiregames.com/public/windows-libs/trunk@%svnrev% win32
 

@@ -31,6 +31,7 @@
 #if MSC_VERSION
 # pragma warning(push, 1)
 # pragma warning(disable: 4100)
+# pragma warning(disable: 4068)
 #endif
 
 

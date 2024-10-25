@@ -4,10 +4,10 @@ set -e
 cd "$(dirname "$0")"
 
 # This should match the version in config/milestone.txt
-FOLDER="mozjs-102.15.1"
+FOLDER="mozjs-115.16.1"
 # If same-version changes are needed, increment this.
-LIB_VERSION="102.15.1+0"
-LIB_NAME="mozjs102"
+LIB_VERSION="115.16.1+0"
+LIB_NAME="mozjs115"
 
 if [ -e .already-built ] && [ "$(cat .already-built)" = "${LIB_VERSION}" ]; then
 	echo "Spidermonkey is already up to date."
@@ -17,7 +17,7 @@ fi
 OS="${OS:=$(uname -s)}"
 
 # fetch
-# This tarball is built from https://ftp.mozilla.org/pub/firefox/releases/102.15.1esr/source
+# This tarball is built from https://ftp.mozilla.org/pub/firefox/releases/115.16.1esr/source/
 # by running js/src/make-source-package.py
 if [ ! -e "${FOLDER}.tar.xz" ]; then
 	curl -fLo "${FOLDER}.tar.xz" \

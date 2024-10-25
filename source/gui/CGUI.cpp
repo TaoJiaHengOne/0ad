@@ -470,7 +470,7 @@ void CGUI::SetGlobalHotkey(const CStr& hotkeyTag, const CStr& eventName, JS::Han
 		return;
 	}
 
-	if (!function.isObject() || !JS_ObjectIsFunction(&function.toObject()))
+	if (!function.isObject() || !JS::IsCallable(&function.toObject()))
 	{
 		ScriptException::Raise(rq, "Cannot assign non-function value to global hotkey '%s'", hotkeyTag.c_str());
 		return;

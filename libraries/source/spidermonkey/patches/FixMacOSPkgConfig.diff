@@ -1,0 +1,17 @@
+diff --git a/build/moz.configure/pkg.configure b/build/moz.configure/pkg.configure
+--- a/build/moz.configure/pkg.configure
++++ b/build/moz.configure/pkg.configure
+@@ -14,11 +14,11 @@
+     "PKG_CONFIG",
+     pkg_config,
+     bootstrap=depends(when=target_sysroot.bootstrapped)(lambda: "pkgconf"),
+     allow_missing=True,
+     when=compile_environment
+-    & depends(target.os)(lambda os: os not in ("WINNT", "OSX", "Android")),
++    & depends(target.os)(lambda os: os not in ("WINNT", "Android")),
+ )
+ 
+ 
+ @depends_if(pkg_config)
+ @checking("for pkg-config version")
+

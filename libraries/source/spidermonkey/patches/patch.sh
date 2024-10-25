@@ -14,17 +14,12 @@ patch -p1 <"${PATCHES}"/FixRustLinkage.diff
 # Differentiate debug/release library names.
 patch -p1 <"${PATCHES}"/FixLibNames.diff
 
-# Fix Windows build environment under MozillaBuild 4, fixed in ESR 115
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1790540
-patch -p1 <"${PATCHES}"/FixMozillaBuild4.diff
-
-# Fix Windows build, fixed in ESR 115
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1802675
-patch -p1 <"${PATCHES}"/FixWinHeap.diff
-
-# Fix linking on Windows with mozglue, fixed in ESR 115
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1751561
-patch -p1 <"${PATCHES}"/FixDllMain.diff
+# On macOS, embedded build is broken due to a faulty check for pkg-config
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1776255
+# The fix above is included in ESR 128, but does not apply to 115
+# Instead, require pkg-config on macOS even though it's not needed here
+# (from https://bugzilla.mozilla.org/show_bug.cgi?id=1783570)
+patch -p1 <"${PATCHES}"/FixMacOSPkgConfig.diff
 
 # There is an issue on 32-bit linux builds sometimes.
 # NB: the patch here is Comment 21 modified by Comment 25
@@ -34,3 +29,8 @@ patch -p1 <"${PATCHES}"/FixDllMain.diff
 if [ "$(uname -m)" = "i686" ] && [ "${OS}" != "Windows_NT" ]; then
 	patch -p1 <"${PATCHES}"/FixFpNormIssue.diff
 fi
+
+# Fix build with clang19
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1894423
+# Fixed in ESR 128
+patch -p1 <"${PATCHES}"/FixClang19.diff

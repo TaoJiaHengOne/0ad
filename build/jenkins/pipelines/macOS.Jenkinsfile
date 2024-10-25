@@ -27,8 +27,8 @@ pipeline {
 
 	agent {
 		node {
-			label 'macOSAgent'
-			customWorkspace 'workspace/clang10'
+			label 'macOSAgentVentura'
+			customWorkspace 'workspace/clang13'
 		}
 	}
 
