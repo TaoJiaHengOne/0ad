@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -229,12 +229,21 @@ public:
 	static bool Math_random(JSContext* cx, uint argc, JS::Value* vp);
 
 	/**
-	 * Retrieve the private data field of a JSObject that is an instance of the given JSClass.
+	 * Name the reserved slots we may need to use in custom JSObjects.
+	 * When using JSCLASS_HAS_RESERVED_SLOTS in the definition of your JSClass, use the number
+	 * of the highest slot you need plus 1.
+	 */
+	enum JSObjectReservedSlots {
+		PRIVATE = 0
+	};
+
+	/**
+	 * Retrieve the private data field of a JSObject.
 	 */
 	template <typename T>
-	static T* GetPrivate(const ScriptRequest& rq, JS::HandleObject thisobj, JSClass* jsClass)
+	static T* GetPrivate(const ScriptRequest& rq, JS::HandleObject thisobj)
 	{
-		T* value = static_cast<T*>(JS_GetInstancePrivate(rq.cx, thisobj, jsClass, nullptr));
+		T* value = JS::GetMaybePtrFromReservedSlot<T>(thisobj, JSObjectReservedSlots::PRIVATE);
 
 		if (value == nullptr)
 			ScriptException::Raise(rq, "Private data of the given object is null!");
@@ -243,20 +252,20 @@ public:
 	}
 
 	/**
-	 * Retrieve the private data field of a JS Object that is an instance of the given JSClass.
+	 * Retrieve the private data field of a JS Object.
 	 * If an error occurs, GetPrivate will report it with the according stack.
 	 */
 	template <typename T>
-	static T* GetPrivate(const ScriptRequest& rq, JS::CallArgs& callArgs, JSClass* jsClass)
+	static T* GetPrivate(const ScriptRequest& rq, JS::CallArgs& callArgs)
 	{
 		if (!callArgs.thisv().isObject())
 		{
-			ScriptException::Raise(rq, "Cannot retrieve private JS class data because from a non-object value!");
+			ScriptException::Raise(rq, "Cannot retrieve private JS object data because from a non-object value!");
 			return nullptr;
 		}
 
 		JS::RootedObject thisObj(rq.cx, &callArgs.thisv().toObject());
-		T* value = static_cast<T*>(JS_GetInstancePrivate(rq.cx, thisObj, jsClass, &callArgs));
+		T* value = JS::GetMaybePtrFromReservedSlot<T>(thisObj, JSObjectReservedSlots::PRIVATE);
 
 		if (value == nullptr)
 			ScriptException::Raise(rq, "Private data of the given object is null!");

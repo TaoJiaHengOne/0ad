@@ -171,7 +171,7 @@ void ScriptContext::MaybeIncrementalGC(double delay)
 		// The sweeping actually frees memory and it does this in a background thread (if JS_USE_HELPER_THREADS is set).
 		// While the sweeping is happening we already run scripts again and produce new garbage.
 
-		const int GCSliceTimeBudget = 30; // Milliseconds an incremental slice is allowed to run
+		const js::SliceBudget GCSliceTimeBudget = js::SliceBudget(js::TimeBudget(30)); // Milliseconds an incremental slice is allowed to run
 
 		// Have a minimum time in seconds to wait between GC slices and before starting a new GC to distribute the GC
 		// load and to hopefully make it unnoticeable for the player. This value should be high enough to distribute

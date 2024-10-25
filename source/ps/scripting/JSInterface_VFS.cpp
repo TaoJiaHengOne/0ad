@@ -98,7 +98,7 @@ struct BuildDirEntListState
 		filename_array(rq.cx),
 		cur_idx(0)
 	{
-		filename_array = JS::NewArrayObject(rq.cx, JS::HandleValueArray::empty());
+		filename_array = JS::NewArrayObject(rq.cx, 0);
 	}
 };
 

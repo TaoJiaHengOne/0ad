@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -20,6 +20,10 @@
 
 #define JSGC_GENERATIONAL 1
 #define JSGC_USE_EXACT_ROOTING 1
+
+#ifdef DEBUG
+#define MOZ_DIAGNOSTIC_ASSERT_ENABLED
+#endif
 
 #ifdef _WIN32
 # define XP_WIN
@@ -73,7 +77,7 @@
 # pragma GCC diagnostic pop
 #endif
 
-#if MOZJS_MAJOR_VERSION != 91
+#if MOZJS_MAJOR_VERSION != 102
 #error Your compiler is trying to use an incorrect major version of the \
 SpiderMonkey library. The only version that works is the one in the \
 libraries/spidermonkey/ directory, and it will not work with a typical \
@@ -81,7 +85,7 @@ system-installed version. Make sure you have got all the right files and \
 include paths.
 #endif
 
-#if MOZJS_MINOR_VERSION != 13
+#if MOZJS_MINOR_VERSION != 15
 #error Your compiler is trying to use an untested minor version of the \
 SpiderMonkey library. If you are a package maintainer, please make sure \
 to check very carefully that this version does not change the behaviour \

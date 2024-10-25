@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ JSClass JSI_GUISize::JSI_class = {
 JSClassOps JSI_GUISize::JSI_classops = {
 	nullptr, nullptr,
 	nullptr, nullptr,
-	nullptr, nullptr, nullptr, nullptr,
+	nullptr, nullptr, nullptr,
 	nullptr, JSI_GUISize::construct, nullptr
 };
 

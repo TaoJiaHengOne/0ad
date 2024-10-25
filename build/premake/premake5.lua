@@ -8,7 +8,7 @@ newoption { trigger = "minimal-flags", description = "Only set compiler/linker f
 newoption { trigger = "outpath", description = "Location for generated project files", default="../workspaces/default" }
 newoption { trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
 newoption { trigger = "with-lto", description = "Enable Link Time Optimization (LTO)" }
-newoption { trigger = "with-system-mozjs", description = "Search standard paths for libmozjs91, instead of using bundled copy" }
+newoption { trigger = "with-system-mozjs", description = "Search standard paths for libmozjs102, instead of using bundled copy" }
 newoption { trigger = "with-system-nvtt", description = "Search standard paths for nvidia-texture-tools library, instead of using bundled copy" }
 newoption { trigger = "with-valgrind", description = "Enable Valgrind support (non-Windows only)" }
 newoption { trigger = "without-audio", description = "Disable use of OpenAL/Ogg/Vorbis APIs" }
@@ -121,7 +121,7 @@ end
 -- The pc file doesn't specify the required -DDEBUG needed in that case
 local mozjs_is_debug_build = false
 if _OPTIONS["with-system-mozjs"] then
-	local _, errorCode = os.outputof(cc .. " $(pkg-config mozjs-91 --cflags) ./tests/mozdebug.c -o /dev/null")
+	local _, errorCode = os.outputof(cc .. " $(pkg-config mozjs-102 --cflags) ./tests/mozdebug.c -o /dev/null")
 	if errorCode ~= 0 then
 		mozjs_is_debug_build = true
 	end

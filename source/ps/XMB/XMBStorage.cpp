@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -293,7 +293,6 @@ bool JSNodeData::Output(WriteBuffer& writeBuffer, JS::HandleValue value) const
 	switch (JS_TypeOfValue(rq.cx, value))
 	{
 		case JSTYPE_UNDEFINED:
-		case JSTYPE_NULL:
 		{
 			writeBuffer.Append("\0\0\0\0", 4);
 			break;

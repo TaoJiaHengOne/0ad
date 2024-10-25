@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ inline bool GetProperty(const ScriptRequest& rq, JS::HandleValue obj, PropType n
 	JS::RootedObject object(rq.cx, &obj.toObject());
 	if constexpr (std::is_same_v<int, PropType>)
 	{
-		JS::RootedId id(rq.cx, INT_TO_JSID(name));
+		JS::RootedId id(rq.cx, JS::PropertyKey::Int(name));
 		return JS_GetPropertyById(rq.cx, object, id, out);
 	}
 	else if constexpr (std::is_same_v<const char*, PropType>)
@@ -108,7 +108,7 @@ inline bool SetProperty(const ScriptRequest& rq, JS::HandleValue obj, PropType n
 	JS::RootedObject object(rq.cx, &obj.toObject());
 	if constexpr (std::is_same_v<int, PropType>)
 	{
-		JS::RootedId id(rq.cx, INT_TO_JSID(name));
+		JS::RootedId id(rq.cx, JS::PropertyKey::Int(name));
 		return JS_DefinePropertyById(rq.cx, object, id, value, attrs);
 	}
 	else if constexpr (std::is_same_v<const char*, PropType>)

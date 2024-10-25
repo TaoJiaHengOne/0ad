@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 #define BEGIN_INTERFACE_WRAPPER(iname) \
 	JSClass class_ICmp##iname = { \
-		"ICmp" #iname, JSCLASS_HAS_PRIVATE \
+		"ICmp" #iname, JSCLASS_HAS_RESERVED_SLOTS( ScriptInterface::JSObjectReservedSlots::PRIVATE+1 ) \
 	}; \
 	static JSFunctionSpec methods_ICmp##iname[] = {
 
@@ -43,13 +43,13 @@
 		ICmp##iname::InterfaceInit(scriptInterface); \
 	}
 
-template <typename T, JSClass* jsClass>
+template <typename T>
 inline T* ComponentGetter(const ScriptRequest& rq, JS::CallArgs& args)
 {
-	return ScriptInterface::GetPrivate<T>(rq, args, jsClass);
+	return ScriptInterface::GetPrivate<T>(rq, args);
 }
 
 #define DEFINE_INTERFACE_METHOD(scriptname, classname, methodname) \
-	ScriptFunction::Wrap<&classname::methodname, ComponentGetter<classname, &class_##classname>>(scriptname),
+	ScriptFunction::Wrap<&classname::methodname, ComponentGetter<classname>>(scriptname),
 
 #endif // INCLUDED_INTERFACE_SCRIPTED

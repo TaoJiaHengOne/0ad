@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -79,11 +79,6 @@ void CBinarySerializerScriptImpl::HandleScriptVal(JS::HandleValue val)
 	case JSTYPE_UNDEFINED:
 	{
 		m_Serializer.NumberU8_Unbounded("type", SCRIPT_TYPE_VOID);
-		break;
-	}
-	case JSTYPE_NULL: // This type is never actually returned (it's a JS2 feature)
-	{
-		m_Serializer.NumberU8_Unbounded("type", SCRIPT_TYPE_NULL);
 		break;
 	}
 	case JSTYPE_OBJECT:
