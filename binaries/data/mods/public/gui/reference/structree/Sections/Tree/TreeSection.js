@@ -11,8 +11,6 @@ class TreeSection
 
 		this.rightMargin = this.TreeSection.size.right;
 		this.vMargin = this.TreeSection.size.top + -this.TreeSection.size.bottom;
-		this.width = 0;
-		this.height = 0;
 
 		this.structureBoxes = [];
 		for (let boxIdx in this.Structures.children)
@@ -26,6 +24,8 @@ class TreeSection
 		if (structures.size > this.structureBoxes.length)
 			error("\"" + this.activeCiv + "\" has more structures than can be supported by the current GUI layout");
 
+		this.Structures.resetScrollPosition();
+
 		// Draw structures
 		let phaseList = this.page.TemplateParser.phaseList;
 		let count = Math.min(structures.size, this.structureBoxes.length);
@@ -36,10 +36,7 @@ class TreeSection
 		hideRemaining(this.Structures.name, count);
 
 		// Position phase idents
-		this.PhaseIdents.draw(phaseList, civCode, runningWidths, this.Structures.size.left);
-
-		this.width = this.Structures.size.left + Math.max(...runningWidths) + EntityBox.prototype.HMargin;
-		this.height = this.constructor.getPositionOffset(phaseList.length, this.page.TemplateParser);
+		this.PhaseIdents.draw(phaseList, civCode);
 	}
 
 	drawPhaseIcon(phaseIcon, phaseIndex, civCode)

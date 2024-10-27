@@ -16,6 +16,11 @@
 		sprite="ModernDarkBoxGold"
 	/>
 
+	<style name="TrainerBox"
+		size="4 0 68 64+16"
+		sprite="ModernDarkBoxGold"
+	/>
+
 	<style name="StructIcon"
 		size="50%-24 8+16 50%+24 8+16+48"
 		sprite="stretched:pregame/shell/logo/wfg_logo_white.png"
@@ -24,7 +29,7 @@
 
 	<style name="ProdBar"
 		sprite="ProdBar"
-		size="40 0 0 0"
+		size="40 0 100% 0"
 	/>
 
 	<style name="ProdBox"

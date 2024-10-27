@@ -20,7 +20,7 @@ class PhaseIdent
 		}
 	}
 
-	draw(phaseList, barLength, civCode)
+	draw(phaseList, civCode)
 	{
 		// Position ident
 		let identSize = this.Ident.size;
@@ -37,9 +37,6 @@ class PhaseIdent
 		for (; i < phaseList.length - this.phaseIdx; ++i)
 		{
 			let prodBar = this.Bars.children[(i - 1)];
-			let prodBarSize = prodBar.size;
-			prodBarSize.right = barLength;
-			prodBar.size = prodBarSize;
 			prodBar.hidden = false;
 
 			this.drawPhaseIcon(prodBar.children[0], this.phaseIdx + i, civCode);
@@ -55,5 +52,4 @@ class PhaseIdent
 		phaseIcon.sprite = "stretched:" + this.page.IconPath + prodPhaseTemplate.icon;
 		phaseIcon.tooltip = getEntityNamesFormatted(prodPhaseTemplate);
 	};
-
 }

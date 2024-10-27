@@ -19,7 +19,7 @@ class TrainerBox extends EntityBox
 		size.bottom += rowHeight;
 
 		// We make the assumuption that all trainer boxes have the same height
-		let boxHeight = this.VMargin / 2 + (size.bottom - size.top + this.VMargin) * trainerIdx;
+		let boxHeight = (this.VMargin / 2 + (size.bottom - size.top + this.VMargin)) * trainerIdx;
 		size.top += boxHeight;
 		size.bottom += boxHeight;
 
