@@ -1,7 +1,5 @@
 function Pack() {}
 
-const PACKING_INTERVAL = 250;
-
 Pack.prototype.Schema =
 	"<element name='Entity' a:help='Entity to transform into'>" +
 		"<text/>" +
@@ -15,6 +13,12 @@ Pack.prototype.Schema =
 			"<value>unpacked</value>" +
 		"</choice>" +
 	"</element>";
+
+/**
+ * Interval of the timer that updates the packing progress.
+ * @type {number}
+ */
+Pack.prototype.PACKING_INTERVAL = 250;
 
 Pack.prototype.Init = function()
 {
@@ -67,7 +71,7 @@ Pack.prototype.Pack = function()
 	this.packing = true;
 
 	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-	this.timer = cmpTimer.SetInterval(this.entity, IID_Pack, "PackProgress", 0, PACKING_INTERVAL, null);
+	this.timer = cmpTimer.SetInterval(this.entity, IID_Pack, "PackProgress", 0, this.PACKING_INTERVAL, null);
 
 	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
@@ -82,7 +86,7 @@ Pack.prototype.Unpack = function()
 	this.packing = true;
 
 	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-	this.timer = cmpTimer.SetInterval(this.entity, IID_Pack, "PackProgress", 0, PACKING_INTERVAL, null);
+	this.timer = cmpTimer.SetInterval(this.entity, IID_Pack, "PackProgress", 0, this.PACKING_INTERVAL, null);
 
 	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
@@ -129,7 +133,7 @@ Pack.prototype.PackProgress = function(data, lateness)
 {
 	if (this.elapsedTime < this.GetPackTime())
 	{
-		this.SetElapsedTime(this.GetElapsedTime() + PACKING_INTERVAL + lateness);
+		this.SetElapsedTime(this.GetElapsedTime() + this.PACKING_INTERVAL + lateness);
 		return;
 	}
 

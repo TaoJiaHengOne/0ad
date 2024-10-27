@@ -22,7 +22,6 @@ Engine.RegisterGlobal("MT_EntityRenamed", "entityRenamed");
 
 const ent = 170;
 const newEnt = 171;
-const PACKING_INTERVAL = 250;
 let timerActivated = false;
 
 AddMock(ent, IID_Visual, {
@@ -110,8 +109,8 @@ cmpPack.elapsedTime = 400;
 cmpPack.PackProgress({}, 100);
 
 TS_ASSERT(cmpPack.IsPacking());
-TS_ASSERT_EQUALS(cmpPack.GetElapsedTime(), 400 + 100 + PACKING_INTERVAL);
-TS_ASSERT_EQUALS(cmpPack.GetProgress(), (400 + 100 + PACKING_INTERVAL) / 2000);
+TS_ASSERT_EQUALS(cmpPack.GetElapsedTime(), 400 + 100 + cmpPack.PACKING_INTERVAL);
+TS_ASSERT_EQUALS(cmpPack.GetProgress(), (400 + 100 + cmpPack.PACKING_INTERVAL) / 2000);
 
 // Try to Pack or Unpack while packing, nothing happen
 cmpPack.elapsedTime = 400;
@@ -143,7 +142,7 @@ cmpPack.elapsedTime = 1800;
 cmpPack.PackProgress({}, 100);
 
 TS_ASSERT(cmpPack.IsPacking());
-TS_ASSERT_EQUALS(cmpPack.GetElapsedTime(), 1800 + 100 + PACKING_INTERVAL);
+TS_ASSERT_EQUALS(cmpPack.GetElapsedTime(), 1800 + 100 + cmpPack.PACKING_INTERVAL);
 // Cap progress at 100%
 TS_ASSERT_EQUALS(cmpPack.GetProgress(), 1);
 TS_ASSERT_EQUALS(cmpPack.timer, 7);
