@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -46,6 +46,7 @@ CTooltip::CTooltip(CGUI& pGUI)
 	  m_UseObject(this, "use_object"),
 	  m_HideObject(this, "hide_object")
 {
+	m_Ghost.GetMutable() = true;
 	// Set up a blank piece of text, to be replaced with a more
 	// interesting message later
 	AddText();
