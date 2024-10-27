@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -398,7 +398,6 @@ void CParamNode::ConstructJSVal(const ScriptRequest& rq, JS::MutableHandleValue 
 
 		// Just a string
 		JS::RootedString str(rq.cx, JS_NewStringCopyUTF8Z(rq.cx, JS::ConstUTF8CharsZ(m_Value.data(), m_Value.size())));
-		str.set(JS_AtomizeAndPinJSString(rq.cx, str));
 		if (str)
 		{
 			ret.setString(str);
@@ -432,8 +431,7 @@ void CParamNode::ConstructJSVal(const ScriptRequest& rq, JS::MutableHandleValue 
 	// If the node has a string too, add that as an extra property
 	if (!m_Value.empty())
 	{
-		std::u16string text(m_Value.begin(), m_Value.end());
-		JS::RootedString str(rq.cx, JS_AtomizeAndPinUCStringN(rq.cx, text.c_str(), text.length()));
+		JS::RootedString str(rq.cx, JS_NewStringCopyUTF8Z(rq.cx, JS::ConstUTF8CharsZ(m_Value.data(), m_Value.size())));
 		if (!str)
 		{
 			ret.setUndefined();
