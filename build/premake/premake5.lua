@@ -117,6 +117,16 @@ elseif os.istarget("linux") then
 	end
 end
 
+-- Test whether system mozjs is built with --enable-debug
+-- The pc file doesn't specify the required -DDEBUG needed in that case
+local mozjs_is_debug_build = false
+if _OPTIONS["with-system-mozjs"] then
+	local _, errorCode = os.outputof(cc .. " $(pkg-config mozjs-91 --cflags) ./tests/mozdebug.c -o /dev/null")
+	if errorCode ~= 0 then
+		mozjs_is_debug_build = true
+	end
+end
+
 -- Set up the Workspace
 workspace "pyrogenesis"
 targetdir(rootdir.."/binaries/system")
@@ -175,7 +185,7 @@ function project_set_build_flags()
 		debugenvs { "_NO_DEBUG_HEAP=1" }
 	end
 
-	filter "Debug"
+	filter { "Debug", "action:vs*" }
 		defines { "DEBUG" }
 
 	filter "Release"
@@ -188,6 +198,10 @@ function project_set_build_flags()
 		defines { "NDEBUG", "CONFIG_FINAL=1" }
 
 	filter { }
+
+	if mozjs_is_debug_build then
+		defines "DEBUG"
+	end
 
 	if _OPTIONS["gles"] then
 		defines { "CONFIG2_GLES=1" }
