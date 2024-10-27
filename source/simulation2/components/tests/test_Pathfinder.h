@@ -269,7 +269,7 @@ public:
 		sim2.InitGame();
 		sim2.Update(0);
 
-		std::ofstream stream(OsString("perf2.html").c_str(), std::ofstream::out | std::ofstream::trunc);
+		std::ofstream stream(OsString("perf2.html"), std::ofstream::out | std::ofstream::trunc);
 
 		CmpPtr<ICmpObstructionManager> cmpObstructionManager(sim2, SYSTEM_ENTITY);
 		CmpPtr<ICmpPathfinder> cmpPathfinder(sim2, SYSTEM_ENTITY);
@@ -326,7 +326,7 @@ public:
 		sim2.InitGame();
 		sim2.Update(0);
 
-		std::ofstream stream(OsString("perf3.html").c_str(), std::ofstream::out | std::ofstream::trunc);
+		std::ofstream stream(OsString("perf3.html"), std::ofstream::out | std::ofstream::trunc);
 
 		CmpPtr<ICmpObstructionManager> cmpObstructionManager(sim2, SYSTEM_ENTITY);
 		CmpPtr<ICmpPathfinder> cmpPathfinder(sim2, SYSTEM_ENTITY);

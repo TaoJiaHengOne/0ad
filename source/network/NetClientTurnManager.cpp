@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -114,13 +114,13 @@ void CNetClientTurnManager::OnSyncError(u32 turn, const CStr& expectedHash, cons
 	ENSURE(m_Simulation2.ComputeStateHash(hash, !TurnNeedsFullHash(turn)));
 
 	OsPath oosdumpPath(psLogDir() / (L"oos_dump" + g_UniqueLogPostfix + L".txt"));
-	std::ofstream file (OsString(oosdumpPath).c_str(), std::ofstream::out | std::ofstream::trunc);
+	std::ofstream file (OsString(oosdumpPath), std::ofstream::out | std::ofstream::trunc);
 	file << "oos turn: " << turn << std::endl;
 	file << "net client turn: " << m_CurrentTurn << std::endl;
 	m_Simulation2.DumpDebugState(file);
 	file.close();
 
-	std::ofstream binfile (OsString(oosdumpPath.ChangeExtension(L".dat")).c_str(), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+	std::ofstream binfile (OsString(oosdumpPath.ChangeExtension(L".dat")), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
 	m_Simulation2.SerializeState(binfile);
 	binfile.close();
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ void CReplayLogger::StartGame(JS::MutableHandleValue attribs)
 	m_Directory = createDateIndexSubdirectory(VisualReplay::GetDirectoryPath());
 	debug_printf("FILES| Replay written to '%s'\n", m_Directory.string8().c_str());
 
-	m_Stream = new std::ofstream(OsString(m_Directory / L"commands.txt").c_str(), std::ofstream::out | std::ofstream::trunc);
+	m_Stream = new std::ofstream(OsString(m_Directory / L"commands.txt"), std::ofstream::out | std::ofstream::trunc);
 	*m_Stream << "start " << Script::StringifyJSON(rq, attribs, false) << "\n";
 }
 
@@ -128,7 +128,7 @@ void CReplayLogger::SaveMetadata(const CSimulation2& simulation)
 	const OsPath fileName = g_Game->GetReplayLogger().GetDirectory() / L"metadata.json";
 	CreateDirectories(fileName.Parent(), 0700);
 
-	std::ofstream stream (OsString(fileName).c_str(), std::ofstream::out | std::ofstream::trunc);
+	std::ofstream stream (OsString(fileName), std::ofstream::out | std::ofstream::trunc);
 	if (stream)
 	{
 		stream << Script::StringifyJSON(rq, &metadata, false);
@@ -161,7 +161,7 @@ void CReplayPlayer::Load(const OsPath& path)
 {
 	ENSURE(!m_Stream);
 
-	m_Stream = new std::ifstream(OsString(path).c_str());
+	m_Stream = new std::ifstream(OsString(path));
 	ENSURE(m_Stream->good());
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -517,7 +517,7 @@ void CProfileViewer::SaveToFile()
 		// Open the file. (It will be closed when the CProfileViewer
 		// destructor is called.)
 		OsPath path = psLogDir()/"profile.txt";
-		m->outputStream.open(OsString(path).c_str(), std::ofstream::out | std::ofstream::trunc);
+		m->outputStream.open(OsString(path), std::ofstream::out | std::ofstream::trunc);
 
 		if (m->outputStream.fail())
 		{

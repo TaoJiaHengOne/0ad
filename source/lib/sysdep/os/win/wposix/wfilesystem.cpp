@@ -217,7 +217,7 @@ int wclosedir(WDIR* d)
 int wopen(const OsPath& pathname, int oflag)
 {
 	ENSURE(!(oflag & O_CREAT));	// must specify mode_arg if O_CREAT
-	return wopen(OsString(pathname).c_str(), oflag, _S_IREAD|_S_IWRITE);
+	return wopen(OsString(pathname), oflag, _S_IREAD|_S_IWRITE);
 }
 
 

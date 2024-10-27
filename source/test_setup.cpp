@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -147,7 +147,7 @@ void ScriptTestSetup(const ScriptInterface& scriptInterface)
 	// Load the TS_* function definitions
 	// (We don't use VFS because tests might not have the normal VFS paths loaded)
 	OsPath path = DataDir()/"tests"/"test_setup.js";
-	std::ifstream ifs(OsString(path).c_str());
+	std::ifstream ifs(OsString(path));
 	ENSURE(ifs.good());
 	std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 	ENSURE(scriptInterface.LoadScript(L"test_setup.js", content));

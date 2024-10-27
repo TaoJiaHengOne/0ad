@@ -186,7 +186,7 @@ bool CGame::StartVisualReplay(const OsPath& replayPath)
 	SetTurnManager(new CReplayTurnManager(*m_Simulation2, GetReplayLogger()));
 
 	m_ReplayPath = replayPath;
-	m_ReplayStream = new std::ifstream(OsString(replayPath).c_str());
+	m_ReplayStream = new std::ifstream(OsString(replayPath));
 
 	std::string type;
 	ENSURE((*m_ReplayStream >> type).good() && type == "start");

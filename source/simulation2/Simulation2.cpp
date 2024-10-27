@@ -282,19 +282,19 @@ void CSimulation2Impl::DumpSerializationTestState(SerializationTestState& state,
 {
 	if (!state.hash.empty())
 	{
-		std::ofstream file (OsString(path / (L"hash." + suffix)).c_str(), std::ofstream::out | std::ofstream::trunc);
+		std::ofstream file (OsString(path / (L"hash." + suffix)), std::ofstream::out | std::ofstream::trunc);
 		file << Hexify(state.hash);
 	}
 
 	if (!state.debug.str().empty())
 	{
-		std::ofstream file (OsString(path / (L"debug." + suffix)).c_str(), std::ofstream::out | std::ofstream::trunc);
+		std::ofstream file (OsString(path / (L"debug." + suffix)), std::ofstream::out | std::ofstream::trunc);
 		file << state.debug.str();
 	}
 
 	if (!state.state.str().empty())
 	{
-		std::ofstream file (OsString(path / (L"state." + suffix)).c_str(), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+		std::ofstream file (OsString(path / (L"state." + suffix)), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
 		file << state.state.str();
 	}
 }
@@ -609,7 +609,7 @@ void CSimulation2Impl::DumpState()
 	std::stringstream name;\
 	name << std::setw(5) << std::setfill('0') << m_TurnNumber << ".txt";
 	const OsPath path = m_OOSLogPath / name.str();
-	std::ofstream file (OsString(path).c_str(), std::ofstream::out | std::ofstream::trunc);
+	std::ofstream file (OsString(path), std::ofstream::out | std::ofstream::trunc);
 
 	if (!DirectoryExists(m_OOSLogPath))
 	{
@@ -628,7 +628,7 @@ void CSimulation2Impl::DumpState()
 
 	m_ComponentManager.DumpDebugState(file, true);
 
-	std::ofstream binfile (OsString(path.ChangeExtension(L".dat")).c_str(), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+	std::ofstream binfile (OsString(path.ChangeExtension(L".dat")), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
 	m_ComponentManager.SerializeState(binfile);
 }
 

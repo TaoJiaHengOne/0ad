@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ bool VisualReplay::ReadCacheFile(const ScriptInterface& scriptInterface, JS::Mut
 	if (!FileExists(GetCacheFilePath()))
 		return false;
 
-	std::ifstream cacheStream(OsString(GetCacheFilePath()).c_str());
+	std::ifstream cacheStream(OsString(GetCacheFilePath()));
 	CStr cacheStr((std::istreambuf_iterator<char>(cacheStream)), std::istreambuf_iterator<char>());
 	cacheStream.close();
 
@@ -104,7 +104,7 @@ void VisualReplay::StoreCacheFile(const ScriptInterface& scriptInterface, JS::Ha
 	ScriptRequest rq(scriptInterface);
 
 	JS::RootedValue replaysRooted(rq.cx, JS::ObjectValue(*replays));
-	std::ofstream cacheStream(OsString(GetTempCacheFilePath()).c_str(), std::ofstream::out | std::ofstream::trunc);
+	std::ofstream cacheStream(OsString(GetTempCacheFilePath()), std::ofstream::out | std::ofstream::trunc);
 	cacheStream << Script::StringifyJSON(rq, &replaysRooted);
 	cacheStream.close();
 
@@ -354,7 +354,7 @@ JS::Value VisualReplay::LoadReplayData(const ScriptInterface& scriptInterface, c
 	if (fileSize == 0)
 		return JS::NullValue();
 
-	std::ifstream* replayStream = new std::ifstream(OsString(replayFile).c_str());
+	std::ifstream* replayStream = new std::ifstream(OsString(replayFile));
 
 	CStr type;
 	if (!(*replayStream >> type).good())
@@ -445,7 +445,7 @@ JS::Value VisualReplay::GetReplayAttributes(const ScriptInterface& scriptInterfa
 		return attribs;
 
 	// Open file
-	std::istream* replayStream = new std::ifstream(OsString(replayFile).c_str());
+	std::istream* replayStream = new std::ifstream(OsString(replayFile));
 	CStr type, line;
 	ENSURE((*replayStream >> type).good() && type == "start");
 
@@ -497,7 +497,7 @@ JS::Value VisualReplay::GetReplayMetadata(const ScriptInterface& scriptInterface
 	ScriptRequest rq(scriptInterface);
 	JS::RootedValue metadata(rq.cx);
 
-	std::ifstream* stream = new std::ifstream(OsString(GetDirectoryPath() / directoryName / L"metadata.json").c_str());
+	std::ifstream* stream = new std::ifstream(OsString(GetDirectoryPath() / directoryName / L"metadata.json"));
 	ENSURE(stream->good());
 	CStr line;
 	std::getline(*stream, line);

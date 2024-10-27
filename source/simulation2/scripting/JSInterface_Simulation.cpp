@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ void PostNetworkCommand(const ScriptInterface& scriptInterface, JS::HandleValue 
 void DumpSimState()
 {
 	OsPath path = psLogDir()/"sim_dump.txt";
-	std::ofstream file (OsString(path).c_str(), std::ofstream::out | std::ofstream::trunc);
+	std::ofstream file (OsString(path), std::ofstream::out | std::ofstream::trunc);
 	g_Game->GetSimulation2()->DumpDebugState(file);
 }
 

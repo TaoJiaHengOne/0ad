@@ -291,7 +291,7 @@ std::ofstream OpenLogFile(const wchar_t* filePrefix, const char* logName)
 {
 	OsPath path{psLogDir() / (filePrefix + g_UniqueLogPostfix + L".html")};
 	debug_printf("FILES| %s written to '%s'\n", logName, path.string8().c_str());
-	return std::ofstream{OsString(path).c_str(), std::ofstream::trunc};
+	return std::ofstream{OsString(path), std::ofstream::trunc};
 }
 }
 
