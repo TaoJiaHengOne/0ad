@@ -8,7 +8,7 @@ set -e
 cd "$(dirname "$0")"
 
 PV=5.0.0-beta2
-LIB_VERSION=${PV}+wfg1
+LIB_VERSION=${PV}+wfg2
 
 if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
 	echo "premake is already up to date."
@@ -28,6 +28,7 @@ tar -xf "premake-core-${PV}.tar.gz"
 #patch
 patch -d "premake-core-${PV}" -p1 <patches/0001-Require-unistd.h-for-macosx-in-libzip.patch
 patch -d "premake-core-${PV}" -p1 <patches/0002-Forceinclude-unistd.h-on-all-Unixes.patch
+patch -d "premake-core-${PV}" -p1 <patches/0003-Add-support-for-idirafter-flag-in-GCC-Clang.patch
 
 #build
 (

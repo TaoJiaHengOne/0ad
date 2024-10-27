@@ -638,7 +638,7 @@ extern_lib_defs = {
 		compile_settings = function()
 			if _OPTIONS["with-system-mozjs"] then
 				if not _OPTIONS["android"] then
-					pkgconfig.add_includes("mozjs-91")
+					pkgconfig.add_includes_after("mozjs-91")
 				end
 			else
 				if os.istarget("windows") then
