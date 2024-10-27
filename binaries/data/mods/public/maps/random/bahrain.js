@@ -305,7 +305,7 @@ function* GenerateMap(mapSettings)
 			"stay": [g_TileClasses.water, 4],
 			"sizes": ["normal"],
 			"mixes": ["same"],
-			"amounts": ["normal"]
+			"amounts": ["tons"]
 		},
 		{
 			"func": addStragglerTrees,

@@ -367,7 +367,7 @@ function* GenerateMap()
 	group = new SimpleGroup([new SimpleObject(oFish, 1, 1, 0, 3)], true, clFood);
 	createObjectGroupsDeprecated(group, 0,
 		[stayClasses(clWater, 1), avoidClasses(clFood, 8)],
-		scaleByMapSize(40, 200), 100
+		scaleByMapSize(100, 250), 100
 	);
 	yield 90;
 

@@ -222,9 +222,9 @@ function* GenerateMap(mapSettings)
 			[new SimpleObject(oFish, 2, 3, 0, 2)]
 		],
 		[
-			25 * numPlayers
+			40 * numPlayers
 		],
-		[avoidClasses(clFood, 20), stayClasses(clWater, 2)],
+		[avoidClasses(clFood, 10), stayClasses(clWater, 2)],
 		clFood);
 
 	g_Map.log("Creating berry bush");

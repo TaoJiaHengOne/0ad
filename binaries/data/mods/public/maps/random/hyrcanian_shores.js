@@ -139,13 +139,13 @@ function* GenerateMap(mapSettings)
 		new TileClassPainter(clHighlands));
 
 	g_Map.log("Creating fish");
-	for (let i = 0; i < scaleByMapSize(10, 20); ++i)
+	for (let i = 0; i < scaleByMapSize(60, 70); ++i)
 		createObjectGroupsDeprecated(
 			new SimpleGroup([new SimpleObject(oFish, 2, 3, 0, 2)], true, clFood),
 			0,
-			[stayClasses(clWater, 2), avoidClasses(clFood, 3)],
+			[stayClasses(clWater, 4), avoidClasses(clFood, 8)],
 			numPlayers,
-			50);
+			100);
 	yield 25;
 
 	g_Map.log("Creating bumps");

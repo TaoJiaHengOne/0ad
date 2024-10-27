@@ -243,7 +243,7 @@ function* GenerateMap()
 		[
 			[new SimpleObject(oFish, 2, 3, 0, 2)]
 		],
-		[scaleByMapSize(3, 25) * numPlayers],
+		[scaleByMapSize(30, 45) * numPlayers],
 		[avoidClasses(clFood, 6), stayClasses(clWater, 4)],
 		clFood);
 

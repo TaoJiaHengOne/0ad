@@ -343,9 +343,9 @@ function* GenerateMap()
 			[new SimpleObject(oFish, 2, 3, 0, 2)]
 		],
 		[
-			3 * numPlayers
+			35 * numPlayers
 		],
-		avoidClasses(clIsland, 8, clFood, 10, clVolcano, 4),
+		avoidClasses(clIsland, 2, clFood, 8, clVolcano, 2),
 		clFood);
 
 	createStragglerTrees(

@@ -284,7 +284,7 @@ function* GenerateMap()
 	group = new SimpleGroup([new SimpleObject(oFish, 1, 3, 2, 6)], true, clFood);
 	createObjectGroupsDeprecated(group, 0,
 		[avoidClasses(clIsland, 2, clFood, 10), stayClasses(clWater, 5)],
-		3*scaleByMapSize(5, 20), 50
+		20*scaleByMapSize(15, 20), 50
 	);
 
 	g_Map.log("Creating sheeps");

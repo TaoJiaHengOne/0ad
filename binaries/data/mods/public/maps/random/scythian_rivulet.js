@@ -283,9 +283,9 @@ function* GenerateMap()
 			[new SimpleObject(oFish, 1, 2, 0, 2)]
 		],
 		[
-			3 * numPlayers
+			12 * numPlayers
 		],
-		[avoidClasses(clPlayer, 8, clForest, 1, clHill, 4), stayClasses (clWater, 6)],
+		[avoidClasses(clPlayer, 8, clForest, 1, clHill, 4), stayClasses (clWater, 2)],
 		clFood);
 
 	g_Map.log("Creating shallow flora");

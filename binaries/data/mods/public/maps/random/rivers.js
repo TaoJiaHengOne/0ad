@@ -282,9 +282,9 @@ function* GenerateMap(mapSettings)
 			[new SimpleObject(oFish, 2, 3, 0, 2)]
 		],
 		[
-			25 * numPlayers
+			35 * numPlayers
 		],
-		[avoidClasses(clFood, 20), stayClasses(clWater, 6)],
+		[avoidClasses(clFood, 8), stayClasses(clWater, 6)],
 		clFood);
 
 	yield 85;

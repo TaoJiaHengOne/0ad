@@ -528,8 +528,8 @@ function* GenerateMap()
 
 	g_Map.log("Creating fish");
 	group = new SimpleGroup([new SimpleObject(oFish, 2, 3, 0, 2)], true, clFood);
-	createObjectGroupsDeprecated(group, 0, [avoidClasses(clFood, 15), stayClasses(clWater, 6)],
-		20 * numPlayers, 60);
+	createObjectGroupsDeprecated(group, 0, [avoidClasses(clFood, 10), stayClasses(clWater, 2)],
+		50 * numPlayers, 60);
 
 	placePlayersNomad(clPlayer,
 		avoidClasses(clWater, 4, clPyrenneans, 4, clForest, 1, clMetal, 4, clRock, 4, clFood, 2));

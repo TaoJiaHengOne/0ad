@@ -63,7 +63,7 @@ function* GenerateMap(mapSettings)
 			"stay": [g_TileClasses.water, 7],
 			"sizes": g_AllSizes,
 			"mixes": g_AllMixes,
-			"amounts": ["many"]
+			"amounts": ["tons"]
 		}
 	]);
 

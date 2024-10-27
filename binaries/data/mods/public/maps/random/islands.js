@@ -333,8 +333,8 @@ function* GenerateMap(mapSettings)
 		true, clFood
 	);
 	createObjectGroupsDeprecated(group, 0,
-		avoidClasses(clLand, 4, clForest, 2, clPlayer, 2, clHill, 2, clFood, 20),
-		25 * numPlayers, 60
+		avoidClasses(clLand, 4, clForest, 2, clPlayer, 2, clHill, 2, clFood, 14),
+		40 * numPlayers, 60
 	);
 
 	yield 85;

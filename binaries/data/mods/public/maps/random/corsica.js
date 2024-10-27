@@ -522,8 +522,29 @@ function* GenerateMap()
 			stayClasses(clWater, 3),
 			avoidClasses(clCreek, 3, clShore, 3)
 		],
-		scaleByMapSize(50, 150),
-		100);
+		scaleByMapSize(100, 150),
+		300);
+
+
+	g_Map.log("Creating shore fish");
+	createObjectGroupsDeprecated(
+		new SimpleGroup([new SimpleObject(eFish, 1, 2, 0, 3)]),
+		0,
+		[
+			stayClasses(clCreek, 1),
+		],
+		scaleByMapSize(200, 300),
+		500);
+
+	g_Map.log("Creating shore fish");
+	createObjectGroupsDeprecated(
+		new SimpleGroup([new SimpleObject(eFish, 1, 2, 0, 3)]),
+		0,
+		[
+			stayClasses(clShore, 3)
+		],
+		scaleByMapSize(200, 300),
+		500);
 
 	yield 95;
 

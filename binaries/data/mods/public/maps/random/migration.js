@@ -342,8 +342,8 @@ function* GenerateMap(mapSettings)
 	createObjectGroupsDeprecated(
 		new SimpleGroup([new SimpleObject(oFish, 2, 3, 0, 2)], true, clFood),
 		0,
-		avoidClasses(clLand, 2, clPlayer, 2, clHill, 0, clFood, 20),
-		25 * numPlayers, 60
+		avoidClasses(clLand, 2, clPlayer, 2, clHill, 0, clFood, 14),
+		60 * numPlayers, 60
 	);
 	yield 82;
 

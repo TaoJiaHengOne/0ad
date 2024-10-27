@@ -302,10 +302,10 @@ function* GenerateMap(mapSettings)
 			[new SimpleObject(oFish, 2, 3, 0, 2)]
 		],
 		[
-			15 * numPlayers
+			25 * numPlayers
 		],
 		[
-			avoidClasses(clFood, 20),
+			avoidClasses(clFood, 10),
 			stayClasses(clWater, 6)
 		],
 		clFood);

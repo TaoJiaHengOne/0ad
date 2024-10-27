@@ -469,7 +469,7 @@ function* GenerateMap()
 			stayClasses(clWater, 4),
 			new HeightConstraint(-Infinity, heightLand)
 		],
-		scaleByMapSize(8, 32));
+		scaleByMapSize(45, 65));
 
 	yield 90;
 

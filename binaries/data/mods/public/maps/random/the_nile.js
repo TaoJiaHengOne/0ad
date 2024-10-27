@@ -22,6 +22,7 @@ function* GenerateMap()
 	const oCamel = "gaia/fauna_camel";
 	const oGazelle = "gaia/fauna_gazelle";
 	const oGoat = "gaia/fauna_goat";
+	const oFish = "gaia/fish/tilapia";
 	const oStoneLarge = "gaia/rock/badlands_large";
 	const oStoneSmall = "gaia/rock/desert_small";
 	const oMetalLarge = "gaia/ore/desert_large";
@@ -492,6 +493,23 @@ function* GenerateMap()
 		],
 		scaleByMapSize(2, 6), 50
 	);
+
+	g_Map.log("Creating fish");
+	createObjectGroups(
+		new SimpleGroup([new SimpleObject(oFish, 1, 2, 0, 1)], true, clFood),
+		0,
+		[stayClasses(clWater, 4), avoidClasses(clFood, 12)],
+		scaleByMapSize(60, 80),
+		100);
+
+
+	g_Map.log("Creating pond fish");
+	createObjectGroups(
+		new SimpleGroup([new SimpleObject(oFish, 1, 2, 0, 1)], true, clFood),
+		0,
+		[stayClasses(clPond, 3), avoidClasses(clFood, 4)],
+		scaleByMapSize(30, 30),
+		50);
 
 	placePlayersNomad(clPlayer, avoidClasses(clWater, 4, clForest, 1, clMetal, 4, clRock, 4, clFood, 2));
 

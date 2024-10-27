@@ -341,8 +341,8 @@ function* GenerateMap()
 		true, clFood
 	);
 	createObjectGroupsDeprecated(group, 0,
-		[avoidClasses(clFood, 20), stayClasses(clWater, 6)],
-		25 * numPlayers, 60
+		[avoidClasses(clFood, 14), stayClasses(clWater, 6)],
+		50 * numPlayers, 60
 	);
 
 	placePlayersNomad(clPlayer,

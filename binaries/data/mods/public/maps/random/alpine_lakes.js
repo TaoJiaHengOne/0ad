@@ -213,9 +213,9 @@ function* GenerateMap(mapSettings)
 			[new SimpleObject(g_Gaia.fish, 2, 3, 0, 2)]
 		],
 		[
-			15 * numPlayers
+			20 * numPlayers
 		],
-		[avoidClasses(clFood, 20), stayClasses(clWater, 6)],
+		[avoidClasses(clFood, 8), stayClasses(clWater, 2)],
 		clFood);
 
 	yield 85;
