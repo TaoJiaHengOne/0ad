@@ -4,8 +4,9 @@
  */
 class MainMenuItemHandler
 {
-	constructor(menuItems)
+	constructor(closePageCallback, menuItems)
 	{
+		this.closePageCallback = closePageCallback;
 		this.menuItems = menuItems;
 		this.lastTickTime = Date.now();
 
@@ -74,7 +75,7 @@ class MainMenuItemHandler
 		this.lastOpenItem = item;
 
 		if (item.onPress)
-			item.onPress();
+			item.onPress(this.closePageCallback);
 		else
 			this.openSubmenu(i);
 	}

@@ -3,10 +3,11 @@
  */
 class MainMenuPage
 {
-	constructor(data, hotloadData, mainMenuItems, backgroundLayerData, projectInformation, communityButtons)
+	constructor(closePageCallback, data, hotloadData, mainMenuItems, backgroundLayerData,
+		projectInformation, communityButtons)
 	{
 		this.backgroundHandler = new BackgroundHandler(pickRandom(backgroundLayerData));
-		this.menuHandler = new MainMenuItemHandler(mainMenuItems);
+		this.menuHandler = new MainMenuItemHandler(closePageCallback, mainMenuItems);
 		this.splashScreenHandler = new SplashScreenHandler(data, hotloadData && hotloadData.splashScreenHandler);
 
 		new MusicHandler();

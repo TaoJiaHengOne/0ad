@@ -287,7 +287,7 @@ var g_MainMenuItems = [
 	{
 		"caption": translate("Exit"),
 		"tooltip": translate("Exit the game."),
-		"onPress": async() => {
+		"onPress": async(closePageCallback) => {
 			const buttonIndex = await messageBox(
 				400, 200,
 				translate("Are you sure you want to quit 0 A.D.?"),
@@ -295,7 +295,7 @@ var g_MainMenuItems = [
 				[translate("No"), translate("Yes")]);
 
 			if (buttonIndex === 1)
-				Engine.Exit();
+				closePageCallback();
 		}
 	}
 ];

@@ -190,7 +190,6 @@
 		<!-- BUTTONS -->
 		<object name="quitButton" type="button" style="ModernButtonRed" size="100%-932 100%-44 100%-752 100%-16">
 			<translatableAttribute id="caption">Quit</translatableAttribute>
-			<action on="Press">Engine.Exit();</action>
 		</object>
 
 		<object name="cancelButton" type="button" style="ModernButtonRed" size="100%-932 100%-44 100%-752 100%-16" hotkey="cancel">

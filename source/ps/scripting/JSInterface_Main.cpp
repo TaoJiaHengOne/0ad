@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -34,16 +34,10 @@
 #include "scriptinterface/FunctionWrapper.h"
 #include "tools/atlas/GameInterface/GameLoop.h"
 
-extern void QuitEngine();
 extern void StartAtlas();
 
 namespace JSI_Main
 {
-void QuitEngine()
-{
-	::QuitEngine();
-}
-
 void StartAtlas()
 {
 	::StartAtlas();
@@ -126,7 +120,6 @@ std::string CalculateMD5(const std::string& input)
 
 void RegisterScriptFunctions(const ScriptRequest& rq)
 {
-	ScriptFunction::Register<&QuitEngine>(rq, "Exit");
 	ScriptFunction::Register<&StartAtlas>(rq, "RestartInAtlas");
 	ScriptFunction::Register<&AtlasIsAvailable>(rq, "AtlasIsAvailable");
 	ScriptFunction::Register<&IsAtlasRunning>(rq, "IsAtlasRunning");

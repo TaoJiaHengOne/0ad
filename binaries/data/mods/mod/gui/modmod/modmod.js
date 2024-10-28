@@ -85,6 +85,10 @@ function init(data, hotloadData)
 	initGUIButtons(data);
 	if (g_HasIncompatibleMods)
 		Engine.OpenChildPage("page_incompatible_mods.xml", {});
+
+	return new Promise(closePageCallback => {
+		Engine.GetGUIObjectByName("quitButton").onPress = closePageCallback;
+	});
 }
 
 function initMods()

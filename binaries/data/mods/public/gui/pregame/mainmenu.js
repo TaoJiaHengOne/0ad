@@ -10,14 +10,16 @@ var g_MainMenuPage;
 
 function init(data, hotloadData)
 {
-	g_MainMenuPage =
-		new MainMenuPage(
+	return new Promise(closePageCallback => {
+		g_MainMenuPage = new MainMenuPage(
+			closePageCallback,
 			data,
 			hotloadData,
 			g_MainMenuItems,
 			g_BackgroundLayerData,
 			g_ProjectInformation,
 			g_CommunityButtons);
+	});
 }
 
 function getHotloadData()
