@@ -8,6 +8,7 @@
 	python -m glad --api="egl=1.5" --extensions="../extensions/egl.txt" --out-path="../" c
 	python -m glad --api="vulkan=1.1" --extensions="../extensions/vulkan.txt" --out-path="../" c
 )
+patch -p1 --ignore-whitespace --fuzz 1 <fix_macos.patch
 mv src/gl.c src/gl.cpp
 mv src/gles2.c src/gles2.cpp
 mv src/glx.c src/glx.cpp

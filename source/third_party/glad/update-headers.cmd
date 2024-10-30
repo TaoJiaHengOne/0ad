@@ -6,6 +6,7 @@ python -m glad --api="glx=1.4" --extensions="../extensions/glx.txt" --out-path="
 python -m glad --api="wgl=1.0" --extensions="../extensions/wgl.txt" --out-path="../" c
 python -m glad --api="vulkan=1.1" --extensions="../extensions/vulkan.txt" --out-path="../" c
 cd ..
+patch -p1 --ignore-whitespace --fuzz 1 < fix_macos.patch
 MOVE src\gl.c src\gl.cpp
 MOVE src\gles2.c src\gles2.cpp
 MOVE src\glx.c src\glx.cpp

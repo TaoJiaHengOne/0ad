@@ -17,6 +17,8 @@ pip install -r requirements.txt
 
 Do not revert the WFG patch in include/glad/gl.h (around line 1765):
 do not add the change reverting it after the generation of the file
+Currently it's automatically applied by running the update-headers script.
+On Windows you need to run it under Git Bash or with the `patch` program in PATH.
 
 Build the source files for all four backends with their respective extensions
 - GL
