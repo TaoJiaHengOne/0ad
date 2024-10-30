@@ -86,6 +86,7 @@ std::unique_ptr<CBuffer> CBuffer::Create(
 {
 	std::unique_ptr<CBuffer> buffer(new CBuffer());
 	buffer->m_Device = device;
+	buffer->m_UID = device->GenerateNextDeviceObjectUID();
 	buffer->m_Type = type;
 	buffer->m_Size = size;
 	buffer->m_Usage = usage;

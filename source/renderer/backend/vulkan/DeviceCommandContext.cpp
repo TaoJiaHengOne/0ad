@@ -229,7 +229,11 @@ CDeviceCommandContext::CUploadRing::CUploadRing(
 void CDeviceCommandContext::CUploadRing::ResizeIfNeeded(
 	VkCommandBuffer commandBuffer, const uint32_t dataSize)
 {
-	const bool resizeNeeded = !m_Buffer || m_BlockOffset + dataSize > m_Capacity;
+	// We need to pad the data size for uniforms because we use dynamic offsets
+	// with a fixed range.
+	const uint32_t paddedDataSize{
+		m_Type == IBuffer::Type::UNIFORM ? round_up_to_pow2(dataSize) : dataSize};
+	const bool resizeNeeded = !m_Buffer || m_BlockOffset + paddedDataSize > m_Capacity;
 	if (!resizeNeeded)
 		return;
 
@@ -323,49 +327,6 @@ std::unique_ptr<IDeviceCommandContext> CDeviceCommandContext::Create(CDevice* de
 		device, IBuffer::Type::INDEX, FRAME_INPLACE_BUFFER_INITIAL_SIZE);
 	deviceCommandContext->m_UniformUploadRing = std::make_unique<CUploadRing>(
 		device, IBuffer::Type::UNIFORM, UNIFORM_BUFFER_INITIAL_SIZE);
-
-	// TODO: reduce the code duplication.
-	VkDescriptorPoolSize descriptorPoolSize{};
-	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	descriptorPoolSize.descriptorCount = 1;
-
-	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo{};
-	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = 1;
-	descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;
-	descriptorPoolCreateInfo.maxSets = 1;
-	ENSURE_VK_SUCCESS(vkCreateDescriptorPool(
-		device->GetVkDevice(), &descriptorPoolCreateInfo, nullptr, &deviceCommandContext->m_UniformDescriptorPool));
-
-	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
-	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	descriptorSetAllocateInfo.descriptorPool = deviceCommandContext->m_UniformDescriptorPool;
-	descriptorSetAllocateInfo.descriptorSetCount = 1;
-	descriptorSetAllocateInfo.pSetLayouts = &device->GetDescriptorManager().GetUniformDescriptorSetLayout();
-
-	ENSURE_VK_SUCCESS(vkAllocateDescriptorSets(
-		device->GetVkDevice(), &descriptorSetAllocateInfo, &deviceCommandContext->m_UniformDescriptorSet));
-
-	CBuffer* uniformBuffer = deviceCommandContext->m_UniformUploadRing->GetBuffer();
-	ENSURE(uniformBuffer);
-
-	// TODO: fix the hard-coded size.
-	const VkDescriptorBufferInfo descriptorBufferInfos[1] =
-	{
-		{uniformBuffer->GetVkBuffer(), 0u, 512u}
-	};
-
-	VkWriteDescriptorSet writeDescriptorSet{};
-	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	writeDescriptorSet.dstSet = deviceCommandContext->m_UniformDescriptorSet;
-	writeDescriptorSet.dstBinding = 0;
-	writeDescriptorSet.dstArrayElement = 0;
-	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	writeDescriptorSet.descriptorCount = 1;
-	writeDescriptorSet.pBufferInfo = descriptorBufferInfos;
-
-	vkUpdateDescriptorSets(
-		device->GetVkDevice(), 1, &writeDescriptorSet, 0, nullptr);
 
 	CFG_GET_VAL(
 		"renderer.backend.vulkan.debugbarrierafterframebufferpass",
@@ -1160,11 +1121,13 @@ void CDeviceCommandContext::UpdateOutdatedConstants()
 				m_ShaderProgram->GetMaterialConstantsDataSize()}, alignment);
 		m_ShaderProgram->UpdateMaterialConstantsData();
 
+		const VkDescriptorSet uniformDescriptorSet{GetUniformDescriptorSet(
+			m_UniformUploadRing->GetBuffer(), m_ShaderProgram->GetMaterialConstantsDataSize())};
 		// TODO: maybe move inside shader program to reduce the # of bind calls.
 		vkCmdBindDescriptorSets(
 			m_CommandContext->GetCommandBuffer(), m_ShaderProgram->GetPipelineBindPoint(),
 			m_ShaderProgram->GetPipelineLayout(), m_Device->GetDescriptorManager().GetUniformSet(),
-			1, &m_UniformDescriptorSet, 1, &offset);
+			1, &uniformDescriptorSet, 1, &offset);
 	}
 }
 
@@ -1220,6 +1183,85 @@ void CDeviceCommandContext::BindIndexBuffer(CBuffer* buffer, uint32_t offset)
 	m_BoundIndexBufferOffset = offset;
 	vkCmdBindIndexBuffer(
 		m_CommandContext->GetCommandBuffer(), buffer->GetVkBuffer(), offset, VK_INDEX_TYPE_UINT16);
+}
+
+VkDescriptorSet CDeviceCommandContext::GetUniformDescriptorSet(
+	CBuffer* uniformBuffer, const uint32_t dataSize)
+{
+	ENSURE(uniformBuffer);
+
+	if (m_UniformBufferUID == INVALID_DEVICE_OBJECT_UID || m_UniformBufferUID != uniformBuffer->GetUID())
+	{
+		if (m_UniformDescriptorPool != VK_NULL_HANDLE)
+		{
+			m_Device->ScheduleObjectToDestroy(
+				VK_OBJECT_TYPE_DESCRIPTOR_POOL, m_UniformDescriptorPool, VK_NULL_HANDLE);
+			m_UniformDescriptorPool = VK_NULL_HANDLE;
+		}
+
+		m_UniformBufferUID = uniformBuffer->GetUID();
+		m_UniformDescriptorSets.clear();
+
+		constexpr uint32_t initialSize{16};
+		const uint32_t maxUniformBufferRange{m_Device->GetChoosenPhysicalDevice().properties.limits.maxUniformBufferRange};
+		const uint32_t maxSize{std::min(uniformBuffer->GetSize(), 65536u)};
+
+		uint32_t maxSets{0};
+		for (uint32_t size{initialSize}; size <= maxUniformBufferRange && size <= maxSize; size *= 2)
+			++maxSets;
+
+		VkDescriptorPoolSize descriptorPoolSize{};
+		descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+		descriptorPoolSize.descriptorCount = maxSets;
+
+		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo{};
+		descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		descriptorPoolCreateInfo.poolSizeCount = 1;
+		descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;
+		descriptorPoolCreateInfo.maxSets = maxSets;
+		ENSURE_VK_SUCCESS(vkCreateDescriptorPool(
+			m_Device->GetVkDevice(), &descriptorPoolCreateInfo, nullptr, &m_UniformDescriptorPool));
+
+		PS::StaticVector<VkDescriptorBufferInfo, 16> descriptorBufferInfos;
+		PS::StaticVector<VkWriteDescriptorSet, 16> writeDescriptorSets;
+		for (uint32_t size{initialSize}; size <= maxUniformBufferRange && size <= maxSize; size *= 2)
+		{
+			VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
+			descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			descriptorSetAllocateInfo.descriptorPool = m_UniformDescriptorPool;
+			descriptorSetAllocateInfo.descriptorSetCount = 1;
+			descriptorSetAllocateInfo.pSetLayouts = &m_Device->GetDescriptorManager().GetUniformDescriptorSetLayout();
+
+			VkDescriptorSet descriptorSet{VK_NULL_HANDLE};
+			ENSURE_VK_SUCCESS(vkAllocateDescriptorSets(
+				m_Device->GetVkDevice(), &descriptorSetAllocateInfo, &descriptorSet));
+
+			m_UniformDescriptorSets.emplace_back(descriptorSet, size);
+			descriptorBufferInfos.emplace_back(uniformBuffer->GetVkBuffer(), 0u, size);
+
+			VkWriteDescriptorSet writeDescriptorSet{};
+			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSet.dstSet = descriptorSet;
+			writeDescriptorSet.dstBinding = 0;
+			writeDescriptorSet.dstArrayElement = 0;
+			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			writeDescriptorSet.descriptorCount = 1;
+			writeDescriptorSet.pBufferInfo = &descriptorBufferInfos.back();
+			writeDescriptorSets.emplace_back(writeDescriptorSet);
+		}
+
+		vkUpdateDescriptorSets(
+			m_Device->GetVkDevice(), writeDescriptorSets.size(), writeDescriptorSets.data(), 0, nullptr);
+	}
+
+	VkDescriptorSet descriptorSet{VK_NULL_HANDLE};
+	for (const UniformDescriptorSet& uniformDescriptorSet : m_UniformDescriptorSets)
+		if (uniformDescriptorSet.size >= dataSize)
+		{
+			descriptorSet = uniformDescriptorSet.descriptorSet;
+			break;
+		}
+	return descriptorSet;
 }
 
 } // namespace Vulkan

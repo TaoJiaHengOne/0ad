@@ -997,6 +997,9 @@ void CDevice::ProcessObjectToDestroyQueue(const bool ignoreFrameID)
 		case VK_OBJECT_TYPE_PIPELINE:
 			vkDestroyPipeline(m_Device, static_cast<VkPipeline>(handle), nullptr);
 			break;
+		case VK_OBJECT_TYPE_DESCRIPTOR_POOL:
+			vkDestroyDescriptorPool(m_Device, static_cast<VkDescriptorPool>(handle), nullptr);
+			break;
 		default:
 			debug_warn("Unsupported object to destroy type.");
 		}

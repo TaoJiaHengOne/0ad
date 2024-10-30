@@ -19,6 +19,7 @@
 #define INCLUDED_RENDERER_BACKEND_VULKAN_BUFFER
 
 #include "renderer/backend/IBuffer.h"
+#include "renderer/backend/vulkan/DeviceObjectUID.h"
 #include "renderer/backend/vulkan/VMA.h"
 
 #include <glad/vulkan.h>
@@ -53,6 +54,8 @@ public:
 	 */
 	void* GetMappedData() { return m_AllocationInfo.pMappedData; }
 
+	DeviceObjectUID GetUID() const { return m_UID; }
+
 private:
 	friend class CDevice;
 
@@ -63,6 +66,8 @@ private:
 	CBuffer();
 
 	CDevice* m_Device = nullptr;
+
+	DeviceObjectUID m_UID{INVALID_DEVICE_OBJECT_UID};
 
 	Type m_Type = Type::VERTEX;
 	uint32_t m_Size = 0;

@@ -21,6 +21,7 @@
 #include "ps/containers/StaticVector.h"
 #include "renderer/backend/IBuffer.h"
 #include "renderer/backend/IDeviceCommandContext.h"
+#include "renderer/backend/vulkan/DeviceObjectUID.h"
 
 #include <glad/vulkan.h>
 #include <memory>
@@ -163,6 +164,8 @@ private:
 	void BindVertexBuffer(const uint32_t bindingSlot, CBuffer* buffer, uint32_t offset);
 	void BindIndexBuffer(CBuffer* buffer, uint32_t offset);
 
+	VkDescriptorSet GetUniformDescriptorSet(CBuffer* buffer, const uint32_t dataSize);
+
 	CDevice* m_Device = nullptr;
 
 	bool m_DebugScopedLabels = false;
@@ -189,8 +192,14 @@ private:
 	class CUploadRing;
 	std::unique_ptr<CUploadRing> m_VertexUploadRing, m_IndexUploadRing, m_UniformUploadRing;
 
+	DeviceObjectUID m_UniformBufferUID = INVALID_DEVICE_OBJECT_UID;
 	VkDescriptorPool m_UniformDescriptorPool = VK_NULL_HANDLE;
-	VkDescriptorSet m_UniformDescriptorSet = VK_NULL_HANDLE;
+	struct UniformDescriptorSet
+	{
+		VkDescriptorSet descriptorSet{VK_NULL_HANDLE};
+		uint32_t size{0};
+	};
+	PS::StaticVector<UniformDescriptorSet, 16> m_UniformDescriptorSets;
 
 	// Currently we support readbacks only from backbuffer.
 	struct QueuedReadback
