@@ -10,10 +10,10 @@ function init()
 
 function loginButton()
 {
-	Engine.PushGuiPage("page_prelobby_login.xml");
+	Engine.OpenChildPage("page_prelobby_login.xml");
 }
 
 function registerButton()
 {
-	Engine.PushGuiPage("page_prelobby_register.xml");
+	Engine.OpenChildPage("page_prelobby_register.xml");
 }

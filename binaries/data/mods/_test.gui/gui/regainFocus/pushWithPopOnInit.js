@@ -1,4 +1,4 @@
 function init()
 {
-	return Engine.PushGuiPage("regainFocus/page_emptyPage.xml");
+	return Engine.OpenChildPage("regainFocus/page_emptyPage.xml");
 }

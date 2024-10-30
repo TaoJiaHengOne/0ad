@@ -113,10 +113,10 @@ void CGUIManager::SwitchPage(const CStrW& pageName, const ScriptInterface* srcSc
 		m_PageStack.clear();
 	}
 
-	PushPage(pageName, initDataClone);
+	OpenChildPage(pageName, initDataClone);
 }
 
-JS::Value CGUIManager::PushPage(const CStrW& pageName, Script::StructuredClone initData)
+JS::Value CGUIManager::OpenChildPage(const CStrW& pageName, Script::StructuredClone initData)
 {
 	// Store the callback handler in the current GUI page before opening the new one
 	JS::RootedValue promise{m_ScriptInterface.GetGeneralJSContext(), [&]
@@ -130,8 +130,8 @@ JS::Value CGUIManager::PushPage(const CStrW& pageName, Script::StructuredClone i
 			return m_PageStack.back().ReplacePromise(*currentPage.GetScriptInterface());
 		}()};
 
-	// Push the page prior to loading its contents, because that may push
-	// another GUI page on init which should be pushed on top of this new page.
+	// Emplace the page prior to loading its contents, because that may open
+	// another GUI page on init which should be emplaced on top of this new page.
 	m_PageStack.emplace_back(pageName, initData);
 	m_PageStack.back().LoadPage(m_ScriptContext);
 

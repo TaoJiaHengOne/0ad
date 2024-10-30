@@ -46,7 +46,7 @@ function languageSelectionChanged()
 async function openAdvancedMenu()
 {
 	let localeText = Engine.GetGUIObjectByName("localeText");
-	const locale = await Engine.PushGuiPage("page_locale_advanced.xml", { "locale": localeText.caption });
+	const locale = await Engine.OpenChildPage("page_locale_advanced.xml", { "locale": localeText.caption });
 
 	if (!locale)
 		return;

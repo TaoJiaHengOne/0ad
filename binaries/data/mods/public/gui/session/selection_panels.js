@@ -1269,7 +1269,7 @@ async function showTemplateDetails(templateName, civCode)
 		return;
 	g_PauseControl.implicitPause();
 
-	await Engine.PushGuiPage(
+	await Engine.OpenChildPage(
 		"page_viewer.xml",
 		{
 			"templateName": templateName,

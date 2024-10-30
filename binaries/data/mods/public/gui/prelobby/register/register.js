@@ -41,5 +41,5 @@ async function onRegistered()
 
 	Engine.StopXmppClient();
 
-	Engine.PushGuiPage("page_prelobby_login.xml");
+	Engine.OpenChildPage("page_prelobby_login.xml");
 }

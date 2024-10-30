@@ -7,7 +7,7 @@
 Engine.HasXmppClient = () => false;
 Engine.SetRankedGame = () => {};
 Engine.TextureExists = () => false;
-Engine.PushGuiPage = () => {};
+Engine.OpenChildPage = () => {};
 Engine.SwitchGuiPage = () => {};
 
 var translateObjectKeys = () => {}

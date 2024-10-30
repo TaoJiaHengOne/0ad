@@ -11,7 +11,7 @@ class LobbyButton
 	onPress()
 	{
 		if (Engine.HasXmppClient())
-			Engine.PushGuiPage("page_lobby.xml", { "dialog": true });
+			Engine.OpenChildPage("page_lobby.xml", { "dialog": true });
 	}
 }
 

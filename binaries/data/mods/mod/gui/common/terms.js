@@ -7,7 +7,7 @@ function initTerms(terms)
 
 async function openTerms(page)
 {
-	const data = await Engine.PushGuiPage(
+	const data = await Engine.OpenChildPage(
 		"page_termsdialog.xml",
 		{
 			"file": g_Terms[page].file,

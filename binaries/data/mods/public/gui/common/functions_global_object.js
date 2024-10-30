@@ -46,7 +46,7 @@ function cancelOnLoadGameError(msg)
 	Engine.SwitchGuiPage("page_pregame.xml");
 
 	if (msg)
-		Engine.PushGuiPage("page_msgbox.xml", {
+		Engine.OpenChildPage("page_msgbox.xml", {
 			"width": 500,
 			"height": 200,
 			"message": msg,

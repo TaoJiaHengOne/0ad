@@ -20,7 +20,7 @@ MenuButtons.prototype.Manual = class
 	{
 		closeOpenDialogs();
 		this.pauseControl.implicitPause();
-		await Engine.PushGuiPage("page_manual.xml");
+		await Engine.OpenChildPage("page_manual.xml");
 		resumeGame();
 	}
 };
@@ -60,7 +60,7 @@ MenuButtons.prototype.Save = class
 		closeOpenDialogs();
 		this.pauseControl.implicitPause();
 
-		await Engine.PushGuiPage(
+		await Engine.OpenChildPage(
 			"page_loadgame.xml",
 			{
 				"savedGameData": getSavedGameData(),
@@ -103,7 +103,7 @@ MenuButtons.prototype.Summary = class
 		 // Allows players to see their own summary.
 		// If they have shared ally vision researched, they are able to see the summary of there allies too.
 		let simState = Engine.GuiInterfaceCall("GetExtendedSimulationState");
-		const data = await Engine.PushGuiPage(
+		const data = await Engine.OpenChildPage(
 			"page_summary.xml",
 			{
 				"sim": {
@@ -149,7 +149,7 @@ MenuButtons.prototype.Lobby = class
 		if (!Engine.HasXmppClient())
 			return;
 		closeOpenDialogs();
-		Engine.PushGuiPage("page_lobby.xml", { "dialog": true });
+		Engine.OpenChildPage("page_lobby.xml", { "dialog": true });
 	}
 };
 
@@ -167,7 +167,7 @@ MenuButtons.prototype.Options = class
 		closeOpenDialogs();
 		this.pauseControl.implicitPause();
 
-		fireConfigChangeHandlers(await Engine.PushGuiPage("page_options.xml"));
+		fireConfigChangeHandlers(await Engine.OpenChildPage("page_options.xml"));
 		resumeGame();
 	}
 };
@@ -186,7 +186,7 @@ MenuButtons.prototype.Hotkeys = class
 		closeOpenDialogs();
 		this.pauseControl.implicitPause();
 
-		await Engine.PushGuiPage("hotkeys/page_hotkeys.xml");
+		await Engine.OpenChildPage("hotkeys/page_hotkeys.xml");
 		resumeGame();
 	}
 };

@@ -22,7 +22,7 @@ class HostButton
 
 	onPress(loadSavedGame)
 	{
-		Engine.PushGuiPage("page_gamesetup_mp.xml", {
+		Engine.OpenChildPage("page_gamesetup_mp.xml", {
 			"loadSavedGame": loadSavedGame,
 			"multiplayerGameType": "host",
 			"name": g_Nickname,

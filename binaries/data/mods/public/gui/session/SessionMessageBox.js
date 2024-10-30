@@ -9,7 +9,7 @@ class SessionMessageBox
 		closeOpenDialogs();
 		g_PauseControl.implicitPause();
 
-		const buttonId = await Engine.PushGuiPage(
+		const buttonId = await Engine.OpenChildPage(
 			"page_msgbox.xml",
 			{
 				"width": this.Width,

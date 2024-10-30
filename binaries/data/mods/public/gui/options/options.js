@@ -81,7 +81,7 @@ var g_OptionType = {
 		},
 		"initGUI": (option, control) => {
 			control.children[2].onPress = async() => {
-				const color = await Engine.PushGuiPage("page_colormixer.xml", control.caption);
+				const color = await Engine.OpenChildPage("page_colormixer.xml", control.caption);
 
 				if (color != control.caption)
 				{

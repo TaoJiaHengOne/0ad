@@ -70,7 +70,7 @@ class JoinButton
 		if (this.joinButton.hidden)
 			return;
 
-		Engine.PushGuiPage("page_gamesetup_mp.xml", {
+		Engine.OpenChildPage("page_gamesetup_mp.xml", {
 			"multiplayerGameType": "join",
 			"name": g_Nickname,
 			"rating": this.getRejoinRating(stanza),

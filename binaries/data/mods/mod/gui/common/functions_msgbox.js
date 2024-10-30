@@ -1,6 +1,6 @@
 function messageBox(width, height, message, title, buttonCaptions)
 {
-	return Engine.PushGuiPage(
+	return Engine.OpenChildPage(
 		"page_msgbox.xml",
 		{
 			"width": width,
@@ -13,7 +13,7 @@ function messageBox(width, height, message, title, buttonCaptions)
 
 function timedConfirmation(width, height, message, timeParameter, timeout, title, buttonCaptions)
 {
-	return Engine.PushGuiPage(
+	return Engine.OpenChildPage(
 		"page_timedconfirmation.xml",
 		{
 			"width": width,

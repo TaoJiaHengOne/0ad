@@ -23,7 +23,7 @@ class CampaignSession
 		this.endGameData.won = won;
 
 		// Run the endgame script.
-		Engine.PushGuiPage(this.getEndGame(), this.endGameData);
+		Engine.OpenChildPage(this.getEndGame(), this.endGameData);
 		closePageCallback();
 	}
 

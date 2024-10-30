@@ -84,7 +84,7 @@ function init(data, hotloadData)
 	initMods();
 	initGUIButtons(data);
 	if (g_HasIncompatibleMods)
-		Engine.PushGuiPage("page_incompatible_mods.xml", {});
+		Engine.OpenChildPage("page_incompatible_mods.xml", {});
 }
 
 function initMods()

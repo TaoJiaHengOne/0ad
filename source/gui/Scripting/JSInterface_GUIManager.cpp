@@ -33,9 +33,9 @@ namespace JSI_GUIManager
 // Note that the initData argument may only contain clonable data.
 // Functions aren't supported for example!
 // It returns a promise.
-JS::Value PushGuiPage(const ScriptRequest& rq, const std::wstring& name, JS::HandleValue initData)
+JS::Value OpenChildPage(const ScriptRequest& rq, const std::wstring& name, JS::HandleValue initData)
 {
-	return g_GUI->PushPage(name, Script::WriteStructuredClone(rq, initData));
+	return g_GUI->OpenChildPage(name, Script::WriteStructuredClone(rq, initData));
 }
 
 void SwitchGuiPage(const ScriptInterface& scriptInterface, const std::wstring& name, JS::HandleValue initData)
@@ -66,7 +66,7 @@ CParamNode GetTemplate(const std::string& templateName)
 
 void RegisterScriptFunctions(const ScriptRequest& rq)
 {
-	ScriptFunction::Register<&PushGuiPage>(rq, "PushGuiPage");
+	ScriptFunction::Register<&OpenChildPage>(rq, "OpenChildPage");
 	ScriptFunction::Register<&SwitchGuiPage>(rq, "SwitchGuiPage");
 	ScriptFunction::Register<&SetCursor>(rq, "SetCursor");
 	ScriptFunction::Register<&ResetCursor>(rq, "ResetCursor");

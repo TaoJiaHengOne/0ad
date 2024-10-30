@@ -28,6 +28,6 @@ async function openModIo(data)
 	if (!data.accepted)
 		return;
 
-	await Engine.PushGuiPage("page_modio.xml");
+	await Engine.OpenChildPage("page_modio.xml");
 	initMods();
 }

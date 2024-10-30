@@ -200,7 +200,7 @@
 
 		<object type="button" style="ModernButtonRed" size="100%-748 100%-44 100%-568 100%-16">
 			<translatableAttribute id="caption">Help</translatableAttribute>
-			<action on="Press">Engine.PushGuiPage("page_modhelp.xml");</action>
+			<action on="Press">Engine.OpenChildPage("page_modhelp.xml");</action>
 		</object>
 
 		<object type="button" style="ModernButtonRed" size="100%-564 100%-44 100%-384 100%-16">

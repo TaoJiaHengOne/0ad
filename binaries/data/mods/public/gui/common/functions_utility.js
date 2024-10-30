@@ -302,7 +302,7 @@ async function pageLoop(page, args)
 {
 	let completionValue = { "nextPage": page, "args": args };
 	while (completionValue?.nextPage != null)
-		completionValue = await Engine.PushGuiPage(completionValue.nextPage, completionValue.args);
+		completionValue = await Engine.OpenChildPage(completionValue.nextPage, completionValue.args);
 
 	return completionValue;
 }

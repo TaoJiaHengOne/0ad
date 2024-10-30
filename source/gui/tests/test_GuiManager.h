@@ -83,7 +83,7 @@ public:
 		Script::CreateObject(rq, &val);
 
 		Script::StructuredClone data = Script::WriteStructuredClone(rq, JS::NullHandleValue);
-		g_GUI->PushPage(L"event/page_event.xml", data);
+		g_GUI->OpenChildPage(L"event/page_event.xml", data);
 
 		const ScriptInterface& pageScriptInterface = *(g_GUI->GetActiveGUI()->GetScriptInterface());
 		ScriptRequest prq(pageScriptInterface);
@@ -146,7 +146,7 @@ public:
 		Script::CreateObject(rq, &val);
 
 		Script::StructuredClone data = Script::WriteStructuredClone(rq, JS::NullHandleValue);
-		g_GUI->PushPage(L"hotkey/page_hotkey.xml", data);
+		g_GUI->OpenChildPage(L"hotkey/page_hotkey.xml", data);
 
 		// Press 'a'.
 		SDL_Event_ hotkeyNotification;
@@ -228,11 +228,11 @@ public:
 			Script::WriteStructuredClone(rq, JS::UndefinedHandleValue)};
 
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 0);
-		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", undefined);
+		g_GUI->OpenChildPage(L"regainFocus/page_emptyPage.xml", undefined);
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 1);
 
 		// This page instantly pushes an empty page with a callback that pops another page again.
-		g_GUI->PushPage(L"regainFocus/page_pushWithPopOnInit.xml", undefined);
+		g_GUI->OpenChildPage(L"regainFocus/page_pushWithPopOnInit.xml", undefined);
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 3);
 
 		// Pop the empty page and execute the continuation.
@@ -254,7 +254,7 @@ public:
 
 		const Script::StructuredClone undefined{
 			Script::WriteStructuredClone(rq, JS::UndefinedHandleValue)};
-		g_GUI->PushPage(L"regainFocus/page_emptyPage.xml", undefined);
+		g_GUI->OpenChildPage(L"regainFocus/page_emptyPage.xml", undefined);
 
 
 		for (const auto& [reject, result] : testSteps)
@@ -263,7 +263,7 @@ public:
 			const Script::StructuredClone clonedValue{Script::WriteStructuredClone(rq, value)};
 
 			const JS::RootedValue promise{rq.cx,
-				g_GUI->PushPage(L"resolveReject/page_resolveReject.xml", clonedValue)};
+				g_GUI->OpenChildPage(L"resolveReject/page_resolveReject.xml", clonedValue)};
 
 			// Check whether promises are settled in the page stack and flush the stack.
 			g_GUI->TickObjects();
@@ -277,7 +277,7 @@ public:
 		const ScriptRequest rq{g_GUI->GetScriptInterface()};
 		const Script::StructuredClone undefined{
 			Script::WriteStructuredClone(rq, JS::UndefinedHandleValue)};
-		g_GUI->PushPage(L"sequential/page_sequential.xml", undefined);
+		g_GUI->OpenChildPage(L"sequential/page_sequential.xml", undefined);
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);
 		CloseTopmostPage();
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 2);

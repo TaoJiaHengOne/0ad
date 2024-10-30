@@ -28,7 +28,7 @@ class CampaignMenu extends AutoWatcher
 
 	async loadSavegame()
 	{
-		const gameId = await Engine.PushGuiPage(
+		const gameId = await Engine.OpenChildPage(
 			'page_loadgame.xml',
 			{
 				"campaignRun": this.run.filename

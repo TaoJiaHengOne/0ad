@@ -6,9 +6,7 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Manual"),
 				"tooltip": translate("Open the 0 A.D. Game Manual."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_manual.xml");
-				}
+				"onPress": Engine.OpenChildPage.bind(null, "page_manual.xml")
 			},
 			{
 				"caption": translate("Tutorial"),
@@ -35,9 +33,9 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Tips and Tricks"),
 				"tooltip": translate("Discover simple tips, tricks, and game mechanics."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_tips.xml", { "tipScrolling": true });
-				}
+				"onPress": Engine.OpenChildPage.bind(null, "page_tips.xml", {
+						"tipScrolling": true
+					})
 			},
 			{
 				"caption": translate("Structure Tree"),
@@ -54,16 +52,12 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Catafalque Overview"),
 				"tooltip": translate("Compare the bonuses of catafalques featured in 0 A.D."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_catafalque.xml");
-				}
+				"onPress": Engine.OpenChildPage.bind(null, "page_catafalque.xml")
 			},
 			{
 				"caption": translate("Map Overview"),
 				"tooltip": translate("View the different maps featured in 0 A.D."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_mapbrowser.xml");
-				},
+				"onPress": Engine.OpenChildPage.bind(null, "page_mapbrowser.xml")
 			}
 		]
 	},
@@ -98,7 +92,7 @@ var g_MainMenuItems = [
 				"caption": translate("Load Game"),
 				"tooltip": translate("Load a saved game."),
 				"onPress": async() => {
-					const gameId = await Engine.PushGuiPage("page_loadgame.xml");
+					const gameId = await Engine.OpenChildPage("page_loadgame.xml");
 
 					if (!gameId)
 						return;
@@ -185,23 +179,21 @@ var g_MainMenuItems = [
 				"hotkey": "lobby",
 				"onPress": () => {
 					 if (Engine.StartXmppClient)
-						 Engine.PushGuiPage("page_prelobby_entrance.xml");
+						 Engine.OpenChildPage("page_prelobby_entrance.xml");
 				}
 			},
 			{
 				// Translation: Join a game by specifying the host's IP address.
 				"caption": translate("Join Game"),
 				"tooltip": translate("Joining an existing multiplayer game."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_gamesetup_mp.xml", {
+				"onPress": Engine.OpenChildPage.bind(null, "page_gamesetup_mp.xml", {
 						"multiplayerGameType": "join"
-					});
-				}
+					})
 			},
 			{
 				"caption": translate("Host New Game"),
 				"tooltip": translate("Host a new multiplayer game."),
-				"onPress": Engine.PushGuiPage.bind(null, "page_gamesetup_mp.xml", {
+				"onPress": Engine.OpenChildPage.bind(null, "page_gamesetup_mp.xml", {
 						"multiplayerGameType": "host",
 						"loadSavedGame": false
 					})
@@ -209,7 +201,7 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Host Saved Game"),
 				"tooltip": translate("Continue playing a game from a savegame."),
-				"onPress": Engine.PushGuiPage.bind(null, "page_gamesetup_mp.xml", {
+				"onPress": Engine.OpenChildPage.bind(null, "page_gamesetup_mp.xml", {
 						"multiplayerGameType": "host",
 						"loadSavedGame": true
 					})
@@ -237,22 +229,18 @@ var g_MainMenuItems = [
 				"caption": translate("Options"),
 				"tooltip": translate("Adjust game settings."),
 				"onPress": async() => {
-					fireConfigChangeHandlers(await Engine.PushGuiPage("page_options.xml"));
+					fireConfigChangeHandlers(await Engine.OpenChildPage("page_options.xml"));
 				}
 			},
 			{
 				"caption": translate("Hotkeys"),
 				"tooltip": translate("Adjust hotkeys."),
-				"onPress": () => {
-					Engine.PushGuiPage("hotkeys/page_hotkeys.xml");
-				}
+				"onPress": Engine.OpenChildPage.bind(null, "hotkeys/page_hotkeys.xml")
 			},
 			{
 				"caption": translate("Language"),
 				"tooltip": translate("Choose the language of the game."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_locale.xml");
-				}
+				"onPress": Engine.OpenChildPage.bind(null, "page_locale.xml")
 			},
 			{
 				"caption": translate("Mod Selection"),
@@ -264,9 +252,7 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Welcome Screen"),
 				"tooltip": translate("Show the Welcome Screen again. Useful if you hid it by mistake."),
-				"onPress": () => {
-					Engine.PushGuiPage("page_splashscreen.xml");
-				}
+				"onPress": Engine.OpenChildPage.bind(null, "page_splashscreen.xml")
 			}
 		]
 	},
@@ -296,9 +282,7 @@ var g_MainMenuItems = [
 	{
 		"caption": translate("Credits"),
 		"tooltip": translate("Show the 0 A.D. credits."),
-		"onPress": () => {
-			Engine.PushGuiPage("page_credits.xml");
-		}
+		"onPress": Engine.OpenChildPage.bind(null, "page_credits.xml")
 	},
 	{
 		"caption": translate("Exit"),

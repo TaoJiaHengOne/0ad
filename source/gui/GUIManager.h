@@ -71,7 +71,7 @@ public:
 	 * user inputs.
 	 * The returned promise will be fulfilled once the pushed page is closed.
 	 */
-	JS::Value PushPage(const CStrW& pageName, Script::StructuredClone initData);
+	JS::Value OpenChildPage(const CStrW& pageName, Script::StructuredClone initData);
 
 	/**
 	 * Called when a file has been modified, to hotload changes.

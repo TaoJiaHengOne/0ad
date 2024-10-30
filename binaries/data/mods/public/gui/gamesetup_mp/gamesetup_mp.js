@@ -348,7 +348,7 @@ async function handleAuthenticated(message, loadSavedGame)
 	}
 	g_IsConnecting = false;
 
-	const savegameID = loadSavedGame ? await Engine.PushGuiPage("page_loadgame.xml") : undefined;
+	const savegameID = loadSavedGame ? await Engine.OpenChildPage("page_loadgame.xml") : undefined;
 
 	if (loadSavedGame && !savegameID)
 	{
