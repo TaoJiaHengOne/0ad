@@ -48,6 +48,17 @@ namespace Vulkan
 namespace
 {
 
+enum class BindingSlotType
+{
+	PUSH_CONSTANT,
+	UNIFORM,
+	TEXTURE,
+	STORAGE_IMAGE
+};
+
+constexpr uint32_t BINDING_SLOT_TYPE_SHIFT{16u};
+constexpr uint32_t BINDING_SLOT_VALUE_MASK{(1u << BINDING_SLOT_TYPE_SHIFT) - 1u};
+
 VkShaderModule CreateShaderModule(CDevice* device, const VfsPath& path)
 {
 	CVFSFile file;
@@ -602,13 +613,13 @@ IDevice* CShaderProgram::GetDevice()
 int32_t CShaderProgram::GetBindingSlot(const CStrIntern name) const
 {
 	if (auto it = m_PushConstantMapping.find(name); it != m_PushConstantMapping.end())
-		return it->second;
+		return (static_cast<uint32_t>(BindingSlotType::PUSH_CONSTANT) << BINDING_SLOT_TYPE_SHIFT) | it->second;
 	if (auto it = m_UniformMapping.find(name); it != m_UniformMapping.end())
-		return it->second + m_PushConstants.size();
+		return (static_cast<uint32_t>(BindingSlotType::UNIFORM) << BINDING_SLOT_TYPE_SHIFT) | it->second;
 	if (const int32_t bindingSlot = m_TextureBinding.has_value() ? m_TextureBinding->GetBindingSlot(name) : -1; bindingSlot != -1)
-		return bindingSlot + m_PushConstants.size() + m_UniformMapping.size();
+		return (static_cast<uint32_t>(BindingSlotType::TEXTURE) << BINDING_SLOT_TYPE_SHIFT) | bindingSlot;
 	if (const int32_t bindingSlot = m_StorageImageBinding.has_value() ? m_StorageImageBinding->GetBindingSlot(name) : -1; bindingSlot != -1)
-		return bindingSlot + m_PushConstants.size() + m_UniformMapping.size() + (m_TextureBinding.has_value() ? m_TextureBinding->GetBoundDeviceObjects().size() : 0);
+		return (static_cast<uint32_t>(BindingSlotType::STORAGE_IMAGE) << BINDING_SLOT_TYPE_SHIFT) | bindingSlot;
 	return -1;
 }
 
@@ -773,18 +784,20 @@ void CShaderProgram::SetUniform(const int32_t bindingSlot, PS::span<const float>
 std::pair<std::byte*, uint32_t> CShaderProgram::GetUniformData(
 	const int32_t bindingSlot, const uint32_t dataSize)
 {
-	if (bindingSlot < static_cast<int32_t>(m_PushConstants.size()))
+	const BindingSlotType bindingSlotType{static_cast<BindingSlotType>(bindingSlot >> BINDING_SLOT_TYPE_SHIFT)};
+	const uint32_t index{bindingSlot & BINDING_SLOT_VALUE_MASK};
+	if (bindingSlotType == BindingSlotType::PUSH_CONSTANT)
 	{
-		const uint32_t size = m_PushConstants[bindingSlot].size;
-		const uint32_t offset = m_PushConstants[bindingSlot].offset;
+		const uint32_t size = m_PushConstants[index].size;
+		const uint32_t offset = m_PushConstants[index].offset;
 		ENSURE(size <= dataSize);
 		m_PushConstantDataMask |= ((1 << (size >> 2)) - 1) << (offset >> 2);
 		return {m_PushConstantData.data() + offset, size};
 	}
 	else
 	{
-		ENSURE(bindingSlot - m_PushConstants.size() < m_Uniforms.size());
-		const Uniform& uniform = m_Uniforms[bindingSlot - m_PushConstants.size()];
+		ENSURE(bindingSlotType == BindingSlotType::UNIFORM);
+		const Uniform& uniform = m_Uniforms[index];
 		m_MaterialConstantsDataOutdated = true;
 		const uint32_t size = uniform.size;
 		const uint32_t offset = uniform.offset;
@@ -797,23 +810,23 @@ void CShaderProgram::SetTexture(const int32_t bindingSlot, CTexture* texture)
 {
 	if (bindingSlot < 0)
 		return;
+	const BindingSlotType bindingSlotType{static_cast<BindingSlotType>(bindingSlot >> BINDING_SLOT_TYPE_SHIFT)};
+	const uint32_t index{bindingSlot & BINDING_SLOT_VALUE_MASK};
 	CDescriptorManager& descriptorManager = m_Device->GetDescriptorManager();
 	if (descriptorManager.UseDescriptorIndexing())
 	{
+		ENSURE(bindingSlotType == BindingSlotType::PUSH_CONSTANT);
 		const uint32_t descriptorIndex = descriptorManager.GetTextureDescriptor(texture->As<CTexture>());
-		ENSURE(bindingSlot < static_cast<int32_t>(m_PushConstants.size()));
-
-		const uint32_t size = m_PushConstants[bindingSlot].size;
-		const uint32_t offset = m_PushConstants[bindingSlot].offset;
+		const uint32_t size = m_PushConstants[index].size;
+		const uint32_t offset = m_PushConstants[index].offset;
 		ENSURE(size == sizeof(descriptorIndex));
 		std::memcpy(m_PushConstantData.data() + offset, &descriptorIndex, size);
 		m_PushConstantDataMask |= ((1 << (size >> 2)) - 1) << (offset >> 2);
 	}
 	else
 	{
-		ENSURE(bindingSlot >= static_cast<int32_t>(m_PushConstants.size() + m_UniformMapping.size()));
+		ENSURE(bindingSlotType == BindingSlotType::TEXTURE);
 		ENSURE(m_TextureBinding.has_value());
-		const uint32_t index = bindingSlot - (m_PushConstants.size() + m_UniformMapping.size());
 		m_TextureBinding->SetObject(index, texture);
 	}
 }
@@ -822,10 +835,9 @@ void CShaderProgram::SetStorageTexture(const int32_t bindingSlot, CTexture* text
 {
 	if (bindingSlot < 0)
 		return;
-	const int32_t offset = static_cast<int32_t>(m_PushConstants.size() + m_UniformMapping.size() + (m_TextureBinding.has_value() ? m_TextureBinding->GetBoundDeviceObjects().size() : 0));
-	ENSURE(bindingSlot >= offset);
+	ENSURE(static_cast<BindingSlotType>(bindingSlot >> BINDING_SLOT_TYPE_SHIFT) == BindingSlotType::STORAGE_IMAGE);
+	const uint32_t index{bindingSlot & BINDING_SLOT_VALUE_MASK};
 	ENSURE(m_StorageImageBinding.has_value());
-	const uint32_t index = bindingSlot - offset;
 	m_StorageImageBinding->SetObject(index, texture);
 }
 
