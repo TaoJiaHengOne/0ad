@@ -433,7 +433,7 @@ void CDeviceCommandContext::UploadTextureRegion(
 void CDeviceCommandContext::UploadBuffer(IBuffer* buffer, const void* data, const uint32_t dataSize)
 {
 	ENSURE(!m_InsideFramebufferPass);
-	UploadBufferRegion(buffer, data, dataSize, 0);
+	UploadBufferRegion(buffer, data, 0, dataSize);
 }
 
 void CDeviceCommandContext::UploadBuffer(
