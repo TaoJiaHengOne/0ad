@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@
 
 struct utsname
 {
-	char sysname[9];   // Name of this implementation of the operating system.
+	char sysname[50];   // Name of this implementation of the operating system.
 	char nodename[16]; // Name of this node within an implementation-defined communications network.
 	char release[9];   // Current release level of this implementation.
 	char version[16];  // Current version level of this release.

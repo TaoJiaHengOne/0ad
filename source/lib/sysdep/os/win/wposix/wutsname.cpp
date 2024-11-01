@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -26,8 +26,45 @@
 #include "lib/sysdep/os/win/wutil.h"	// WinScopedPreserveLastError
 #include "lib/sysdep/os/win/wversion.h"	// wversion_Family
 
+#include <iostream>
+#include <memory>
 #include <sstream>
+#include <string>
+#include <vector>
+#include <windows.h>
 #include <winternl.h>
+
+#if MSC_VERSION
+#pragma comment(lib, "version.lib")		// DLL version
+#endif
+
+static DWORD GetNtdllVersion()
+{
+	// Get system path for kernel32.dll.
+	WCHAR dllPath[MAX_PATH];
+	if (!GetSystemDirectoryW(dllPath, MAX_PATH))
+		return 0;
+
+	wcscat_s(dllPath, L"\\ntdll.dll");
+
+	// Retrieve version information size.
+	DWORD verHandle = 0;
+	DWORD verSize = GetFileVersionInfoSizeW(dllPath, &verHandle);
+	if (verSize <= 0)
+		return  0;
+
+	std::vector<BYTE> versionData(verSize);
+	if (!GetFileVersionInfoW(dllPath, verHandle, verSize, versionData.data()))
+		return 0;
+
+	VS_FIXEDFILEINFO* lpFfi = nullptr;
+	UINT len = 0;
+	if (!VerQueryValueW(versionData.data(), L"\\", (LPVOID*)&lpFfi, &len) && lpFfi != nullptr)
+		return 0;
+
+	return HIWORD(lpFfi->dwFileVersionLS);
+}
+
 
 /**
  * Taken and modified from: https://stackoverflow.com/questions/32115255/c-how-to-detect-windows-10
@@ -35,14 +72,24 @@
 int uname(struct utsname* un)
 {
 	WUTIL_FUNC(pRtlGetVersion, NTSTATUS, (LPOSVERSIONINFOEXW));
-	WUTIL_IMPORT_NTDLL(RtlGetVersion , pRtlGetVersion);
+	WUTIL_IMPORT_NTDLL(RtlGetVersion, pRtlGetVersion);
 
 	if (!pRtlGetVersion)
-		return  -1;
+		return -1;
 
 	OSVERSIONINFOEXW osInfo = { sizeof(OSVERSIONINFOEXW) };
-	pRtlGetVersion(&osInfo);
+	NTSTATUS status = pRtlGetVersion(&osInfo);
+	if (!NT_SUCCESS(status))
+		return -1;
+
 	std::ostringstream stream;
+
+	// Check for compatibility mode
+	DWORD version = GetNtdllVersion();
+
+	// We tolerate a certain discrepancy that might happen on some OSes.
+	if (version != 0 && std::abs((int)osInfo.dwBuildNumber - (int)version) > 20)
+		stream << "Compatibility Mode ";
 
 	// OS Implementation name
 	if (osInfo.dwMajorVersion >= 10)
@@ -59,7 +106,6 @@ int uname(struct utsname* un)
 		stream << wversion_Family() << "\0";
 
 	sprintf_s(un->sysname, ARRAY_SIZE(un->sysname), "%s", stream.str().c_str());
-
 
 	// OS Service Pack
 	int sp;
