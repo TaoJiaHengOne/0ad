@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,4 +29,5 @@ DEFINE_INTERFACE_METHOD("SetTerritoryBlinking", ICmpTerritoryManager, SetTerrito
 DEFINE_INTERFACE_METHOD("IsTerritoryBlinking", ICmpTerritoryManager, IsTerritoryBlinking)
 DEFINE_INTERFACE_METHOD("GetTerritoryPercentage", ICmpTerritoryManager, GetTerritoryPercentage)
 DEFINE_INTERFACE_METHOD("UpdateColors", ICmpTerritoryManager, UpdateColors)
+DEFINE_INTERFACE_METHOD("IsVisible", ICmpTerritoryManager, IsVisible)
 END_INTERFACE_WRAPPER(TerritoryManager)

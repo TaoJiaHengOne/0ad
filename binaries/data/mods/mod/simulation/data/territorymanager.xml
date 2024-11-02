@@ -3,4 +3,5 @@
   <ImpassableCost>4</ImpassableCost>
   <BorderThickness>0.75</BorderThickness>
   <BorderSeparation>0.85</BorderSeparation>
+  <VisibilityStatus>visible</VisibilityStatus>
 </TerritoryManager>

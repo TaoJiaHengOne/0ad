@@ -19,5 +19,12 @@
     <element name="BorderSeparation">
       <data type="decimal"/>
     </element>
+    <element name="VisibilityStatus">
+      <choice>
+        <value>off</value>
+        <value>hidden</value>
+        <value>visible</value>
+      </choice>
+    </element>
   </interleave>
 </element>

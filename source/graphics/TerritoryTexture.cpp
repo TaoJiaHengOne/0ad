@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -147,7 +147,7 @@ void CTerritoryTexture::RecomputeTexture(Renderer::Backend::IDeviceCommandContex
 	PROFILE("recompute territory texture");
 
 	CmpPtr<ICmpTerritoryManager> cmpTerritoryManager(m_Simulation, SYSTEM_ENTITY);
-	if (!cmpTerritoryManager)
+	if (!cmpTerritoryManager || !cmpTerritoryManager->IsVisible())
 		return;
 
 	std::unique_ptr<u8[]> bitmap = std::make_unique<u8[]>(m_MapSize * m_MapSize * 4);

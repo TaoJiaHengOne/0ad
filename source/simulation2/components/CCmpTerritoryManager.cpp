@@ -128,7 +128,6 @@ public:
 		m_EnableLineDebugOverlays = false;
 		m_DirtyID = 1;
 		m_DirtyBlinkingID = 1;
-		m_Visible = true;
 		m_ColorChanged = false;
 
 		m_AnimTime = 0.0;
@@ -144,6 +143,11 @@ public:
 		int impassableCost = externalParamNode.GetChild("TerritoryManager").GetChild("ImpassableCost").ToInt();
 		ENSURE(0 <= impassableCost && impassableCost <= 255);
 		m_ImpassableCost = (u8)impassableCost;
+
+		const std::string& visibilityStatus = externalParamNode.GetChild("TerritoryManager").GetChild("VisibilityStatus").ToString();
+		m_Enabled = visibilityStatus != "off";
+		m_Visible = m_Enabled && visibilityStatus == "visible";
+
 		m_BorderThickness = externalParamNode.GetChild("TerritoryManager").GetChild("BorderThickness").ToFixed().ToFloat();
 		m_BorderSeparation = externalParamNode.GetChild("TerritoryManager").GetChild("BorderSeparation").ToFixed().ToFloat();
 	}
@@ -305,14 +309,22 @@ public:
 
 	void SetVisibility(bool visible) override
 	{
+		if (!m_Enabled)
+			return;
+
 		m_Visible = visible;
+	}
+
+	bool IsVisible() const override
+	{
+		return m_Enabled && m_Visible;
 	}
 
 	void UpdateColors() override;
 
 private:
-
 	bool m_Visible;
+	bool m_Enabled;
 };
 
 REGISTER_COMPONENT_TYPE(TerritoryManager)
@@ -716,7 +728,7 @@ void CCmpTerritoryManager::Interpolate(float frameTime, float UNUSED(frameOffset
 
 void CCmpTerritoryManager::RenderSubmit(SceneCollector& collector, const CFrustum& frustum, bool culling)
 {
-	if (!m_Visible)
+	if (!IsVisible())
 		return;
 
 	for (size_t i = 0; i < m_BoundaryLines.size(); ++i)

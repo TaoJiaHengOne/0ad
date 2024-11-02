@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -104,6 +104,11 @@ public:
 	 * Updates the boundary and territory colors.
 	 */
 	virtual void UpdateColors() = 0;
+
+	/**
+	 * Whether the territory lines are visible.
+	 */
+	virtual bool IsVisible() const = 0;
 
 	DECLARE_INTERFACE_TYPE(TerritoryManager)
 };
