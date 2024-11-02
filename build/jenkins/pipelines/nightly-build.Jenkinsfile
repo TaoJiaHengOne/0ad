@@ -17,7 +17,7 @@
 
 // This pipeline is used to generate the nightly builds.
 
-def visualStudioPath = "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe\""
+def visualStudioPath = "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\""
 def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /m:2 /nologo -clp:Warningsonly -clp:ErrorsOnly"
 
 def gitHash = ""
@@ -26,7 +26,7 @@ def buildSPIRV = false
 pipeline {
 	agent {
 		node {
-			label 'WindowsAgent'
+			label 'WindowsAgentNew'
 			customWorkspace 'workspace/nightly-build'
 		}
 	}
@@ -66,8 +66,8 @@ pipeline {
 		stage ("Pre-build") {
 			steps {
 				bat "cd libraries && get-windows-libs.bat"
-				bat "(robocopy C:\\wxwidgets3.2.5\\lib libraries\\win32\\wxwidgets\\lib /MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
-				bat "(robocopy C:\\wxwidgets3.2.5\\include libraries\\win32\\wxwidgets\\include /MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+				bat "(robocopy E:\\wxWidgets-3.2.6\\lib libraries\\win32\\wxwidgets\\lib /MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+				bat "(robocopy E:\\wxWidgets-3.2.6\\include libraries\\win32\\wxwidgets\\include /MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 				bat "cd build\\workspaces && update-workspaces.bat --atlas --without-pch --large-address-aware --without-tests"
 			}
 		}
@@ -98,8 +98,8 @@ pipeline {
 		stage("Mirror to SVN") {
 			steps {
 				ws("workspace/nightly-svn") {
-					svn(url: "https://svn.wildfiregames.com/nightly-build/trunk", changelog: false)
-					bat "svn revert -R . && svn cleanup"
+					bat "svn co https://svn.wildfiregames.com/nightly-build/trunk ."
+					bat "svn revert -R ."
 					script { env.NIGHTLY_PATH = env.WORKSPACE }
 				}
 				bat """
@@ -169,6 +169,14 @@ pipeline {
 						}
 					}
 				}
+			}
+		}
+	}
+
+	post {
+		always {
+			ws("workspace/nightly-svn") {
+				bat "svn cleanup"
 			}
 		}
 	}
