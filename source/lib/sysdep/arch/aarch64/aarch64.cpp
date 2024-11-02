@@ -29,7 +29,7 @@
 #include "lib/sysdep/cpu.h"
 #include "lib/sysdep/os.h"
 
-#if defined OS_MAC
+#if OS_MACOSX
 #include <cstdlib>
 #include <cstddef>
 #include <sys/sysctl.h>
@@ -37,7 +37,7 @@
 
 const char* cpu_IdentifierString()
 {
-#if defined(OS_MAC)
+#if OS_MACOSX
 	size_t bufferSize = 0;
 
 	if (sysctlbyname("machdep.cpu.brand_string", nullptr, &bufferSize, nullptr, 0) != 0) {
