@@ -39,7 +39,7 @@ pipeline {
 	stages {
 		stage("Generate build version") {
 			steps {
-				checkout scmGit(branches: [[name: "${GIT_BRANCH}"]], extensions: [localBranch()])
+				checkout scmGit(branches: [[name: "${GIT_BRANCH}"]], extensions: [cleanAfterCheckout(), localBranch()])
 				script { gitHash = bat(script:"@git rev-parse --short HEAD", returnStdout: true ).trim() }
 				bat "cd build\\build_version && build_version.bat"
 			}
@@ -84,17 +84,6 @@ pipeline {
 			}
 		}
 
-		stage("Check-in SPIRV generation rules") {
-			when {
-				expression { env.spirv_rules_FILENAME }
-			}
-			steps {
-				unstash 'spirv_rules'
-				bat "move spirv_rules source\\tools\\spirv\\rules.json"
-				script { buildSPIRV = true }
-			}
-		}
-
 		stage("Mirror to SVN") {
 			steps {
 				ws("workspace/nightly-svn") {
@@ -116,6 +105,7 @@ pipeline {
 					/XD .svn ^
 					/XD %NIGHTLY_PATH%\\binaries\\data\\mods\\mod\\shaders\\spirv ^
 					/XD %NIGHTLY_PATH%\\binaries\\data\\mods\\public\\shaders\\spirv ^
+					/XF %NIGHTLY_PATH%\\source\\tools\\spirv\\rules.json ^
 				/MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0
 				"""
 				bat """
@@ -124,6 +114,19 @@ pipeline {
 					/XF *.lib ^
 				/MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0
 				"""
+			}
+		}
+
+		stage("Check-in SPIR-V rules") {
+			when {
+				expression { env.spirv_rules_FILENAME }
+			}
+			steps {
+				ws("workspace/nightly-svn") {
+					unstash 'spirv_rules'
+					bat "move spirv_rules source\\tools\\spirv\\rules.json"
+				}
+				script { buildSPIRV = true }
 			}
 		}
 
