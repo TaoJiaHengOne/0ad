@@ -109,7 +109,7 @@ global.ConstructComponent = function(ent, name, template)
 		}
 	});
 
-	cmp.Init();
+	cmp.Init?.();
 
 	if (!g_Components[ent])
 		g_Components[ent] = {};
