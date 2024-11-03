@@ -7,6 +7,7 @@ newoption { trigger = "jenkins-tests", description = "Configure CxxTest to use t
 newoption { trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
 newoption { trigger = "outpath", description = "Location for generated project files" }
 newoption { trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
+newoption { trigger = "with-lto", description = "Enable Link Time Optimization (LTO)" }
 newoption { trigger = "with-system-mozjs", description = "Search standard paths for libmozjs91, instead of using bundled copy" }
 newoption { trigger = "with-system-nvtt", description = "Search standard paths for nvidia-texture-tools library, instead of using bundled copy" }
 newoption { trigger = "with-valgrind", description = "Enable Valgrind support (non-Windows only)" }
@@ -191,6 +192,9 @@ function project_set_build_flags()
 	filter "Release"
 		if os.istarget("windows") or not _OPTIONS["minimal-flags"] then
 			optimize "Speed"
+		end
+		if _OPTIONS["with-lto"] then
+			flags { "LinkTimeOptimization" }
 		end
 		defines { "NDEBUG", "CONFIG_FINAL=1" }
 
