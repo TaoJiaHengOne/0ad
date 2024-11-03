@@ -1,8 +1,7 @@
 local m = {}
-m._VERSION = "1.0.1-dev"
+m._VERSION = "1.1.0-dev"
 
 m.exepath = nil
-m.rootfile = nil
 m.runner = "ErrorPrinter"
 m.options = ""
 m.rootoptions = ""
@@ -19,9 +18,8 @@ end
 -- Pass all the necessary options to cxxtest (see http://cxxtest.com/guide.html)
 -- for a reference of available options, that should eventually be implemented in
 -- this module.
-function m.init(source_root, have_std, have_eh, runner, includes, root_includes)
+function m.init(have_std, have_eh, runner, includes, root_includes)
 
-	m.rootfile = source_root.."test_root.cpp"
 	m.runner = runner
 
 	if have_std then
@@ -47,11 +45,17 @@ function m.init(source_root, have_std, have_eh, runner, includes, root_includes)
 		project "cxxtestroot"
 		kind "Makefile"
 
+		targetdir "%{wks.location}/generated"
+		targetname "test_root.cpp"
+
 		-- Note: this command is not silent and clutters the output
 		-- Reported upstream: https://github.com/premake/premake-core/issues/954
 		buildmessage 'Generating test root file'
-		buildcommands { m.exepath.." --root "..m.rootoptions.." --runner="..m.runner.." -o "..path.getabsolute(m.rootfile) }
-		cleancommands { "rm " .. path.getabsolute(m.rootfile) }
+		buildcommands {
+			"{MKDIR} %{wks.location}/generated",
+			m.exepath.." --root "..m.rootoptions.." --runner="..m.runner.." -o %{wks.location}/generated/test_root.cpp"
+		}
+		cleancommands { "{DELETE} %{wks.location}/generated/test_root.cpp" }
 	end
 end
 
@@ -64,7 +68,10 @@ function m.configure_project(hdrfiles)
 		dependson { "cxxtestroot" }
 	else
 		prebuildmessage 'Generating test root file'
-		prebuildcommands { m.exepath.." --root "..m.rootoptions.." --runner="..m.runner.." -o "..path.getabsolute(m.rootfile) }
+		prebuildcommands {
+			"{MKDIR} %{wks.location}/generated",
+			m.exepath.." --root "..m.rootoptions.." --runner="..m.runner.." -o %{wks.location}/generated/test_root.cpp"
+		}
 	end
 
 	-- Add headers
@@ -76,15 +83,18 @@ function m.configure_project(hdrfiles)
 	-- This doesn't work with xcode, see https://github.com/premake/premake-core/issues/940
 	filter { "files:**.h", "files:not **precompiled.h" }
 		buildmessage 'Generating %{file.basename}.cpp'
-		buildcommands { m.exepath.." --part "..m.options.." -o %{file.directory}/%{file.basename}.cpp %{file.relpath}" }
-		buildoutputs { "%{file.directory}/%{file.basename}.cpp" }
+		buildcommands {
+			"{MKDIR} %{wks.location}/generated",
+			m.exepath.." --part "..m.options.." -o %{wks.location}/generated/%{file.basename}.cpp %{file.relpath}"
+		}
+		buildoutputs { "%{wks.location}/generated/%{file.basename}.cpp" }
 	filter {}
 
 	-- Add source files
-	files { m.rootfile }
+	files { "%{wks.location}/generated/test_root.cpp" }
 	if not (_ACTION == "gmake2") then
 		for _,hdrfile in ipairs(hdrfiles) do
-			local srcfile = string.sub(hdrfile, 1, -3) .. ".cpp"
+			local srcfile = "%{wks.location}/generated/".. path.getbasename(hdrfile) .. ".cpp"
 			files { srcfile }
 		end
 	end

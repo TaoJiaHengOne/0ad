@@ -57,11 +57,6 @@ __pycache__/
 *.lo
 *.la
 
-# Test .cpp files (generated during the build)
-test_*.cpp
-stub_*.cpp
-!test_setup.cpp
-
 # Translation files
 binaries/data/mods/public/gui/credits/texts/translators.json
 *.po

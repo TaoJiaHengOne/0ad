@@ -3,8 +3,8 @@
 # This script remains for backwards compatibility, but consists of a single
 # git command.
 
-cd "$(dirname "$0")/../../" || exit 1
-git clean -fx build source
+cd "$(dirname "$0")" || exit 1
+git clean -fx .
 
 echo "WARNING: This script has been split with libraries/clean-source-libs.sh"
 echo "If you want to fix a problem with bundled libs, it's the other script"

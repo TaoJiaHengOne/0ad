@@ -1434,7 +1434,7 @@ function setup_tests()
 		table.insert(test_root_include_files, "lib/external_libraries/libsdl.h")
 	end
 
-	cxxtest.init(source_root, true, true, runner, include_files, test_root_include_files)
+	cxxtest.init(true, true, runner, include_files, test_root_include_files)
 
 	local target_type = get_main_project_target_type()
 	project_create("test", target_type)
