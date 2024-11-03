@@ -661,14 +661,6 @@ void CDevice::Report(const ScriptRequest& rq, JS::HandleValue settings)
 		INTEGER(MAX_ARRAY_TEXTURE_LAYERS_EXT);
 	}
 
-	if (ogl_HaveExtension("GL_EXT_transform_feedback"))
-	{
-		INTEGER(MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS_EXT);
-		INTEGER(MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS_EXT);
-		INTEGER(MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS_EXT);
-	}
-
-
 	// Other interesting extensions:
 
 	if (ogl_HaveExtension("GL_EXT_timer_query") || ogl_HaveExtension("GL_ARB_timer_query"))
