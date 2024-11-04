@@ -386,7 +386,7 @@ InReaction IGUIObject::SendMouseEvent(EGUIMessageType type, const CStr& eventNam
 
 	SGUIMessage msg(type);
 	if (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT)
-		msg.Skip(true);
+		msg.Skip();
 	HandleMessage(msg);
 
 	ScriptRequest rq(m_pGUI.GetScriptInterface());
@@ -396,18 +396,25 @@ InReaction IGUIObject::SendMouseEvent(EGUIMessageType type, const CStr& eventNam
 
 	const CVector2D& mousePos = m_pGUI.GetMousePos();
 
-	Script::CreateObject(
-		rq,
-		&mouse,
-		"x", mousePos.X,
-		"y", mousePos.Y,
-		"buttons", m_pGUI.GetMouseButtons());
-	JS::RootedValueVector paramData(rq.cx);
-	ignore_result(paramData.append(mouse));
-	ScriptEvent(eventName, paramData);
+	std::map<CStr, JS::Heap<JSObject*> >::iterator it = m_ScriptHandlers.find(eventName);
+	if (it != m_ScriptHandlers.end())
+	{
+		Script::CreateObject(
+			rq,
+			&mouse,
+			"x", mousePos.X,
+			"y", mousePos.Y,
+			"buttons", m_pGUI.GetMouseButtons());
+		JS::RootedValueVector paramData(rq.cx);
+		ignore_result(paramData.append(mouse));
+		ScriptEvent(eventName, paramData);
+
+		if (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT)
+			msg.Skip(false);
+	}
 
 	// inform to parents until get to the root object
-	// for now only wheel events are bubbled up
+	// for now only wheel events are inform to parents
 	if (GetParent() && (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT) && msg.skipped)
 		msg.Skip(GetParent()->SendMouseEvent(type, eventName) == IN_PASS);
 
