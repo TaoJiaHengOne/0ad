@@ -415,8 +415,13 @@ InReaction IGUIObject::SendMouseEvent(EGUIMessageType type, const CStr& eventNam
 
 	// inform to parents until get to the root object
 	// for now only wheel events are inform to parents
-	if (GetParent() && (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT) && msg.skipped)
-		msg.Skip(GetParent()->SendMouseEvent(type, eventName) == IN_PASS);
+	if ((type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT) && msg.skipped)
+	{
+		if (GetParent())
+			msg.Skip(GetParent()->SendMouseEvent(type, eventName) == IN_PASS);
+		else
+			msg.Skip(false);
+	}
 
 	return msg.skipped ? IN_PASS : IN_HANDLED;
 }
