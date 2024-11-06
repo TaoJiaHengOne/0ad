@@ -260,6 +260,10 @@ extern_lib_defs = {
 				else
 					sysincludedirs { libraries_source_dir .. "cxxtest-4.4" }
 				end
+				-- Upstream uses WIN32 instead of _WIN32 define
+				if os.istarget("windows") then
+					defines { "WIN32" }
+				end
 			end
 		end,
 	},
