@@ -35,11 +35,14 @@ public:
 	~CPUSkinnedModelVertexRenderer();
 
 	CModelRData* CreateModelData(const void* key, CModel* model) override;
-	void UpdateModelData(CModel* model, CModelRData* data, int updateflags) override;
-
-	void UploadModelData(
+	void UpdateModelsData(
 		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
-		CModel* model, CModelRData* data) override;
+		PS::span<CModel*> models) override;
+
+	void UploadModelsData(
+		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
+		PS::span<CModel*> models) override;
+
 	void PrepareModelDef(
 		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 		const CModelDef& def) override;
@@ -48,6 +51,13 @@ public:
 		Renderer::Backend::IShaderProgram* shader, CModel* model, CModelRData* data) override;
 
 protected:
+	void UpdateModelData(
+		CModel* model, CModelRData* data, int updateflags);
+
+	void UploadModelData(
+		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
+		CModel* model, CModelRData* data);
+
 	struct Internals;
 	std::unique_ptr<Internals> m;
 };

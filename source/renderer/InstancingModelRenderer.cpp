@@ -334,15 +334,16 @@ CModelRData* InstancingModelRenderer::CreateModelData(const void* key, CModel* m
 	return new CModelRData(key);
 }
 
-
-void InstancingModelRenderer::UpdateModelData(CModel* UNUSED(model), CModelRData* UNUSED(data), int UNUSED(updateflags))
+void InstancingModelRenderer::UpdateModelsData(
+	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
+	PS::span<CModel*> UNUSED(models))
 {
 	// We have no per-CModel data
 }
 
-void InstancingModelRenderer::UploadModelData(
+void InstancingModelRenderer::UploadModelsData(
 	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
-	CModel* UNUSED(model), CModelRData* UNUSED(data))
+	PS::span<CModel*> UNUSED(models))
 {
 	// Data uploaded once during creation as we don't update it dynamically.
 }

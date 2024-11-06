@@ -789,12 +789,12 @@ void CSceneRenderer::PrepareSubmissions(
 	// Prepare model renderers
 	{
 	PROFILE3("prepare models");
-	m->Model.NormalSkinned->PrepareModels();
-	m->Model.TranspSkinned->PrepareModels();
+	m->Model.NormalSkinned->PrepareModels(deviceCommandContext);
+	m->Model.TranspSkinned->PrepareModels(deviceCommandContext);
 	if (m->Model.NormalUnskinned != m->Model.NormalSkinned)
-		m->Model.NormalUnskinned->PrepareModels();
+		m->Model.NormalUnskinned->PrepareModels(deviceCommandContext);
 	if (m->Model.TranspUnskinned != m->Model.TranspSkinned)
-		m->Model.TranspUnskinned->PrepareModels();
+		m->Model.TranspUnskinned->PrepareModels(deviceCommandContext);
 	}
 
 	m->terrainRenderer.PrepareForRendering();

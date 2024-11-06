@@ -133,7 +133,8 @@ public:
 	 * Must be called before any rendering calls and after all models
 	 * for this frame have been submitted.
 	 */
-	virtual void PrepareModels() = 0;
+	virtual void PrepareModels(
+		Renderer::Backend::IDeviceCommandContext* deviceCommandContext) = 0;
 
 	/**
 	 * Upload renderer data for all previously submitted models to backend.
@@ -271,7 +272,8 @@ public:
 
 	// Batching implementations
 	void Submit(int cullGroup, CModel* model) override;
-	void PrepareModels() override;
+	void PrepareModels(
+		Renderer::Backend::IDeviceCommandContext* deviceCommandContext) override;
 	void UploadModels(
 		Renderer::Backend::IDeviceCommandContext* deviceCommandContext) override;
 	void EndFrame() override;

@@ -25,6 +25,7 @@
 
 #include "graphics/MeshManager.h"
 #include "graphics/ShaderProgramPtr.h"
+#include "ps/containers/Span.h"
 #include "renderer/backend/IDeviceCommandContext.h"
 #include "renderer/backend/IShaderProgram.h"
 
@@ -78,13 +79,12 @@ public:
 	 * perform software vertex transforms and potentially other per-frame
 	 * calculations.
 	 *
-	 * @param model The model.
-	 * @param data Private data as returned by CreateModelData.
-	 * @param updateflags Flags indicating which data has changed during
-	 * the frame. The value is the same as the value of the model's
-	 * CRenderData::m_UpdateFlags.
+	 * @param deviceCommandContext context for backend commands (f.e. uploading).
+	 * @param models models.
 	 */
-	virtual void UpdateModelData(CModel* model, CModelRData* data, int updateflags) = 0;
+	virtual void UpdateModelsData(
+		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
+		PS::span<CModel*> models) = 0;
 
 	/**
 	 * Upload per-model data to backend.
@@ -94,10 +94,13 @@ public:
 	 *
 	 * ModelVertexRenderer implementations should use this function to
 	 * upload all needed data to backend.
+	 *
+	 * @param deviceCommandContext context for backend commands (f.e. uploading).
+	 * @param models models.
 	 */
-	virtual void UploadModelData(
+	virtual void UploadModelsData(
 		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
-		CModel* model, CModelRData* data) = 0;
+		PS::span<CModel*> models) = 0;
 
 	/**
 	 * PrepareModelDef: Setup backend state for rendering of models that

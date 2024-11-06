@@ -188,6 +188,17 @@ CModelRData* CPUSkinnedModelVertexRenderer::CreateModelData(const void* key, CMo
 	return modelRData;
 }
 
+void CPUSkinnedModelVertexRenderer::UpdateModelsData(
+	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
+	PS::span<CModel*> models)
+{
+	for (CModel* model : models)
+	{
+		CModelRData* rdata = static_cast<CModelRData*>(model->GetRenderData());
+		UpdateModelData(model, rdata, rdata->m_UpdateFlags);
+	}
+}
+
 // Fill in and upload dynamic vertex array
 void CPUSkinnedModelVertexRenderer::UpdateModelData(CModel* model, CModelRData* data, int updateflags)
 {
@@ -206,6 +217,17 @@ void CPUSkinnedModelVertexRenderer::UpdateModelData(CModel* model, CModelRData* 
 	}
 
 	modelRData->m_Array.PrepareForRendering();
+}
+
+void CPUSkinnedModelVertexRenderer::UploadModelsData(
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
+	PS::span<CModel*> models)
+{
+	for (CModel* model : models)
+	{
+		CModelRData* rdata = static_cast<CModelRData*>(model->GetRenderData());
+		UploadModelData(deviceCommandContext, model, rdata);
+	}
 }
 
 void CPUSkinnedModelVertexRenderer::UploadModelData(

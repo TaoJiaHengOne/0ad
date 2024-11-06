@@ -229,7 +229,8 @@ void ShaderModelRenderer::Submit(int cullGroup, CModel* model)
 
 
 // Call update for all submitted models and enter the rendering phase
-void ShaderModelRenderer::PrepareModels()
+void ShaderModelRenderer::PrepareModels(
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
 	for (int cullGroup = 0; cullGroup < CSceneRenderer::CULL_MAX; ++cullGroup)
 	{
@@ -239,8 +240,13 @@ void ShaderModelRenderer::PrepareModels()
 
 			CModelRData* rdata = static_cast<CModelRData*>(model->GetRenderData());
 			ENSURE(rdata->GetKey() == m->vertexRenderer.get());
+		}
 
-			m->vertexRenderer->UpdateModelData(model, rdata, rdata->m_UpdateFlags);
+		m->vertexRenderer->UpdateModelsData(deviceCommandContext, m->submissions[cullGroup]);
+
+		for (CModel* model : m->submissions[cullGroup])
+		{
+			CModelRData* rdata = static_cast<CModelRData*>(model->GetRenderData());
 			rdata->m_UpdateFlags = 0;
 		}
 	}
@@ -251,13 +257,7 @@ void ShaderModelRenderer::UploadModels(
 {
 	for (int cullGroup = 0; cullGroup < CSceneRenderer::CULL_MAX; ++cullGroup)
 	{
-		for (CModel* model : m->submissions[cullGroup])
-		{
-			CModelRData* rdata = static_cast<CModelRData*>(model->GetRenderData());
-			ENSURE(rdata->GetKey() == m->vertexRenderer.get());
-
-			m->vertexRenderer->UploadModelData(deviceCommandContext, model, rdata);
-		}
+		m->vertexRenderer->UploadModelsData(deviceCommandContext, m->submissions[cullGroup]);
 	}
 }
 
