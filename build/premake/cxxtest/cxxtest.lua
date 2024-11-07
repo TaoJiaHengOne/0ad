@@ -19,13 +19,18 @@ end
 -- Pass all the necessary options to cxxtest (see http://cxxtest.com/guide.html)
 -- for a reference of available options, that should eventually be implemented in
 -- this module.
-function m.init(source_root, have_std, runner, includes, root_includes)
+function m.init(source_root, have_std, have_eh, runner, includes, root_includes)
 
 	m.rootfile = source_root.."test_root.cpp"
 	m.runner = runner
 
 	if m.have_std then
 		m.options = m.options.." --have-std"
+	end
+
+	if have_eh then
+		-- use exception handling by default
+		m.options = m.options.." --have-eh"
 	end
 
 	m.rootoptions = m.options
