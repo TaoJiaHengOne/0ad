@@ -1,5 +1,5 @@
 local m = {}
-m._VERSION = "1.0.0-dev"
+m._VERSION = "1.0.1-dev"
 
 m.exepath = nil
 m.rootfile = nil
@@ -24,12 +24,11 @@ function m.init(source_root, have_std, have_eh, runner, includes, root_includes)
 	m.rootfile = source_root.."test_root.cpp"
 	m.runner = runner
 
-	if m.have_std then
+	if have_std then
 		m.options = m.options.." --have-std"
 	end
 
 	if have_eh then
-		-- use exception handling by default
 		m.options = m.options.." --have-eh"
 	end
 
