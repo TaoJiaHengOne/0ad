@@ -432,6 +432,7 @@ extern_lib_defs = {
 				add_default_include_paths("icu")
 			else
 				pkgconfig.add_includes("icu-i18n")
+				pkgconfig.add_includes("icu-uc")
 			end
 		end,
 		link_settings = function()
@@ -444,6 +445,7 @@ extern_lib_defs = {
 				})
 			else
 				pkgconfig.add_links("icu-i18n")
+				pkgconfig.add_links("icu-uc")
 			end
 		end,
 	},
