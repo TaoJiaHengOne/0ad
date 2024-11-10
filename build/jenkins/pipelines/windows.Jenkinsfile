@@ -15,9 +15,9 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This pipeline builds the game on Windows (which uses the MSVC 15.0 compiler from Visual Studio 2017) and runs tests.
+// This pipeline builds the game on Windows (with the MSVC 15.0 compiler) and runs tests.
 
-def visualStudioPath = "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe\""
+def visualStudioPath = "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\""
 def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test /m:2 /nologo -clp:NoSummary"
 
 pipeline {
@@ -27,7 +27,7 @@ pipeline {
 	agent {
 		node {
 			label 'WindowsAgent'
-			customWorkspace 'workspace/vs2017'
+			customWorkspace 'workspace/win32-pch'
 		}
 	}
 
@@ -40,8 +40,8 @@ pipeline {
 				bat "git lfs pull -I \"binaries/data/mods/_test.*\""
 
 				bat "cd libraries && get-windows-libs.bat"
-				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC C:\\wxwidgets3.0.4\\lib libraries\\win32\\wxwidgets\\lib) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
-				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC C:\\wxwidgets3.0.4\\include libraries\\win32\\wxwidgets\\include) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\lib libraries\\win32\\wxwidgets\\lib) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\include libraries\\win32\\wxwidgets\\include) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 				bat "cd build\\workspaces && update-workspaces.bat --atlas --jenkins-tests"
 			}
 		}

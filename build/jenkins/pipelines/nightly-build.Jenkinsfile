@@ -26,7 +26,7 @@ def buildSPIRV = false
 pipeline {
 	agent {
 		node {
-			label 'WindowsAgentNew'
+			label 'WindowsAgent'
 			customWorkspace 'workspace/nightly-build'
 		}
 	}
