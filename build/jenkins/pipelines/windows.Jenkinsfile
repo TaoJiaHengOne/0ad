@@ -24,6 +24,10 @@ pipeline {
 	// Stop previous build in pull requests, but not in branches
 	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
 
+	parameters {
+		booleanParam description: 'Non-incremental build', name: 'CLEANBUILD'
+	}
+
 	agent {
 		node {
 			label 'WindowsAgent'
@@ -43,20 +47,31 @@ pipeline {
 				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\lib libraries\\win32\\wxwidgets\\lib) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\include libraries\\win32\\wxwidgets\\include) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 				bat "cd build\\workspaces && update-workspaces.bat --atlas --jenkins-tests"
+
+				script {
+					if (params.CLEANBUILD) {
+						bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug /t:Clean"
+						bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release /t:Clean"
+					}
+				}
 			}
 		}
 
 		stage("Debug Build") {
 			steps {
-				retry(2) {
-					script {
-						try { bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug ${buildOptions}") }
-						catch(e) {
-							bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug /t:Clean")
-							throw e
-						}
-					}
+				bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug ${buildOptions}"
+			}
+			post {
+				failure {
+					script { if (!params.CLEANBUILD) {
+						build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
+					}}
 				}
+			}
+		}
+
+		stage("Debug Tests") {
+			steps {
 				timeout(time: 15) {
 					bat "cd binaries\\system && test_dbg.exe > cxxtest-debug.xml"
 				}
@@ -70,15 +85,12 @@ pipeline {
 
 		stage ("Release Build") {
 			steps {
-				retry(2) {
-					script {
-						try { bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}") }
-						catch(e) {
-							bat("cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release /t:Clean")
-							throw e
-						}
-					}
-				}
+				bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}"
+			}
+		}
+
+		stage ("Release Tests") {
+			steps {
 				timeout(time: 5) {
 					bat "cd binaries\\system && test.exe > cxxtest-release.xml"
 				}

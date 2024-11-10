@@ -21,6 +21,10 @@ pipeline {
 	// Stop previous build in pull requests, but not in branches
 	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
 
+	parameters {
+		booleanParam description: 'Non-incremental build', name: 'CLEANBUILD'
+	}
+
 	agent none
 	stages {
 		stage("Setup") {
@@ -74,6 +78,13 @@ pipeline {
 									sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
 								}
 							}
+
+							script {
+								if (params.CLEANBUILD) {
+									sh "cd build/workspaces/gcc/ && make clean config=debug"
+									sh "cd build/workspaces/gcc/ && make clean config=release"
+								}
+							}
 						}
 						post {
 							failure {
@@ -84,15 +95,19 @@ pipeline {
 
 					stage("Debug Build") {
 						steps {
-							retry(2) {
-								script {
-									try { sh "cd build/workspaces/gcc/ && make config=debug" }
-									catch(e) {
-										sh "cd build/workspaces/gcc/ && make clean config=debug"
-										throw e
-									}
-								}
+							sh "cd build/workspaces/gcc/ && make config=debug"
+						}
+						post {
+							failure {
+								script { if (!params.CLEANBUILD) {
+									build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
+								}}
 							}
+						}
+					}
+
+					stage("Debug Tests") {
+						steps {
 							timeout(time: 15) {
 								sh "cd binaries/system/ && ./test_dbg > cxxtest-debug.xml"
 							}
@@ -106,15 +121,12 @@ pipeline {
 
 					stage("Release Build") {
 						steps {
-							retry(2) {
-								script {
-									try { sh "cd build/workspaces/gcc/ && make config=release" }
-									catch(e) {
-										sh "cd build/workspaces/gcc/ && make clean config=release"
-										throw e
-									}
-								}
-							}
+							sh "cd build/workspaces/gcc/ && make config=release"
+						}
+					}
+
+					stage("Release Tests") {
+						steps {
 							timeout(time: 15) {
 								sh "cd binaries/system/ && ./test > cxxtest-release.xml"
 							}

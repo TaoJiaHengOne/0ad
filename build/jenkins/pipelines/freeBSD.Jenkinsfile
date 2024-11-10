@@ -22,6 +22,10 @@ pipeline {
 	// Stop previous build in pull requests, but not in branches
 	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
 
+	parameters {
+		booleanParam description: 'Non-incremental build', name: 'CLEANBUILD'
+	}
+
 	agent {
 		node {
 			label 'FreeBSDAgent'
@@ -44,6 +48,12 @@ pipeline {
 
 				sh "libraries/build-source-libs.sh 2> freebsd-prebuild-errors.log"
 				sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> freebsd-prebuild-errors.log"
+
+				script {
+					if (params.CLEANBUILD) {
+						sh "cd build/workspaces/gcc/ && gmake clean config=release"
+					}
+				}
 			}
 			post {
 				failure {
@@ -54,16 +64,19 @@ pipeline {
 
 		stage ("Release Build") {
 			steps {
-				retry (2) {
-					script {
-						try { sh "cd build/workspaces/gcc/ && gmake config=release" }
-						catch(e) {
-							sh "cd build/workspaces/gcc/ && gmake clean config=release"
-							throw e
-						}
-					}
+				sh "cd build/workspaces/gcc/ && gmake config=release"
+			}
+			post {
+				failure {
+					script { if (!params.CLEANBUILD) {
+						build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
+					}}
 				}
+			}
+		}
 
+		stage ("Release Tests") {
+			steps {
 				timeout(time: 15) {
 					sh "cd binaries/system/ && ./test > cxxtest-release.xml"
 				}
