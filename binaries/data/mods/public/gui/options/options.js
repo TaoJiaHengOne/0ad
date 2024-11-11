@@ -357,7 +357,7 @@ function enableButtons()
 
 async function setDefaults()
 {
-	const buttonIndex = messageBox(
+	const buttonIndex = await messageBox(
 		500, 200,
 		translate("Resetting the options will erase your saved settings. Do you want to continue?"),
 		translate("Warning"),
