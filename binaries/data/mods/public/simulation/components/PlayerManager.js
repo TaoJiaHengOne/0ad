@@ -152,35 +152,4 @@ PlayerManager.prototype.RemoveLastPlayer = function()
 	Engine.DestroyEntity(lastId);
 };
 
-PlayerManager.prototype.SetMaxWorldPopulation = function(max)
-{
-	this.maxWorldPopulation = max;
-	this.RedistributeWorldPopulation();
-};
-
-PlayerManager.prototype.GetMaxWorldPopulation = function()
-{
-	return this.maxWorldPopulation;
-};
-
-PlayerManager.prototype.RedistributeWorldPopulation = function()
-{
-	const worldPopulation = this.GetMaxWorldPopulation();
-	if (!worldPopulation)
-		return;
-
-	const activePlayers = this.GetActivePlayers();
-	if (!activePlayers.length)
-		return;
-
-	const newMaxPopulation = worldPopulation / activePlayers.length;
-	for (const playerID of activePlayers)
-		Engine.QueryInterface(this.GetPlayerByID(playerID), IID_Player).SetMaxPopulation(newMaxPopulation);
-};
-
-PlayerManager.prototype.OnGlobalPlayerDefeated = function(msg)
-{
-	this.RedistributeWorldPopulation();
-};
-
 Engine.RegisterSystemComponentType(IID_PlayerManager, "PlayerManager", PlayerManager);

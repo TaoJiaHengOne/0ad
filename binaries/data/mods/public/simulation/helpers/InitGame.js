@@ -53,14 +53,13 @@ function InitGame(settings)
 			cmpPlayer.SetAI(true);
 		}
 
-		if (settings.PopulationCap)
-			cmpPlayer.SetMaxPopulation(settings.PopulationCap);
-
 		if (settings.AllyView)
 			Engine.QueryInterface(cmpPlayer.entity, IID_TechnologyManager)?.ResearchTechnology(Engine.QueryInterface(cmpPlayer.entity, IID_Diplomacy).template.SharedLosTech);
 	}
-	if (settings.WorldPopulationCap)
-		Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).SetMaxWorldPopulation(settings.WorldPopulationCap);
+
+	const cmpPopulationCapManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PopulationCapManager);
+	cmpPopulationCapManager.SetPopulationCapType(settings.PopulationCapType);
+	cmpPopulationCapManager.SetPopulationCap(settings.PopulationCap);
 
 	// Update the grid with all entities created for the map init.
 	Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).UpdateGrid();

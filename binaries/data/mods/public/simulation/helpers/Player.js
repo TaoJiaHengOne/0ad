@@ -69,21 +69,6 @@ function LoadPlayerSettings(settings, newPlayers)
 		if (i == 0)
 			continue;
 
-		// PopulationLimit
-		{
-			const maxPopulation =
-				settings.PlayerData[i].PopulationLimit !== undefined ?
-					settings.PlayerData[i].PopulationLimit :
-				settings.PopulationCap !== undefined ?
-					settings.PopulationCap :
-				playerDefaults[i].PopulationLimit !== undefined ?
-					playerDefaults[i].PopulationLimit :
-					undefined;
-
-			if (maxPopulation !== undefined)
-				cmpPlayer.SetMaxPopulation(maxPopulation);
-		}
-
 		// StartingResources
 		if (settings.PlayerData[i].Resources !== undefined)
 			cmpPlayer.SetResourceCounts(settings.PlayerData[i].Resources);

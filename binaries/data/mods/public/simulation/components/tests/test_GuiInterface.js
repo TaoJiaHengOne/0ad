@@ -22,6 +22,7 @@ Engine.LoadComponentScript("interfaces/Loot.js");
 Engine.LoadComponentScript("interfaces/Market.js");
 Engine.LoadComponentScript("interfaces/Pack.js");
 Engine.LoadComponentScript("interfaces/Population.js");
+Engine.LoadComponentScript("interfaces/PopulationCapManager.js");
 Engine.LoadComponentScript("interfaces/ProductionQueue.js");
 Engine.LoadComponentScript("interfaces/Promotion.js");
 Engine.LoadComponentScript("interfaces/Repairable.js");
@@ -93,6 +94,11 @@ AddMock(SYSTEM_ENTITY, IID_RangeManager, {
 AddMock(SYSTEM_ENTITY, IID_TemplateManager, {
 	"GetCurrentTemplateName": function(ent) { return "example"; },
 	"GetTemplate": function(name) { return ""; }
+});
+
+AddMock(SYSTEM_ENTITY, IID_PopulationCapManager, {
+	"GetPopulationCapType": function() { return "player"; },
+	"GetPopulationCap": function() { return 200; }
 });
 
 AddMock(SYSTEM_ENTITY, IID_Timer, {
@@ -404,7 +410,8 @@ TS_ASSERT_UNEVAL_EQUALS(cmp.GetSimulationState(), {
 	"timeElapsed": 0,
 	"victoryConditions": ["conquest", "wonder"],
 	"alliedVictory": false,
-	"maxWorldPopulation": undefined
+	"populationCapType": "player",
+	"populationCap": 200
 });
 
 TS_ASSERT_UNEVAL_EQUALS(cmp.GetExtendedSimulationState(), {
@@ -562,7 +569,8 @@ TS_ASSERT_UNEVAL_EQUALS(cmp.GetExtendedSimulationState(), {
 	"timeElapsed": 0,
 	"victoryConditions": ["conquest", "wonder"],
 	"alliedVictory": false,
-	"maxWorldPopulation": undefined
+	"populationCapType": "player",
+	"populationCap": 200
 });
 
 

@@ -1,23 +1,21 @@
 /**
- * Combines the worldPopulation and regular population cap.
- * At the moment those are incompatible so this makes sense.
+ * Manages the maximum population capacity.
+ * This includes the cap value itself and its type (determining how to distribute the set cap among players).
  * TODO: Should there be a dialog allowing per-player pop limits?
  */
 GameSettings.prototype.Attributes.Population = class Population extends GameSetting
 {
 	init()
 	{
-		this.popDefault = this.getDefaultValue("PopulationCapacities", "Population") || 200;
-		this.worldPopDefault = this.getDefaultValue("WorldPopulationCapacities", "Population") || 800;
-
-		this.perPlayer = false;
-		this.useWorldPop = false;
-		this.cap = this.popDefault;
+		this.perPlayer = null;
+		this.capTypeDefault = this.getDefaultValue("PopulationCapacities", "Name");
+		this.setPopCapType(this.capTypeDefault);
 		this.settings.map.watch(() => this.onMapChange(), ["map"]);
 	}
 
 	toInitAttributes(attribs)
 	{
+		attribs.settings.PopulationCapType = this.capType;
 		if (this.perPlayer)
 		{
 			if (!attribs.settings.PlayerData)
@@ -28,48 +26,45 @@ GameSettings.prototype.Attributes.Population = class Population extends GameSett
 				if (this.perPlayer[i])
 					attribs.settings.PlayerData[i].PopulationLimit = this.perPlayer[i];
 		}
-		if (this.useWorldPop)
-		{
-			attribs.settings.WorldPopulation = true;
-			attribs.settings.WorldPopulationCap = this.cap;
-		}
 		else
 			attribs.settings.PopulationCap = this.cap;
 	}
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "WorldPopulation"))
-			this.setPopCap(true, this.getLegacySetting(attribs, "WorldPopulationCap"));
-		else if (!!this.getLegacySetting(attribs, "PopulationCap"))
-			this.setPopCap(false, this.getLegacySetting(attribs, "PopulationCap"));
+		if (this.getLegacySetting(attribs, "PopulationCapType") !== undefined)
+			this.setPopCapType(this.getLegacySetting(attribs, "PopulationCapType"));
+
+		if (this.getLegacySetting(attribs, "PopulationCap") !== undefined)
+			this.setPopCap(this.getLegacySetting(attribs, "PopulationCap"));
 	}
 
 	onMapChange()
 	{
-		this.perPlayer = undefined;
+		this.perPlayer = null;
 		if (this.settings.map.type != "scenario")
 			return;
+
 		if (this.getMapSetting("PlayerData")?.some(data => data.PopulationLimit))
+		{
 			this.perPlayer = this.getMapSetting("PlayerData").map(data => data.PopulationLimit || undefined);
-		else if (this.getMapSetting("WorldPopulation"))
-			this.setPopCap(true, +this.getMapSetting("WorldPopulationCap"));
-		else
-			this.setPopCap(false, +this.getMapSetting("PopulationCap"));
+			return;
+		}
+
+		this.setPopCapType(this.getMapSetting("PopulationCapType") || this.capTypeDefault);
+		if (this.getMapSetting("PopulationCap"))
+			this.setPopCap(this.getMapSetting("PopulationCap"));
 	}
 
-	setPopCap(worldPop, cap = undefined)
+	setPopCap(cap)
 	{
-		if (worldPop != this.useWorldPop)
-			this.cap = undefined;
+		this.cap = cap;
+	}
 
-		this.useWorldPop = worldPop;
-
-		if (!!cap)
-			this.cap = cap;
-		else if (!this.cap && !this.useWorldPop)
-			this.cap = this.popDefault;
-		else if (!this.cap && this.useWorldPop)
-			this.cap = this.worldPopDefault;
+	setPopCapType(capType)
+	{
+		this.capType = capType;
+		this.currentData = g_Settings.PopulationCapacities.find(type => type.Name == capType);
+		this.setPopCap(this.currentData.Options.Default);
 	}
 };

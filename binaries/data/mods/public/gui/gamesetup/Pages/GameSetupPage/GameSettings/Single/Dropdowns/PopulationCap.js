@@ -1,66 +1,82 @@
+const CAPTYPE_PLAYER_POPULATION = "player";
+const CAPTYPE_TEAM_POPULATION = "team";
+const CAPTYPE_WORLD_POPULATION = "world";
+
 GameSettingControls.PopulationCap = class PopulationCap extends GameSettingControlDropdown
 {
 	constructor(...args)
 	{
 		super(...args);
 
-		this.dropdown.list = g_PopulationCapacities.Title;
-		this.dropdown.list_data = g_PopulationCapacities.Population;
-
 		this.sprintfArgs = {};
 
-		g_GameSettings.population.watch(() => this.render(), ["useWorldPop", "cap", "perPlayer"]);
+		g_GameSettings.population.watch(() => this.render(), ["cap", "perPlayer"]);
 		g_GameSettings.map.watch(() => this.render(), ["type"]);
 		this.render();
 	}
 
 	render()
 	{
-		this.setHidden(g_GameSettings.population.useWorldPop);
 		this.setEnabled(g_GameSettings.map.type != "scenario" && !g_GameSettings.population.perPlayer);
+		this.title.caption = g_GameSettings.population.currentData.CapTitle;
 		if (g_GameSettings.population.perPlayer)
 			this.label.caption = this.PerPlayerCaption;
-		else
-			this.setSelectedValue(g_GameSettings.population.cap);
+		if (!this.enabled)
+			return;
+
+		this.dropdown.list_data = g_GameSettings.population.currentData.Options.List;
+		this.dropdown.list = this.dropdown.list_data.map(population =>
+			population < 10000 ? population : translate("Unlimited")
+		);
+		this.setSelectedValue(g_GameSettings.population.cap);
 	}
+
 
 	onHoverChange()
 	{
-		let tooltip = this.Tooltip;
-		if (this.dropdown.hovered != -1)
-		{
-			let popCap = g_PopulationCapacities.Population[this.dropdown.hovered];
-			let players = g_GameSettings.playerCount.nbPlayers;
-			if (popCap * players >= this.PopulationCapacityRecommendation)
-			{
-				this.sprintfArgs.players = players;
-				this.sprintfArgs.popCap = popCap;
-				tooltip = setStringTags(sprintf(this.HoverTooltip, this.sprintfArgs), this.HoverTags);
-			}
-		}
+		if (this.dropdown.hovered == -1)
+			return;
+		let tooltip = g_GameSettings.population.currentData.CapTooltip;
+		if (this.canTotalPopExceedRecommendedMax())
+			tooltip = setStringTags(this.WarningTooltip, this.WarningTags);
+
 		this.dropdown.tooltip = tooltip;
+	}
+
+
+	canTotalPopExceedRecommendedMax()
+	{
+		const popCap = g_GameSettings.population.currentData.Options.List[this.dropdown.hovered];
+		const nbPlayers = g_GameSettings.playerCount.nbPlayers;
+		const nbTeams = g_GameSettings.playerTeam.values.reduce((teamList, team) => {
+			if (!teamList.includes(team) || team == -1)
+				teamList.push(team);
+			return teamList;
+		}, []).length;
+
+		switch (g_GameSettings.population.capType)
+		{
+		case CAPTYPE_PLAYER_POPULATION: return nbPlayers * popCap > this.PopulationCapacityRecommendation;
+		case CAPTYPE_TEAM_POPULATION: return nbTeams * popCap > this.PopulationCapacityRecommendation;
+		case CAPTYPE_WORLD_POPULATION: return popCap > this.PopulationCapacityRecommendation;
+		default: return false;
+		}
 	}
 
 	onSelectionChange(itemIdx)
 	{
-		g_GameSettings.population.setPopCap(false, g_PopulationCapacities.Population[itemIdx]);
+		g_GameSettings.population.setPopCap(g_GameSettings.population.currentData.Options.List[itemIdx]);
 		this.gameSettingsController.setNetworkInitAttributes();
 	}
 };
 
-GameSettingControls.PopulationCap.prototype.TitleCaption =
-	translate("Population Cap");
-
-GameSettingControls.PopulationCap.prototype.Tooltip =
-	translate("Select population limit.");
-
 GameSettingControls.PopulationCap.prototype.PerPlayerCaption =
 	translateWithContext("population limit", "Per Player");
 
-GameSettingControls.PopulationCap.prototype.HoverTooltip =
-	translate("Warning: There might be performance issues if all %(players)s players reach %(popCap)s population.");
+GameSettingControls.PopulationCap.prototype.WarningTooltip =
+	translate("Warning: These settings can result in significant lag when all players reach their maximum population capacity.");
 
-GameSettingControls.PopulationCap.prototype.HoverTags = {
+GameSettingControls.PopulationCap.prototype.WarningTags = {
 	"color": "orange"
 };
 

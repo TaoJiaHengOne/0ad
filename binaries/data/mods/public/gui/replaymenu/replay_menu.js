@@ -177,6 +177,12 @@ function sanitizeInitAttributes(attribs)
 	if (!attribs.settings.PopulationCap)
 		attribs.settings.PopulationCap = 300;
 
+	if (!attribs.settings.PopulationCapType)
+		attribs.settings.PopulationCapType =
+			attribs.settings.WorldPopulation ?
+				"world" :
+				"player";
+
 	if (!attribs.mapType)
 		attribs.mapType = "skirmish";
 
@@ -228,7 +234,7 @@ function displayReplayList()
 		return {
 			"directories": replay.directory,
 			"months": compatibilityColor(getReplayDateTime(replay), works),
-			"popCaps": compatibilityColor(translatePopulationCapacity(replay.attribs.settings.PopulationCap, !!replay.attribs.settings.WorldPopulation), works),
+			"popCaps": compatibilityColor(translatePopulationCapacity(replay.attribs.settings.PopulationCap, replay.attribs.settings.PopulationCapType), works),
 			"mapNames": compatibilityColor(getReplayMapName(replay), works),
 			"mapSizes": compatibilityColor(translateMapSize(replay.attribs.settings.Size), works),
 			"durations": compatibilityColor(getReplayDuration(replay), works),

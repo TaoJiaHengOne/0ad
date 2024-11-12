@@ -12,6 +12,7 @@ function Cheat(input)
 		return;
 
 	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpPopulationManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PopulationCapManager);
 
 	switch(input.action)
 	{
@@ -24,7 +25,7 @@ function Cheat(input)
 		Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).SetLosRevealAll(-1, true);
 		return;
 	case "maxpopulation":
-		cmpPlayer.SetPopulationBonuses((cmpPlayerManager.GetMaxWorldPopulation() || cmpPlayer.GetMaxPopulation()) + 500);
+		cmpPlayer.SetPopulationBonuses(cmpPopulationManager.GetPopulationCap() + 500);
 		return;
 	case "changemaxpopulation":
 	{

@@ -360,25 +360,21 @@ function getGameDescription(initAttributes, mapCache)
 					})
 		});
 
-	if (initAttributes.settings.PopulationCap !== undefined)
+	if (initAttributes.settings.PopulationCapType !== undefined)
 		titles.push({
-			"label": translate("Population Limit"),
-			"value":
-				initAttributes.settings.PlayerData &&
-				initAttributes.settings.PlayerData.some(pData => pData && pData.PopulationLimit !== undefined) ?
-					translateWithContext("population limit", "Per Player") :
-					g_PopulationCapacities.Title[
-						g_PopulationCapacities.Population.indexOf(
-							initAttributes.settings.PopulationCap)]
+			"label": translate("Population Cap Type"),
+			"value": translate(g_PopulationCapacities.Title[g_PopulationCapacities.Name.indexOf(initAttributes.settings.PopulationCapType)])
 		});
 
-	if (initAttributes.settings.WorldPopulationCap !== undefined)
+	if (initAttributes.settings.PopulationCap !== undefined)
 		titles.push({
-			"label": translate("World Population Cap"),
+			"label": translate(g_PopulationCapacities.CapTitle[g_PopulationCapacities.Name.indexOf(initAttributes.settings.PopulationCapType)]),
 			"value":
-				g_WorldPopulationCapacities.Title[
-					g_WorldPopulationCapacities.Population.indexOf(
-						initAttributes.settings.WorldPopulationCap)]
+				initAttributes.settings.PlayerData?.some(pData => pData?.PopulationLimit !== undefined) ?
+					translateWithContext("population capacity", "Per Player") :
+					initAttributes.settings.PopulationCap < 10000 ?
+						initAttributes.settings.PopulationCap :
+						translateWithContext("population capacity", "Unlimited")
 		});
 
 	titles.push({

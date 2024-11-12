@@ -5,6 +5,8 @@ GameSettingControls.LockedTeams = class LockedTeams extends GameSettingControlCh
 		super(...args);
 		g_GameSettings.map.watch(() => this.render(), ["type"]);
 		g_GameSettings.lockedTeams.watch(() => this.render(), ["available", "enabled"]);
+		g_GameSettings.population.watch(() => this.render(), ["capType"]);
+		g_GameSettings.rating.watch(() => this.render(), ["enabled"]);
 		this.render();
 	}
 
@@ -15,7 +17,7 @@ GameSettingControls.LockedTeams = class LockedTeams extends GameSettingControlCh
 
 	render()
 	{
-		this.setEnabled(g_GameSettings.map.type != "scenario" && g_GameSettings.lockedTeams.available);
+		this.setEnabled(g_GameSettings.lockedTeams.available);
 		this.setChecked(g_GameSettings.lockedTeams.enabled);
 	}
 

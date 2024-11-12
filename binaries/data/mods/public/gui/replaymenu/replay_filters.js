@@ -16,7 +16,6 @@ var g_DurationFilterIntervals = [
  * Allow to filter by population capacity.
  */
 const g_PopulationCapacities = prepareForDropdown(g_Settings && g_Settings.PopulationCapacities);
-const g_WorldPopulationCapacities = prepareForDropdown(g_Settings && g_Settings.WorldPopulationCapacities);
 
 /**
  * Reloads the selectable values in the filters. The filters depend on g_Settings and g_Replays
@@ -97,10 +96,22 @@ function initMapNameFilter(filters)
 function initPopCapFilter(filters)
 {
 	var populationFilter = Engine.GetGUIObjectByName("populationFilter");
-	populationFilter.list = [translateWithContext("population capacity", "Any")].concat(g_PopulationCapacities.Title);
-	populationFilter.list_data = [""].concat(g_PopulationCapacities.Population);
 
-	if (filters && filters.popCap)
+	// Merge the pop cap options of all pop cap types into one single list.
+	const popCapOptions = g_PopulationCapacities.Options
+		.map(item => item.List)
+		.flat()
+		.reduce((list, cap) => {
+			if (!list.includes(cap))
+				list.push(cap);
+			return list;
+		}, [])
+		.sort((a, b) => a > b);
+
+	populationFilter.list = [translateWithContext("population capacity", "Any")].concat(popCapOptions.map(cap => cap >= 10000 ? "Unlimited" : cap));
+	populationFilter.list_data = [""].concat(popCapOptions);
+
+	if (filters?.popCap)
 		populationFilter.selected = populationFilter.list_data.indexOf(filters.popCap);
 
 	if (populationFilter.selected == -1 || populationFilter.selected >= populationFilter.list.length)
@@ -191,7 +202,7 @@ function filterReplays()
 	let sortOrder = Engine.GetGUIObjectByName("replaySelection").selected_column_order;
 
 	g_ReplaysFiltered = g_Replays.filter(replay => filterReplay(replay)).sort((a, b) => {
-		let cmpA, cmpB;
+		let cmpA, cmpB, cmpA_secondary, cmpB_secondary;
 		switch (sortKey)
 		{
 		case 'months':
@@ -217,6 +228,8 @@ function filterReplays()
 		case 'popCapacity':
 			cmpA = +a.attribs.settings.PopulationCap;
 			cmpB = +b.attribs.settings.PopulationCap;
+			cmpA_secondary = g_PopulationCapacities.Name.indexOf(a.attribs.settings.PopulationCapType);
+			cmpB_secondary = g_PopulationCapacities.Name.indexOf(b.attribs.settings.PopulationCapType);
 			break;
 		}
 
@@ -224,6 +237,12 @@ function filterReplays()
 			return -sortOrder;
 		else if (cmpA > cmpB)
 			return +sortOrder;
+
+		else if(cmpA_secondary && cmpB_secondary)
+			if (cmpA_secondary < cmpB_secondary)
+				return -sortOrder;
+			else if(cmpA_secondary > cmpB_secondary)
+				return +sortOrder;
 
 		return 0;
 	});
