@@ -503,18 +503,25 @@ void CModel::AddFlagsRec(int flags)
 			m_Props[i].m_Model->ToCModel()->AddFlagsRec(flags);
 }
 
-void CModel::RemoveShadowsRec()
+void CModel::RemoveShadowsCast()
 {
 	m_Flags &= ~ModelFlag::CAST_SHADOWS;
-
-	m_Material.AddShaderDefine(str_DISABLE_RECEIVE_SHADOWS, str_1);
-
 	for (size_t i = 0; i < m_Props.size(); ++i)
 	{
 		if (m_Props[i].m_Model->ToCModel())
-			m_Props[i].m_Model->ToCModel()->RemoveShadowsRec();
+			m_Props[i].m_Model->ToCModel()->RemoveShadowsCast();
+	}
+}
+
+void CModel::RemoveShadowsReceive()
+{
+	m_Material.AddShaderDefine(str_DISABLE_RECEIVE_SHADOWS, str_1);
+	for (size_t i = 0; i < m_Props.size(); ++i)
+	{
+		if (m_Props[i].m_Model->ToCModel())
+			m_Props[i].m_Model->ToCModel()->RemoveShadowsReceive();
 		else if (m_Props[i].m_Model->ToCModelDecal())
-			m_Props[i].m_Model->ToCModelDecal()->RemoveShadows();
+			m_Props[i].m_Model->ToCModelDecal()->RemoveShadowsReceive();
 	}
 }
 

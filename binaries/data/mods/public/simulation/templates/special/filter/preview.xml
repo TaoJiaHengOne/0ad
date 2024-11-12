@@ -29,6 +29,7 @@
   </Visibility>
   <!-- Previews should not cast shadows -->
   <VisualActor merge="">
-    <DisableShadows/>
+    <ShadowsReceive>true</ShadowsReceive>
+    <ShadowsCast>false</ShadowsCast>
   </VisualActor>
 </Entity>

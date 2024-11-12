@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -106,7 +106,9 @@ public:
 	void AddFlagsRec(int flags);
 	// remove shadow casting and receiving, recursively through props
 	// TODO: replace with more generic shader define + flags setting
-	void RemoveShadowsRec();
+	void RemoveShadowsCast();
+	void RemoveShadowsReceive();
+
 
 	void SetTerrainDirty(ssize_t i0, ssize_t j0, ssize_t i1, ssize_t j1) override
 	{

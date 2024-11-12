@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -95,7 +95,8 @@ private:
 
 	bool m_SilhouetteDisplay;
 	bool m_SilhouetteOccluder;
-	bool m_DisableShadows;
+	bool m_ShadowsCast;
+	bool m_ShadowsReceive;
 
 	ICmpUnitRenderer::tag_t m_ModelTag;
 
@@ -126,11 +127,6 @@ public:
 			"</optional>"
 			"<optional>"
 				"<element name='ConstructionPreview' a:help='If present, the unit should have a construction preview'>"
-					"<empty/>"
-				"</element>"
-			"</optional>"
-			"<optional>"
-				"<element name='DisableShadows' a:help='Used internally; if present, shadows will be disabled'>"
 					"<empty/>"
 				"</element>"
 			"</optional>"
@@ -188,7 +184,23 @@ public:
 			"</optional>"
 			"<element name='VisibleInAtlasOnly'>"
 				"<data type='boolean'/>"
-			"</element>";
+			"</element>"
+			"<optional>"
+				"<element name='ShadowsCast'>"
+					"<a:help>If true (default), the entity will cast dynamic shadows onto the environment. "
+					"Set to false to avoid unnecessary shadow computation for objects that do not need to affect scene lighting, "
+					"such as transparent effects, previews, or decorative visuals.</a:help>"
+					"<data type='boolean'/>"
+				"</element>"
+			"</optional>"
+			"<optional>"
+				"<element name='ShadowsReceive'>"
+					"<a:help>If true (default), the entity will receive dynamic shadows from other objects. "
+					"Set to false if the object should appear fully lit regardless of surrounding shadows, which can be useful "
+					"for performance tuning or effects that simulate glowing or volumetric visuals.</a:help>"
+					"<data type='boolean'/>"
+				"</element>"
+			"</optional>";
 	}
 
 	void Init(const CParamNode& paramNode) override
@@ -210,7 +222,9 @@ public:
 
 		m_SilhouetteDisplay = paramNode.GetChild("SilhouetteDisplay").ToBool();
 		m_SilhouetteOccluder = paramNode.GetChild("SilhouetteOccluder").ToBool();
-		m_DisableShadows = paramNode.GetChild("DisableShadows").ToBool();
+
+		m_ShadowsCast = m_VisibleInAtlasOnly ? false : (paramNode.GetChild("ShadowsCast").IsOk() ? paramNode.GetChild("ShadowsCast").ToBool() : true);
+		m_ShadowsReceive = m_VisibleInAtlasOnly ? false : (paramNode.GetChild("ShadowsReceive").IsOk() ? paramNode.GetChild("ShadowsReceive").ToBool() : true);
 
 		// Initialize the model's selection shape descriptor. This currently relies on the component initialization order; the
 		// Footprint component must be initialized before this component (VisualActor) to support the ability to use the footprint
@@ -613,12 +627,15 @@ void CCmpVisualActor::InitModel()
 		model.ToCModel()->AddFlagsRec(modelFlags);
 	}
 
-	if (m_DisableShadows)
+	if (!m_ShadowsCast && model.ToCModel())
+		model.ToCModel()->RemoveShadowsCast();
+
+	if (!m_ShadowsReceive)
 	{
 		if (model.ToCModel())
-			model.ToCModel()->RemoveShadowsRec();
+			model.ToCModel()->RemoveShadowsReceive();
 		else if (model.ToCModelDecal())
-			model.ToCModelDecal()->RemoveShadows();
+			model.ToCModelDecal()->RemoveShadowsReceive();
 	}
 
 	bool floating = m_Unit->GetObject().m_Base->m_Properties.m_FloatOnWater;
