@@ -21,7 +21,7 @@
  * GameReport, fairly generic custom stanza extension used
  * to report game statistics.
  */
-GameReport::GameReport(const glooxwrapper::Tag* tag)
+GameReport::GameReport(const gloox::Tag* tag)
 	: StanzaExtension(EXTGAMEREPORT)
 {
 	if (!tag || tag->name() != "report" || tag->xmlns() != XMLNS_GAMEREPORT)
@@ -32,12 +32,12 @@ GameReport::GameReport(const glooxwrapper::Tag* tag)
 /**
  * Required by gloox, used to serialize the GameReport into XML for sending.
  */
-glooxwrapper::Tag* GameReport::tag() const
+gloox::Tag* GameReport::tag() const
 {
-	glooxwrapper::Tag* t = glooxwrapper::Tag::allocate("report");
+	gloox::Tag* t = new gloox::Tag("report");
 	t->setXmlns(XMLNS_GAMEREPORT);
 
-	for (const glooxwrapper::Tag* const& tag : m_GameReport)
+	for (const gloox::Tag* const& tag : m_GameReport)
 		t->addChild(tag->clone());
 
 	return t;
@@ -46,13 +46,13 @@ glooxwrapper::Tag* GameReport::tag() const
 /**
  * Required by gloox, used to find the GameReport element in a recived IQ.
  */
-const glooxwrapper::string& GameReport::filterString() const
+const std::string& GameReport::filterString() const
 {
-	static const glooxwrapper::string filter = "/iq/report[@xmlns='" XMLNS_GAMEREPORT "']";
+	static const std::string filter = "/iq/report[@xmlns='" XMLNS_GAMEREPORT "']";
 	return filter;
 }
 
-glooxwrapper::StanzaExtension* GameReport::clone() const
+gloox::StanzaExtension* GameReport::clone() const
 {
 	GameReport* q = new GameReport();
 	return q;
@@ -64,48 +64,47 @@ glooxwrapper::StanzaExtension* GameReport::clone() const
  * Example stanza:
  * <board player="foobar">1200</board>
  */
-BoardListQuery::BoardListQuery(const glooxwrapper::Tag* tag)
+BoardListQuery::BoardListQuery(const gloox::Tag* tag)
 	: StanzaExtension(EXTBOARDLISTQUERY)
 {
 	if (!tag || tag->name() != "query" || tag->xmlns() != XMLNS_BOARDLIST)
 		return;
 
-	const glooxwrapper::Tag* c = tag->findTag_clone("query/command");
+	const gloox::Tag* c = tag->findTag("query/command");
 	if (c)
 		m_Command = c->cdata();
-	glooxwrapper::Tag::free(c);
-	for (const glooxwrapper::Tag* const& t : tag->findTagList_clone("query/board"))
-		m_StanzaBoardList.emplace_back(t);
+	for (const gloox::Tag* const& t : tag->findTagList("query/board"))
+		m_StanzaBoardList.emplace_back(t->clone());
 }
 
 /**
  * Required by gloox, used to find the BoardList element in a received IQ.
  */
-const glooxwrapper::string& BoardListQuery::filterString() const
+const std::string& BoardListQuery::filterString() const
 {
-	static const glooxwrapper::string filter = "/iq/query[@xmlns='" XMLNS_BOARDLIST "']";
+	static const std::string filter = "/iq/query[@xmlns='" XMLNS_BOARDLIST "']";
 	return filter;
 }
 
 /**
  * Required by gloox, used to serialize the BoardList request into XML for sending.
  */
-glooxwrapper::Tag* BoardListQuery::tag() const
+gloox::Tag* BoardListQuery::tag() const
 {
-	glooxwrapper::Tag* t = glooxwrapper::Tag::allocate("query");
+	gloox::Tag* t = new gloox::Tag("query");
 	t->setXmlns(XMLNS_BOARDLIST);
 
 	// Check for ratinglist or boardlist command
 	if (!m_Command.empty())
-		t->addChild(glooxwrapper::Tag::allocate("command", m_Command));
+		t->addChild(new gloox::Tag("command", m_Command));
 
-	for (const glooxwrapper::Tag* const& tag : m_StanzaBoardList)
+	for (const gloox::Tag* const& tag : m_StanzaBoardList)
 		t->addChild(tag->clone());
 
 	return t;
 }
 
-glooxwrapper::StanzaExtension* BoardListQuery::clone() const
+gloox::StanzaExtension* BoardListQuery::clone() const
 {
 	BoardListQuery* q = new BoardListQuery();
 	return q;
@@ -113,8 +112,8 @@ glooxwrapper::StanzaExtension* BoardListQuery::clone() const
 
 BoardListQuery::~BoardListQuery()
 {
-	for (const glooxwrapper::Tag* const& t : m_StanzaBoardList)
-		glooxwrapper::Tag::free(t);
+	for (const gloox::Tag* const& t : m_StanzaBoardList)
+		delete t;
 	m_StanzaBoardList.clear();
 }
 
@@ -123,49 +122,48 @@ BoardListQuery::~BoardListQuery()
  * the listing of games from the server, and register/
  * unregister/changestate games on the server.
  */
-GameListQuery::GameListQuery(const glooxwrapper::Tag* tag)
+GameListQuery::GameListQuery(const gloox::Tag* tag)
 	: StanzaExtension(EXTGAMELISTQUERY)
 {
 	if (!tag || tag->name() != "query" || tag->xmlns() != XMLNS_GAMELIST)
 		return;
 
-	const glooxwrapper::Tag* c = tag->findTag_clone("query/command");
+	const gloox::Tag* c = tag->findTag("query/command");
 	if (c)
 		m_Command = c->cdata();
-	glooxwrapper::Tag::free(c);
 
-	for (const glooxwrapper::Tag* const& t : tag->findTagList_clone("query/game"))
-		m_GameList.emplace_back(t);
+	for (const gloox::Tag* const& t : tag->findTagList("query/game"))
+		m_GameList.emplace_back(t->clone());
 }
 
 /**
  * Required by gloox, used to find the GameList element in a received IQ.
  */
-const glooxwrapper::string& GameListQuery::filterString() const
+const std::string& GameListQuery::filterString() const
 {
-	static const glooxwrapper::string filter = "/iq/query[@xmlns='" XMLNS_GAMELIST "']";
+	static const std::string filter = "/iq/query[@xmlns='" XMLNS_GAMELIST "']";
 	return filter;
 }
 
 /**
  * Required by gloox, used to serialize the game object into XML for sending.
  */
-glooxwrapper::Tag* GameListQuery::tag() const
+gloox::Tag* GameListQuery::tag() const
 {
-	glooxwrapper::Tag* t = glooxwrapper::Tag::allocate("query");
+	gloox::Tag* t = new gloox::Tag("query");
 	t->setXmlns(XMLNS_GAMELIST);
 
 	// Check for register / unregister command
 	if (!m_Command.empty())
-		t->addChild(glooxwrapper::Tag::allocate("command", m_Command));
+		t->addChild(new gloox::Tag("command", m_Command));
 
-	for (const glooxwrapper::Tag* const& tag : m_GameList)
+	for (const gloox::Tag* const& tag : m_GameList)
 		t->addChild(tag->clone());
 
 	return t;
 }
 
-glooxwrapper::StanzaExtension* GameListQuery::clone() const
+gloox::StanzaExtension* GameListQuery::clone() const
 {
 	GameListQuery* q = new GameListQuery();
 	return q;
@@ -173,8 +171,8 @@ glooxwrapper::StanzaExtension* GameListQuery::clone() const
 
 GameListQuery::~GameListQuery()
 {
-	for (const glooxwrapper::Tag* const & t : m_GameList)
-		glooxwrapper::Tag::free(t);
+	for (const gloox::Tag* const & t : m_GameList)
+		delete t;
 	m_GameList.clear();
 }
 
@@ -185,48 +183,47 @@ GameListQuery::~GameListQuery()
  * <profile player="foobar" highestRating="1500" rank="1895" totalGamesPlayed="50"
  * 	wins="25" losses="25" /><command>foobar</command>
  */
-ProfileQuery::ProfileQuery(const glooxwrapper::Tag* tag)
+ProfileQuery::ProfileQuery(const gloox::Tag* tag)
 	: StanzaExtension(EXTPROFILEQUERY)
 {
 	if (!tag || tag->name() != "query" || tag->xmlns() != XMLNS_PROFILE)
 		return;
 
-	const glooxwrapper::Tag* c = tag->findTag_clone("query/command");
+	const gloox::Tag* c = tag->findTag("query/command");
 	if (c)
 		m_Command = c->cdata();
-	glooxwrapper::Tag::free(c);
 
-	for (const glooxwrapper::Tag* const& t : tag->findTagList_clone("query/profile"))
-		m_StanzaProfile.emplace_back(t);
+	for (const gloox::Tag* const& t : tag->findTagList("query/profile"))
+		m_StanzaProfile.emplace_back(t->clone());
 }
 
 /**
  * Required by gloox, used to find the Profile element in a received IQ.
  */
-const glooxwrapper::string& ProfileQuery::filterString() const
+const std::string& ProfileQuery::filterString() const
 {
-	static const glooxwrapper::string filter = "/iq/query[@xmlns='" XMLNS_PROFILE "']";
+	static const std::string filter = "/iq/query[@xmlns='" XMLNS_PROFILE "']";
 	return filter;
 }
 
 /**
  * Required by gloox, used to serialize the Profile request into XML for sending.
  */
-glooxwrapper::Tag* ProfileQuery::tag() const
+gloox::Tag* ProfileQuery::tag() const
 {
-	glooxwrapper::Tag* t = glooxwrapper::Tag::allocate("query");
+	gloox::Tag* t = new gloox::Tag("query");
 	t->setXmlns(XMLNS_PROFILE);
 
 	if (!m_Command.empty())
-		t->addChild(glooxwrapper::Tag::allocate("command", m_Command));
+		t->addChild(new gloox::Tag("command", m_Command));
 
-	for (const glooxwrapper::Tag* const& tag : m_StanzaProfile)
+	for (const gloox::Tag* const& tag : m_StanzaProfile)
 		t->addChild(tag->clone());
 
 	return t;
 }
 
-glooxwrapper::StanzaExtension* ProfileQuery::clone() const
+gloox::StanzaExtension* ProfileQuery::clone() const
 {
 	ProfileQuery* q = new ProfileQuery();
 	return q;
@@ -234,8 +231,8 @@ glooxwrapper::StanzaExtension* ProfileQuery::clone() const
 
 ProfileQuery::~ProfileQuery()
 {
-	for (const glooxwrapper::Tag* const& t : m_StanzaProfile)
-		glooxwrapper::Tag::free(t);
+	for (const gloox::Tag* const& t : m_StanzaProfile)
+		delete t;
 	m_StanzaProfile.clear();
 }
 
@@ -243,43 +240,41 @@ ProfileQuery::~ProfileQuery()
  * LobbyAuth, a custom IQ Stanza, used to send and
  * receive a security token for hosting authentication.
  */
-LobbyAuth::LobbyAuth(const glooxwrapper::Tag* tag)
+LobbyAuth::LobbyAuth(const gloox::Tag* tag)
 	: StanzaExtension(EXTLOBBYAUTH)
 {
 	if (!tag || tag->name() != "auth" || tag->xmlns() != XMLNS_LOBBYAUTH)
 		return;
 
-	const glooxwrapper::Tag* c = tag->findTag_clone("auth/token");
+	const gloox::Tag* c = tag->findTag("auth/token");
 	if (c)
 		m_Token = c->cdata();
-
-	glooxwrapper::Tag::free(c);
 }
 
 /**
  * Required by gloox, used to find the LobbyAuth element in a received IQ.
  */
-const glooxwrapper::string& LobbyAuth::filterString() const
+const std::string& LobbyAuth::filterString() const
 {
-	static const glooxwrapper::string filter = "/iq/auth[@xmlns='" XMLNS_LOBBYAUTH "']";
+	static const std::string filter = "/iq/auth[@xmlns='" XMLNS_LOBBYAUTH "']";
 	return filter;
 }
 
 /**
  * Required by gloox, used to serialize the auth object into XML for sending.
  */
-glooxwrapper::Tag* LobbyAuth::tag() const
+gloox::Tag* LobbyAuth::tag() const
 {
-	glooxwrapper::Tag* t = glooxwrapper::Tag::allocate("auth");
+	gloox::Tag* t = new gloox::Tag("auth");
 	t->setXmlns(XMLNS_LOBBYAUTH);
 
 	// Check for the auth token
 	if (!m_Token.empty())
-		t->addChild(glooxwrapper::Tag::allocate("token", m_Token));
+		t->addChild(new gloox::Tag("token", m_Token));
 	return t;
 }
 
-glooxwrapper::StanzaExtension* LobbyAuth::clone() const
+gloox::StanzaExtension* LobbyAuth::clone() const
 {
 	return new LobbyAuth();
 }
@@ -288,78 +283,70 @@ glooxwrapper::StanzaExtension* LobbyAuth::clone() const
  * ConnectionData, a custom IQ Stanza, used to send and
  * receive a ip and port of the server.
  */
-ConnectionData::ConnectionData(const glooxwrapper::Tag* tag)
+ConnectionData::ConnectionData(const gloox::Tag* tag)
 	: StanzaExtension(EXTCONNECTIONDATA)
 {
 	if (!tag || tag->name() != "connectiondata" || tag->xmlns() != XMLNS_CONNECTIONDATA)
 		return;
 
-	const glooxwrapper::Tag* c = tag->findTag_clone("connectiondata/ip");
+	const gloox::Tag* c = tag->findTag("connectiondata/ip");
 	if (c)
 		m_Ip = c->cdata();
-	const glooxwrapper::Tag* p= tag->findTag_clone("connectiondata/port");
+	const gloox::Tag* p= tag->findTag("connectiondata/port");
 	if (p)
 		m_Port = p->cdata();
-	const glooxwrapper::Tag* pip = tag->findTag_clone("connectiondata/isLocalIP");
+	const gloox::Tag* pip = tag->findTag("connectiondata/isLocalIP");
 	if (pip)
 		m_IsLocalIP = pip->cdata();
-	const glooxwrapper::Tag* s = tag->findTag_clone("connectiondata/useSTUN");
+	const gloox::Tag* s = tag->findTag("connectiondata/useSTUN");
 	if (s)
 		m_UseSTUN = s->cdata();
-	const glooxwrapper::Tag* pw = tag->findTag_clone("connectiondata/password");
+	const gloox::Tag* pw = tag->findTag("connectiondata/password");
 	if (pw)
 		m_Password = pw->cdata();
-	const glooxwrapper::Tag* cs = tag->findTag_clone("connectiondata/clientsalt");
+	const gloox::Tag* cs = tag->findTag("connectiondata/clientsalt");
 	if (cs)
 		m_ClientSalt = cs->cdata();
-	const glooxwrapper::Tag* e = tag->findTag_clone("connectiondata/error");
+	const gloox::Tag* e = tag->findTag("connectiondata/error");
 	if (e)
 		m_Error= e->cdata();
-
-	glooxwrapper::Tag::free(c);
-	glooxwrapper::Tag::free(p);
-	glooxwrapper::Tag::free(pip);
-	glooxwrapper::Tag::free(s);
-	glooxwrapper::Tag::free(pw);
-	glooxwrapper::Tag::free(cs);
-	glooxwrapper::Tag::free(e);
 }
 
 /**
  * Required by gloox, used to find the LobbyAuth element in a received IQ.
  */
-const glooxwrapper::string& ConnectionData::filterString() const
+const std::string& ConnectionData::filterString() const
 {
-	static const glooxwrapper::string filter = "/iq/connectiondata[@xmlns='" XMLNS_CONNECTIONDATA "']";
+	static const std::string filter = "/iq/connectiondata[@xmlns='" XMLNS_CONNECTIONDATA "']";
 	return filter;
 }
 
 /**
  * Required by gloox, used to serialize the auth object into XML for sending.
  */
-glooxwrapper::Tag* ConnectionData::tag() const
+gloox::Tag* ConnectionData::tag() const
 {
-	glooxwrapper::Tag* t = glooxwrapper::Tag::allocate("connectiondata");
+	gloox::Tag* t = new gloox::Tag("connectiondata");
 	t->setXmlns(XMLNS_CONNECTIONDATA);
 
 	if (!m_Ip.empty())
-		t->addChild(glooxwrapper::Tag::allocate("ip", m_Ip));
+		t->addChild(new gloox::Tag("ip", m_Ip));
 	if (!m_Port.empty())
-		t->addChild(glooxwrapper::Tag::allocate("port", m_Port));
+		t->addChild(new gloox::Tag("port", m_Port));
 	if (!m_IsLocalIP.empty())
-		t->addChild(glooxwrapper::Tag::allocate("isLocalIP", m_IsLocalIP));
+		t->addChild(new gloox::Tag("isLocalIP", m_IsLocalIP));
 	if (!m_UseSTUN.empty())
-		t->addChild(glooxwrapper::Tag::allocate("useSTUN", m_UseSTUN));
+		t->addChild(new gloox::Tag("useSTUN", m_UseSTUN));
 	if (!m_Password.empty())
-		t->addChild(glooxwrapper::Tag::allocate("password", m_Password));
+		t->addChild(new gloox::Tag("password", m_Password));
 	if (!m_ClientSalt.empty())
-		t->addChild(glooxwrapper::Tag::allocate("clientsalt", m_ClientSalt));
+		t->addChild(new gloox::Tag("clientsalt", m_ClientSalt));
 	if (!m_Error.empty())
-		t->addChild(glooxwrapper::Tag::allocate("error", m_Error));
+		t->addChild(new gloox::Tag("error", m_Error));
 	return t;
 }
 
-glooxwrapper::StanzaExtension* ConnectionData::clone() const
+gloox::StanzaExtension* ConnectionData::clone() const
 {
 	return new ConnectionData();
 }

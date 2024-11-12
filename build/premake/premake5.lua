@@ -26,8 +26,6 @@ newoption { trigger = "macosx-version-min", description = "Set minimum required 
 newoption { trigger = "sysroot", description = "Set compiler system root path, used for building against a non-system SDK. For example /usr/local becomes SYSROOT/user/local" }
 
 -- Windows specific options
-newoption { trigger = "build-shared-glooxwrapper", description = "Rebuild glooxwrapper DLL for Windows. Requires the same compiler version that gloox was built with" }
-newoption { trigger = "use-shared-glooxwrapper", description = "Use prebuilt glooxwrapper DLL for Windows" }
 newoption { trigger = "large-address-aware", description = "Make the executable large address aware. Do not use for development, in order to spot memory issues easily" }
 
 -- Install options
@@ -691,25 +689,6 @@ function setup_all_libs ()
 			"fmt",
 		}
 		setup_static_lib_project("lobby", source_dirs, extern_libs, {})
-
-		if _OPTIONS["use-shared-glooxwrapper"] and not _OPTIONS["build-shared-glooxwrapper"] then
-			table.insert(static_lib_names_debug, "glooxwrapper_dbg")
-			table.insert(static_lib_names_release, "glooxwrapper")
-		else
-			source_dirs = {
-				"lobby/glooxwrapper",
-			}
-			extern_libs = {
-				"boost",
-				"gloox",
-				"fmt",
-			}
-			if _OPTIONS["build-shared-glooxwrapper"] then
-				setup_shared_lib_project("glooxwrapper", source_dirs, extern_libs, {})
-			else
-				setup_static_lib_project("glooxwrapper", source_dirs, extern_libs, {})
-			end
-		end
 	else
 		source_dirs = {
 			"lobby/scripting",

@@ -377,6 +377,7 @@ extern_lib_defs = {
 		compile_settings = function()
 			if os.istarget("windows") then
 				add_default_include_paths("gloox")
+				defines { "GLOOX_IMPORTS" }
 			else
 				pkgconfig.add_includes("gloox")
 			end

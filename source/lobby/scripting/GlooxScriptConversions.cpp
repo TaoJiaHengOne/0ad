@@ -23,11 +23,6 @@
 #include "lobby/XmppClient.h"
 #include "scriptinterface/ScriptConversions.h"
 
-template<> void Script::ToJSVal<glooxwrapper::string>(const ScriptRequest& rq, JS::MutableHandleValue ret, const glooxwrapper::string& val)
-{
-	ToJSVal(rq, ret, wstring_from_utf8(val.to_string()));
-}
-
 template<> void Script::ToJSVal<gloox::Presence::PresenceType>(const ScriptRequest& rq, JS::MutableHandleValue ret, const gloox::Presence::PresenceType& val)
 {
 	ToJSVal(rq, ret, XmppClient::GetPresenceString(val));

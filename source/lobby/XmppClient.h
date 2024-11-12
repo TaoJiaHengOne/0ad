@@ -20,7 +20,7 @@
 
 #include "IXmppClient.h"
 
-#include "glooxwrapper/glooxwrapper.h"
+#include "lib/external_libraries/gloox.h"
 
 #include <ctime>
 #include <deque>
@@ -29,22 +29,16 @@
 
 class ScriptRequest;
 
-namespace glooxwrapper
-{
-	class Client;
-	struct CertInfo;
-}
-
-class XmppClient : public IXmppClient, public glooxwrapper::ConnectionListener, public glooxwrapper::MUCRoomHandler, public glooxwrapper::IqHandler, public glooxwrapper::RegistrationHandler, public glooxwrapper::MessageHandler, public glooxwrapper::Jingle::SessionHandler
+class XmppClient : public IXmppClient, public gloox::ConnectionListener, public gloox::MUCRoomHandler, public gloox::IqHandler, public gloox::RegistrationHandler, public gloox::MessageHandler, public gloox::Jingle::SessionHandler, public gloox::LogHandler
 {
 	NONCOPYABLE(XmppClient);
 
 private:
 	// Components
-	glooxwrapper::Client* m_client;
-	glooxwrapper::MUCRoom* m_mucRoom;
-	glooxwrapper::Registration* m_registration;
-	glooxwrapper::SessionManager* m_sessionManager;
+	gloox::Client* m_client;
+	gloox::MUCRoom* m_mucRoom;
+	gloox::Registration* m_registration;
+	gloox::Jingle::SessionManager* m_sessionManager;
 
 	// Account infos
 	std::string m_username;
@@ -78,35 +72,35 @@ public:
 	void TraceMember(JSTracer *trc);
 
 	// Network
-	void connect();
-	void disconnect();
-	bool isConnected();
-	void recv();
-	void SendIqGetBoardList();
-	void SendIqGetProfile(const std::string& player);
-	void SendIqGameReport(const ScriptRequest& rq, JS::HandleValue data);
-	void SendIqRegisterGame(const ScriptRequest& rq, JS::HandleValue data);
-	void SendIqGetConnectionData(const std::string& jid, const std::string& password, const std::string& clientSalt, bool localIP);
-	void SendIqUnregisterGame();
-	void SendIqChangeStateGame(const std::string& nbp, const std::string& players);
-	void SendIqLobbyAuth(const std::string& to, const std::string& token);
-	void SetNick(const std::string& nick);
-	std::string GetNick() const;
-	std::string GetJID() const;
-	void kick(const std::string& nick, const std::string& reason);
-	void ban(const std::string& nick, const std::string& reason);
-	void SetPresence(const std::string& presence);
-	const char* GetPresence(const std::string& nickname);
-	const char* GetRole(const std::string& nickname);
-	std::wstring GetRating(const std::string& nickname);
-	const std::wstring& GetSubject();
+	void connect() override;
+	void disconnect() override;
+	bool isConnected() override;
+	void recv() override;
+	void SendIqGetBoardList() override;
+	void SendIqGetProfile(const std::string& player) override;
+	void SendIqGameReport(const ScriptRequest& rq, JS::HandleValue data) override;
+	void SendIqRegisterGame(const ScriptRequest& rq, JS::HandleValue data) override;
+	void SendIqGetConnectionData(const std::string& jid, const std::string& password, const std::string& clientSalt, bool localIP) override;
+	void SendIqUnregisterGame() override;
+	void SendIqChangeStateGame(const std::string& nbp, const std::string& players) override;
+	void SendIqLobbyAuth(const std::string& to, const std::string& token) override;
+	void SetNick(const std::string& nick) override;
+	std::string GetNick() const override;
+	std::string GetJID() const override;
+	void kick(const std::string& nick, const std::string& reason) override;
+	void ban(const std::string& nick, const std::string& reason) override;
+	void SetPresence(const std::string& presence) override;
+	const char* GetPresence(const std::string& nickname) override;
+	const char* GetRole(const std::string& nickname) override;
+	std::wstring GetRating(const std::string& nickname) override;
+	const std::wstring& GetSubject() override;
 
-	JS::Value GUIGetPlayerList(const ScriptRequest& rq);
-	JS::Value GUIGetGameList(const ScriptRequest& rq);
-	JS::Value GUIGetBoardList(const ScriptRequest& rq);
-	JS::Value GUIGetProfile(const ScriptRequest& rq);
+	JS::Value GUIGetPlayerList(const ScriptRequest& rq) override;
+	JS::Value GUIGetGameList(const ScriptRequest& rq) override;
+	JS::Value GUIGetBoardList(const ScriptRequest& rq) override;
+	JS::Value GUIGetProfile(const ScriptRequest& rq) override;
 
-	void SendStunEndpointToHost(const std::string& ip, u16 port, const std::string& hostJID);
+	void SendStunEndpointToHost(const std::string& ip, u16 port, const std::string& hostJID) override;
 
 	/**
 	 * Convert gloox values to string or time.
@@ -117,52 +111,59 @@ public:
 	static std::string RegistrationResultToString(gloox::RegistrationResult res);
 	static std::string ConnectionErrorToString(gloox::ConnectionError err);
 	static std::string CertificateErrorToString(gloox::CertStatus status);
-	static std::time_t ComputeTimestamp(const glooxwrapper::Message& msg);
+	static std::time_t ComputeTimestamp(const gloox::Message& msg);
 
 protected:
 	/* Xmpp handlers */
 	/* MUC handlers */
-	virtual void handleMUCParticipantPresence(glooxwrapper::MUCRoom& room, const glooxwrapper::MUCRoomParticipant, const glooxwrapper::Presence&);
-	virtual void handleMUCError(glooxwrapper::MUCRoom& room, gloox::StanzaError);
-	virtual void handleMUCMessage(glooxwrapper::MUCRoom& room, const glooxwrapper::Message& msg, bool priv);
-	virtual void handleMUCSubject(glooxwrapper::MUCRoom& room, const glooxwrapper::string& nick, const glooxwrapper::string& subject);
-	/* MUC handlers not supported by glooxwrapper */
-	// virtual bool handleMUCRoomCreation(glooxwrapper::MUCRoom*) {return false;}
-	// virtual void handleMUCInviteDecline(glooxwrapper::MUCRoom*, const glooxwrapper::JID&, const std::string&) {}
-	// virtual void handleMUCInfo(glooxwrapper::MUCRoom*, int, const std::string&, const glooxwrapper::DataForm*) {}
-	// virtual void handleMUCItems(glooxwrapper::MUCRoom*, const std::list<gloox::Disco::Item*, std::allocator<gloox::Disco::Item*> >&) {}
+	void handleMUCParticipantPresence(gloox::MUCRoom* room, gloox::MUCRoomParticipant, const gloox::Presence&) override;
+	void handleMUCError(gloox::MUCRoom* room, gloox::StanzaError) override;
+	void handleMUCMessage(gloox::MUCRoom* room, const gloox::Message& msg, bool priv) override;
+	void handleMUCSubject(gloox::MUCRoom* room, const std::string& nick, const std::string& subject) override;
+	// Currently unused, provide noop implemtation for pure virtual functions.
+	bool handleMUCRoomCreation(gloox::MUCRoom*) override { return false; }
+	void handleMUCInviteDecline(gloox::MUCRoom*, const gloox::JID&, const std::string&) override {}
+	void handleMUCInfo(gloox::MUCRoom*, int, const std::string&, const gloox::DataForm*) override {}
+	void handleMUCItems(gloox::MUCRoom*, const std::list<gloox::Disco::Item*, std::allocator<gloox::Disco::Item*> >&) override {}
 
 	/* Log handler */
-	virtual void handleLog(gloox::LogLevel level, gloox::LogArea area, const std::string& message);
+	void handleLog(gloox::LogLevel level, gloox::LogArea area, const std::string& message) override;
 
 	/* ConnectionListener handlers*/
-	virtual void onConnect();
-	virtual void onDisconnect(gloox::ConnectionError e);
-	virtual bool onTLSConnect(const glooxwrapper::CertInfo& info);
+	void onConnect() override;
+	void onDisconnect(gloox::ConnectionError e) override;
+	bool onTLSConnect(const gloox::CertInfo& info) override;
 
 	/* Iq Handlers */
-	virtual bool handleIq(const glooxwrapper::IQ& iq);
-	virtual void handleIqID(const glooxwrapper::IQ&, int) {}
+	bool handleIq(const gloox::IQ& iq) override;
+	void handleIqID(const gloox::IQ&, int) override {}
 
 	/* Registration Handlers */
-	virtual void handleRegistrationFields(const glooxwrapper::JID& /*from*/, int fields, glooxwrapper::string instructions );
-	virtual void handleRegistrationResult(const glooxwrapper::JID& /*from*/, gloox::RegistrationResult result);
-	virtual void handleAlreadyRegistered(const glooxwrapper::JID& /*from*/);
-	virtual void handleDataForm(const glooxwrapper::JID& /*from*/, const glooxwrapper::DataForm& /*form*/);
-	virtual void handleOOB(const glooxwrapper::JID& /*from*/, const glooxwrapper::OOB& oob);
+	void handleRegistrationFields(const gloox::JID& /*from*/, int fields, std::string instructions ) override;
+#if GLOOXVERSION >= 0x010100
+	void handleRegistrationResult(const gloox::JID& /*from*/, gloox::RegistrationResult result, const gloox::Error* /*error*/) override;
+#else
+	void handleRegistrationResult(const gloox::JID& /*from*/, gloox::RegistrationResult result) override;
+#endif
+	void handleAlreadyRegistered(const gloox::JID& /*from*/) override;
+	void handleDataForm(const gloox::JID& /*from*/, const gloox::DataForm& /*form*/) override;
+	void handleOOB(const gloox::JID& /*from*/, const gloox::OOB& oob) override;
 
 	/* Message Handler */
-	virtual void handleMessage(const glooxwrapper::Message& msg, glooxwrapper::MessageSession* session);
+	void handleMessage(const gloox::Message& msg, gloox::MessageSession* session) override;
 
 	/* Session Handler */
-	virtual void handleSessionAction(gloox::Jingle::Action action, glooxwrapper::Jingle::Session& session, const glooxwrapper::Jingle::Session::Jingle& jingle);
-	virtual void handleSessionInitiation(glooxwrapper::Jingle::Session& session, const glooxwrapper::Jingle::Session::Jingle& jingle);
+	void handleSessionAction(gloox::Jingle::Action action, gloox::Jingle::Session* session, const gloox::Jingle::Session::Jingle* jingle) override;
+	void handleSessionActionError(gloox::Jingle::Action /*action*/, gloox::Jingle::Session* /*session*/, const gloox::Error* /*error*/) override {}
+	void handleIncomingSession(gloox::Jingle::Session* /*session*/) override {}
+private:
+	void handleSessionInitiation(gloox::Jingle::Session* session, const gloox::Jingle::Session::Jingle* jingle);
 
 public:
-	JS::Value GuiPollNewMessages(const ScriptInterface& guiInterface);
-	JS::Value GuiPollHistoricMessages(const ScriptInterface& guiInterface);
-	bool GuiPollHasPlayerListUpdate();
-	void SendMUCMessage(const std::string& message);
+	JS::Value GuiPollNewMessages(const ScriptInterface& guiInterface) override;
+	JS::Value GuiPollHistoricMessages(const ScriptInterface& guiInterface) override;
+	bool GuiPollHasPlayerListUpdate() override;
+	void SendMUCMessage(const std::string& message) override;
 
 protected:
 	template<typename... Args>
@@ -174,26 +175,26 @@ protected:
 
 private:
 	struct SPlayer {
-		SPlayer(const gloox::Presence::PresenceType presence, const gloox::MUCRoomRole role, const glooxwrapper::string& rating)
+		SPlayer(const gloox::Presence::PresenceType presence, const gloox::MUCRoomRole role, const std::string& rating)
 		: m_Presence(presence), m_Role(role), m_Rating(rating)
 		{
 		}
 		gloox::Presence::PresenceType m_Presence;
 		gloox::MUCRoomRole m_Role;
-		glooxwrapper::string m_Rating;
+		std::string m_Rating;
 	};
-	using PlayerMap = std::map<glooxwrapper::string, SPlayer>;
+	using PlayerMap = std::map<std::string, SPlayer>;
 
 	/// Map of players
 	PlayerMap m_PlayerMap;
 	/// Whether or not the playermap has changed since the last time the GUI checked.
 	bool m_PlayerMapUpdate;
 	/// List of games
-	std::vector<const glooxwrapper::Tag*> m_GameList;
+	std::vector<const gloox::Tag*> m_GameList;
 	/// List of rankings
-	std::vector<const glooxwrapper::Tag*> m_BoardList;
+	std::vector<const gloox::Tag*> m_BoardList;
 	/// Profile data
-	std::vector<const glooxwrapper::Tag*> m_Profile;
+	std::vector<const gloox::Tag*> m_Profile;
 	/// ScriptInterface to root the values
 	const ScriptInterface* m_ScriptInterface;
 	/// Queue of messages for the GUI

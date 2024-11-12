@@ -40,23 +40,15 @@
 #else
 #define DbgXMPP(x) std::cout << x << std::endl;
 
-static std::string tag_xml(const glooxwrapper::IQ& iq)
+static std::string tag_xml(const gloox::IQ& iq)
 {
-	std::string ret;
-	glooxwrapper::Tag* tag = iq.tag();
-	ret = tag->xml().to_string();
-	glooxwrapper::Tag::free(tag);
-	return ret;
+	return iq.tag()->xml();
 }
 #endif
 
-static std::string tag_name(const glooxwrapper::IQ& iq)
+static std::string tag_name(const gloox::IQ& iq)
 {
-	std::string ret;
-	glooxwrapper::Tag* tag = iq.tag();
-	ret = tag->name().to_string();
-	glooxwrapper::Tag::free(tag);
-	return ret;
+	return iq.tag()->name();
 }
 
 IXmppClient* IXmppClient::create(const ScriptInterface* scriptInterface, const std::string& sUsername, const std::string& sPassword, const std::string& sRoom, const std::string& sNick, const int historyRequestSize,bool regOpt)
@@ -106,15 +98,15 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 	m_xpartamuppId = sXpartamupp + "@" + m_server + "/CC";
 	m_echelonId = sEchelon + "@" + m_server + "/CC";
 	// Generate a unique, unpredictable resource to allow multiple 0 A.D. instances to connect to the lobby.
-	glooxwrapper::JID clientJid(sUsername + "@" + m_server + "/0ad-" + ps_generate_guid());
-	glooxwrapper::JID roomJid(m_room + "@conference." + m_server + "/" + sNick);
+	gloox::JID clientJid(sUsername + "@" + m_server + "/0ad-" + ps_generate_guid());
+	gloox::JID roomJid(m_room + "@conference." + m_server + "/" + sNick);
 
 	// If we are connecting, use the full jid and a password
 	// If we are registering, only use the server name
 	if (!regOpt)
-		m_client = new glooxwrapper::Client(clientJid, sPassword);
+		m_client = new gloox::Client(clientJid, sPassword);
 	else
-		m_client = new glooxwrapper::Client(m_server);
+		m_client = new gloox::Client(m_server);
 
 	// Optionally join without a TLS certificate, so a local server can be tested  quickly.
 	// Security risks from malicious JS mods can be mitigated if this option and also the hostname and login are shielded from JS access.
@@ -152,25 +144,26 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 	m_client->registerMessageHandler(this);
 
 	// Uncomment to see the raw stanzas
-	//m_client->getWrapped()->logInstance().registerLogHandler( gloox::LogLevelDebug, gloox::LogAreaAll, this );
+	// m_client->logInstance().registerLogHandler(gloox::LogLevelDebug, gloox::LogAreaAll, this);
 
 	if (!regOpt)
 	{
 		// Create a Multi User Chat Room
-		m_mucRoom = new glooxwrapper::MUCRoom(m_client, roomJid, this, 0);
+		m_mucRoom = new gloox::MUCRoom(m_client, roomJid, this, 0);
 		// Get room history.
 		m_mucRoom->setRequestHistory(historyRequestSize, gloox::MUCRoom::HistoryMaxStanzas);
 	}
 	else
 	{
 		// Registration
-		m_registration = new glooxwrapper::Registration(m_client);
+		m_registration = new gloox::Registration(m_client);
 		m_registration->registerRegistrationHandler(this);
 	}
 
-	m_sessionManager = new glooxwrapper::SessionManager(m_client, this);
+	m_sessionManager = new gloox::Jingle::SessionManager(m_client, this);
 	// Register plugins to allow gloox parse them in incoming sessions
-	m_sessionManager->registerPlugins();
+	m_sessionManager->registerPlugin(new gloox::Jingle::Content());
+	m_sessionManager->registerPlugin(new gloox::Jingle::ICEUDP());
 }
 
 /**
@@ -188,12 +181,12 @@ XmppClient::~XmppClient()
 
 	delete m_client;
 
-	for (const glooxwrapper::Tag* const& t : m_GameList)
-		glooxwrapper::Tag::free(t);
-	for (const glooxwrapper::Tag* const& t : m_BoardList)
-		glooxwrapper::Tag::free(t);
-	for (const glooxwrapper::Tag* const& t : m_Profile)
-		glooxwrapper::Tag::free(t);
+	for (const gloox::Tag* const& t : m_GameList)
+		delete t;
+	for (const gloox::Tag* const& t : m_BoardList)
+		delete t;
+	for (const gloox::Tag* const& t : m_Profile)
+		delete t;
 
 	if (m_ScriptInterface)
 		JS_RemoveExtraGCRootsTracer(m_ScriptInterface->GetGeneralJSContext(), XmppClient::Trace, this);
@@ -269,12 +262,12 @@ void XmppClient::onDisconnect(gloox::ConnectionError error)
 		m_mucRoom->leave();
 
 	// Clear game, board and player lists.
-	for (const glooxwrapper::Tag* const& t : m_GameList)
-		glooxwrapper::Tag::free(t);
-	for (const glooxwrapper::Tag* const& t : m_BoardList)
-		glooxwrapper::Tag::free(t);
-	for (const glooxwrapper::Tag* const& t : m_Profile)
-		glooxwrapper::Tag::free(t);
+	for (const gloox::Tag* const& t : m_GameList)
+		delete t;
+	for (const gloox::Tag* const& t : m_BoardList)
+		delete t;
+	for (const gloox::Tag* const& t : m_Profile)
+		delete t;
 
 	m_BoardList.clear();
 	m_GameList.clear();
@@ -296,7 +289,7 @@ void XmppClient::onDisconnect(gloox::ConnectionError error)
 /**
  * Handle TLS connection.
  */
-bool XmppClient::onTLSConnect(const glooxwrapper::CertInfo& info)
+bool XmppClient::onTLSConnect(const gloox::CertInfo& info)
 {
 	DbgXMPP("onTLSConnect");
 	DbgXMPP(
@@ -320,7 +313,7 @@ bool XmppClient::onTLSConnect(const glooxwrapper::CertInfo& info)
 /**
  * Handle MUC room errors
  */
-void XmppClient::handleMUCError(glooxwrapper::MUCRoom& UNUSED(room), gloox::StanzaError err)
+void XmppClient::handleMUCError(gloox::MUCRoom* UNUSED(room), gloox::StanzaError err)
 {
 	DbgXMPP("MUC Error " << ": " << StanzaErrorToString(err));
 	CreateGUIMessage("system", "error", std::time(nullptr), "text", err);
@@ -335,12 +328,12 @@ void XmppClient::handleMUCError(glooxwrapper::MUCRoom& UNUSED(room), gloox::Stan
  */
 void XmppClient::SendIqGetBoardList()
 {
-	glooxwrapper::JID echelonJid(m_echelonId);
+	gloox::JID echelonJid(m_echelonId);
 
 	// Send IQ
 	BoardListQuery* b = new BoardListQuery();
 	b->m_Command = "getleaderboard";
-	glooxwrapper::IQ iq(gloox::IQ::Get, echelonJid, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Get, echelonJid, m_client->getID());
 	iq.addExtension(b);
 	DbgXMPP("SendIqGetBoardList [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -351,12 +344,12 @@ void XmppClient::SendIqGetBoardList()
  */
 void XmppClient::SendIqGetProfile(const std::string& player)
 {
-	glooxwrapper::JID echelonJid(m_echelonId);
+	gloox::JID echelonJid(m_echelonId);
 
 	// Send IQ
 	ProfileQuery* b = new ProfileQuery();
 	b->m_Command = player;
-	glooxwrapper::IQ iq(gloox::IQ::Get, echelonJid, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Get, echelonJid, m_client->getID());
 	iq.addExtension(b);
 	DbgXMPP("SendIqGetProfile [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -367,16 +360,16 @@ void XmppClient::SendIqGetProfile(const std::string& player)
  */
 void XmppClient::SendIqGetConnectionData(const std::string& jid, const std::string& password, const std::string& clientSalt, bool localIP)
 {
-	glooxwrapper::JID targetJID(jid);
+	gloox::JID targetJID(jid);
 
 	ConnectionData* connectionData = new ConnectionData();
 	connectionData->m_Password = password;
 	connectionData->m_ClientSalt = clientSalt;
 	connectionData->m_IsLocalIP = localIP ? "1" : "0";
-	glooxwrapper::IQ iq(gloox::IQ::Get, targetJID, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Get, targetJID, m_client->getID());
 	iq.addExtension(connectionData);
 	m_connectionDataJid = iq.from().full();
-	m_connectionDataIqId = iq.id().to_string();
+	m_connectionDataIqId = iq.id();
 	DbgXMPP("SendIqGetConnectionData [" << tag_xml(iq) << "]");
 	m_client->send(iq);
 }
@@ -388,11 +381,11 @@ void XmppClient::SendIqGetConnectionData(const std::string& jid, const std::stri
  */
 void XmppClient::SendIqGameReport(const ScriptRequest& rq, JS::HandleValue data)
 {
-	glooxwrapper::JID echelonJid(m_echelonId);
+	gloox::JID echelonJid(m_echelonId);
 
 	// Setup some base stanza attributes
 	GameReport* game = new GameReport();
-	glooxwrapper::Tag* report = glooxwrapper::Tag::allocate("game");
+	gloox::Tag* report = new gloox::Tag("game");
 
 	// Iterate through all the properties reported and add them to the stanza.
 	std::vector<std::string> properties;
@@ -408,7 +401,7 @@ void XmppClient::SendIqGameReport(const ScriptRequest& rq, JS::HandleValue data)
 	game->m_GameReport.emplace_back(report);
 
 	// Send IQ
-	glooxwrapper::IQ iq(gloox::IQ::Set, echelonJid, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Set, echelonJid, m_client->getID());
 	iq.addExtension(game);
 	DbgXMPP("SendGameReport [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -421,12 +414,12 @@ void XmppClient::SendIqGameReport(const ScriptRequest& rq, JS::HandleValue data)
  */
 void XmppClient::SendIqRegisterGame(const ScriptRequest& rq, JS::HandleValue data)
 {
-	glooxwrapper::JID xpartamuppJid(m_xpartamuppId);
+	gloox::JID xpartamuppJid(m_xpartamuppId);
 
 	// Setup some base stanza attributes
 	std::unique_ptr<GameListQuery> g = std::make_unique<GameListQuery>();
 	g->m_Command = "register";
-	glooxwrapper::Tag* game = glooxwrapper::Tag::allocate("game");
+	gloox::Tag* game = new gloox::Tag("game");
 
 	// Iterate through all the properties reported and add them to the stanza.
 	std::vector<std::string> properties;
@@ -452,7 +445,7 @@ void XmppClient::SendIqRegisterGame(const ScriptRequest& rq, JS::HandleValue dat
 	g->m_GameList.emplace_back(game);
 
 	// Send IQ
-	glooxwrapper::IQ iq(gloox::IQ::Set, xpartamuppJid, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Set, xpartamuppJid, m_client->getID());
 	iq.addExtension(g.release());
 	DbgXMPP("SendIqRegisterGame [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -463,14 +456,14 @@ void XmppClient::SendIqRegisterGame(const ScriptRequest& rq, JS::HandleValue dat
  */
 void XmppClient::SendIqUnregisterGame()
 {
-	glooxwrapper::JID xpartamuppJid(m_xpartamuppId);
+	gloox::JID xpartamuppJid(m_xpartamuppId);
 
 	// Send IQ
 	GameListQuery* g = new GameListQuery();
 	g->m_Command = "unregister";
-	g->m_GameList.emplace_back(glooxwrapper::Tag::allocate("game"));
+	g->m_GameList.emplace_back(new gloox::Tag("game"));
 
-	glooxwrapper::IQ iq(gloox::IQ::Set, xpartamuppJid, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Set, xpartamuppJid, m_client->getID());
 	iq.addExtension(g);
 	DbgXMPP("SendIqUnregisterGame [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -485,17 +478,17 @@ void XmppClient::SendIqUnregisterGame()
  */
 void XmppClient::SendIqChangeStateGame(const std::string& nbp, const std::string& players)
 {
-	glooxwrapper::JID xpartamuppJid(m_xpartamuppId);
+	gloox::JID xpartamuppJid(m_xpartamuppId);
 
 	// Send IQ
 	GameListQuery* g = new GameListQuery();
 	g->m_Command = "changestate";
-	glooxwrapper::Tag* game = glooxwrapper::Tag::allocate("game");
+	gloox::Tag* game = new gloox::Tag("game");
 	game->addAttribute("nbp", nbp);
 	game->addAttribute("players", players);
 	g->m_GameList.emplace_back(game);
 
-	glooxwrapper::IQ iq(gloox::IQ::Set, xpartamuppJid, m_client->getID());
+	gloox::IQ iq(gloox::IQ::Set, xpartamuppJid, m_client->getID());
 	iq.addExtension(g);
 	DbgXMPP("SendIqChangeStateGame [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -513,8 +506,8 @@ void XmppClient::SendIqLobbyAuth(const std::string& to, const std::string& token
 	LobbyAuth* auth = new LobbyAuth();
 	auth->m_Token = token;
 
-	glooxwrapper::JID clientJid(to);
-	glooxwrapper::IQ iq(gloox::IQ::Set, clientJid, m_client->getID());
+	gloox::JID clientJid(to);
+	gloox::IQ iq(gloox::IQ::Set, clientJid, m_client->getID());
 	iq.addExtension(auth);
 	DbgXMPP("SendIqLobbyAuth [" << tag_xml(iq) << "]");
 	m_client->send(iq);
@@ -524,15 +517,19 @@ void XmppClient::SendIqLobbyAuth(const std::string& to, const std::string& token
  * Account registration                              *
  *****************************************************/
 
-void XmppClient::handleRegistrationFields(const glooxwrapper::JID&, int fields, glooxwrapper::string)
+void XmppClient::handleRegistrationFields(const gloox::JID&, int fields, std::string)
 {
-	glooxwrapper::RegistrationFields vals;
+	gloox::RegistrationFields vals;
 	vals.username = m_username;
 	vals.password = m_password;
 	m_registration->createAccount(fields, vals);
 }
 
-void XmppClient::handleRegistrationResult(const glooxwrapper::JID&, gloox::RegistrationResult result)
+#if GLOOXVERSION >= 0x010100
+void XmppClient::handleRegistrationResult(const gloox::JID&, gloox::RegistrationResult result, const gloox::Error* /*error*/)
+#else
+void XmppClient::handleRegistrationResult(const gloox::JID&, gloox::RegistrationResult result)
+#endif
 {
 	if (result == gloox::RegistrationSuccess)
 		CreateGUIMessage("system", "registered", std::time(nullptr));
@@ -542,17 +539,17 @@ void XmppClient::handleRegistrationResult(const glooxwrapper::JID&, gloox::Regis
 	disconnect();
 }
 
-void XmppClient::handleAlreadyRegistered(const glooxwrapper::JID&)
+void XmppClient::handleAlreadyRegistered(const gloox::JID&)
 {
 	DbgXMPP("the account already exists");
 }
 
-void XmppClient::handleDataForm(const glooxwrapper::JID&, const glooxwrapper::DataForm&)
+void XmppClient::handleDataForm(const gloox::JID&, const gloox::DataForm&)
 {
 	DbgXMPP("dataForm received");
 }
 
-void XmppClient::handleOOB(const glooxwrapper::JID&, const glooxwrapper::OOB&)
+void XmppClient::handleOOB(const gloox::JID&, const gloox::OOB&)
 {
 	DbgXMPP("OOB registration requested");
 }
@@ -572,7 +569,7 @@ JS::Value XmppClient::GUIGetPlayerList(const ScriptRequest& rq)
 	Script::CreateArray(rq, &ret);
 	int j = 0;
 
-	for (const std::pair<const glooxwrapper::string, SPlayer>& p : m_PlayerMap)
+	for (const std::pair<const std::string, SPlayer>& p : m_PlayerMap)
 	{
 		JS::RootedValue player(rq.cx);
 
@@ -604,7 +601,7 @@ JS::Value XmppClient::GUIGetGameList(const ScriptRequest& rq)
 		"nbp", "maxnbp", "players", "mapName", "niceMapName", "mapSize", "mapType",
 		"victoryConditions", "startTime", "mods" };
 
-	for(const glooxwrapper::Tag* const& t : m_GameList)
+	for(const gloox::Tag* const& t : m_GameList)
 	{
 		JS::RootedValue game(rq.cx);
 		Script::CreateObject(rq, &game);
@@ -630,7 +627,7 @@ JS::Value XmppClient::GUIGetBoardList(const ScriptRequest& rq)
 
 	const char* attributes[] = { "name", "rank", "rating" };
 
-	for(const glooxwrapper::Tag* const& t : m_BoardList)
+	for(const gloox::Tag* const& t : m_BoardList)
 	{
 		JS::RootedValue board(rq.cx);
 		Script::CreateObject(rq, &board);
@@ -656,7 +653,7 @@ JS::Value XmppClient::GUIGetProfile(const ScriptRequest& rq)
 
 	const char* stats[] = { "player", "rating", "totalGamesPlayed", "highestRating", "wins", "losses", "rank" };
 
-	for (const glooxwrapper::Tag* const& t : m_Profile)
+	for (const gloox::Tag* const& t : m_Profile)
 	{
 		JS::RootedValue profile(rq.cx);
 		Script::CreateObject(rq, &profile);
@@ -799,7 +796,7 @@ void XmppClient::SendMUCMessage(const std::string& message)
 /**
  * Handle a room message.
  */
-void XmppClient::handleMUCMessage(glooxwrapper::MUCRoom& UNUSED(room), const glooxwrapper::Message& msg, bool priv)
+void XmppClient::handleMUCMessage(gloox::MUCRoom* UNUSED(room), const gloox::Message& msg, bool priv)
 {
 	DbgXMPP(msg.from().resource() << " said " << msg.body());
 
@@ -814,7 +811,7 @@ void XmppClient::handleMUCMessage(glooxwrapper::MUCRoom& UNUSED(room), const glo
 /**
  * Handle a private message.
  */
-void XmppClient::handleMessage(const glooxwrapper::Message& msg, glooxwrapper::MessageSession*)
+void XmppClient::handleMessage(const gloox::Message& msg, gloox::MessageSession*)
 {
 	DbgXMPP("type " << msg.subtype() << ", subject " << msg.subject()
 	  << ", message " << msg.body() << ", thread id " << msg.thread());
@@ -831,7 +828,7 @@ void XmppClient::handleMessage(const glooxwrapper::Message& msg, glooxwrapper::M
 /**
  * Handle portions of messages containing custom stanza extensions.
  */
-bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
+bool XmppClient::handleIq(const gloox::IQ& iq)
 {
 	DbgXMPP("handleIq [" << tag_xml(iq) << "]");
 
@@ -851,7 +848,7 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 				return true;
 			}
 
-			if (!m_connectionDataIqId.empty() && m_connectionDataIqId.compare(iq.id().to_string()) != 0) {
+			if (!m_connectionDataIqId.empty() && m_connectionDataIqId.compare(iq.id()) != 0) {
 				LOGMESSAGE("XmppClient: Received connection data with invalid id");
 				return true;
 			}
@@ -862,7 +859,7 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 				return true;
 			}
 
-			g_NetClient->SetupServerData(cd->m_Ip.to_string(), stoi(cd->m_Port.to_string()), !cd->m_UseSTUN.empty());
+			g_NetClient->SetupServerData(cd->m_Ip, stoi(cd->m_Port), !cd->m_UseSTUN.empty());
 			g_NetClient->TryToConnect(iq.from().full(), !cd->m_IsLocalIP.empty());
 		}
 		if (gq)
@@ -880,7 +877,7 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 					LOGWARNING("XmppClient: Received empty game list in response to Game Register");
 					return true;
 				}
-				std::string publicIP = gq->m_GameList.front()->findAttribute("ip").to_string();
+				std::string publicIP = gq->m_GameList.front()->findAttribute("ip");
 				if (publicIP.empty())
 				{
 					LOGWARNING("XmppClient: Received game with no IP in response to Game Register");
@@ -890,11 +887,11 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 				return true;
 			}
 
-			for (const glooxwrapper::Tag* const& t : m_GameList)
-				glooxwrapper::Tag::free(t);
+			for (const gloox::Tag* const& t : m_GameList)
+				delete t;
 			m_GameList.clear();
 
-			for (const glooxwrapper::Tag* const& t : gq->m_GameList)
+			for (const gloox::Tag* const& t : gq->m_GameList)
 				m_GameList.emplace_back(t->clone());
 
 			CreateGUIMessage("game", "gamelist", std::time(nullptr));
@@ -909,18 +906,18 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 
 			if (bq->m_Command == "boardlist")
 			{
-				for (const glooxwrapper::Tag* const& t : m_BoardList)
-					glooxwrapper::Tag::free(t);
+				for (const gloox::Tag* const& t : m_BoardList)
+					delete t;
 				m_BoardList.clear();
 
-				for (const glooxwrapper::Tag* const& t : bq->m_StanzaBoardList)
+				for (const gloox::Tag* const& t : bq->m_StanzaBoardList)
 					m_BoardList.emplace_back(t->clone());
 
 				CreateGUIMessage("game", "leaderboard", std::time(nullptr));
 			}
 			else if (bq->m_Command == "ratinglist")
 			{
-				for (const glooxwrapper::Tag* const& t : bq->m_StanzaBoardList)
+				for (const gloox::Tag* const& t : bq->m_StanzaBoardList)
 				{
 					const PlayerMap::iterator it = m_PlayerMap.find(t->findAttribute("name"));
 					if (it != m_PlayerMap.end())
@@ -940,11 +937,11 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 				return true;
 			}
 
-			for (const glooxwrapper::Tag* const& t : m_Profile)
-				glooxwrapper::Tag::free(t);
+			for (const gloox::Tag* const& t : m_Profile)
+				delete t;
 			m_Profile.clear();
 
-			for (const glooxwrapper::Tag* const& t : pq->m_StanzaProfile)
+			for (const gloox::Tag* const& t : pq->m_StanzaProfile)
 				m_Profile.emplace_back(t->clone());
 
 			CreateGUIMessage("game", "profile", std::time(nullptr));
@@ -955,13 +952,13 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 		const LobbyAuth* lobbyAuth = iq.findExtension<LobbyAuth>(EXTLOBBYAUTH);
 		if (lobbyAuth)
 		{
-			LOGMESSAGE("XmppClient: Received lobby auth: %s from %s", lobbyAuth->m_Token.to_string(), iq.from().username());
+			LOGMESSAGE("XmppClient: Received lobby auth: %s from %s", lobbyAuth->m_Token, iq.from().username());
 
-			glooxwrapper::IQ response(gloox::IQ::Result, iq.from(), iq.id());
+			gloox::IQ response(gloox::IQ::Result, iq.from(), iq.id());
 			m_client->send(response);
 
 			if (g_NetServer)
-				g_NetServer->OnLobbyAuth(iq.from().username(), lobbyAuth->m_Token.to_string());
+				g_NetServer->OnLobbyAuth(iq.from().username(), lobbyAuth->m_Token);
 			else
 				LOGMESSAGE("Received lobby authentication request, but not hosting currently!");
 		}
@@ -974,7 +971,7 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 			LOGMESSAGE("XmppClient: Received request for connection data from %s", iq.from().username());
 			if (!g_NetServer)
 			{
-				glooxwrapper::IQ response(gloox::IQ::Result, iq.from(), iq.id());
+				gloox::IQ response(gloox::IQ::Result, iq.from(), iq.id());
 				ConnectionData* connectionData = new ConnectionData();
 				connectionData->m_Error = "not_server";
 
@@ -985,7 +982,7 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 			}
 			if (g_NetServer->IsBanned(iq.from().username()))
 			{
-				glooxwrapper::IQ response(gloox::IQ::Result, iq.from(), iq.id());
+				gloox::IQ response(gloox::IQ::Result, iq.from(), iq.id());
 				ConnectionData* connectionData = new ConnectionData();
 				connectionData->m_Error = "banned";
 
@@ -994,9 +991,9 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 				m_client->send(response);
 				return true;
 			}
-			if (!g_NetServer->CheckPasswordAndIncrement(iq.from().username(), cd->m_Password.to_string(), cd->m_ClientSalt.to_string()))
+			if (!g_NetServer->CheckPasswordAndIncrement(iq.from().username(), cd->m_Password, cd->m_ClientSalt))
 			{
-				glooxwrapper::IQ response(gloox::IQ::Result, iq.from(), iq.id());
+				gloox::IQ response(gloox::IQ::Result, iq.from(), iq.id());
 				ConnectionData* connectionData = new ConnectionData();
 				connectionData->m_Error = "invalid_password";
 
@@ -1006,10 +1003,10 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 				return true;
 			}
 
-			glooxwrapper::IQ response(gloox::IQ::Result, iq.from(), iq.id());
+			gloox::IQ response(gloox::IQ::Result, iq.from(), iq.id());
 			ConnectionData* connectionData = new ConnectionData();
 
-			if (cd->m_IsLocalIP.to_string() == "0")
+			if (cd->m_IsLocalIP == "0")
 			{
 				connectionData->m_Ip = g_NetServer->GetPublicIp();
 				connectionData->m_Port = std::to_string(g_NetServer->GetPublicPort());
@@ -1037,7 +1034,7 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 
 	}
 	else if (iq.subtype() == gloox::IQ::Error)
-		CreateGUIMessage("system", "error", std::time(nullptr), "text", iq.error_error());
+		CreateGUIMessage("system", "error", std::time(nullptr), "text", iq.error()->error());
 	else
 	{
 		CreateGUIMessage("system", "error", std::time(nullptr), "text", wstring_from_utf8(g_L10n.Translate("unknown subtype (see logs)")));
@@ -1050,9 +1047,9 @@ bool XmppClient::handleIq(const glooxwrapper::IQ& iq)
 /**
  * Update local data when a user changes presence.
  */
-void XmppClient::handleMUCParticipantPresence(glooxwrapper::MUCRoom& UNUSED(room), const glooxwrapper::MUCRoomParticipant participant, const glooxwrapper::Presence& presence)
+void XmppClient::handleMUCParticipantPresence(gloox::MUCRoom* UNUSED(room), const gloox::MUCRoomParticipant participant, const gloox::Presence& presence)
 {
-	const glooxwrapper::string& nick = participant.nick->resource();
+	const std::string& nick = participant.nick->resource();
 
 	if (presence.presence() == gloox::Presence::Unavailable)
 	{
@@ -1169,9 +1166,9 @@ void XmppClient::handleMUCParticipantPresence(glooxwrapper::MUCRoom& UNUSED(room
 /**
  * Update local cache when subject changes.
  */
-void XmppClient::handleMUCSubject(glooxwrapper::MUCRoom& UNUSED(room), const glooxwrapper::string& nick, const glooxwrapper::string& subject)
+void XmppClient::handleMUCSubject(gloox::MUCRoom* UNUSED(room), const std::string& nick, const std::string& subject)
 {
-	m_Subject = wstring_from_utf8(subject.to_string());
+	m_Subject = wstring_from_utf8(subject);
 
 	CreateGUIMessage(
 		"chat",
@@ -1204,12 +1201,12 @@ void XmppClient::SetNick(const std::string& nick)
  */
 std::string XmppClient::GetNick() const
 {
-	return m_mucRoom->nick().to_string();
+	return m_mucRoom->nick();
 }
 
 std::string XmppClient::GetJID() const
 {
-	return m_client->getJID().to_string();
+	return m_client->getID();
 }
 
 /**
@@ -1289,7 +1286,7 @@ std::wstring XmppClient::GetRating(const std::string& nick)
 	if (it == m_PlayerMap.end())
 		return std::wstring();
 
-	return wstring_from_utf8(it->second.m_Rating.to_string());
+	return wstring_from_utf8(it->second.m_Rating);
 }
 
 /*****************************************************
@@ -1303,7 +1300,7 @@ std::wstring XmppClient::GetRating(const std::string& nick)
  *
  * @returns Seconds since the epoch.
  */
-std::time_t XmppClient::ComputeTimestamp(const glooxwrapper::Message& msg)
+std::time_t XmppClient::ComputeTimestamp(const gloox::Message& msg)
 {
 	// Only historic messages contain a timestamp!
 	if (!msg.when())
@@ -1312,7 +1309,7 @@ std::time_t XmppClient::ComputeTimestamp(const glooxwrapper::Message& msg)
 	// The locale is irrelevant, because the XMPP date format doesn't contain written month names
 	for (const std::string& format : std::vector<std::string>{ "Y-M-d'T'H:m:sZ", "Y-M-d'T'H:m:s.SZ" })
 	{
-		UDate dateTime = g_L10n.ParseDateTime(msg.when()->stamp().to_string(), format, icu::Locale::getUS());
+		UDate dateTime = g_L10n.ParseDateTime(msg.when()->stamp(), format, icu::Locale::getUS());
 		if (dateTime)
 			return dateTime / 1000.0;
 	}
@@ -1505,20 +1502,51 @@ void XmppClient::SendStunEndpointToHost(const std::string& ip, u16 port, const s
 {
 	DbgXMPP("SendStunEndpointToHost " << hostJIDStr);
 
-	glooxwrapper::JID hostJID(hostJIDStr);
-	glooxwrapper::Jingle::Session session = m_sessionManager->createSession(hostJID);
-	session.sessionInitiate(ip.c_str(), port);
+	gloox::JID hostJID(hostJIDStr);
+	gloox::Jingle::Session* session = m_sessionManager->createSession(hostJID,  this);
+
+	gloox::Jingle::ICEUDP::CandidateList candidateList;
+
+	candidateList.push_back(gloox::Jingle::ICEUDP::Candidate{
+		"1", // component_id,
+		"1", // foundation
+		"0", // candidate_generation
+		"1", // candidate_id
+		ip,
+		"0", // network
+		port,
+		0, // priority
+		"udp",
+		"", // base_ip
+		0, // base_port
+		gloox::Jingle::ICEUDP::ServerReflexive});
+
+	// sessionInitiate deletes the new Content, and
+	// the Plugin destructor inherited by Content frees the ICEUDP plugin.
+
+	gloox::Jingle::PluginList pluginList;
+	pluginList.push_back(new gloox::Jingle::ICEUDP(/*local_pwd*/ "", /*local_ufrag*/ "", candidateList));
+
+	session->sessionInitiate(new gloox::Jingle::Content(std::string("game-data"), pluginList));
 }
 
-void XmppClient::handleSessionAction(gloox::Jingle::Action action, glooxwrapper::Jingle::Session& session, const glooxwrapper::Jingle::Session::Jingle& jingle)
+void XmppClient::handleSessionAction(gloox::Jingle::Action action, gloox::Jingle::Session* session, const gloox::Jingle::Session::Jingle* jingle)
 {
 	if (action == gloox::Jingle::SessionInitiate)
 		handleSessionInitiation(session, jingle);
 }
 
-void XmppClient::handleSessionInitiation(glooxwrapper::Jingle::Session& UNUSED(session), const glooxwrapper::Jingle::Session::Jingle& jingle)
+void XmppClient::handleSessionInitiation(gloox::Jingle::Session* UNUSED(session), const gloox::Jingle::Session::Jingle* jingle)
 {
-	glooxwrapper::Jingle::ICEUDP::Candidate candidate = jingle.getCandidate();
+	gloox::Jingle::ICEUDP::Candidate candidate{};
+
+	const gloox::Jingle::Content* content = static_cast<const gloox::Jingle::Content*>(jingle->plugins().front());
+	if (content)
+	{
+		const gloox::Jingle::ICEUDP* iceUDP = static_cast<const gloox::Jingle::ICEUDP*>(content->findPlugin(gloox::Jingle::PluginICEUDP));
+		if (iceUDP)
+			candidate = iceUDP->candidates().front();
+	}
 
 	if (candidate.ip.empty())
 	{
@@ -1532,5 +1560,5 @@ void XmppClient::handleSessionInitiation(glooxwrapper::Jingle::Session& UNUSED(s
 		return;
 	}
 
-	g_NetServer->SendHolePunchingMessage(candidate.ip.to_string(), candidate.port);
+	g_NetServer->SendHolePunchingMessage(candidate.ip, candidate.port);
 }
