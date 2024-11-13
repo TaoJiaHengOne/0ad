@@ -27,6 +27,7 @@
 #include <mutex>
 #include <optional>
 #include <type_traits>
+#include <utility>
 
 template<typename Callback>
 class PackagedTask;
