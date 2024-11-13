@@ -38,9 +38,6 @@
     <GainMultiplier>0.75</GainMultiplier>
     <GarrisonGainMultiplier>0.2</GarrisonGainMultiplier>
   </Trader>
-  <TreasureCollector>
-    <MaxDistance>12</MaxDistance>
-  </TreasureCollector>
   <UnitAI>
     <DefaultStance>passive</DefaultStance>
     <CanGuard>false</CanGuard>

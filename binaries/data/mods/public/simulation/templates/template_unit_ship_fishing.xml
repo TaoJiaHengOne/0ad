@@ -57,6 +57,9 @@
     <BarHeight>0.333</BarHeight>
     <HeightOffset>5.0</HeightOffset>
   </StatusBars>
+  <TreasureCollector>
+    <MaxDistance>5</MaxDistance>
+  </TreasureCollector>
   <UnitAI>
     <DefaultStance>passive</DefaultStance>
     <CanGuard>false</CanGuard>

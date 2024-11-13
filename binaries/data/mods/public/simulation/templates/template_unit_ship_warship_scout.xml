@@ -47,6 +47,9 @@
   <TrainingRestrictions>
     <Category>ScoutShip</Category>
   </TrainingRestrictions>
+  <TreasureCollector>
+    <MaxDistance>7</MaxDistance>
+  </TreasureCollector>
   <UnitMotion>
     <WalkSpeed op="mul">1.6</WalkSpeed>
     <Acceleration op="mul">3.0</Acceleration>

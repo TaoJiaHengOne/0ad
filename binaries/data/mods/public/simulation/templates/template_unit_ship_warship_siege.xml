@@ -89,6 +89,9 @@
       <attack_impact_ranged>attack/impact/siegeprojectilehit.xml</attack_impact_ranged>
     </SoundGroups>
   </Sound>
+  <TreasureCollector>
+    <MaxDistance>24</MaxDistance>
+  </TreasureCollector>
   <UnitMotion>
     <WalkSpeed op="mul">1.2</WalkSpeed>
     <Acceleration op="mul">1.8</Acceleration>

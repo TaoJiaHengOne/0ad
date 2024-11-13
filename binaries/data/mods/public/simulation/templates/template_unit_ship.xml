@@ -79,7 +79,9 @@
     <BarHeight>0.5</BarHeight>
     <HeightOffset>6.0</HeightOffset>
   </StatusBars>
-  <TreasureCollector disable=""/>
+  <TreasureCollector>
+    <MaxDistance>12</MaxDistance>
+  </TreasureCollector>
   <UnitAI>
     <Formations disable=""/>
   </UnitAI>
