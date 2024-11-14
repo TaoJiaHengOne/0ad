@@ -290,24 +290,26 @@ var g_NotificationsTypes =
 	},
 	"map-flare": function(notification, player)
 	{
-		// Don't display for the player that did the flare because they will see it immediately
-		if (player != Engine.GetPlayerID() && g_Players[player].isMutualAlly[Engine.GetPlayerID()])
-		{
-			let now = Date.now();
-			if (g_FlareRateLimitLastTimes.length)
-			{
-				g_FlareRateLimitLastTimes = g_FlareRateLimitLastTimes.filter(t => now - t < g_FlareRateLimitScope * 1000);
-				if (g_FlareRateLimitLastTimes.length >= g_FlareRateLimitMaximumFlares)
-				{
-					warn("Received too many flares. Dropping a flare request by '" + g_Players[player].name + "'.");
-					return;
-				}
-			}
-			g_FlareRateLimitLastTimes.push(now);
+		const shouldSeeFlare = g_IsObserver || g_Players[player]?.isMutualAlly[Engine.GetPlayerID()];
 
-			displayFlare(notification.position, notification.guid);
-			Engine.PlayUISound(g_FlareSound, false);
+		// Don't display for the player that did the flare because they will see it immediately.
+		if (!shouldSeeFlare || notification.guid == Engine.GetPlayerGUID())
+			return;
+
+		let now = Date.now();
+		if (g_FlareRateLimitLastTimes.length)
+		{
+			g_FlareRateLimitLastTimes = g_FlareRateLimitLastTimes.filter(t => now - t < g_FlareRateLimitScope * 1000);
+			if (g_FlareRateLimitLastTimes.length >= g_FlareRateLimitMaximumFlares)
+			{
+				warn("Received too many flares. Dropping a flare request by '" + g_Players[player].name + "'.");
+				return;
+			}
 		}
+		g_FlareRateLimitLastTimes.push(now);
+
+		displayFlare(notification.position, notification.guid);
+		Engine.PlayUISound(g_FlareSound, false);
 	}
 };
 

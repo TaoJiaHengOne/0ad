@@ -1944,7 +1944,8 @@ function displayFlare(position, playerGUID)
 		"template": g_TargetMarker.map_flare,
 		"x": position.x,
 		"z": position.z,
-		"owner": playerID
+		// Set the owner to gaia if the flare was sent by an observer (to make the target marker white).
+		"owner": playerID != -1 ? playerID : 0
 	});
 	g_MiniMapPanel.flare(position, playerID);
 	addChatMessage({

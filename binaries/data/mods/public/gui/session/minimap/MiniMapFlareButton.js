@@ -1,5 +1,5 @@
 /**
- * If the button that this class manages is pressed, an idle unit having one of the given classes is selected.
+ * If the button that this class manages is pressed, the input state is switched to 'flare', letting the player send a flare by left-clicking on the map.
  */
 class MiniMapFlareButton
 {
@@ -13,23 +13,36 @@ class MiniMapFlareButton
 
 	rebuild()
 	{
-		this.flareButton.enabled = !g_IsObserver;
+		if (g_IsObserver)
+		{
+			this.flareButton.sprite = "stretched:session/minimap-observer-flare.png";
+			this.flareButton.sprite_over = "stretched:session/minimap-observer-flare-highlight.png";
+		}
+		else
+		{
+			this.flareButton.sprite = "stretched:session/minimap-player-flare.png";
+			this.flareButton.sprite_over = "stretched:session/minimap-player-flare-highlight.png";
+		}
+		this.updateTooltip();
 	}
 
 	onHotkeyChange()
 	{
-		this.flareButton.tooltip =
-			colorizeHotkey("%(hotkey)s" + " ", "session.flare") +
-			translate(this.Tooltip);
+		this.colorizedHotkey = colorizeHotkey("%(hotkey)s" + " ", "session.flare");
+		this.updateTooltip();
+	}
+
+	updateTooltip()
+	{
+		this.flareButton.tooltip = this.colorizedHotkey + (g_IsObserver ? this.ObserverTooltip : this.PlayerTooltip);
 	}
 
 	onPress()
 	{
-		if (g_IsObserver)
-			return;
 		if (inputState == INPUT_NORMAL)
 			inputState = INPUT_FLARE;
 	}
 }
 
-MiniMapFlareButton.prototype.Tooltip = markForTranslation("Send a flare to your allies");
+MiniMapFlareButton.prototype.PlayerTooltip = markForTranslation("Send a flare to your allies.");
+MiniMapFlareButton.prototype.ObserverTooltip = markForTranslation("Send a flare to other observers.");

@@ -177,11 +177,21 @@ ChatMessageFormatSimulation.tribute = class
 
 ChatMessageFormatSimulation.flare = class
 {
-	// We don't need to check whether the player is supposed to see the flare as this function is only ever called in that case
+	// We don't need to check whether the player is supposed to see the flare as this function is only ever called in that case.
 	parse(msg)
 	{
-		if (Engine.ConfigDB_GetValue("user", "gui.session.notifications.flare") != "true")
+		switch (Engine.ConfigDB_GetValue("user", "gui.session.notifications.flare"))
+		{
+		case "never":
 			return "";
+
+		case "observer":
+			if (!g_IsObserver)
+				return "";
+
+		default:
+			break;
+		}
 
 		return {
 			"text": sprintf(translate("%(icon)s%(player)s has sent a flare."), {

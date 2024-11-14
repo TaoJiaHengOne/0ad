@@ -595,10 +595,15 @@
 				"config": "gui.session.notifications.barter"
 			},
 			{
-				"type": "boolean",
+				"type": "dropdown",
 				"label": "Chat notification flare",
-				"tooltip": "Show a chat notification when you or an ally sends a flare.",
-				"config": "gui.session.notifications.flare"
+				"tooltip": "Show a chat notification when a player sends a flare.",
+				"config": "gui.session.notifications.flare",
+				"list": [
+					{ "value": "never", "label": "Never", "tooltip": "Disable flare chat notifications."},
+					{ "value": "observer", "label": "Only as observer", "tooltip": "Only show flare chat notifications when you are observer."},
+					{ "value": "always", "label": "Always", "tooltip": "Always show flare chat notifications – as player and as observer."}
+				]
 			},
 			{
 				"type": "dropdown",

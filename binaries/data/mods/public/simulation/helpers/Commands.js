@@ -4,6 +4,13 @@ var g_DebugCommands = false;
 
 function ProcessCommand(player, cmd)
 {
+	if (player == -1)
+	{
+		if (g_ObserverCommands[cmd.type])
+			g_ObserverCommands[cmd.type](player, cmd, {});
+		return;
+	}
+
 	let cmpPlayer = QueryPlayerIDInterface(player);
 	if (!cmpPlayer)
 		return;
@@ -906,6 +913,10 @@ var g_Commands = {
 		}
 	},
 
+};
+
+var g_ObserverCommands = {
+	"map-flare": g_Commands["map-flare"]
 };
 
 /**

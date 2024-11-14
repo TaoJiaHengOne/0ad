@@ -101,9 +101,13 @@ function updateCursorAndTooltip()
 	let cursorSet = false;
 	let tooltipSet = false;
 	let informationTooltip = Engine.GetGUIObjectByName("informationTooltip");
-	if (inputState == INPUT_FLARE || inputState == INPUT_NORMAL && Engine.HotkeyIsPressed("session.flare") && !g_IsObserver)
+	if (inputState == INPUT_FLARE || inputState == INPUT_NORMAL && Engine.HotkeyIsPressed("session.flare"))
 	{
-		Engine.SetCursor("action-flare");
+		Engine.SetCursor(
+			g_IsObserver ?
+				"action-observer-flare" :
+				"action-player-flare"
+		);
 		cursorSet = true;
 	}
 	else if (!mouseIsOverObject && (inputState == INPUT_NORMAL || inputState == INPUT_PRESELECTEDACTION) || g_MiniMapPanel.isMouseOverMiniMap())
@@ -825,7 +829,7 @@ function handleInputAfterGui(ev)
 			return false;
 
 		case "mousebuttondown":
-			if (Engine.HotkeyIsPressed("session.flare") && controlsPlayer(g_ViewedPlayer))
+			if (Engine.HotkeyIsPressed("session.flare"))
 			{
 				triggerFlareAction(Engine.GetTerrainAtScreenPoint(ev.x, ev.y));
 				return true;
@@ -1134,7 +1138,7 @@ function handleInputAfterGui(ev)
 	case INPUT_FLARE:
 		if (ev.type == "mousebuttondown")
 		{
-			if (ev.button == SDL_BUTTON_LEFT && controlsPlayer(g_ViewedPlayer))
+			if (ev.button == SDL_BUTTON_LEFT)
 			{
 				triggerFlareAction(Engine.GetTerrainAtScreenPoint(ev.x, ev.y));
 				inputState = INPUT_NORMAL;
