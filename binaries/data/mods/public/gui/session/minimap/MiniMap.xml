@@ -57,7 +57,7 @@
 		size="2 4 117 119"
 		tooltip_style="sessionToolTip"
 		hotkey="session.flareactivate"
-		mouse_event_mask="texture:session/minimap-flare.png"
+		mouse_event_mask="texture:session/minimap-player-flare.png"
 	/>
 
 	<!-- MiniMap -->
