@@ -29,11 +29,33 @@ class CheckRefs:
         self.files: list[Path] = []
         self.roots: list[Path] = []
         self.deps: list[tuple[Path, Path]] = []
+        self.gui_items: dict[str, list[str]] = {
+            "gui_objects": [],
+            "sprites": [],
+            "styles": [],
+            "scrollbars": [],
+            "tooltips": [],
+            "fonts": [],
+            "colors": [],
+        }
+        self.deps_gui_items: dict[str, list[tuple[Path, str]]] = {
+            "gui_objects": [],
+            "sprites": [],
+            "styles": [],
+            "scrollbars": [],
+            "tooltips": [],
+            "fonts": [],
+            "colors": [],
+        }
+        # Three or four positive integers below 256 separated by spaces
+        integer_8bit = r"2[0-4]\d|25[0-5]|[01]?\d{1,2}"
+        self.rgba_color_regex = rf"\s*(({integer_8bit})\s+){{2,3}}({integer_8bit})\s*"
         self.vfs_root = Path(__file__).resolve().parents[3] / "binaries" / "data" / "mods"
         self.supportedTextureFormats = ("dds", "png")
         self.supportedMeshesFormats = ("pmd", "dae")
         self.supportedAnimationFormats = ("psa", "dae")
         self.supportedAudioFormats = "ogg"
+        self.supportedFontFormats = "fnt"
         self.mods = []
         self.__init_logger()
         self.inError = False
@@ -115,6 +137,7 @@ class CheckRefs:
         self.add_particles()
         self.add_soundgroups()
         self.add_audio()
+        self.add_fonts()
         self.add_gui_xml()
         self.add_gui_data()
         self.add_civs()
@@ -124,6 +147,7 @@ class CheckRefs:
         self.add_auras()
         self.add_tips()
         self.check_deps()
+        self.check_deps_gui_items()
         if args.check_unused:
             self.check_unused()
         if args.validate_templates:
@@ -581,37 +605,68 @@ class CheckRefs:
             [fp for (fp, ffp) in self.find_files("audio/", self.supportedAudioFormats)]
         )
 
-    def add_gui_object_repeat(self, obj, fp):
-        for repeat in obj.findall("repeat"):
-            for sub_obj in repeat.findall("object"):
-                # TODO: look at sprites, styles, etc
-                self.add_gui_object_include(sub_obj, fp)
-            for sub_obj in repeat.findall("objects"):
-                # TODO: look at sprites, styles, etc
-                self.add_gui_object_include(sub_obj, fp)
-
-            self.add_gui_object_include(repeat, fp)
-
-    def add_gui_object_include(self, obj, fp):
-        for include in obj.findall("include"):
-            included_file = include.get("file")
-            if included_file:
-                self.deps.append((fp, Path(included_file)))
+    def add_fonts(self):
+        self.logger.info("Loading fonts...")
+        for fp, _ffp in sorted(self.find_files("fonts/", "png")):
+            self.files.append(fp)
+        for fp, _ffp in sorted(self.find_files("fonts/", self.supportedFontFormats)):
+            self.gui_items["fonts"].append(fp.stem)
+            self.deps.append((fp, fp.with_suffix(".png")))
 
     def add_gui_object(self, parent, fp):
         if parent is None:
             return
 
         for obj in parent.findall("object"):
-            # TODO: look at sprites, styles, etc
-            self.add_gui_object_repeat(obj, fp)
-            self.add_gui_object_include(obj, fp)
             self.add_gui_object(obj, fp)
-        for obj in parent.findall("objects"):
-            # TODO: look at sprites, styles, etc
-            self.add_gui_object_repeat(obj, fp)
-            self.add_gui_object_include(obj, fp)
+        for obj in parent.findall("repeat"):
             self.add_gui_object(obj, fp)
+        self.add_gui_object_attribs(parent, fp)
+
+    def add_gui_object_attribs(self, parent, fp):
+        for attr, val in parent.attrib.items():
+            if attr == "name":
+                self.gui_items["gui_objects"].append(val)
+            elif attr == "font":
+                self.deps_gui_items["fonts"].append((fp, val))
+            elif attr == "textcolor":
+                self.add_gui_color_attrib(val, fp)
+            elif "sound" in attr:
+                self.deps.append((fp, Path(f"{val}")))
+            elif "sprite" in attr:
+                self.add_gui_sprite_attrib(val, fp)
+            elif attr == "mouse_event_mask":
+                if val.startswith("texture:"):
+                    texture_file = val.replace("texture:", "")
+                    self.deps.append((fp, Path(f"art/textures/ui/{texture_file}")))
+                else:
+                    self.logger.warning(
+                        "Invalid mouse_event_mask in '%s': missing the \"texture:\" modifier",
+                        str(self.vfs_to_relative_to_mods(fp)),
+                    )
+            elif attr == "style":
+                self.deps_gui_items["styles"].append((fp, val))
+            elif attr == "tooltip_style":
+                self.deps_gui_items["tooltips"].append((fp, val))
+            elif attr == "scrollbar_style":
+                self.deps_gui_items["scrollbars"].append((fp, val))
+
+    def add_gui_sprite_attrib(self, val, fp):
+        if "stretched:" in val or "cropped:" in val:
+            # Other modifiers like "grayscale:" are caught by this as well.
+            texture_file = val.split(":")[-1]
+            self.deps.append((fp, Path(f"art/textures/ui/{texture_file}")))
+        elif "color:" in val:
+            self.add_gui_color_attrib(val, fp)
+        else:
+            self.deps_gui_items["sprites"].append((fp, val))
+
+    def add_gui_color_attrib(self, val, fp):
+        color = val.replace("color:", "")
+        # Colors can be given names (in setup.xml files)
+        # which can then be used directly in place of rgb/rgba values.
+        if re.fullmatch(self.rgba_color_regex, color) is None:
+            self.deps_gui_items["colors"].append((fp, color))
 
     def add_gui_xml(self):
         self.logger.info("Loading GUI XML...")
@@ -656,26 +711,77 @@ class CheckRefs:
                             )
                     self.add_gui_object(root_xml, fp)
                 elif name == "setup":
-                    # TODO: look at sprites, styles, etc
-                    pass
+                    for obj in root_xml:
+                        if obj.tag == "scrollbar":
+                            if "name" in obj.attrib:
+                                self.gui_items["scrollbars"].append(obj.get("name"))
+                            else:
+                                self.logger.warning(
+                                    "Found scrollbar without name in %s",
+                                    self.vfs_to_relative_to_mods(fp),
+                                )
+                            for attr, val in obj.attrib.items():
+                                if "sprite" in attr:
+                                    self.add_gui_sprite_attrib(val, fp)
+                        elif obj.tag == "tooltip":
+                            if "name" in obj.attrib:
+                                self.gui_items["tooltips"].append(obj.get("name"))
+                            else:
+                                self.logger.warning(
+                                    "Found tooltip without name in %s",
+                                    self.vfs_to_relative_to_mods(fp),
+                                )
+                            for attr, val in obj.attrib.items():
+                                if attr == "name":
+                                    self.gui_items["tooltips"].append(val)
+                                elif attr == "use_object":
+                                    self.deps_gui_items["gui_objects"].append((fp, val))
+                                elif attr == "sprite":
+                                    self.add_gui_sprite_attrib(val, fp)
+                                elif attr == "textcolor":
+                                    self.add_gui_color_attrib(val, fp)
+                                elif attr == "font":
+                                    self.deps_gui_items["fonts"].append((fp, val))
+                        elif obj.tag == "color":
+                            if "name" in obj.attrib:
+                                self.gui_items["colors"].append(obj.get("name"))
+                            else:
+                                self.logger.warning(
+                                    "Found scrollbar without name in %s",
+                                    self.vfs_to_relative_to_mods(fp),
+                                )
+
                 elif name == "styles":
                     for style in root_xml.findall("style"):
-                        if style.get("sound_opened"):
-                            self.deps.append((fp, Path(f"{style.get('sound_opened')}")))
-                        if style.get("sound_closed"):
-                            self.deps.append((fp, Path(f"{style.get('sound_closed')}")))
-                        if style.get("sound_selected"):
-                            self.deps.append((fp, Path(f"{style.get('sound_selected')}")))
-                        if style.get("sound_disabled"):
-                            self.deps.append((fp, Path(f"{style.get('sound_disabled')}")))
-                    # TODO: look at sprites, styles, etc
+                        if "name" in style.attrib:
+                            self.gui_items["styles"].append(style.get("name"))
+                        else:
+                            self.logger.warning(
+                                "Found scrollbar without name in %s",
+                                self.vfs_to_relative_to_mods(fp),
+                            )
+                        self.gui_items["styles"].append(style.get("name"))
+                        self.add_gui_object_attribs(style, fp)
+
                 elif name == "sprites":
                     for sprite in root_xml.findall("sprite"):
-                        for image in sprite.findall("image"):
-                            if image.get("texture"):
-                                self.deps.append(
-                                    (fp, Path(f"art/textures/ui/{image.get('texture')}"))
-                                )
+                        if "name" in sprite.attrib:
+                            self.gui_items["sprites"].append(sprite.get("name"))
+                        else:
+                            self.logger.warning(
+                                "Found scrollbar without name in %s",
+                                self.vfs_to_relative_to_mods(fp),
+                            )
+                        for el in sprite.attrib.items():
+                            if el == "image":
+                                if el.get("texture"):
+                                    self.deps.append(
+                                        (fp, Path(f"art/textures/ui/{el.get('texture')}"))
+                                    )
+                                elif el.get("backcolor"):
+                                    self.add_gui_color_attrib(el.get("backcolor"), fp)
+                            elif el == "effect" and el.get("add_color"):
+                                self.add_gui_color_attrib(el.get("color"), fp)
                 else:
                     bio = BytesIO()
                     xml.write(bio)
@@ -834,6 +940,38 @@ class CheckRefs:
                 )
 
             self.inError = True
+
+    def check_deps_gui_items(self):
+        self.logger.info("Looking for missing GUI items...")
+        lower_case_items = {
+            key: [item.lower() for item in value] for key, value in self.gui_items.items()
+        }
+        missing_items: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
+
+        for category, items in self.deps_gui_items.items():
+            for ref, item in items:
+                if item not in self.gui_items[category]:
+                    missing_items[category][item].add(ref)
+
+        for category, items in missing_items.items():
+            # Simply remove the "s" at the end: ugly, but works.
+            # (It's only for prettier error messages anyway...)
+            category_name_singular = category[:-1]
+            for item, refs in items.items():
+                refs_relative = [str(self.vfs_to_relative_to_mods(ref)) for ref in refs]
+                self.logger.error(
+                    "Missing %s '%s' referenced by: %s",
+                    category_name_singular,
+                    item,
+                    ", ".join(sorted(refs_relative)),
+                )
+
+                if item.lower() in lower_case_items[category]:
+                    self.logger.warning(
+                        "### Case-insensitive match (found '%s')", lower_case_items[item.lower()]
+                    )
+
+            self.InError = True
 
     def check_unused(self):
         self.logger.info("Looking for unused files...")
