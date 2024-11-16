@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -83,7 +83,7 @@ class CCamera
 		float GetOrthoScale() const { return m_OrthoScale; }
 
 		// Returns a quad of view in camera space at given distance from camera.
-		void GetViewQuad(float dist, Quad& quad) const;
+		Quad GetViewQuad(const float dist) const;
 
 		// Builds a ray passing through the screen coordinate (px, py), calculates
 		// origin and direction of the ray.

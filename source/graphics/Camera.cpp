@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -160,7 +160,7 @@ float CCamera::GetAspectRatio() const
 	return static_cast<float>(m_ViewPort.m_Width) / static_cast<float>(m_ViewPort.m_Height);
 }
 
-void CCamera::GetViewQuad(float dist, Quad& quad) const
+CCamera::Quad CCamera::GetViewQuad(const float dist) const
 {
 	if (m_ProjType == ProjectionType::CUSTOM)
 	{
@@ -168,6 +168,7 @@ void CCamera::GetViewQuad(float dist, Quad& quad) const
 		const std::array<CVector2D, 4> ndcCorners = {
 			CVector2D{-1.0f, -1.0f}, CVector2D{1.0f, -1.0f},
 			CVector2D{1.0f, 1.0f}, CVector2D{-1.0f, 1.0f}};
+		Quad quad;
 		for (size_t idx = 0; idx < 4; ++idx)
 		{
 			const CVector2D& corner = ndcCorners[idx];
@@ -183,24 +184,18 @@ void CCamera::GetViewQuad(float dist, Quad& quad) const
 			quad[idx].Y = quadCorner.Y;
 			quad[idx].Z = quadCorner.Z;
 		}
-		return;
+		return quad;
 	}
 
 	const float y = m_ProjType == ProjectionType::PERSPECTIVE ? dist * tanf(m_FOV * 0.5f) : m_OrthoScale * 0.5f;
 	const float x = y * GetAspectRatio();
 
-	quad[0].X = -x;
-	quad[0].Y = -y;
-	quad[0].Z = dist;
-	quad[1].X = x;
-	quad[1].Y = -y;
-	quad[1].Z = dist;
-	quad[2].X = x;
-	quad[2].Y = y;
-	quad[2].Z = dist;
-	quad[3].X = -x;
-	quad[3].Y = y;
-	quad[3].Z = dist;
+	return {{
+		{-x, -y, dist},
+		{x, -y, dist},
+		{x, y, dist},
+		{-x, y, dist}
+	}};
 }
 
 void CCamera::BuildCameraRay(int px, int py, CVector3D& origin, CVector3D& dir) const
@@ -211,8 +206,7 @@ void CCamera::BuildCameraRay(int px, int py, CVector3D& origin, CVector3D& dir) 
 	const float dx = static_cast<float>(px) / m_ViewPort.m_Width;
 	const float dy = 1.0f - static_cast<float>(py) / m_ViewPort.m_Height;
 
-	Quad points;
-	GetViewQuad(m_FarPlane, points);
+	Quad points{GetViewQuad(m_FarPlane)};
 
 	// Transform from camera space to world space.
 	for (CVector3D& point : points)

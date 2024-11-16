@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -174,16 +174,12 @@ void CDebugRenderer::DrawCircle(const CVector3D& origin, const float radius, con
 
 void CDebugRenderer::DrawCameraFrustum(const CCamera& camera, const CColor& color, int intermediates, bool wireframe)
 {
-	CCamera::Quad nearPoints;
-	CCamera::Quad farPoints;
-
-	camera.GetViewQuad(camera.GetNearPlane(), nearPoints);
-	camera.GetViewQuad(camera.GetFarPlane(), farPoints);
-	for (int i = 0; i < 4; ++i)
-	{
-		nearPoints[i] = camera.m_Orientation.Transform(nearPoints[i]);
-		farPoints[i] = camera.m_Orientation.Transform(farPoints[i]);
-	}
+	CCamera::Quad nearPoints{camera.GetViewQuad(camera.GetNearPlane())};
+	for (CVector3D& point : nearPoints)
+		point = camera.m_Orientation.Transform(point);
+	CCamera::Quad farPoints{camera.GetViewQuad(camera.GetFarPlane())};
+	for (CVector3D& point : farPoints)
+		point = camera.m_Orientation.Transform(point);
 
 	CShaderTechniquePtr overlayTech =
 		GetShaderTechnique(str_debug_line, color, true, wireframe);

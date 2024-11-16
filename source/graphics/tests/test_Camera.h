@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -171,12 +171,9 @@ public:
 		);
 		camera.SetPerspectiveProjection(1.0f, 101.0f, DEGTORAD(90.0f));
 
-		CCamera::Quad quad;
-
 		// Zero distance point is the origin of all camera rays,
 		// so all plane points should stay there.
-		camera.GetViewQuad(0.0f, quad);
-		for (const CVector3D& point : quad)
+		for (const CVector3D& point : camera.GetViewQuad(0.0f))
 			TS_ASSERT_EQUALS(point, CVector3D(0.0f, 0.0f, 0.0f));
 
 		// Points lying on the near plane.
@@ -186,8 +183,7 @@ public:
 			CVector3D(1.0f, 1.0f, 1.0f),
 			CVector3D(-1.0f, 1.0f, 1.0f)
 		};
-		CCamera::Quad nearQuad;
-		camera.GetViewQuad(camera.GetNearPlane(), nearQuad);
+		const CCamera::Quad nearQuad{camera.GetViewQuad(camera.GetNearPlane())};
 		CompareQuads(nearQuad, expectedNearQuad);
 
 		CCamera::Quad expectedWorldSpaceNearQuad = {
@@ -205,8 +201,7 @@ public:
 			CVector3D(101.0f, 101.0f, 101.0f),
 			CVector3D(-101.0f, 101.0f, 101.0f)
 		};
-		CCamera::Quad farQuad;
-		camera.GetViewQuad(camera.GetFarPlane(), farQuad);
+		const CCamera::Quad farQuad{camera.GetViewQuad(camera.GetFarPlane())};
 		CompareQuads(farQuad, expectedFarQuad);
 
 		CCamera::Quad expectedWorldSpaceFarQuad = {
@@ -237,9 +232,7 @@ public:
 
 		// Zero distance is the origin plane of all camera rays,
 		// so all plane points should stay there.
-		CCamera::Quad quad;
-		camera.GetViewQuad(0.0f, quad);
-		for (const CVector3D& point : quad)
+		for (const CVector3D& point : camera.GetViewQuad(0.0f))
 		{
 			constexpr float EPS = 1e-4f;
 			TS_ASSERT_DELTA(point.Z, 0.0f, EPS);
@@ -252,8 +245,7 @@ public:
 			CVector3D(5.0f, 5.0f, 2.0f),
 			CVector3D(-5.0f, 5.0f, 2.0f)
 		};
-		CCamera::Quad nearQuad;
-		camera.GetViewQuad(camera.GetNearPlane(), nearQuad);
+		const CCamera::Quad nearQuad{camera.GetViewQuad(camera.GetNearPlane())};
 		CompareQuads(nearQuad, expectedNearQuad);
 
 		CCamera::Quad expectedWorldSpaceNearQuad = {
@@ -271,8 +263,7 @@ public:
 			CVector3D(5.0f, 5.0f, 128.0f),
 			CVector3D(-5.0f, 5.0f, 128.0f)
 		};
-		CCamera::Quad farQuad;
-		camera.GetViewQuad(camera.GetFarPlane(), farQuad);
+		const CCamera::Quad farQuad{camera.GetViewQuad(camera.GetFarPlane())};
 		CompareQuads(farQuad, expectedFarQuad);
 
 		CCamera::Quad expectedWorldSpaceFarQuad = {
@@ -315,11 +306,10 @@ public:
 			cameraPerspective.GetFarPlane()
 		};
 
-		CCamera::Quad quad, expectedQuad;
 		for (const float distance : distances)
 		{
-			camera.GetViewQuad(distance, quad);
-			cameraPerspective.GetViewQuad(distance, expectedQuad);
+			CCamera::Quad quad{camera.GetViewQuad(distance)};
+			CCamera::Quad expectedQuad{cameraPerspective.GetViewQuad(distance)};
 			CompareQuads(quad, expectedQuad);
 		}
 	}

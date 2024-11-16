@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -149,20 +149,18 @@ void CalculateBoundsForCascade(
 	// We can solve 3D problem in 2D space, because the frustum is
 	// symmetric by 2 planes. Than means we can use only one corner
 	// to find a circumscribed sphere.
-	CCamera::Quad corners;
-
-	camera.GetViewQuad(nearPlane, corners);
-	for (CVector3D& corner : corners)
+	CCamera::Quad nearCorners{camera.GetViewQuad(nearPlane)};
+	for (CVector3D& corner : nearCorners)
 		corner = camera.GetOrientation().Transform(corner);
-	const CVector3D cornerNear = corners[0];
-	for (const CVector3D& corner : corners)
+	const CVector3D cornerNear = nearCorners[0];
+	for (const CVector3D& corner : nearCorners)
 		*frustumBBAA += lightTransform.Transform(corner);
 
-	camera.GetViewQuad(farPlane, corners);
-	for (CVector3D& corner : corners)
+	CCamera::Quad farCorners{camera.GetViewQuad(farPlane)};
+	for (CVector3D& corner : farCorners)
 		corner = camera.GetOrientation().Transform(corner);
-	const CVector3D cornerDist = corners[0];
-	for (const CVector3D& corner : corners)
+	const CVector3D cornerDist = farCorners[0];
+	for (const CVector3D& corner : farCorners)
 		*frustumBBAA += lightTransform.Transform(corner);
 
 	// We solve 2D case for the right trapezoid.
