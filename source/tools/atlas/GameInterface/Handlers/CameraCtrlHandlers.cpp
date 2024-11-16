@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -114,10 +114,9 @@ MESSAGEHANDLER(Scroll)
 	}
 	else if (msg->type == eScrollType::TO)
 	{
-		CVector3D origin, dir;
 		float x, y;
 		msg->pos->GetScreenSpace(x, y);
-		g_Game->GetView()->GetCamera()->BuildCameraRay((int)x, (int)y, origin, dir);
+		auto [origin, dir] = g_Game->GetView()->GetCamera()->BuildCameraRay((int)x, (int)y);
 		dir *= targetDistance;
 		camera.Translate(targetPos - dir - origin);
 		g_Game->GetView()->GetCamera()->UpdateFrustum();

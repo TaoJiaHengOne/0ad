@@ -87,7 +87,12 @@ class CCamera
 
 		// Builds a ray passing through the screen coordinate (px, py), calculates
 		// origin and direction of the ray.
-		void BuildCameraRay(int px, int py, CVector3D& origin, CVector3D& dir) const;
+		struct Ray
+		{
+			CVector3D origin;
+			CVector3D direction;
+		};
+		Ray BuildCameraRay(const int px, const int py) const;
 
 		// General helpers that seem to fit here
 

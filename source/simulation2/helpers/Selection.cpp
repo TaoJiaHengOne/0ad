@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -36,8 +36,7 @@
 entity_id_t EntitySelection::PickEntityAtPoint(CSimulation2& simulation, const CCamera& camera, int screenX, int screenY, player_id_t player, bool allowEditorSelectables)
 {
 	PROFILE2("PickEntityAtPoint");
-	CVector3D origin, dir;
-	camera.BuildCameraRay(screenX, screenY, origin, dir);
+	const auto [origin, dir] = camera.BuildCameraRay(screenX, screenY);
 
 	CmpPtr<ICmpUnitRenderer> cmpUnitRenderer(simulation.GetSimContext().GetSystemEntity());
 	ENSURE(cmpUnitRenderer);

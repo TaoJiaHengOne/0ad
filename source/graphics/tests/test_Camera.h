@@ -335,8 +335,8 @@ public:
 			);
 			camera.SetPerspectiveProjection(1.0f, 101.0f, DEGTORAD(90.0f));
 
-			CVector3D origin, dir;
-			camera.BuildCameraRay(viewPort.m_Width / 2, viewPort.m_Height / 2, origin, dir);
+			const auto [origin, dir] =
+				camera.BuildCameraRay(viewPort.m_Width / 2, viewPort.m_Height / 2);
 			const CVector3D expectedOrigin = cameraPosition;
 			const CVector3D expectedDir = cameraDirection;
 			CompareVectors(origin, expectedOrigin, EPS);
@@ -365,8 +365,8 @@ public:
 			);
 			camera.SetOrthoProjection(2.0f, 128.0f, 10.0f);
 
-			CVector3D origin, dir;
-			camera.BuildCameraRay(viewPort.m_Width / 2, viewPort.m_Height / 2, origin, dir);
+			const auto [origin, dir] =
+				camera.BuildCameraRay(viewPort.m_Width / 2, viewPort.m_Height / 2);
 			const CVector3D expectedOrigin = cameraPosition;
 			const CVector3D expectedDir = cameraDirection;
 			CompareVectors(origin, expectedOrigin, EPS);

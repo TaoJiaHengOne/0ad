@@ -198,7 +198,7 @@ CCamera::Quad CCamera::GetViewQuad(const float dist) const
 	}};
 }
 
-void CCamera::BuildCameraRay(int px, int py, CVector3D& origin, CVector3D& dir) const
+CCamera::Ray CCamera::BuildCameraRay(const int px, const int py) const
 {
 	ENSURE(m_ProjType == ProjectionType::PERSPECTIVE || m_ProjType == ProjectionType::ORTHO);
 
@@ -216,19 +216,21 @@ void CCamera::BuildCameraRay(int px, int py, CVector3D& origin, CVector3D& dir) 
 	const CVector3D basisX = points[1] - points[0];
 	const CVector3D basisY = points[3] - points[0];
 
+	Ray result;
 	if (m_ProjType == ProjectionType::PERSPECTIVE)
 	{
 		// Build direction for the camera origin to the target point.
-		origin = m_Orientation.GetTranslation();
+		result.origin = m_Orientation.GetTranslation();
 		CVector3D targetPoint = points[0] + (basisX * dx) + (basisY * dy);
-		dir = targetPoint - origin;
+		result.direction = targetPoint - result.origin;
 	}
 	else if (m_ProjType == ProjectionType::ORTHO)
 	{
-		origin = m_Orientation.GetTranslation() + (basisX * (dx - 0.5f)) + (basisY * (dy - 0.5f));
-		dir = m_Orientation.GetIn();
+		result.origin = m_Orientation.GetTranslation() + (basisX * (dx - 0.5f)) + (basisY * (dy - 0.5f));
+		result.direction = m_Orientation.GetIn();
 	}
-	dir.Normalize();
+	result.direction.Normalize();
+	return result;
 }
 
 void CCamera::GetScreenCoordinates(const CVector3D& world, float& x, float& y) const
@@ -247,9 +249,9 @@ CVector3D CCamera::GetWorldCoordinates(int px, int py, bool aboveWater) const
 {
 	CHFTracer tracer(g_Game->GetWorld()->GetTerrain());
 	int x, z;
-	CVector3D origin, dir, delta, terrainPoint, waterPoint;
+	CVector3D delta, terrainPoint, waterPoint;
 
-	BuildCameraRay(px, py, origin, dir);
+	const auto [origin, dir] = BuildCameraRay(px, py);
 
 	bool gotTerrain = tracer.RayIntersect(origin, dir, x, z, terrainPoint);
 
@@ -315,9 +317,9 @@ CVector3D CCamera::GetWorldCoordinates(int px, int py, float h) const
 	CPlane plane;
 	plane.Set(CVector3D(0.f, 1.f, 0.f), CVector3D(0.f, h, 0.f)); // upwards normal, passes through h
 
-	CVector3D origin, dir, delta, currentTarget;
+	CVector3D delta, currentTarget;
 
-	BuildCameraRay(px, py, origin, dir);
+	const auto [origin, dir] = BuildCameraRay(px, py);
 
 	if (plane.FindRayIntersection(origin, dir, &currentTarget))
 		return currentTarget;

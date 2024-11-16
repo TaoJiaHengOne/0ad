@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -137,8 +137,7 @@ void CTouchInput::OnFingerMotion(int id, int x, int y)
 	if (m_State == STATE_PANNING && id == 0)
 	{
 		CCamera& camera = *(g_Game->GetView()->GetCamera());
-		CVector3D origin, dir;
-		camera.BuildCameraRay(x, y, origin, dir);
+		auto [origin, dir] = camera.BuildCameraRay(x, y);
 		dir *= m_PanDist / dir.Y;
 		camera.GetOrientation().Translate(m_PanFocus - dir - origin);
 		camera.UpdateFrustum();
@@ -151,8 +150,7 @@ void CTouchInput::OnFingerMotion(int id, int x, int y)
 		float zoomDist = (newDist - oldDist) * -0.005f * m_PanDist;
 
 		CCamera& camera = *(g_Game->GetView()->GetCamera());
-		CVector3D origin, dir;
-		camera.BuildCameraRay(m_Pos[0].X, m_Pos[0].Y, origin, dir);
+		CVector3D dir{camera.BuildCameraRay(m_Pos[0].X, m_Pos[0].Y).direction};
 		dir *= zoomDist;
 		camera.GetOrientation().Translate(dir);
 		camera.UpdateFrustum();
