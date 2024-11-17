@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -292,9 +292,8 @@ static CVector3D GetNearestPointToScreenCoords(const CVector3D& base, const CVec
 		float delta = (upper - lower) / 3.0;
 		float middle1 = lower + delta, middle2 = lower + 2.0f * delta;
 		CVector3D p1 = base + dir * middle1, p2 = base + dir * middle2;
-		CVector2D s1, s2;
-		g_Game->GetView()->GetCamera()->GetScreenCoordinates(p1, s1.X, s1.Y);
-		g_Game->GetView()->GetCamera()->GetScreenCoordinates(p2, s2.X, s2.Y);
+		const CVector2D s1{g_Game->GetView()->GetCamera()->GetScreenCoordinates(p1)};
+		const CVector2D s2{g_Game->GetView()->GetCamera()->GetScreenCoordinates(p2)};
 		if ((s1 - screen).Length() < (s2 - screen).Length())
 			upper = middle2;
 		else
@@ -341,7 +340,7 @@ BEGIN_COMMAND(AddPathNode)
 			fixed::FromFloat(focus.Z)
 		);
 		spline.InsertNode(index + 1, target, CFixedVector3D(), fixed::FromInt(1));
-		
+
 		spline.BuildSpline();
 		cmpCinemaManager->DeletePath(name);
 		cmpCinemaManager->AddPath(CCinemaPath(data, positionSpline, targetSpline));
@@ -462,9 +461,8 @@ static bool isPathNodePicked(const TNSpline& spline, const CVector2D& cursor, At
 			data.Position.Y.ToFloat(),
 			data.Position.Z.ToFloat()
 		);
-		CVector2D screen_pos;
-		g_Game->GetView()->GetCamera()->GetScreenCoordinates(position, screen_pos.X, screen_pos.Y);
-		if ((screen_pos - cursor).Length() < MINIMAL_SCREEN_DISTANCE)
+		const CVector2D screenPos{g_Game->GetView()->GetCamera()->GetScreenCoordinates(position)};
+		if ((screenPos - cursor).Length() < MINIMAL_SCREEN_DISTANCE)
 		{
 			node.index = i;
 			node.targetNode = targetNode;
@@ -508,9 +506,8 @@ QUERYHANDLER(PickPathNode)
 static bool isAxisPicked(const CVector3D& base, const CVector3D& direction, float length, const CVector2D& cursor)
 {
 	CVector3D position = GetNearestPointToScreenCoords(base, direction, cursor, 0, length);
-	CVector2D screen_position;
-	g_Game->GetView()->GetCamera()->GetScreenCoordinates(position, screen_position.X, screen_position.Y);
-	return (cursor - screen_position).Length() < MINIMAL_SCREEN_DISTANCE;
+	const CVector2D screenPos{g_Game->GetView()->GetCamera()->GetScreenCoordinates(position)};
+	return (cursor - screenPos).Length() < MINIMAL_SCREEN_DISTANCE;
 }
 
 QUERYHANDLER(PickAxis)

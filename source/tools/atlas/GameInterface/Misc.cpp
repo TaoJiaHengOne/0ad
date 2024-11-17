@@ -78,9 +78,13 @@ void AtlasMessage::Position::GetScreenSpace(float& x, float& y) const
 	switch (type)
 	{
 	case 0:
-		g_Game->GetView()->GetCamera()->GetScreenCoordinates(CVector3D(type0.x, type0.y, type0.x), x, y);
+	{
+		const CVector2D screenPos{g_Game->GetView()->GetCamera()->GetScreenCoordinates(
+			CVector3D{type0.x, type0.y, type0.x})};
+		x = screenPos.X;
+		y = screenPos.Y;
 		break;
-
+	}
 	case 1:
 		x = type1.x;
 		y = type1.y;

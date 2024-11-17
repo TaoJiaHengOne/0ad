@@ -1363,10 +1363,10 @@ void CPatchRData::RenderPriorities(CTextRenderer& textRenderer)
 			pos.X += TERRAIN_TILE_SIZE/4.f;
 			pos.Z += TERRAIN_TILE_SIZE/4.f;
 
-			float x, y;
-			camera.GetScreenCoordinates(pos, x, y);
+			const CVector2D screenPos{camera.GetScreenCoordinates(pos)};
 
-			textRenderer.PrintfAt(x, y, L"%d", m_Patch->m_MiniPatches[j][i].Priority);
+			textRenderer.PrintfAt(screenPos.X, screenPos.Y, L"%d",
+				m_Patch->m_MiniPatches[j][i].Priority);
 		}
 	}
 }

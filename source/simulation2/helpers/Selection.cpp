@@ -114,10 +114,9 @@ bool CheckEntityInRect(CEntityHandle handle, const CCamera& camera, int sx0, int
 		return false;
 
 	// Compare screen-space coordinates
-	float x, y;
-	camera.GetScreenCoordinates(position, x, y);
-	int ix = (int)x;
-	int iy = (int)y;
+	const CVector2D screenPos{camera.GetScreenCoordinates(position)};
+	int ix = static_cast<int>(screenPos.X);
+	int iy = static_cast<int>(screenPos.Y);
 	return sx0 <= ix && ix <= sx1 && sy0 <= iy && iy <= sy1;
 }
 

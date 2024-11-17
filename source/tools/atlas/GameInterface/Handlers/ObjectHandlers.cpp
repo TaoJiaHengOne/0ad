@@ -667,11 +667,10 @@ QUERYHANDLER(PickObject)
 			CFixedVector3D fixed = cmpPosition->GetPosition();
 			CVector3D centre = CVector3D(fixed.X.ToFloat(), fixed.Y.ToFloat(), fixed.Z.ToFloat());
 
-			float cx, cy;
-			g_Game->GetView()->GetCamera()->GetScreenCoordinates(centre, cx, cy);
+			const CVector2D screenPos{g_Game->GetView()->GetCamera()->GetScreenCoordinates(centre)};
 
-			msg->offsetx = (int)(cx - x);
-			msg->offsety = (int)(cy - y);
+			msg->offsetx = static_cast<int>(screenPos.X - x);
+			msg->offsety = static_cast<int>(screenPos.Y - y);
 		}
 	}
 }

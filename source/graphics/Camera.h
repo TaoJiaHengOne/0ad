@@ -26,6 +26,7 @@
 #include "maths/BoundingBoxAligned.h"
 #include "maths/Frustum.h"
 #include "maths/Matrix3D.h"
+#include "maths/Vector2D.h"
 
 #include <array>
 
@@ -97,7 +98,7 @@ class CCamera
 		// General helpers that seem to fit here
 
 		// Get the screen-space coordinates corresponding to a given world-space position
-		void GetScreenCoordinates(const CVector3D& world, float& x, float& y) const;
+		CVector2D GetScreenCoordinates(const CVector3D& world) const;
 
 		// Get the point on the terrain corresponding to pixel (px,py) (or the mouse coordinates)
 		// The aboveWater parameter determines whether we want to stop at the water plane or also get underwater points

@@ -233,16 +233,17 @@ CCamera::Ray CCamera::BuildCameraRay(const int px, const int py) const
 	return result;
 }
 
-void CCamera::GetScreenCoordinates(const CVector3D& world, float& x, float& y) const
+CVector2D CCamera::GetScreenCoordinates(const CVector3D& world) const
 {
 	CMatrix3D transform = m_ProjMat * m_Orientation.GetInverse();
 
 	CVector4D screenspace = transform.Transform(CVector4D(world.X, world.Y, world.Z, 1.0f));
 
-	x = screenspace.X / screenspace.W;
-	y = screenspace.Y / screenspace.W;
+	float x = screenspace.X / screenspace.W;
+	float y = screenspace.Y / screenspace.W;
 	x = (x + 1) * 0.5f * m_ViewPort.m_Width;
 	y = (1 - y) * 0.5f * m_ViewPort.m_Height;
+	return {x, y};
 }
 
 CVector3D CCamera::GetWorldCoordinates(int px, int py, bool aboveWater) const

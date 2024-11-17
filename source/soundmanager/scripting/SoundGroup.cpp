@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -147,38 +147,37 @@ float CSoundGroup::RadiansOffCenter(const CVector3D& position, bool& onScreen, f
 	const float yBufferSize = 15.f;
 	const float radianCap = m_MaxStereoAngle;
 
-	float x, y;
-	g_Game->GetView()->GetCamera()->GetScreenCoordinates(position, x, y);
+	const CVector2D screenPos{g_Game->GetView()->GetCamera()->GetScreenCoordinates(position)};
 
 	onScreen = true;
 	float answer = 0.f;
-	if (x < -xBufferSize)
+	if (screenPos.X < -xBufferSize)
 	{
 		onScreen = false;
 		answer = -radianCap;
 	}
-	else if (x > screenWidth + xBufferSize)
+	else if (screenPos.X > screenWidth + xBufferSize)
 	{
 		onScreen = false;
 		answer = radianCap;
 	}
 	else
 	{
-		if (x < 0 || x > screenWidth)
+		if (screenPos.X < 0 || screenPos.X > screenWidth)
 			itemRollOff = MAX_ROLLOFF;
 
-		answer = radianCap * (x * 2 / screenWidth - 1);
+		answer = radianCap * (screenPos.X * 2 / screenWidth - 1);
 	}
 
-	if (y < -yBufferSize)
+	if (screenPos.X < -yBufferSize)
 	{
 		onScreen = false;
 	}
-	else if (y > screenHeight + yBufferSize)
+	else if (screenPos.Y > screenHeight + yBufferSize)
 	{
 		onScreen = false;
 	}
-	else if (y < 0 || y > screenHeight)
+	else if (screenPos.Y < 0 || screenPos.Y > screenHeight)
 	{
 		itemRollOff = MAX_ROLLOFF;
 	}
