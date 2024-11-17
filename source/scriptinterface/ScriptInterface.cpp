@@ -214,7 +214,7 @@ JS::Value deepfreeze(const ScriptInterface& scriptInterface, JS::HandleValue val
 		return JS::UndefinedValue();
 	}
 
-	Script::FreezeObject(rq, val, true);
+	Script::DeepFreezeObject(rq, val);
 	return val;
 }
 

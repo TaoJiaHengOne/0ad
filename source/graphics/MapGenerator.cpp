@@ -388,7 +388,7 @@ Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::a
 	}
 
 	// Prevent unintentional modifications to the settings object by random map scripts
-	if (!Script::FreezeObject(rq, settingsVal, true))
+	if (!Script::DeepFreezeObject(rq, settingsVal))
 	{
 		LOGERROR("RunMapGenerationScript: Failed to deepfreeze settings");
 		return nullptr;

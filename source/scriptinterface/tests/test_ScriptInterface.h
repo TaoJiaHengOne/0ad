@@ -134,6 +134,24 @@ public:
 		}
 	}
 
+	void test_deepfreeze()
+	{
+		ScriptInterface script("Test", "Test", g_ScriptContext);
+		TestLogger logger;
+
+		TS_ASSERT(!script.LoadScript(L"testFreezeObject.js", "var obj1 = { foo: \"a\"}; deepfreeze(obj1); obj1.bar = \"b\";"));
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "Object is not extensible");
+
+		TS_ASSERT(!script.LoadScript(L"testDeepFreezeObject.js", "var obj2 = { foo: \"a\"}; deepfreeze(obj2); obj2.foo = \"b\";"));
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "\"foo\" is read-only");
+
+		TS_ASSERT(!script.LoadScript(L"testFreezeArray.js", "var array = [0]; deepfreeze(array); array.push(1);"));
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "can\'t define array index property past the end of an array with non-writable length");
+
+		TS_ASSERT(!script.LoadScript(L"testFreezeFunction.js", "var fn = a => a+1; deepfreeze(fn); fn.name = \"foo\";"));
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "\"name\" is read-only");
+	}
+
 	/**
 	 * This test is mainly to make sure that all required template overloads get instantiated at least once so that compiler errors
 	 * in these functions are revealed instantly (but it also tests the basic functionality of these functions).

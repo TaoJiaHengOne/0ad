@@ -150,17 +150,35 @@ inline bool GetObjectClassName(const ScriptRequest& rq, JS::HandleValue val, T& 
 	return GetObjectClassName(rq, obj, name);
 }
 
-inline bool FreezeObject(const ScriptRequest& rq, JS::HandleValue objVal, bool deep)
+inline bool DeepFreezeObject(const ScriptRequest& rq, JS::HandleValue objVal)
 {
 	if (!objVal.isObject())
+	{
+		LOGERROR("DeepFreezeObject expected object type!");
+		return false;
+	}
+
+	// Get all properties and recursively freeze those that are objects
+	JS::RootedObject obj(rq.cx, &objVal.toObject());
+	JS::RootedIdVector props(rq.cx);
+	if (!js::GetPropertyKeys(rq.cx, obj, JSITER_HIDDEN, &props))
 		return false;
 
-	JS::RootedObject obj(rq.cx, &objVal.toObject());
+	for (size_t i = 0; i < props.length(); ++i)
+	{
+		JS::RootedId id(rq.cx, props[i]);
+		JS::RootedValue val(rq.cx);
+		if (!JS_IdToValue(rq.cx, id, &val))
+			return false;
 
-	if (deep)
-		return JS_DeepFreezeObject(rq.cx, obj);
-	else
-		return JS_FreezeObject(rq.cx, obj);
+		if (!val.isObject())
+			continue;
+
+		if (!DeepFreezeObject(rq, val))
+			return false;
+	}
+
+	return JS_FreezeObject(rq.cx, obj);
 }
 
 /**

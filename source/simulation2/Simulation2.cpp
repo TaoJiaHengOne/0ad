@@ -171,7 +171,7 @@ public:
 		for (const SimulationCommand& command : commands)
 		{
 			JS::RootedValue tmpCommand(rqNew.cx, Script::CloneValueFromOtherCompartment(newScript, oldScript, command.data));
-			Script::FreezeObject(rqNew, tmpCommand, true);
+			Script::DeepFreezeObject(rqNew, tmpCommand);
 			SimulationCommand cmd(command.player, rqNew.cx, tmpCommand);
 			newCommands.emplace_back(std::move(cmd));
 		}
@@ -849,7 +849,7 @@ void CSimulation2::LoadMapSettings()
 	// Initialize here instead of in Update()
 	ScriptFunction::CallVoid(rq, global, "LoadMapSettings", m->m_MapSettings);
 
-	Script::FreezeObject(rq, m->m_InitAttributes, true);
+	Script::DeepFreezeObject(rq, m->m_InitAttributes);
 	GetScriptInterface().SetGlobal("InitAttributes", m->m_InitAttributes, true, true, true);
 
 	if (!m->m_StartupScript.empty())

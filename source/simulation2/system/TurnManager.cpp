@@ -223,7 +223,7 @@ void CTurnManager::AddCommand(int client, int player, JS::HandleValue data, u32 
 
 	ScriptRequest rq(m_Simulation2.GetScriptInterface());
 
-	Script::FreezeObject(rq, data, true);
+	Script::DeepFreezeObject(rq, data);
 
 	size_t command_in_turns = turn - (m_CurrentTurn+1);
 	if (m_QueuedCommands.size() <= command_in_turns)
@@ -295,7 +295,7 @@ void CTurnManager::QuickSave(JS::HandleValue GUIMetadata)
 
 	m_QuickSaveMetadata.set(Script::DeepCopy(rq, GUIMetadata));
 	// Freeze state to ensure that consectuvie loads don't modify the state
-	Script::FreezeObject(rq, m_QuickSaveMetadata, true);
+	Script::DeepFreezeObject(rq, m_QuickSaveMetadata);
 
 	LOGMESSAGERENDER("Quicksaved game");
 }

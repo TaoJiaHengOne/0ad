@@ -73,7 +73,7 @@ template<> void Script::ToJSVal<CParamNode>(const ScriptRequest& rq,  JS::Mutabl
 	// Prevent modifications to the object, so that it's safe to share between
 	// components and to reconstruct on deserialization
 	if (ret.isObject())
-		Script::FreezeObject(rq, ret, true);
+		Script::DeepFreezeObject(rq, ret);
 }
 
 template<> void Script::ToJSVal<const CParamNode*>(const ScriptRequest& rq,  JS::MutableHandleValue ret, const CParamNode* const& val)

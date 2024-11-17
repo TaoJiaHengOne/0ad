@@ -704,7 +704,7 @@ void XmppClient::CreateGUIMessage(
 
 	JS::RootedObject messageObj(rq.cx, message.toObjectOrNull());
 	SetGUIMessageProperty(rq, messageObj, args...);
-	Script::FreezeObject(rq, message, true);
+	Script::DeepFreezeObject(rq, message);
 	m_GuiMessageQueue.push_back(JS::Heap<JS::Value>(message));
 }
 
@@ -755,7 +755,7 @@ JS::Value XmppClient::GuiPollNewMessages(const ScriptInterface& guiInterface)
 		if (true)
 		{
 			Script::SetProperty(rq, historicMessage, "historic", true);
-			Script::FreezeObject(rq, historicMessage, true);
+			Script::DeepFreezeObject(rq, historicMessage);
 			m_HistoricGuiMessages.push_back(JS::Heap<JS::Value>(historicMessage));
 		}
 		else

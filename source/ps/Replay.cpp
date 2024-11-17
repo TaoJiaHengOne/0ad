@@ -279,7 +279,7 @@ void CReplayPlayer::Replay(const bool serializationtest, const int rejointesttur
 			ScriptRequest rq(g_Game->GetSimulation2()->GetScriptInterface());
 			JS::RootedValue data(rq.cx);
 			Script::ParseJSON(rq, line, &data);
-			Script::FreezeObject(rq, data, true);
+			Script::DeepFreezeObject(rq, data);
 			commands.emplace_back(SimulationCommand(player, rq.cx, data));
 		}
 		else if (type == "hash" || type == "hash-quick")
