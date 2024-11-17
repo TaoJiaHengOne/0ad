@@ -1,7 +1,6 @@
 newoption { category = "Pyrogenesis", trigger = "android", description = "Use non-working Android cross-compiling mode" }
 newoption { category = "Pyrogenesis", trigger = "coverage", description = "Enable code coverage data collection (GCC only)" }
 newoption { category = "Pyrogenesis", trigger = "gles", description = "Use non-working OpenGL ES 2.0 mode" }
-newoption { category = "Pyrogenesis", trigger = "icc", description = "Use Intel C++ Compiler (Linux only; should use either \"--cc icc\" or --without-pch too, and then set CXX=icpc before calling make)" }
 newoption { category = "Pyrogenesis", trigger = "jenkins-tests", description = "Configure CxxTest to use the XmlPrinter runner which produces Jenkins-compatible output" }
 newoption { category = "Pyrogenesis", trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
 newoption { category = "Pyrogenesis", trigger = "outpath", description = "Location for generated project files", default="../workspaces/default" }
@@ -50,8 +49,6 @@ dofile("extern_libs5.lua")
 -- detect compiler for non-Windows
 if os.istarget("macosx") then
 	cc = "clang"
-elseif os.istarget("linux") and _OPTIONS["icc"] then
-	cc = "icc"
 elseif os.istarget("bsd") and os.getversion().description == "FreeBSD" then
 	cc = "clang"
 elseif not os.istarget("windows") then
@@ -190,9 +187,9 @@ function project_set_build_flags()
 		symbols "On"
 	end
 
-	if cc ~= "icc" and (os.istarget("windows") or not _OPTIONS["minimal-flags"]) then
+	if os.istarget("windows") or not _OPTIONS["minimal-flags"] then
 		-- adds the -Wall compiler flag
-		warnings "Extra" -- this causes far too many warnings/remarks on ICC
+		warnings "Extra"
 	end
 
 	-- disable Windows debug heap, since it makes malloc/free hugely slower when
@@ -266,142 +263,119 @@ function project_set_build_flags()
 
 	else	-- *nix
 
-		-- TODO, FIXME: This check is incorrect because it means that some additional flags will be added inside the "else" branch if the
-		-- compiler is ICC and minimal-flags is specified (ticket: #2994)
-		if cc == "icc" and not _OPTIONS["minimal-flags"] then
+		-- exclude most non-essential build options for minimal-flags
+		if not _OPTIONS["minimal-flags"] then
 			buildoptions {
-				"-w1",
-				-- "-Wabi",
-				-- "-Wp64", -- complains about OBJECT_TO_JSVAL which is annoying
-				"-Wpointer-arith",
-				"-Wreturn-type",
-				-- "-Wshadow",
-				"-Wuninitialized",
-				"-Wunknown-pragmas",
-				"-Wunused-function",
-				"-wd1292" -- avoid lots of 'attribute "__nonnull__" ignored'
+				-- enable most of the standard warnings
+				"-Wno-switch",		-- enumeration value not handled in switch (this is sometimes useful, but results in lots of noise)
+				"-Wno-reorder",		-- order of initialization list in constructors (lots of noise)
+				"-Wno-invalid-offsetof",	-- offsetof on non-POD types (see comment in renderer/PatchRData.cpp)
+
+				"-Wextra",
+				"-Wno-missing-field-initializers",	-- (this is common in external headers we can't fix)
+
+				-- add some other useful warnings that need to be enabled explicitly
+				"-Wunused-parameter",
+				"-Wredundant-decls",	-- (useful for finding some multiply-included header files)
+				-- "-Wformat=2",		-- (useful sometimes, but a bit noisy, so skip it by default)
+				-- "-Wcast-qual",		-- (useful for checking const-correctness, but a bit noisy, so skip it by default)
+				"-Wnon-virtual-dtor",	-- (sometimes noisy but finds real bugs)
+				"-Wundef",				-- (useful for finding macro name typos)
+
+				-- enable security features (stack checking etc) that shouldn't have
+				-- a significant effect on performance and can catch bugs
+				"-fstack-protector-all",
+
+				-- always enable strict aliasing (useful in debug builds because of the warnings)
+				"-fstrict-aliasing",
+
+				-- don't omit frame pointers (for now), because performance will be impacted
+				-- negatively by the way this breaks profilers more than it will be impacted
+				-- positively by the optimisation
+				"-fno-omit-frame-pointer"
 			}
-			filter "Debug"
-				buildoptions { "-O0" } -- ICC defaults to -O2
-			filter { }
-			if os.istarget("macosx") then
-				linkoptions { "-multiply_defined","suppress" }
-			end
-		else
-			-- exclude most non-essential build options for minimal-flags
-			if not _OPTIONS["minimal-flags"] then
+
+			filter { "Release" }
 				buildoptions {
-					-- enable most of the standard warnings
-					"-Wno-switch",		-- enumeration value not handled in switch (this is sometimes useful, but results in lots of noise)
-					"-Wno-reorder",		-- order of initialization list in constructors (lots of noise)
-					"-Wno-invalid-offsetof",	-- offsetof on non-POD types (see comment in renderer/PatchRData.cpp)
-
-					"-Wextra",
-					"-Wno-missing-field-initializers",	-- (this is common in external headers we can't fix)
-
-					-- add some other useful warnings that need to be enabled explicitly
-					"-Wunused-parameter",
-					"-Wredundant-decls",	-- (useful for finding some multiply-included header files)
-					-- "-Wformat=2",		-- (useful sometimes, but a bit noisy, so skip it by default)
-					-- "-Wcast-qual",		-- (useful for checking const-correctness, but a bit noisy, so skip it by default)
-					"-Wnon-virtual-dtor",	-- (sometimes noisy but finds real bugs)
-					"-Wundef",				-- (useful for finding macro name typos)
-
-					-- enable security features (stack checking etc) that shouldn't have
-					-- a significant effect on performance and can catch bugs
-					"-fstack-protector-all",
-
-					-- always enable strict aliasing (useful in debug builds because of the warnings)
-					"-fstrict-aliasing",
-
-					-- don't omit frame pointers (for now), because performance will be impacted
-					-- negatively by the way this breaks profilers more than it will be impacted
-					-- positively by the optimisation
-					"-fno-omit-frame-pointer"
+					-- FORTIFY_SOURCE needs optimizations to be enabled
+					"-U_FORTIFY_SOURCE",    -- (avoid redefinition warning if already defined)
+					"-D_FORTIFY_SOURCE=2",
 				}
+			filter {}
 
-				filter { "Release" }
-					buildoptions {
-						-- FORTIFY_SOURCE needs optimizations to be enabled
-						"-U_FORTIFY_SOURCE",	-- (avoid redefinition warning if already defined)
-						"-D_FORTIFY_SOURCE=2",
-					}
-				filter {}
-
-				-- issues with gcc 12 to 14, workaround for CI which sets CC=gcc-12
-				if cc == "gcc-12" then
-					buildoptions {
-						"-Wno-dangling-pointer",
-					}
-				end
-
-				if not _OPTIONS["without-pch"] then
-					buildoptions {
-						-- do something (?) so that ccache can handle compilation with PCH enabled
-						-- (ccache 3.1+ also requires CCACHE_SLOPPINESS=time_macros for this to work)
-						"-fpch-preprocess"
-					}
-				end
-
-				if os.istarget("linux") or os.istarget("bsd") then
-					buildoptions { "-fPIC" }
-					linkoptions { "-Wl,--no-undefined", "-Wl,--as-needed", "-Wl,-z,relro" }
-				end
-
-				if arch == "x86" then
-					buildoptions {
-						-- To support intrinsics like __sync_bool_compare_and_swap on x86
-						-- we need to set -march to something that supports them (i686).
-						-- We use pentium3 to also enable other features like mmx and sse,
-						-- while tuning for generic to have good performance on every
-						-- supported CPU.
-						-- Note that all these features are already supported on amd64.
-						"-march=pentium3 -mtune=generic",
-						-- This allows x86 operating systems to handle the 2GB+ public mod.
-						"-D_FILE_OFFSET_BITS=64"
-					}
-				end
+			-- issues with gcc 12 to 14, workaround for CI which sets CC=gcc-12
+			if cc == "gcc-12" then
+				buildoptions {
+					"-Wno-dangling-pointer",
+				}
 			end
 
-			if arch == "arm" then
-				-- disable warnings about va_list ABI change and use
-				-- compile-time flags for futher configuration.
-				buildoptions { "-Wno-psabi" }
-				if _OPTIONS["android"] then
-					-- Android uses softfp, so we should too.
-					buildoptions { "-mfloat-abi=softfp" }
-				end
+			if not _OPTIONS["without-pch"] then
+				buildoptions {
+					-- do something (?) so that ccache can handle compilation with PCH enabled
+					-- (ccache 3.1+ also requires CCACHE_SLOPPINESS=time_macros for this to work)
+					"-fpch-preprocess"
+				}
 			end
 
-			if _OPTIONS["coverage"] then
-				buildoptions { "-fprofile-arcs", "-ftest-coverage" }
-				links { "gcov" }
+			if os.istarget("linux") or os.istarget("bsd") then
+				buildoptions { "-fPIC" }
+				linkoptions { "-Wl,--no-undefined", "-Wl,--as-needed", "-Wl,-z,relro" }
 			end
 
-			-- MacOS 10.12 only supports intel processors with SSE 4.1, so enable that.
-			if os.istarget("macosx") and arch == "amd64" then
-				buildoptions { "-msse4.1" }
+			if arch == "x86" then
+				buildoptions {
+					-- To support intrinsics like __sync_bool_compare_and_swap on x86
+					-- we need to set -march to something that supports them (i686).
+					-- We use pentium3 to also enable other features like mmx and sse,
+					-- while tuning for generic to have good performance on every
+					-- supported CPU.
+					-- Note that all these features are already supported on amd64.
+					"-march=pentium3 -mtune=generic",
+					-- This allows x86 operating systems to handle the 2GB+ public mod.
+					"-D_FILE_OFFSET_BITS=64"
+				}
 			end
+		end
 
-			-- Check if SDK path should be used
-			if _OPTIONS["sysroot"] then
-				buildoptions { "-isysroot " .. _OPTIONS["sysroot"] }
-				linkoptions { "-Wl,-syslibroot," .. _OPTIONS["sysroot"] }
+		if arch == "arm" then
+			-- disable warnings about va_list ABI change and use
+			-- compile-time flags for futher configuration.
+			buildoptions { "-Wno-psabi" }
+			if _OPTIONS["android"] then
+				-- Android uses softfp, so we should too.
+				buildoptions { "-mfloat-abi=softfp" }
 			end
+		end
 
-			-- On OS X, sometimes we need to specify the minimum API version to use
-			if _OPTIONS["macosx-version-min"] then
-				buildoptions { "-mmacosx-version-min=" .. _OPTIONS["macosx-version-min"] }
-				-- clang and llvm-gcc look at mmacosx-version-min to determine link target
-				-- and CRT version, and use it to set the macosx_version_min linker flag
-				linkoptions { "-mmacosx-version-min=" .. _OPTIONS["macosx-version-min"] }
-			end
+		if _OPTIONS["coverage"] then
+			buildoptions { "-fprofile-arcs", "-ftest-coverage" }
+			links { "gcov" }
+		end
 
-			-- Only libc++ is supported on MacOS
-			if os.istarget("macosx") then
-				buildoptions { "-stdlib=libc++" }
-				linkoptions { "-stdlib=libc++" }
-			end
+		-- MacOS 10.12 only supports intel processors with SSE 4.1, so enable that.
+		if os.istarget("macosx") and arch == "amd64" then
+			buildoptions { "-msse4.1" }
+		end
+
+		-- Check if SDK path should be used
+		if _OPTIONS["sysroot"] then
+			buildoptions { "-isysroot " .. _OPTIONS["sysroot"] }
+			linkoptions { "-Wl,-syslibroot," .. _OPTIONS["sysroot"] }
+		end
+
+		-- On OS X, sometimes we need to specify the minimum API version to use
+		if _OPTIONS["macosx-version-min"] then
+			buildoptions { "-mmacosx-version-min=" .. _OPTIONS["macosx-version-min"] }
+			-- clang and llvm-gcc look at mmacosx-version-min to determine link target
+			-- and CRT version, and use it to set the macosx_version_min linker flag
+			linkoptions { "-mmacosx-version-min=" .. _OPTIONS["macosx-version-min"] }
+		end
+
+		-- Only libc++ is supported on MacOS
+		if os.istarget("macosx") then
+			buildoptions { "-stdlib=libc++" }
+			linkoptions { "-stdlib=libc++" }
 		end
 
 		buildoptions {
