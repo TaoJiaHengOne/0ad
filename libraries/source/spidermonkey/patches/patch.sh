@@ -14,6 +14,9 @@ patch -p1 <"${PATCHES}"/FixRustLinkage.diff
 # Differentiate debug/release library names.
 patch -p1 <"${PATCHES}"/FixLibNames.diff
 
+# Add needed debug define in pkg-config file.
+patch -p1 <"${PATCHES}"/FixPkgConfigDebug.diff
+
 # On macOS, embedded build is broken due to a faulty check for pkg-config
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1776255
 # The fix above is included in ESR 128, but does not apply to 115
