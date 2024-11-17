@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@
 // raised when templates are instantiated (e.g. vfs_lookup.cpp),
 // so include this header from such source files as well.
 
-#include "lib/sysdep/compiler.h"	// ICC_VERSION
+#include "lib/sysdep/compiler.h"	// MSC_VERSION
 #include "lib/sysdep/arch.h"	// ARCH_IA32
 
 #if MSC_VERSION
@@ -40,20 +40,4 @@
 # pragma warning(disable:4820) // incorrect padding
 # pragma warning(disable:4514) // unreferenced inlined function has been removed
 # pragma warning(disable:4571) // Informational: catch(...) semantics changed since Visual C++ 7.1; structured exceptions (SEH) are no longer caught
-#endif
-#if ICC_VERSION
-# pragma warning(push)
-# pragma warning(disable:82)	// storage class is not first
-# pragma warning(disable:193)	// zero used for undefined preprocessing identifier
-# pragma warning(disable:304)	// access control not specified
-# pragma warning(disable:367)	// duplicate friend declaration
-# pragma warning(disable:444)	// destructor for base class is not virtual
-# pragma warning(disable:522)	// function redeclared inline after being called
-# pragma warning(disable:811)	// exception specification for implicitly declared virtual function is incompatible with that of overridden function
-# pragma warning(disable:1879)	// unimplemented pragma ignored
-# pragma warning(disable:2270)	// the declaration of the copy assignment operator has been suppressed
-# pragma warning(disable:2273)	// the declaration of the copy constructor has been suppressed
-# if ARCH_IA32
-#  pragma warning(disable:693)	// calling convention specified here is ignored
-# endif
 #endif

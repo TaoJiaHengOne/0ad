@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -113,25 +113,12 @@ enum DataKind
 
 //-----------------------------------------------------------------------------
 
-#if ICC_VERSION
-# pragma warning(push)
-# pragma warning(disable:94)	// the size of an array must be greater than zero
-# pragma warning(disable:271)	// trailing comma is nonstandard
-# pragma warning(disable:418)	// declaration requires a typedef name
-# pragma warning(disable:791)	// calling convention specified more than once
-#endif
-
 #pragma pack(push, 8)	// seems to be required
 
 #define _NO_CVCONST_H	// request SymTagEnum be defined
 #include <dbghelp.h>	// must come after win.h and the above definitions
 
 #pragma pack(pop)
-
-#if ICC_VERSION
-# pragma warning(pop)
-#endif
-
 
 //-----------------------------------------------------------------------------
 

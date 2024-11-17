@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -42,7 +42,7 @@ typedef short int16_t;
 typedef int int32_t;
 #endif
 
-#if MSC_VERSION || ICC_VERSION || LCC_VERSION
+#if MSC_VERSION || LCC_VERSION
 typedef __int64 int64_t;
 #else
 typedef long long int64_t;
@@ -51,7 +51,7 @@ typedef long long int64_t;
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
-#if MSC_VERSION || ICC_VERSION || LCC_VERSION
+#if MSC_VERSION || LCC_VERSION
 typedef unsigned __int64 uint64_t;
 #else
 typedef unsigned long long uint64_t;

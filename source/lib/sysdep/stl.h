@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -48,12 +48,6 @@
 # define STL_GCC __GLIBCXX__
 #else
 # define STL_GCC 0
-#endif
-// .. ICC
-#if defined(__INTEL_CXXLIB_ICC)
-# define STL_ICC __INTEL_CXXLIB_ICC
-#else
-# define STL_ICC 0
 #endif
 
 

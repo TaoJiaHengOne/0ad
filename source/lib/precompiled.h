@@ -54,11 +54,6 @@
 // (as soon as possible so that headers below are covered)
 #include "lib/pch/pch_warnings.h"
 
-#if ICC_VERSION
-#include <mathimf.h>	// (must come before <cmath> or <math.h> (replaces them))
-double __cdecl abs(double x);	// not declared by mathimf
-#endif
-
 
 //
 // headers made available everywhere for convenience

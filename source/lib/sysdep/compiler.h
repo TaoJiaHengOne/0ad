@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 Wildfire Games.
+/* Copyright (c) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -29,18 +29,12 @@
 
 // detect compiler and its version (0 if not present, otherwise
 // major*100 + minor). note that more than one *_VERSION may be
-// non-zero due to interoperability (e.g. ICC with MSC).
+// non-zero due to interoperability.
 // .. VC
 #ifdef _MSC_VER
 # define MSC_VERSION _MSC_VER
 #else
 # define MSC_VERSION 0
-#endif
-// .. ICC (VC-compatible, GCC-compatible)
-#if defined(__INTEL_COMPILER)
-# define ICC_VERSION __INTEL_COMPILER
-#else
-# define ICC_VERSION 0
 #endif
 // .. LCC (Win32) and MCST LCC (E2K) compilers define same identifier (__LCC__)
 #if defined(__LCC__) && !defined(__MCST__)
@@ -106,7 +100,7 @@
 #ifndef COMPILER_HAS_SSE
 # if GCC_VERSION && defined(__SSE__)
 #  define COMPILER_HAS_SSE 1
-# elif MSC_VERSION	// also includes ICC
+# elif MSC_VERSION
 #  define COMPILER_HAS_SSE 1
 # else
 #  define COMPILER_HAS_SSE 0
@@ -116,7 +110,7 @@
 #ifndef COMPILER_HAS_SSE2
 # if GCC_VERSION && defined(__SSE2__)
 #  define COMPILER_HAS_SSE2 1
-# elif MSC_VERSION	// also includes ICC
+# elif MSC_VERSION
 #  define COMPILER_HAS_SSE2 1
 # else
 #  define COMPILER_HAS_SSE2 0

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -384,7 +384,6 @@ static double MeasureRelativeDistance()
 {
 	const size_t size = 32*MiB;
 	void* mem = vm::Allocate(size);
-	ASSUME_ALIGNED(mem, pageSize);
 
 	const uintptr_t previousProcessorMask = os_cpu_SetThreadAffinityMask(os_cpu_ProcessorMask());
 

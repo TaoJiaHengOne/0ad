@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -83,7 +83,7 @@ struct Growth_Exponential
 // allocators such as Arena append variable-sized intervals).
 //
 // we don't store smart pointers because storage usually doesn't need
-// to be copied, and ICC 11 sometimes wasn't able to inline Address().
+// to be copied.
 struct Storage
 {
 	// @return starting address (alignment depends on the allocator).

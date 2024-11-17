@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -44,16 +44,6 @@
 # pragma warning(disable:6246)	// local declaration hides declaration of the same name in outer scope
 # pragma warning(disable:6326)	// potential comparison of a constant with another constant
 # pragma warning(disable:6334)	// sizeof operator applied to an expression with an operator might yield unexpected results
-// .. Intel-specific
-# if ICC_VERSION
-#  pragma warning(disable:383)	// value copied to temporary, reference to temporary used
-#  pragma warning(disable:981)	// operands are evaluated in unspecified order
-#  pragma warning(disable:1418)	// external function definition with no prior declaration (raised for all non-static function templates)
-#  pragma warning(disable:1572)	// floating-point equality and inequality comparisons are unreliable
-#  pragma warning(disable:1684)	// conversion from pointer to same-sized integral type
-#  pragma warning(disable:1786)	// function is deprecated (disabling 4996 isn't sufficient)
-#  pragma warning(disable:2415)	// variable of static storage duration was declared but never referenced (raised by Boost)
-# endif
 // .. disabled by default in W4, ENABLE them
 # pragma warning(default:4062)   // enumerator is not handled
 # pragma warning(default:4254)   // [bit field] conversion, possible loss of data

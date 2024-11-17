@@ -331,7 +331,6 @@ void RunHardwareDetection(bool writeSystemInfoBeforeDetection, Renderer::Backend
 	Script::SetProperty(rq, settings, "build_version", std::wstring(build_version));
 
 	Script::SetProperty(rq, settings, "build_msc", (int)MSC_VERSION);
-	Script::SetProperty(rq, settings, "build_icc", (int)ICC_VERSION);
 	Script::SetProperty(rq, settings, "build_gcc", (int)GCC_VERSION);
 	Script::SetProperty(rq, settings, "build_clang", (int)CLANG_VERSION);
 
