@@ -39,6 +39,9 @@ ResourceGatherer.prototype.GATHER_AMOUNT = 1;
 
 ResourceGatherer.prototype.Init = function()
 {
+	// Cached. Currently not a target of modifiers.
+	this.range = { "max": +this.template.MaxDistance, "min": 0 };
+
 	this.capacities = {};
 	this.carrying = {}; // { generic type: integer amount currently carried }
 	// (Note that this component supports carrying multiple types of resources,
@@ -164,7 +167,7 @@ ResourceGatherer.prototype.GetCapacity = function(resourceType)
 
 ResourceGatherer.prototype.GetRange = function()
 {
-	return { "max": +this.template.MaxDistance, "min": 0 };
+	return this.range;
 };
 
 /**
@@ -467,7 +470,7 @@ ResourceGatherer.prototype.RemoveFromPlayerCounter = function(playerid)
 ResourceGatherer.prototype.IsTargetInRange = function(target)
 {
 	return Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager).
-		IsInTargetRange(this.entity, target, 0, +this.template.MaxDistance, false);
+		IsInTargetRange(this.entity, target, this.range.min, this.range.max, false);
 };
 
 // Since we cache gather rates, we need to make sure we update them when tech changes.
