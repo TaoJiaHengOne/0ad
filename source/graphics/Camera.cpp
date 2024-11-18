@@ -250,7 +250,7 @@ CVector3D CCamera::GetWorldCoordinates(int px, int py, bool aboveWater) const
 {
 	CHFTracer tracer(g_Game->GetWorld()->GetTerrain());
 	int x, z;
-	CVector3D delta, terrainPoint, waterPoint;
+	CVector3D terrainPoint, waterPoint;
 
 	const auto [origin, dir] = BuildCameraRay(px, py);
 
@@ -318,7 +318,7 @@ CVector3D CCamera::GetWorldCoordinates(int px, int py, float h) const
 	CPlane plane;
 	plane.Set(CVector3D(0.f, 1.f, 0.f), CVector3D(0.f, h, 0.f)); // upwards normal, passes through h
 
-	CVector3D delta, currentTarget;
+	CVector3D currentTarget;
 
 	const auto [origin, dir] = BuildCameraRay(px, py);
 
@@ -337,7 +337,7 @@ CVector3D CCamera::GetFocus() const
 	CHFTracer tracer(g_Game->GetWorld()->GetTerrain());
 	int x, z;
 
-	CVector3D origin, dir, delta, terrainPoint, waterPoint;
+	CVector3D origin, dir, terrainPoint, waterPoint;
 
 	origin = m_Orientation.GetTranslation();
 	dir = m_Orientation.GetIn();
