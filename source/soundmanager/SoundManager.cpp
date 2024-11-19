@@ -831,9 +831,9 @@ void CSoundManager::RunHardwareDetection()
 	// Sound cards
 
 	const ALCchar* devices = nullptr;
-	if (alcIsExtensionPresent(nullptr, "ALC_enumeration_EXT") == AL_TRUE)
+	if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT") == AL_TRUE)
 	{
-		if (alcIsExtensionPresent(nullptr, "ALC_enumerate_all_EXT") == AL_TRUE)
+		if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATE_ALL_EXT") == AL_TRUE)
 			devices = alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER);
 		else
 			devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
