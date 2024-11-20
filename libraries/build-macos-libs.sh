@@ -49,6 +49,7 @@ MINIUPNPC_VERSION="miniupnpc-2.2.8"
 SODIUM_VERSION="libsodium-1.0.20"
 FMT_VERSION="7.1.3"
 MOLTENVK_VERSION="1.2.2"
+OPENAL_SOFT_VERSION="1.24.0"
 # --------------------------------------------------------------
 # Bundled with the game:
 # * SpiderMonkey
@@ -57,7 +58,6 @@ MOLTENVK_VERSION="1.2.2"
 # --------------------------------------------------------------
 # --------------------------------------------------------------
 # Provided by OS X:
-# * OpenAL
 # * OpenGL
 # --------------------------------------------------------------
 
@@ -1101,6 +1101,44 @@ echo "Building libsodium..."
 		already_built
 	fi
 ) || die "Failed to build libsodium"
+
+echo "Building OpenAL Soft"
+(
+	LIB_DIRECTORY="openal-soft-$OPENAL_SOFT_VERSION"
+	LIB_ARCHIVE="$OPENAL_SOFT_VERSION.tar.gz"
+	LIB_URL="https://github.com/kcat/openal-soft/archive/refs/tags/"
+
+	mkdir -p openal-soft
+	cd openal-soft
+
+	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$OPENAL_SOFT_VERSION+1" ]; then
+		INSTALL_DIR="$(pwd)"
+
+		rm -f .already-built
+		download_lib $LIB_URL $LIB_ARCHIVE || die
+
+		rm -rf $LIB_DIRECTORY include lib
+		tar -xf $LIB_ARCHIVE || die
+
+		# shellcheck disable=SC2086
+		cmake -B libopenal-soft \
+			-S $LIB_DIRECTORY \
+			-DCMAKE_C_FLAGS="$CFLAGS" \
+			-DLIBTYPE=STATIC \
+			-DALSOFT_EXAMPLES=OFF \
+			-DALSOFT_UTILS=OFF \
+			-DALSOFT_TESTS=OFF \
+			-G "Unix Makefiles" \
+			-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+			$CMAKE_FLAGS || die
+		cmake --build libopenal-soft "${JOBS}" --target install || die
+
+		cp -f lib/pkgconfig/* "$PC_PATH"
+		echo "$OPENAL_SOFT_VERSION" >.already-built
+	else
+		already_built
+	fi
+) || die "Failed to build OpenAL Soft"
 
 # --------------------------------------------------------------
 echo "Building fmt..."

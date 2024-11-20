@@ -609,7 +609,7 @@ extern_lib_defs = {
 		compile_settings = function()
 			if os.istarget("windows") then
 				add_default_include_paths("openal")
-			elseif not os.istarget("macosx") then
+			else
 				pkgconfig.add_includes("openal")
 			end
 		end,
@@ -620,10 +620,6 @@ extern_lib_defs = {
 					win_names  = { "openal32" },
 					dbg_suffix = "",
 					no_delayload = 1, -- delayload seems to cause errors on startup
-				})
-			elseif os.istarget("macosx") then
-				add_default_links({
-					osx_frameworks = { "OpenAL" },
 				})
 			else
 				pkgconfig.add_links("openal")
