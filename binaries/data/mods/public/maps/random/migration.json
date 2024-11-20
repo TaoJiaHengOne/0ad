@@ -2,10 +2,15 @@
 	"settings" : {
 		"Name" : "Migration",
 		"Script" : "migration.js",
-		"Description" : "Players start in small islands in the eastern part of the map. There is a big continent in the west ready for expansion.",
+		"Description" : "Players start on islands towards the outside of the map and must move to take advantage of the middle island before their resources run out.",
 		"Keywords": ["naval"],
 		"Preview" : "migration.png",
 		"SupportedBiomes": "generic/",
-		"CircularMap" : true
+		"CircularMap" : true,
+		"PlayerPlacements": [
+			"circle",
+			"river",
+			"stronghold"
+		]
 	}
 }

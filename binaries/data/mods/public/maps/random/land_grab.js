@@ -2,7 +2,8 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap(mapSettings) {
+function* GenerateMap(mapSettings)
+{
 	setBiome(mapSettings.Biome);
 
 	const tMainTerrain = g_Terrains.mainTerrain;
@@ -41,8 +42,16 @@ function* GenerateMap(mapSettings) {
 	const aBushMedium = g_Decoratives.bushMedium;
 	const aBushSmall = g_Decoratives.bushSmall;
 
-	const pForest1 = [tForestFloor2 + TERRAIN_SEPARATOR + oTree1, tForestFloor2 + TERRAIN_SEPARATOR + oTree2, tForestFloor2];
-	const pForest2 = [tForestFloor1 + TERRAIN_SEPARATOR + oTree4, tForestFloor1 + TERRAIN_SEPARATOR + oTree5, tForestFloor1];
+	const pForest1 = [
+		tForestFloor2 + TERRAIN_SEPARATOR + oTree1,
+		tForestFloor2 + TERRAIN_SEPARATOR + oTree2,
+		tForestFloor2
+	];
+	const pForest2 = [
+		tForestFloor1 + TERRAIN_SEPARATOR + oTree4,
+		tForestFloor1 + TERRAIN_SEPARATOR + oTree5,
+		tForestFloor1
+	];
 
 	const heightSeaGround = -5;
 	const heightLand = 3;
@@ -58,49 +67,40 @@ function* GenerateMap(mapSettings) {
 	const clPlayer = g_Map.createTileClass();
 	const clHill = g_Map.createTileClass();
 	const clForest = g_Map.createTileClass();
-	const clForestIsland = g_Map.createTileClass();
 	const clDirt = g_Map.createTileClass();
 	const clRock = g_Map.createTileClass();
 	const clMetal = g_Map.createTileClass();
 	const clFood = g_Map.createTileClass();
-	const clIslandHunt = g_Map.createTileClass();
 	const clBaseResource = g_Map.createTileClass();
 	const clLand = g_Map.createTileClass();
 	const clIsland = g_Map.createTileClass();
 
 	const startAngle = randomAngle();
-	const pattern = g_MapSettings.PlayerPlacement;
+	const playerIDs = sortAllPlayers();
+	const [playerPosition, playerAngle] = playerPlacementCustomAngle(
+		fractionToTiles(0.35),
+		mapCenter,
+		i => startAngle - Math.PI * (i + 1) / (numPlayers + 1));
 
-	const teamDist = {
-		"circle": 0.42,
-		"river": 0.65,
-		"stronghold": 0.44
-	}[pattern];
-
-	const playerDist = {
-		"circle": 0.1,
-		"river": 0.1,
-		"stronghold": 0.06
-	}[pattern];
-
-	const [playerIDs, playerPosition] =
-		playerPlacementByPattern(
-			pattern,
-			fractionToTiles(teamDist),
-			fractionToTiles(playerDist),
-			startAngle,
-			undefined);
-
-	g_Map.log("Creating player islands");
-	for (let i = 0; i < numPlayers; ++i) {
+	g_Map.log("Creating player islands and docks");
+	for (let i = 0; i < numPlayers; ++i)
+	{
 		createArea(
-			new ClumpPlacer(diskArea(defaultPlayerBaseRadius() * 1.75), 0.8, 0.1, Infinity, playerPosition[i]),
+			new ClumpPlacer(diskArea(defaultPlayerBaseRadius()), 0.8, 0.1, Infinity,
+				playerPosition[i]),
 			[
 				new LayeredPainter([tWater, tShore, tMainTerrain], [1, 4]),
 				new SmoothElevationPainter(ELEVATION_SET, heightLand, 4),
 				new TileClassPainter(clIsland),
 				new TileClassPainter(isNomad() ? clLand : clPlayer)
 			]);
+
+		if (isNomad())
+			continue;
+
+		const dockLocation =
+			findLocationInDirectionBasedOnHeight(playerPosition[i], mapCenter, -3, 2.6, 3);
+		g_Map.placeEntityPassable(oDock, playerIDs[i], dockLocation, playerAngle[i] + Math.PI);
 	}
 	yield 10;
 
@@ -121,6 +121,14 @@ function* GenerateMap(mapSettings) {
 				{ "template": oStoneLarge }
 			]
 		},
+		"Treasures": {
+			"types": [
+				{
+					"template": oWoodTreasure,
+					"count": 14
+				}
+			]
+		},
 		"Trees": {
 			"template": oTree1,
 			"count": scaleByMapSize(12, 30)
@@ -132,20 +140,21 @@ function* GenerateMap(mapSettings) {
 	yield 15;
 
 	g_Map.log("Create the continent body");
-	const continentPosition = Vector2D.add(mapCenter, new Vector2D(0, fractionToTiles(0))).round();
+	const continentPosition =
+		Vector2D.add(mapCenter, new Vector2D(0, fractionToTiles(0.38)).rotate(-startAngle)).round();
 	createArea(
-		new ClumpPlacer(diskArea(fractionToTiles(0.30)), 0.8, 0.08, Infinity, continentPosition),
+		new ClumpPlacer(diskArea(fractionToTiles(0.4)), 0.8, 0.08, Infinity, continentPosition),
 		[
 			new LayeredPainter([tWater, tShore, tMainTerrain], [4, 2]),
 			new SmoothElevationPainter(ELEVATION_SET, heightLand, 4),
 			new TileClassPainter(clLand)
 		],
-		avoidClasses(clIsland, 22));
-	Engine.SetProgress(20);
+		avoidClasses(clIsland, 8));
+	yield 20;
 
 	g_Map.log("Creating shore jaggedness");
 	createAreas(
-		new ClumpPlacer(scaleByMapSize(10, 65), 0.2, 0.1, Infinity),
+		new ClumpPlacer(scaleByMapSize(15, 80), 0.2, 0.1, Infinity),
 		[
 			new LayeredPainter([tMainTerrain, tMainTerrain], [2]),
 			new SmoothElevationPainter(ELEVATION_SET, heightLand, 4),
@@ -153,7 +162,7 @@ function* GenerateMap(mapSettings) {
 		],
 		[
 			borderClasses(clLand, 6, 3),
-			avoidClasses(clIsland, 16)
+			avoidClasses(clIsland, 8)
 		],
 		scaleByMapSize(2, 15) * 20,
 		150);
@@ -179,40 +188,44 @@ function* GenerateMap(mapSettings) {
 			new SmoothElevationPainter(ELEVATION_SET, heightHill, 2),
 			new TileClassPainter(clHill)
 		],
-		[avoidClasses(clIsland, 10, clHill, 50), stayClasses(clLand, 12)],
+		[avoidClasses(clIsland, 10, clHill, 15), stayClasses(clLand, 7)],
 		scaleByMapSize(1, 4) * numPlayers
 	);
 	yield 34;
 
 	g_Map.log("Creating forests");
-	var [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
-	var types = [
+	const [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
+	const types = [
 		[[tForestFloor2, tMainTerrain, pForest1], [tForestFloor2, pForest1]],
 		[[tForestFloor1, tMainTerrain, pForest2], [tForestFloor1, pForest2]]
 	];
 
-	var size = forestTrees / (scaleByMapSize(2, 8) * numPlayers) *
+	const forestSize = forestTrees / (scaleByMapSize(2, 8) * numPlayers) *
 		(currentBiome() == "generic/savanna" ? 2 : 1);
 
-	var num = Math.floor(size / types.length);
-	for (let type of types)
+	const num = Math.floor(forestSize / types.length);
+	for (const type of types)
 		createAreas(
 			new ClumpPlacer(forestTrees / num, 0.1, 0.1, Infinity),
 			[
 				new LayeredPainter(type, [2]),
 				new TileClassPainter(clForest)
 			],
-			[avoidClasses(clForest, 10, clHill, 2), stayClasses(clLand, 7)],
+			[avoidClasses(clPlayer, 6, clForest, 10, clHill, 0), stayClasses(clLand, 7)],
 			num);
 	yield 38;
 
 	g_Map.log("Creating dirt patches");
-	for (let size of [scaleByMapSize(3, 48), scaleByMapSize(5, 84), scaleByMapSize(8, 128)])
+	for (const size of [scaleByMapSize(3, 48), scaleByMapSize(5, 84), scaleByMapSize(8, 128)])
 		createAreas(
 			new ClumpPlacer(size, 0.3, 0.06, 0.5),
 			[
 				new LayeredPainter(
-					[[tMainTerrain, tTier1Terrain], [tTier1Terrain, tTier2Terrain], [tTier2Terrain, tTier3Terrain]],
+					[
+						[tMainTerrain, tTier1Terrain],
+						[tTier1Terrain, tTier2Terrain],
+						[tTier2Terrain, tTier3Terrain]
+					],
 					[1, 1]),
 				new TileClassPainter(clDirt)
 			],
@@ -229,58 +242,43 @@ function* GenerateMap(mapSettings) {
 	yield 42;
 
 	g_Map.log("Creating grass patches");
-	for (let size of [scaleByMapSize(2, 32), scaleByMapSize(3, 48), scaleByMapSize(5, 80)])
+	for (const size of [scaleByMapSize(2, 32), scaleByMapSize(3, 48), scaleByMapSize(5, 80)])
 		createAreas(
 			new ClumpPlacer(size, 0.3, 0.06, 0.5),
 			new TerrainPainter(tTier4Terrain),
 			[avoidClasses(clForest, 0, clHill, 0, clDirt, 5, clIsland, 0), stayClasses(clLand, 7)],
 			scaleByMapSize(15, 45));
-	Engine.SetProgress(46);
+	yield 46;
 
 	g_Map.log("Creating stone mines");
-	let group = new SimpleGroup([new SimpleObject(oStoneSmall, 0, 2, 0, 4, 0, 2 * Math.PI, 1), new SimpleObject(oStoneLarge, 1, 1, 0, 4, 0, 2 * Math.PI, 4)], true, clRock);
+	let group = new SimpleGroup(
+		[
+			new SimpleObject(oStoneSmall, 0, 2, 0, 4, 0, 2 * Math.PI, 1),
+			new SimpleObject(oStoneLarge, 1, 1, 0, 4, 0, 2 * Math.PI, 4)
+		], true, clRock);
 	createObjectGroupsDeprecated(group, 0,
-		[avoidClasses(clForest, 0, clRock, 18, clHill, 1), stayClasses(clLand, 4)],
-		scaleByMapSize(26, 30), 800
+		[avoidClasses(clForest, 1, clPlayer, 10, clRock, 10, clHill, 1), stayClasses(clLand, 7)],
+		scaleByMapSize(4, 16), 100
 	);
 	yield 50;
-
-	g_Map.log("Creating metal mines");
-	group = new SimpleGroup([new SimpleObject(oMetalLarge, 1, 1, 0, 4)], true, clMetal);
-	createObjectGroupsDeprecated(group, 0,
-		[avoidClasses(clForest, 0, clMetal, 18, clRock, 8, clHill, 1), stayClasses(clLand, 4)],
-		scaleByMapSize(28, 32), 800
-	);
 
 	g_Map.log("Creating small stone quarries");
 	group = new SimpleGroup([new SimpleObject(oStoneSmall, 2, 5, 1, 3)], true, clRock);
 	createObjectGroupsDeprecated(group, 0,
-		[avoidClasses(clForest, 0, clMetal, 6, clRock, 12, clHill, 1), stayClasses(clLand, 4)],
-		scaleByMapSize(25, 30), 800
+		[avoidClasses(clForest, 1, clPlayer, 10, clRock, 10, clHill, 1), stayClasses(clLand, 7)],
+		scaleByMapSize(4, 16), 100
 	);
 	yield 54;
 
-	g_Map.log("Creating island forests");
-	var [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
-	var types = [
-		[[tForestFloor2, tMainTerrain, pForest1], [tForestFloor2, pForest1]],
-		[[tForestFloor1, tMainTerrain, pForest2], [tForestFloor1, pForest2]]
-	];
-
-	var size = forestTrees / (scaleByMapSize(2, 8) * numPlayers) *
-		(currentBiome() == "generic/savanna" ? 2 : 3);
-
-	var num = Math.floor((size / types.length));
-	for (let type of types)
-		createAreas(
-			new ClumpPlacer(forestTrees / num, 0.1, 0.1, Infinity),
-			[
-				new LayeredPainter(type, [2]),
-				new TileClassPainter(clForestIsland)
-			],
-			[avoidClasses(clBaseResource, 11, clForestIsland, 6, clHill, 0), stayClasses(clIsland, 5)],
-			num);
-
+	g_Map.log("Creating metal mines");
+	group = new SimpleGroup([new SimpleObject(oMetalLarge, 1, 1, 0, 4)], true, clMetal);
+	createObjectGroupsDeprecated(group, 0,
+		[
+			avoidClasses(clForest, 1, clPlayer, 10, clMetal, 10, clRock, 5, clHill, 1),
+			stayClasses(clLand, 7)
+		],
+		scaleByMapSize(4, 16), 100
+	);
 	yield 58;
 
 	g_Map.log("Creating small decorative rocks");
@@ -316,19 +314,6 @@ function* GenerateMap(mapSettings) {
 		[avoidClasses(clForest, 0, clPlayer, 10, clHill, 1, clFood, 20), stayClasses(clLand, 7)],
 		3 * numPlayers, 50
 	);
-
-	if (currentBiome() == "generic/savanna") {
-		g_Map.log("Creating Island Fauna");
-		group = new SimpleGroup(
-			[new SimpleObject(oMainHuntableAnimal, 5, 7, 0, 4)],
-			true, clIslandHunt
-		);
-		createObjectGroupsDeprecated(group, 0,
-			[avoidClasses(clBaseResource, 6, clIslandHunt, 58), stayClasses(clIsland, 12)],
-			numPlayers * 20, 400
-		);
-	}
-
 	yield 70;
 
 	g_Map.log("Creating sheep");
@@ -357,25 +342,21 @@ function* GenerateMap(mapSettings) {
 	createObjectGroupsDeprecated(
 		new SimpleGroup([new SimpleObject(oFish, 2, 3, 0, 2)], true, clFood),
 		0,
-		avoidClasses(clLand, 2, clPlayer, 2, clHill, 0, clFood, 10),
-		scaleByMapSize(500, 700), 500
+		avoidClasses(clLand, 2, clPlayer, 2, clHill, 0, clFood, 14),
+		60 * numPlayers, 60
 	);
 	yield 82;
 
 	createStragglerTrees(
 		[oTree1, oTree2, oTree4, oTree3],
-		[avoidClasses(clForest, 1, clHill, 1, clPlayer, 9, clMetal, 6, clRock, 6), stayClasses(clLand, 9)],
+		[
+			avoidClasses(clForest, 1, clHill, 1, clPlayer, 9, clMetal, 6, clRock, 6),
+			stayClasses(clLand, 9)
+		],
 		clForest,
 		stragglerTrees);
 
-	createStragglerTrees(
-		[oTree1, oTree2, oTree4, oTree3],
-		[avoidClasses(clForestIsland, 1, clBaseResource, 8), stayClasses(clIsland, 5)],
-		clForest,
-		stragglerTrees);
-
-
-	yield 85;
+	yield 86;
 
 	const planetm = currentBiome() == "generic/india" ? 8 : 1;
 
@@ -391,13 +372,16 @@ function* GenerateMap(mapSettings) {
 
 	g_Map.log("Creating large grass tufts");
 	group = new SimpleGroup(
-		[new SimpleObject(aGrass, 2, 4, 0, 1.8, -Math.PI / 8, Math.PI / 8), new SimpleObject(aGrassShort, 3, 6, 1.2, 2.5, -Math.PI / 8, Math.PI / 8)]
+		[
+			new SimpleObject(aGrass, 2, 4, 0, 1.8, -Math.PI / 8, Math.PI / 8),
+			new SimpleObject(aGrassShort, 3, 6, 1.2, 2.5, -Math.PI / 8, Math.PI / 8)
+		]
 	);
 	createObjectGroupsDeprecated(group, 0,
 		[avoidClasses(clHill, 2, clPlayer, 2, clDirt, 1, clForest, 0), stayClasses(clLand, 6)],
 		planetm * scaleByMapSize(13, 200)
 	);
-	Engine.SetProgress(94);
+	yield 94;
 
 	g_Map.log("Creating bushes");
 	group = new SimpleGroup(
@@ -411,10 +395,14 @@ function* GenerateMap(mapSettings) {
 
 	setSkySet(pickRandom(["cirrus", "cumulus", "sunny"]));
 	setSunRotation(randomAngle());
-	setSunElevation(randFloat(1 / 5, 1 / 3) * Math.PI);
+	setSunElevation(randFloat(1/5, 1/3) * Math.PI);
 	setWaterWaviness(2);
 
-	placePlayersNomad(clPlayer, [stayClasses(clIsland, 4), avoidClasses(clForest, 1, clMetal, 4, clRock, 4, clHill, 4, clFood, 2)]);
+	placePlayersNomad(clPlayer,
+		[
+			stayClasses(clIsland, 4),
+			avoidClasses(clForest, 1, clMetal, 4, clRock, 4, clHill, 4, clFood, 2)
+		]);
 
 	return g_Map;
 }
