@@ -838,15 +838,23 @@ void CSoundManager::RunHardwareDetection()
 		else
 			devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
 	}
-	WARN_IF_FALSE(devices);
 
 	m_SoundCardNames.clear();
-	do
+	if (devices)
 	{
-		m_SoundCardNames += devices;
-		devices += strlen(devices) + 1;
-		m_SoundCardNames += "; ";
-	} while (*devices);
+		do
+		{
+			m_SoundCardNames += devices;
+			devices += strlen(devices) + 1;
+			m_SoundCardNames += "; ";
+		} while (*devices);
+	}
+	else
+	{
+		const char* failMsg = "Failed to query audio device names";
+		LOGERROR(failMsg);
+		m_SoundCardNames = failMsg;
+	}
 
 	// Driver version
 	const ALCchar* al_version = alGetString(AL_VERSION);
