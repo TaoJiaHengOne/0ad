@@ -859,8 +859,6 @@ bool CCmpPathfinder::CheckMovement(const IObstructionTestFilter& filter,
 	entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r,
 	pass_class_t passClass) const
 {
-	PROFILE2_IFSPIKE("Check Movement", 0.001);
-
 	// Test against obstructions first. filter may discard pathfinding-blocking obstructions.
 	// Use more permissive version of TestLine to allow unit-unit collisions to overlap slightly.
 	// This makes movement smoother and more natural for units, overall.

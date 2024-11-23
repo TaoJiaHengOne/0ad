@@ -481,6 +481,7 @@ public:
 	bool AreShapesInRange(const ObstructionSquare& source, const ObstructionSquare& target, entity_pos_t minRange, entity_pos_t maxRange, bool opposite) const override;
 
 	bool TestLine(const IObstructionTestFilter& filter, entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r, bool relaxClearanceForUnits = false) const override;
+	bool TestUnitLine(const IObstructionTestFilter& filter, entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r, bool relaxClearanceForUnits) const override;
 	bool TestStaticShape(const IObstructionTestFilter& filter, entity_pos_t x, entity_pos_t z, entity_pos_t a, entity_pos_t w, entity_pos_t h, std::vector<entity_id_t>* out) const override;
 	bool TestUnitShape(const IObstructionTestFilter& filter, entity_pos_t x, entity_pos_t z, entity_pos_t r, std::vector<entity_id_t>* out) const override;
 
@@ -860,8 +861,6 @@ bool CCmpObstructionManager::AreShapesInRange(const ObstructionSquare& source, c
 
 bool CCmpObstructionManager::TestLine(const IObstructionTestFilter& filter, entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r, bool relaxClearanceForUnits) const
 {
-	PROFILE("TestLine");
-
 	// Check that both end points are within the world (which means the whole line must be)
 	if (!IsInWorld(x0, z0, r) || !IsInWorld(x1, z1, r))
 		return true;
@@ -908,6 +907,39 @@ bool CCmpObstructionManager::TestLine(const IObstructionTestFilter& filter, enti
 
 	return false;
 }
+
+bool CCmpObstructionManager::TestUnitLine(const IObstructionTestFilter& filter, entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r, bool relaxClearanceForUnits) const
+{
+	// Check that both end points are within the world (which means the whole line must be)
+	if (!IsInWorld(x0, z0, r) || !IsInWorld(x1, z1, r))
+		return true;
+
+	CFixedVector2D posMin (std::min(x0, x1) - r, std::min(z0, z1) - r);
+	CFixedVector2D posMax (std::max(x0, x1) + r, std::max(z0, z1) + r);
+
+	// actual radius used for unit-unit collisions. If relaxClearanceForUnits, will be smaller to allow more overlap.
+	entity_pos_t unitUnitRadius = r;
+	if (relaxClearanceForUnits)
+		unitUnitRadius -= entity_pos_t::FromInt(1)/2;
+
+	std::vector<entity_id_t> unitShapes;
+	m_UnitSubdivision.GetInRange(unitShapes, posMin, posMax);
+	for (const entity_id_t& shape : unitShapes)
+	{
+		std::map<u32, UnitShape>::const_iterator it = m_UnitShapes.find(shape);
+		ENSURE(it != m_UnitShapes.end());
+
+		if (!filter.TestShape(UNIT_INDEX_TO_TAG(it->first), it->second.flags, it->second.group, INVALID_ENTITY))
+			continue;
+
+		CFixedVector2D center(it->second.x, it->second.z);
+		CFixedVector2D halfSize(it->second.clearance + unitUnitRadius, it->second.clearance + unitUnitRadius);
+		if (Geometry::TestRayAASquare(CFixedVector2D(x0, z0) - center, CFixedVector2D(x1, z1) - center, halfSize))
+			return true;
+	}
+	return false;
+}
+
 
 bool CCmpObstructionManager::TestStaticShape(const IObstructionTestFilter& filter,
 	entity_pos_t x, entity_pos_t z, entity_pos_t a, entity_pos_t w, entity_pos_t h,

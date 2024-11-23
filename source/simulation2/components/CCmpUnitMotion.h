@@ -1093,13 +1093,47 @@ void CCmpUnitMotion::PostMove(CCmpUnitMotionManager::MotionState& state, fixed d
 	else if (!state.wasObstructed && state.pos != state.initialPos)
 		m_FailedMovements = 0;
 
+	bool needPathUpdate = PathingUpdateNeeded(state.pos);
+
+	// If we're following a long-path, check if we might run into units in advance, to smoothe motion.
+	if (!needPathUpdate && !state.wasObstructed && m_LongPath.m_Waypoints.size() >= 1)
+	{
+		ICmpObstructionManager::tag_t specificIgnore;
+		if (m_MoveRequest.m_Type == MoveRequest::ENTITY)
+		{
+			CmpPtr<ICmpObstruction> cmpTargetObstruction(GetSimContext(), m_MoveRequest.m_Entity);
+			if (cmpTargetObstruction)
+				specificIgnore = cmpTargetObstruction->GetObstruction();
+		}
+		CmpPtr<ICmpObstructionManager> cmpObstructionManager(GetSystemEntity());
+		if (cmpObstructionManager && cmpObstructionManager->TestUnitLine(GetObstructionFilter(specificIgnore),
+			state.pos.X, state.pos.Y, m_LongPath.m_Waypoints.back().x, m_LongPath.m_Waypoints.back().z, m_Clearance, true))
+		{
+			// We will run into something: request a new short path.
+			// If we have several waypoints left, aim for the one after next directly.
+			// (This is mostly because the obstruction might be at the waypoint, and the end is kind of treated specially).
+			// Else just path to the goal.
+			if (m_LongPath.m_Waypoints.size() > 1) {
+				fixed radius = Pathfinding::NAVCELL_SIZE * 2;
+				m_LongPath.m_Waypoints.pop_back();
+				PathGoal subgoal = { PathGoal::CIRCLE, m_LongPath.m_Waypoints.back().x, m_LongPath.m_Waypoints.back().z, radius };
+				RequestShortPath(state.pos, subgoal, false);
+			} else {
+				// If we only have one waypoint left, request a short path to the waypoint itself.
+				PathGoal goal;
+				if (ComputeGoal(goal, m_MoveRequest))
+					RequestShortPath(state.pos, goal, false);
+			}
+		}
+	}
+
 	// If we moved straight, and didn't quite finish the path, reset - we'll update it next turn if still OK.
 	if (state.wentStraight && !state.wasObstructed)
 		m_ShortPath.m_Waypoints.clear();
 
 	// We may need to recompute our path sometimes (e.g. if our target moves).
 	// Since we request paths asynchronously anyways, this does not need to be done before moving.
-	if (!state.wentStraight && PathingUpdateNeeded(state.pos))
+	if (!state.wentStraight && needPathUpdate)
 	{
 		PathGoal goal;
 		if (ComputeGoal(goal, m_MoveRequest))
