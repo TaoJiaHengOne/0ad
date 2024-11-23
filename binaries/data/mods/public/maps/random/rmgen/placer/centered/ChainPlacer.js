@@ -39,7 +39,9 @@ ChainPlacer.prototype.place = function(constraint)
 	let failed = 0;
 	let count = 0;
 
-	const gotRet = new Array(size).fill(0).map(p => new Array(size).fill(-1));
+	// Initialization as 0, 1 means 'inside the circle', otherwise stores the offset into Edges + 2
+	const gotRet = new Uint16Array(size * size);
+	const at = (x, y) => x + y * size;
 	--size;
 
 	this.minRadius = Math.min(this.maxRadius, Math.max(this.minRadius, 1));
@@ -70,19 +72,19 @@ ChainPlacer.prototype.place = function(constraint)
 				continue;
 			}
 
-			const state = gotRet[position.x][position.y];
-			if (state == -1)
+			const state = gotRet[at(position.x, position.y)];
+			if (state == 0)
 			{
 				points.push(position);
-				gotRet[position.x][position.y] = -2;
+				gotRet[at(position.x, position.y)] = 1;
 			}
-			else if (state >= 0)
+			else if (state >= 2)
 			{
-				edges.splice(state, 1);
-				gotRet[position.x][position.y] = -2;
+				edges.splice(state - 2, 1);
+				gotRet[at(position.x, position.y)] = 1;
 
-				for (let k = state; k < edges.length; ++k)
-					--gotRet[edges[k].x][edges[k].y];
+				for (let k = state - 2; k < edges.length; ++k)
+					--gotRet[at(edges[k].x, edges[k].y)];
 			}
 		}
 
@@ -93,16 +95,16 @@ ChainPlacer.prototype.place = function(constraint)
 			     Math.abs(this.centerPosition.y - pos.y) > this.maxDistance))
 				continue;
 
-			if (gotRet[pos.x][pos.y] != -2)
+			if (gotRet[at(pos.x,pos.y)] != 1)
 				continue;
 
-			if (pos.x > 0 && gotRet[pos.x - 1][pos.y] == -1 ||
-			    pos.y > 0 && gotRet[pos.x][pos.y - 1] == -1 ||
-			    pos.x < size && gotRet[pos.x + 1][pos.y] == -1 ||
-			    pos.y < size && gotRet[pos.x][pos.y + 1] == -1)
+			if (pos.x > 0 && gotRet[at(pos.x - 1, pos.y)] == 0 ||
+			    pos.y > 0 && gotRet[at(pos.x, pos.y - 1)] == 0 ||
+			    pos.x < size && gotRet[at(pos.x + 1, pos.y)] == 0 ||
+			    pos.y < size && gotRet[at(pos.x, pos.y + 1)] == 0)
 			{
 				edges.push(pos);
-				gotRet[pos.x][pos.y] = edges.length - 1;
+				gotRet[at(pos.x, pos.y)] = edges.length + 1;
 			}
 		}
 	}
