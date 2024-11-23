@@ -25,7 +25,7 @@
 
 // Those are minimal defaults. The runtime for the main game is larger and GCs upon a larger growth.
 constexpr int DEFAULT_CONTEXT_SIZE = 16 * 1024 * 1024;
-constexpr int DEFAULT_HEAP_GROWTH_BYTES_GCTRIGGER = 2 * 1024 * 1024;
+constexpr uint32_t DEFAULT_HEAP_GROWTH_BYTES_GCTRIGGER = 2 * 1024 * 1024;
 
 namespace Script
 {
@@ -45,7 +45,7 @@ class JobQueue;
 class ScriptContext
 {
 public:
-	ScriptContext(int contextSize, int heapGrowthBytesGCTrigger);
+	ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger);
 	~ScriptContext();
 
 	/**
@@ -57,20 +57,26 @@ public:
 	 */
 	static std::shared_ptr<ScriptContext> CreateContext(
 		int contextSize = DEFAULT_CONTEXT_SIZE,
-		int heapGrowthBytesGCTrigger = DEFAULT_HEAP_GROWTH_BYTES_GCTRIGGER);
+		uint32_t heapGrowthBytesGCTrigger = DEFAULT_HEAP_GROWTH_BYTES_GCTRIGGER);
 
 
 	/**
-	 * MaybeIncrementalGC tries to determine whether a context-wide garbage collection would free up enough memory to
-	 * be worth the amount of time it would take. It does this with our own logic and NOT some predefined JSAPI logic because
-	 * such functionality currently isn't available out of the box.
-	 * It does incremental GC which means it will collect one slice each time it's called until the garbage collection is done.
-	 * This can and should be called quite regularly. The delay parameter allows you to specify a minimum time since the last GC
-	 * in seconds (the delay should be a fraction of a second in most cases though).
-	 * It will only start a new incremental GC or another GC slice if this time is exceeded. The user of this function is
-	 * responsible for ensuring that GC can run with a small enough delay to get done with the work.
+	 * MaybeIncrementalGC checks if running a GC is worth the time that will take.
+	 * The logic is custom as Spidermonkey tends to assume 'idle time' will exist,
+	 * which is a thing in websites but not really in 0 A.D.
+	 * This can have a few behaviours:
+	 *  - doing nothing
+	 *  - starting a new incremental GC
+	 *  - running a GC slice
+	 *  - finishing the incremental GC
+	 *  For details, check the SM doc in e.g. GC.cpp and GCapi.cpp
 	 */
-	void MaybeIncrementalGC(double delay);
+	void MaybeIncrementalGC();
+
+	/**
+	 * Does a non-incremental, shrinking GC.
+	 * A shrinking GC dumps JIT code and tries to defragment memory.
+	 */
 	void ShrinkingGC();
 
 	/**
@@ -105,9 +111,8 @@ private:
 	std::list<JS::Realm*> m_Realms;
 
 	int m_ContextSize;
-	int m_HeapGrowthBytesGCTrigger;
-	int m_LastGCBytes{0};
-	double m_LastGCCheck{0.0};
+	uint32_t m_HeapGrowthBytesGCTrigger;
+	uint32_t m_LastGCBytes{0};
 };
 
 // Using a global object for the context is a workaround until Simulation, AI, etc,

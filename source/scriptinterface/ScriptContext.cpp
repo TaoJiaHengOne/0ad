@@ -80,12 +80,12 @@ void GCSliceCallbackHook(JSContext* UNUSED(cx), JS::GCProgress progress, const J
 	#endif
 }
 
-std::shared_ptr<ScriptContext> ScriptContext::CreateContext(int contextSize, int heapGrowthBytesGCTrigger)
+std::shared_ptr<ScriptContext> ScriptContext::CreateContext(int contextSize, uint32_t heapGrowthBytesGCTrigger)
 {
 	return std::make_shared<ScriptContext>(contextSize, heapGrowthBytesGCTrigger);
 }
 
-ScriptContext::ScriptContext(int contextSize, int heapGrowthBytesGCTrigger):
+ScriptContext::ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger):
 	m_JobQueue{std::make_unique<Script::JobQueue>()},
 	m_ContextSize{contextSize},
 	m_HeapGrowthBytesGCTrigger{heapGrowthBytesGCTrigger}
@@ -111,6 +111,14 @@ ScriptContext::ScriptContext(int contextSize, int heapGrowthBytesGCTrigger):
 	JS_SetGCParameter(m_cx, JSGC_MAX_BYTES, m_ContextSize);
 	JS_SetGCParameter(m_cx, JSGC_INCREMENTAL_GC_ENABLED, true);
 	JS_SetGCParameter(m_cx, JSGC_PER_ZONE_GC_ENABLED, false);
+
+	// Attempt to turn off Spidermonkey-led GCs.
+	JS_SetGCParameter(m_cx, JSGC_HEAP_GROWTH_FACTOR, contextSize);
+	JS_SetGCParameter(m_cx, JSGC_LOW_FREQUENCY_HEAP_GROWTH, 300);
+	JS_SetGCParameter(m_cx, JSGC_HIGH_FREQUENCY_SMALL_HEAP_GROWTH, 500);
+	JS_SetGCParameter(m_cx, JSGC_HIGH_FREQUENCY_LARGE_HEAP_GROWTH, 300);
+	JS_SetGCParameter(m_cx, JSGC_SLICE_TIME_BUDGET_MS, 10);
+
 
 	JS_SetOffthreadIonCompilationEnabled(m_cx, true);
 
@@ -166,105 +174,71 @@ void ScriptContext::UnRegisterRealm(JS::Realm* realm)
 }
 
 #define GC_DEBUG_PRINT 0
-void ScriptContext::MaybeIncrementalGC(double delay)
+void ScriptContext::MaybeIncrementalGC()
 {
 	PROFILE2("MaybeIncrementalGC");
 
-	if (JS::IsIncrementalGCEnabled(m_cx))
+	if (!JS::IsIncrementalGCEnabled(m_cx))
+		return;
+
+	// The idea is to get the heap size after a completed GC and trigger the next GC
+	// when the heap size has reached m_LastGCBytes + X.
+	// Spidermonkey allocates memory arenas of 4KB for JS heap data.
+	// At the end of a GC, any such arena that became empty is freed.
+	// On shrinking GCs, spidermonkey further defragments the arenas, which effectively frees more memory but costs time.
+	// In practice, shrinking GCs also dump JITted code and the defragmentation is not worth it for 0 A.D.
+	// The regular GCs also free quite a bit of memory anyways, and non-full arenas get used for new objects.
+
+	const uint32_t gcBytes = JS_GetGCParameter(m_cx, JSGC_BYTES);
+
+#if GC_DEBUG_PRINT
+	printf("gcBytes: %i KB, last of %i KB\n", gcBytes / 1024, m_LastGCBytes / 1024);
+#endif
+
+	// The memory freeing happens mostly in the background, so we can't rely on the value on the last incremental slice.
+	// To fix that, just remember a 'minimum' value.
+	if (m_LastGCBytes > gcBytes || m_LastGCBytes == 0)
 	{
-		// The idea is to get the heap size after a completed GC and trigger the next GC when the heap size has
-		// reached m_LastGCBytes + X.
-		// In practice it doesn't quite work like that. When the incremental marking is completed, the sweeping kicks in.
-		// The sweeping actually frees memory and it does this in a background thread (if JS_USE_HELPER_THREADS is set).
-		// While the sweeping is happening we already run scripts again and produce new garbage.
-
-		const js::SliceBudget GCSliceTimeBudget = js::SliceBudget(js::TimeBudget(30)); // Milliseconds an incremental slice is allowed to run
-
-		// Have a minimum time in seconds to wait between GC slices and before starting a new GC to distribute the GC
-		// load and to hopefully make it unnoticeable for the player. This value should be high enough to distribute
-		// the load well enough and low enough to make sure we don't run out of memory before we can start with the
-		// sweeping.
-		if (timer_Time() - m_LastGCCheck < delay)
-			return;
-
-		m_LastGCCheck = timer_Time();
-
-		int gcBytes = JS_GetGCParameter(m_cx, JSGC_BYTES);
-
 #if GC_DEBUG_PRINT
-			std::cout << "gcBytes: " << gcBytes / 1024 << " KB" << std::endl;
+		printf("Setting m_LastGCBytes: %d KB \n", gcBytes / 1024);
+#endif
+		m_LastGCBytes = gcBytes;
+	}
+
+	// Run an additional incremental GC slice if the currently running incremental GC isn't over yet
+	// ... or
+	// start a new incremental GC if the JS heap size has grown enough for a GC to make sense
+	if (JS::IsIncrementalGCInProgress(m_cx) || (gcBytes - m_LastGCBytes > m_HeapGrowthBytesGCTrigger))
+	{
+#if GC_DEBUG_PRINT
+		if (JS::IsIncrementalGCInProgress(m_cx))
+			printf("An incremental GC cycle is in progress. \n");
+		else
+			printf("GC needed because JSGC_BYTES - m_LastGCBytes > m_HeapGrowthBytesGCTrigger \n"
+				"    JSGC_BYTES: %d KB \n    m_LastGCBytes: %d KB \n    m_HeapGrowthBytesGCTrigger: %d KB \n",
+				gcBytes / 1024,
+				m_LastGCBytes / 1024,
+				m_HeapGrowthBytesGCTrigger / 1024);
 #endif
 
-		if (m_LastGCBytes > gcBytes || m_LastGCBytes == 0)
-		{
 #if GC_DEBUG_PRINT
-			printf("Setting m_LastGCBytes: %d KB \n", gcBytes / 1024);
-#endif
-			m_LastGCBytes = gcBytes;
-		}
-
-		// Run an additional incremental GC slice if the currently running incremental GC isn't over yet
-		// ... or
-		// start a new incremental GC if the JS heap size has grown enough for a GC to make sense
-		if (JS::IsIncrementalGCInProgress(m_cx) || (gcBytes - m_LastGCBytes > m_HeapGrowthBytesGCTrigger))
-		{
-#if GC_DEBUG_PRINT
-			if (JS::IsIncrementalGCInProgress(m_cx))
-				printf("An incremental GC cycle is in progress. \n");
-			else
-				printf("GC needed because JSGC_BYTES - m_LastGCBytes > m_HeapGrowthBytesGCTrigger \n"
-					"    JSGC_BYTES: %d KB \n    m_LastGCBytes: %d KB \n    m_HeapGrowthBytesGCTrigger: %d KB \n",
-					gcBytes / 1024,
-					m_LastGCBytes / 1024,
-					m_HeapGrowthBytesGCTrigger / 1024);
+		if (!JS::IsIncrementalGCInProgress(m_cx))
+			printf("Starting incremental GC \n");
+		else
+			printf("Running incremental GC slice \n");
 #endif
 
-			// A hack to make sure we never exceed the context size because we can't collect the memory
-			// fast enough.
-			if (gcBytes > m_ContextSize / 2)
-			{
-				if (JS::IsIncrementalGCInProgress(m_cx))
-				{
-#if GC_DEBUG_PRINT
-					printf("Finishing incremental GC because gcBytes > m_ContextSize / 2. \n");
-#endif
-					PrepareZonesForIncrementalGC();
-					JS::FinishIncrementalGC(m_cx, JS::GCReason::API);
-				}
-				else
-				{
-					if (gcBytes > m_ContextSize * 0.75)
-					{
-						ShrinkingGC();
-#if GC_DEBUG_PRINT
-						printf("Running shrinking GC because gcBytes > m_ContextSize * 0.75. \n");
-#endif
-					}
-					else
-					{
-#if GC_DEBUG_PRINT
-						printf("Running full GC because gcBytes > m_ContextSize / 2. \n");
-#endif
-						JS_GC(m_cx);
-					}
-				}
-			}
-			else
-			{
-#if GC_DEBUG_PRINT
-				if (!JS::IsIncrementalGCInProgress(m_cx))
-					printf("Starting incremental GC \n");
-				else
-					printf("Running incremental GC slice \n");
-#endif
-				PrepareZonesForIncrementalGC();
-				if (!JS::IsIncrementalGCInProgress(m_cx))
-					JS::StartIncrementalGC(m_cx, JS::GCOptions::Normal, JS::GCReason::API, GCSliceTimeBudget);
-				else
-					JS::IncrementalGCSlice(m_cx, JS::GCReason::API, GCSliceTimeBudget);
-			}
-			m_LastGCBytes = gcBytes;
-		}
+		// There is a tradeoff between this time and the number of frames we must run GCs on, but overall we should prioritize smooth framerates.
+		const js::SliceBudget GCSliceTimeBudget = js::SliceBudget(js::TimeBudget(6)); // Milliseconds an incremental slice is allowed to run. SM respects this fairly well.
+
+		PrepareZonesForIncrementalGC();
+		if (!JS::IsIncrementalGCInProgress(m_cx))
+			JS::StartIncrementalGC(m_cx, JS::GCOptions::Normal, JS::GCReason::API, GCSliceTimeBudget);
+		else
+			JS::IncrementalGCSlice(m_cx, JS::GCReason::API, GCSliceTimeBudget);
+
+		// Reset this here so that the minimum gets cleared.
+		m_LastGCBytes = gcBytes;
 	}
 }
 

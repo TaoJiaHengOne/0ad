@@ -424,7 +424,7 @@ bool CNetServerWorker::RunStep()
 	// (Do as little work as possible while the mutex is held open,
 	// to avoid performance problems and deadlocks.)
 
-	m_ScriptInterface->GetContext().MaybeIncrementalGC(0.5f);
+	m_ScriptInterface->GetContext().MaybeIncrementalGC();
 
 	ScriptRequest rq(m_ScriptInterface);
 

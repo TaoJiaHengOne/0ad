@@ -402,7 +402,7 @@ std::optional<bool> CGUIManager::TickObjects()
 
 	// We share the script context with everything else that runs in the same thread.
 	// This call makes sure we trigger GC regularly even if the simulation is not running.
-	m_ScriptContext.MaybeIncrementalGC(1.0f);
+	m_ScriptContext.MaybeIncrementalGC();
 
 	// Save an immutable copy so iterators aren't invalidated by tick handlers
 	PageStackType pageStack = m_PageStack;

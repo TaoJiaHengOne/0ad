@@ -197,7 +197,7 @@ void CReplayPlayer::Replay(const bool serializationtest, const int rejointesttur
 	g_ProfileViewer.AddRootTable(g_ScriptStatsTable);
 
 	const int contextSize = 384 * 1024 * 1024;
-	const int heapGrowthBytesGCTrigger = 20 * 1024 * 1024;
+	const int heapGrowthBytesGCTrigger = 12 * 1024 * 1024;
 	g_ScriptContext = ScriptContext::CreateContext(contextSize, heapGrowthBytesGCTrigger);
 
 	std::vector<SimulationCommand> commands;

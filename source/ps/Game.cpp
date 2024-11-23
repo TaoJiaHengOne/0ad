@@ -43,6 +43,7 @@
 #include "renderer/TimeManager.h"
 #include "renderer/WaterManager.h"
 #include "scriptinterface/FunctionWrapper.h"
+#include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 #include "scriptinterface/JSON.h"
 #include "simulation2/Simulation2.h"
@@ -330,6 +331,11 @@ PSRETURN CGame::ReallyStartGame()
 	// and we could end up rendering before having set up any models (so they'd
 	// all be invisible)
 	Interpolate(0, 0);
+
+	// Run a shrinking GC to reset the memory before starting the game proper.
+	// This also clears JIT code, which seems like a good idea as the game init
+	// might have different patterns to the game itself.
+	m_Simulation2->GetScriptInterface().GetContext().ShrinkingGC();
 
 	m_GameStarted = true;
 

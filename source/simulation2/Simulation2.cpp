@@ -484,20 +484,9 @@ void CSimulation2Impl::Update(int turnLength, const std::vector<SimulationComman
 		}
 	}
 
-	// Run the GC occasionally
-	// No delay because a lot of garbage accumulates in one turn and in non-visual replays there are
-	// much more turns in the same time than in normal games.
-	// Every 500 turns we run a shrinking GC, which decommits unused memory and frees all JIT code.
-	// Based on testing, this seems to be a good compromise between memory usage and performance.
-	// Also check the comment about gcPreserveCode in the ScriptInterface code and this forum topic:
-	// http://www.wildfiregames.com/forum/index.php?showtopic=18466&p=300323
-	//
 	// (TODO: we ought to schedule this for a frame where we're not
 	// running the sim update, to spread the load)
-	if (m_TurnNumber % 500 == 0)
-		scriptInterface.GetContext().ShrinkingGC();
-	else
-		scriptInterface.GetContext().MaybeIncrementalGC(0.0f);
+	scriptInterface.GetContext().MaybeIncrementalGC();
 
 	if (m_EnableOOSLog)
 		DumpState();

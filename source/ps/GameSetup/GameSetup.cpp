@@ -536,7 +536,7 @@ bool Init(const CmdLineArgs& args, int flags)
 	// Using a global object for the context is a workaround until Simulation and AI use
 	// their own threads and also their own contexts.
 	const int contextSize = 384 * 1024 * 1024;
-	const int heapGrowthBytesGCTrigger = 20 * 1024 * 1024;
+	const int heapGrowthBytesGCTrigger = 12 * 1024 * 1024;
 	g_ScriptContext = ScriptContext::CreateContext(contextSize, heapGrowthBytesGCTrigger);
 
 	// On the first Init (INIT_MODS), check for command-line arguments
