@@ -68,7 +68,7 @@ pipeline {
 				bat "cd libraries && get-windows-libs.bat"
 				bat "(robocopy E:\\wxWidgets-3.2.6\\lib libraries\\win32\\wxwidgets\\lib /MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 				bat "(robocopy E:\\wxWidgets-3.2.6\\include libraries\\win32\\wxwidgets\\include /MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
-				bat "cd build\\workspaces && update-workspaces.bat --atlas --without-pch --large-address-aware --without-tests"
+				bat "cd build\\workspaces && update-workspaces.bat --atlas --without-pch --without-tests"
 			}
 		}
 

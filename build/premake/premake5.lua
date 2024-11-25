@@ -25,9 +25,6 @@ newoption { trigger = "prefer-local-libs", description = "Prefer locally built l
 newoption { trigger = "macosx-version-min", description = "Set minimum required version of the OS X API, the build will possibly fail if an older SDK is used, while newer API functions will be weakly linked (i.e. resolved at runtime)" }
 newoption { trigger = "sysroot", description = "Set compiler system root path, used for building against a non-system SDK. For example /usr/local becomes SYSROOT/user/local" }
 
--- Windows specific options
-newoption { trigger = "large-address-aware", description = "Make the executable large address aware. Do not use for development, in order to spot memory issues easily" }
-
 -- Install options
 newoption { trigger = "bindir", description = "Directory for executables (typically '/usr/games'); default is to be relocatable" }
 newoption { trigger = "datadir", description = "Directory for data files (typically '/usr/share/games/0ad'); default is ../data/ relative to executable" }
@@ -1066,9 +1063,8 @@ function setup_main_exe ()
 
 		links { "delayimp" }
 
-		-- allow the executable to use more than 2GB of RAM.
-		-- this should not be enabled during development, so that memory issues are easily spotted.
-		if _OPTIONS["large-address-aware"] then
+		if arch == "x86" then
+			-- allow the executable to use more than 2GB of RAM.
 			linkoptions { "/LARGEADDRESSAWARE" }
 		end
 
