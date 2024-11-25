@@ -7,8 +7,8 @@ set -e
 
 cd "$(dirname "$0")"
 
-PV=5.0.0-beta2
-LIB_VERSION=${PV}+wfg2
+PV=5.0.0-beta3
+LIB_VERSION=${PV}+wfg0
 
 echo "Building Premake..."
 while [ "$#" -gt 0 ]; do
@@ -38,9 +38,8 @@ rm -Rf "premake-core-${PV}"
 tar -xf "premake-core-${PV}.tar.gz"
 
 #patch
-patch -d "premake-core-${PV}" -p1 <patches/0001-Require-unistd.h-for-macosx-in-libzip.patch
-patch -d "premake-core-${PV}" -p1 <patches/0002-Forceinclude-unistd.h-on-all-Unixes.patch
-patch -d "premake-core-${PV}" -p1 <patches/0003-Add-support-for-idirafter-flag-in-GCC-Clang.patch
+patch -d "premake-core-${PV}" -p1 <patches/0001-Use-_SC_NPROCESSORS_ONLN-for-CPU-detection-in-BSDs.-.patch
+patch -d "premake-core-${PV}" -p1 <patches/0002-Make-clang-default-toolset-for-BSD.patch
 
 #build
 (
