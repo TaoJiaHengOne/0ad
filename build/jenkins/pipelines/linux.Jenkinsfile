@@ -15,7 +15,7 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This pipeline builds the game on Linux (with min and max supported versions of GCC and clang) and runs tests.
+// This pipeline builds the game on Linux (with minimum supported versions of GCC and clang) and runs tests.
 
 pipeline {
 	// Stop previous build in pull requests, but not in branches
@@ -37,6 +37,7 @@ pipeline {
 			steps {
 				discoverGitReferenceBuild()
 				sh "cd build/jenkins/dockerfiles/ && docker build -t buster-base -f buster-base.Dockerfile ."
+				sh "cd build/jenkins/dockerfiles/ && docker build -t bullseye-base -f bullseye-base.Dockerfile ."
 			}
 		}
 		stage("Linux Build") {
@@ -46,18 +47,14 @@ pipeline {
 				axes {
 					axis {
 						name 'JENKINS_COMPILER'
-						values 'gcc7' //, 'gcc14', 'clang8', 'clang18'
-					}
-					axis {
-						name 'JENKINS_PCH'
-						values 'pch' //, 'no-pch'
+						values 'gcc8', 'clang9'
 					}
 				}
 
 				agent {
 					dockerfile {
 						label 'LinuxAgent'
-						customWorkspace "workspace/${JENKINS_COMPILER}-${JENKINS_PCH}"
+						customWorkspace "workspace/${JENKINS_COMPILER}-pch"
 						dir 'build/jenkins/dockerfiles'
 						filename "${JENKINS_COMPILER}.Dockerfile"
 					}
@@ -71,13 +68,7 @@ pipeline {
 
 							sh "libraries/build-source-libs.sh 2> ${JENKINS_COMPILER}-prebuild-errors.log"
 
-							script {
-								if (env.JENKINS_PCH == "no-pch") {
-									sh "build/workspaces/update-workspaces.sh --jenkins-tests --without-pch 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
-								} else {
-									sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
-								}
-							}
+							sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
 
 							script {
 								if (params.CLEANBUILD) {

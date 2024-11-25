@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 RUN useradd -ms /bin/bash --uid 1006 builder
 
@@ -25,20 +25,18 @@ RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends \
       libsdl2-dev \
       libsodium-dev \
       libvorbis-dev \
-      libwxgtk3.0-dev \
+      libwxgtk3.0-gtk3-dev \
       libxml2-dev \
       make \
       m4 \
       patch \
       python3-dev \
       python3-pip \
+      python-is-python3 \
       subversion \
       xz-utils \
       zlib1g-dev \
  && apt-get clean
-
-# From bullseye forward this is done by installing the package python-is-python3
-RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Install git-lfs
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
@@ -52,4 +50,3 @@ ENV PATH="${PATH}:/home/builder/.cargo/bin"
 USER root
 
 ENV SHELL=/bin/bash
-
