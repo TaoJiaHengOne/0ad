@@ -45,7 +45,7 @@ RUN git lfs install --system --skip-smudge
 
 # Install rust and Cargo via rustup
 USER builder
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.51.0 -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.66.0 -y
 ENV PATH="${PATH}:/home/builder/.cargo/bin"
 USER root
 
