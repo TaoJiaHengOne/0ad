@@ -5,7 +5,7 @@ newoption { trigger = "gles", description = "Use non-working OpenGL ES 2.0 mode"
 newoption { trigger = "icc", description = "Use Intel C++ Compiler (Linux only; should use either \"--cc icc\" or --without-pch too, and then set CXX=icpc before calling make)" }
 newoption { trigger = "jenkins-tests", description = "Configure CxxTest to use the XmlPrinter runner which produces Jenkins-compatible output" }
 newoption { trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
-newoption { trigger = "outpath", description = "Location for generated project files" }
+newoption { trigger = "outpath", description = "Location for generated project files", default="../workspaces/default" }
 newoption { trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
 newoption { trigger = "with-lto", description = "Enable Link Time Optimization (LTO)" }
 newoption { trigger = "with-system-mozjs", description = "Search standard paths for libmozjs91, instead of using bundled copy" }
@@ -121,9 +121,6 @@ end
 workspace "pyrogenesis"
 targetdir(rootdir.."/binaries/system")
 libdirs(rootdir.."/binaries/system")
-if not _OPTIONS["outpath"] then
-	error("You must specify the 'outpath' parameter")
-end
 location(_OPTIONS["outpath"])
 configurations { "Release", "Debug" }
 

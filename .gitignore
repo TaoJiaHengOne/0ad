@@ -4,13 +4,10 @@ binaries/system/*
 !binaries/system/readme.txt
 
 # Workspaces
-build/workspaces/codeblocks/
-build/workspaces/gcc/
-build/workspaces/xcode3/
-build/workspaces/xcode4/
-build/workspaces/vc2013
-build/workspaces/vc2015
-build/workspaces/vs2017
+build/workspaces
+!build/workspaces/clean-workspaces.sh
+!build/workspaces/update-workspaces.bat
+!build/workspaces/update-workspaces.sh
 
 # Libraries
 libraries/macos
