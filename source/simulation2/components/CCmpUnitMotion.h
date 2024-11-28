@@ -1093,7 +1093,7 @@ void CCmpUnitMotion::PostMove(CCmpUnitMotionManager::MotionState& state, fixed d
 	else if (!state.wasObstructed && state.pos != state.initialPos)
 		m_FailedMovements = 0;
 
-	bool needPathUpdate = PathingUpdateNeeded(state.pos);
+	const bool needPathUpdate{PathingUpdateNeeded(state.pos)};
 
 	// If we're following a long-path, check if we might run into units in advance, to smoothe motion.
 	if (!needPathUpdate && !state.wasObstructed && m_LongPath.m_Waypoints.size() >= 1)
