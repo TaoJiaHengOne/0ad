@@ -337,18 +337,6 @@ Foundation.prototype.Build = function(builderEnt, work)
 
 		let building = ChangeEntityTemplate(this.entity, this.finalTemplateName);
 
-		const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
-		const cmpBuildingIdentity = Engine.QueryInterface(building, IID_Identity);
-		if (cmpIdentity && cmpBuildingIdentity)
-		{
-			const oldPhenotype = cmpIdentity.GetPhenotype();
-			if (cmpBuildingIdentity.GetPhenotype() !== oldPhenotype)
-			{
-				cmpBuildingIdentity.SetPhenotype(oldPhenotype);
-				Engine.QueryInterface(building, IID_Visual)?.RecomputeActorName();
-			}
-		}
-
 		if (cmpPlayerStatisticsTracker)
 			cmpPlayerStatisticsTracker.IncreaseConstructedBuildingsCounter(building);
 

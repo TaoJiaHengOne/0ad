@@ -368,6 +368,15 @@ Health.prototype.CreateCorpse = function()
 	if (cmpOwnership && cmpOwnershipCorpse)
 		cmpOwnershipCorpse.SetOwner(cmpOwnership.GetOwner());
 
+	const cmpIdentityCorpse = Engine.QueryInterface(entCorpse, IID_Identity);
+	if (cmpIdentityCorpse)
+	{
+		const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+		if (cmpIdentity)
+			// NB: Rely on cmpVisualCorpse below to call RecomputeActorName
+			cmpIdentityCorpse.SetPhenotype(cmpIdentity.GetPhenotype());
+	}
+
 	let cmpVisualCorpse = Engine.QueryInterface(entCorpse, IID_Visual);
 	if (cmpVisualCorpse)
 	{
@@ -376,22 +385,6 @@ Health.prototype.CreateCorpse = function()
 			cmpVisualCorpse.SetActorSeed(cmpVisual.GetActorSeed());
 
 		cmpVisualCorpse.SelectAnimation("death", true, 1);
-	}
-
-	const cmpIdentityCorpse = Engine.QueryInterface(entCorpse, IID_Identity);
-	if (cmpIdentityCorpse)
-	{
-		const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
-		if (cmpIdentity)
-		{
-			const oldPhenotype = cmpIdentity.GetPhenotype();
-			if (cmpIdentityCorpse.GetPhenotype() !== oldPhenotype)
-			{
-				cmpIdentityCorpse.SetPhenotype(oldPhenotype);
-				if (cmpVisualCorpse)
-					cmpVisualCorpse.RecomputeActorName();
-			}
-		}
 	}
 
 	if (resource)

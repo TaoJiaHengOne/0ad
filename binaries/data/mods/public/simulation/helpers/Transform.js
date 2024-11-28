@@ -13,6 +13,12 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
 
 	Engine.ProfileStart("Transform");
 
+	const cmpIdentity = Engine.QueryInterface(oldEnt, IID_Identity);
+	const cmpNewIdentity = Engine.QueryInterface(newEnt, IID_Identity);
+	if (cmpIdentity && cmpNewIdentity)
+		// No need to call visualactor::recomputeactorname, will be called below.
+		cmpNewIdentity.SetPhenotype(cmpIdentity.GetPhenotype());
+
 	const cmpVisual = Engine.QueryInterface(oldEnt, IID_Visual);
 	const cmpNewVisual = Engine.QueryInterface(newEnt, IID_Visual);
 	if (cmpVisual && cmpNewVisual)
