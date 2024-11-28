@@ -2,7 +2,7 @@
 <Entity parent="civ/athen|spec_champ|template_unit_champion_infantry_archer">
   <Identity>
     <GenericName>Scythian Archer</GenericName>
-    <SpecificName>Toxótēs Skythikós</SpecificName>
+    <SpecificName>Speusínios</SpecificName>
     <Icon>units/athen/champion_ranged.png</Icon>
   </Identity>
   <VisualActor>
