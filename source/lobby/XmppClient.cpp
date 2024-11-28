@@ -1206,7 +1206,7 @@ std::string XmppClient::GetNick() const
 
 std::string XmppClient::GetJID() const
 {
-	return m_client->getID();
+	return m_client->jid().full();
 }
 
 /**
