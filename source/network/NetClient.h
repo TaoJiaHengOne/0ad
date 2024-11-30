@@ -28,6 +28,7 @@
 
 #include <ctime>
 #include <deque>
+#include <optional>
 #include <thread>
 
 class CGame;
@@ -229,7 +230,12 @@ public:
 
 	void SendAssignPlayerMessage(const int playerID, const CStr& guid);
 
-	void SendChatMessage(const std::wstring& text);
+	/**
+	 * @param text The message to send.
+	 * @param receivers The GUID of the receiving clients. If empty send it to
+	 *	all clients.
+	 */
+	void SendChatMessage(const std::wstring& text, std::optional<std::vector<std::string>> receivers);
 
 	void SendReadyMessage(const int status);
 

@@ -41,6 +41,8 @@
 
 #include "third_party/encryption/pkcs5_pbkdf2.h"
 
+#include <optional>
+
 namespace JSI_Network
 {
 u16 GetDefaultPort()
@@ -237,11 +239,25 @@ void KickPlayer(const CStrW& playerName, bool ban)
 	g_NetClient->SendKickPlayerMessage(playerName, ban);
 }
 
-void SendNetworkChat(const CStrW& message)
+void SendNetworkChat(const ScriptRequest& rq, const CStrW& message, JS::HandleValue handle)
 {
 	ENSURE(g_NetClient);
 
-	g_NetClient->SendChatMessage(message);
+	if (handle.isNullOrUndefined())
+	{
+		g_NetClient->SendChatMessage(message, std::nullopt);
+		return;
+	}
+
+	auto receivers = std::make_optional<std::vector<std::string>>();
+	if (!Script::FromJSVal(rq, handle, *receivers))
+	{
+		ScriptException::Raise(rq, "The second argument to `SendNetworkChat` has to be either an Array "
+			"or a nullish value.");
+		return;
+	}
+
+	g_NetClient->SendChatMessage(message, std::move(receivers));
 }
 
 void SendNetworkReady(int message)

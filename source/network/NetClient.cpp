@@ -465,10 +465,17 @@ void CNetClient::SendAssignPlayerMessage(const int playerID, const CStr& guid)
 	SendMessage(&assignPlayer);
 }
 
-void CNetClient::SendChatMessage(const std::wstring& text)
+void CNetClient::SendChatMessage(const std::wstring& text,
+	std::optional<std::vector<std::string>> receivers)
 {
 	CChatMessage chat;
 	chat.m_Message = text;
+	if (receivers)
+		std::transform(receivers->begin(), receivers->end(), std::back_inserter(chat.m_Receivers),
+			[](std::string& receiver)
+			{
+				return CChatMessage::S_m_Receivers{std::move(receiver)};
+			});
 	SendMessage(&chat);
 }
 
@@ -732,7 +739,7 @@ bool CNetClient::OnChat(CNetClient* client, CFsmEvent* event)
 
 	client->PushGuiMessage(
 		"type", "chat",
-		"guid", message->m_GUID,
+		"guid", message->m_SenderGUID,
 		"text", message->m_Message);
 
 	return true;

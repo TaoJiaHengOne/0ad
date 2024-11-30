@@ -26,6 +26,7 @@
 
 #include <ctime>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <utility>
 #include <unordered_map>
@@ -229,7 +230,8 @@ public:
 	/**
 	 * Send a message to all clients who match one of the given states.
 	 */
-	bool Broadcast(const CNetMessage* message, const std::vector<NetServerSessionState>& targetStates);
+	bool Multicast(const CNetMessage* message, const std::vector<NetServerSessionState>& targetStates,
+		const std::optional<std::vector<std::string>>& receivers = std::nullopt);
 
 private:
 	friend class CNetServer;

@@ -78,7 +78,7 @@ class Chat
 	}
 
 	/**
-	 * Send the given chat message.
+	 * Send the given chat message to the addressees.
 	 */
 	submitChat(text, command = "")
 	{
@@ -88,12 +88,47 @@ class Chat
 		let msg = command ? command + " " + text : text;
 
 		if (Engine.HasNetClient())
-			Engine.SendNetworkChat(msg);
+			Engine.SendNetworkChat(msg, this.getReceiverGUIDs(text, command));
 		else
 			this.ChatMessageHandler.handleMessage({
 				"type": "message",
 				"guid": "local",
 				"text": msg
 			});
+	}
+
+	getReceiverGUIDs(text, command)
+	{
+		const senderGUID = Engine.GetPlayerGUID();
+
+		if (command.startsWith("/msg "))
+		{
+			const receiverGUID =
+				this.ChatMessageFormatPlayer.matchUsername(
+					command.substr("/msg ".length));
+
+			if (!receiverGUID)
+			{
+				warn("Unknown chat addressee: " + text);
+				return [];
+			}
+
+			return [senderGUID, receiverGUID];
+		}
+
+		const isAddressee = this.ChatAddressees.AddresseeTypes.find(
+			type => type.command === command)?.isAddressee;
+
+		if (!isAddressee)
+		{
+			warn("Unknown chat command " + command);
+			return [];
+		}
+
+		const senderID = Engine.GetPlayerID();
+		return Object.keys(g_PlayerAssignments).filter(potentialReceiverGUID => {
+			return potentialReceiverGUID === senderGUID ||
+				isAddressee(senderID, g_PlayerAssignments[potentialReceiverGUID].player);
+		});
 	}
 }

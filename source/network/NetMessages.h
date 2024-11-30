@@ -136,8 +136,11 @@ START_NMT_CLASS_(AuthenticateResult, NMT_AUTHENTICATE_RESULT)
 END_NMT_CLASS()
 
 START_NMT_CLASS_(Chat, NMT_CHAT)
-	NMT_FIELD(CStr, m_GUID) // ignored when client->server, valid when server->client
+	NMT_FIELD(CStr, m_SenderGUID) // ignored when client->server
 	NMT_FIELD(CStrW, m_Message)
+	NMT_START_ARRAY(m_Receivers) // send to all when empty
+		NMT_FIELD(CStr, m_ReceiverGUID) // ignored when server->client
+	NMT_END_ARRAY()
 END_NMT_CLASS()
 
 START_NMT_CLASS_(Ready, NMT_READY)

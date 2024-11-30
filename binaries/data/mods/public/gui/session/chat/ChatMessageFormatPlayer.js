@@ -89,24 +89,17 @@ class ChatMessageFormatPlayer
 		// Parse private message
 		let isPM = msg.cmd == "/msg";
 		let addresseeGUID;
-		let addresseeIndex;
 		if (isPM)
 		{
 			addresseeGUID = this.matchUsername(msg.text);
 			let addressee = g_PlayerAssignments[addresseeGUID];
 			if (!addressee)
 			{
-				if (isSender)
-					warn("Couldn't match username: " + msg.text);
+				warn("Couldn't find chat message receiver: " + msg.text);
 				return false;
 			}
 
-			// Prohibit PM if addressee and sender are identical
-			if (isSender && addresseeGUID == Engine.GetPlayerGUID())
-				return false;
-
 			msg.text = msg.text.substr(addressee.name.length + 1);
-			addresseeIndex = addressee.player;
 		}
 
 		// Set context string
@@ -120,11 +113,30 @@ class ChatMessageFormatPlayer
 		msg.context = addresseeType.context;
 
 		// For observers only permit public- and observer-chat and PM to observers
-		if (isPlayerObserver(senderID) &&
-		    (isPM && !isPlayerObserver(addresseeIndex) || !isPM && msg.cmd != "/observers"))
-			return false;
+		if (isPlayerObserver(senderID))
+		{
+			if (isPM && !g_IsObserver)
+			{
+				warn("Received unexpected private chat message from observer " +
+					g_PlayerAssignments[msg.guid]?.name +
+					" to active player " +
+					g_PlayerAssignments[addresseeGUID]?.name);
+				return false;
+			}
 
-		let visible = isSender || addresseeType.isAddressee(senderID, addresseeGUID);
+			if (!isPM && msg.cmd != "/observers")
+			{
+				warn("Received unexpected chat message from observer " +
+					g_PlayerAssignments[msg.guid]?.name + " to " + msg.cmd);
+				return false;
+			}
+		}
+
+		// We already should only be receiving messages that were meant for us. The following
+		// consistency check rejects a message only if it was manipulated by the sender or if it was
+		// sent before a relevant simulation change occurred.
+		const visible = isSender || (addresseeType.isAddressee(senderID, Engine.GetPlayerID()) &&
+			(!isPM || addresseeGUID === Engine.GetPlayerGUID()));
 		msg.isVisiblePM = isPM && visible;
 
 		return visible;
@@ -143,7 +155,7 @@ class ChatMessageFormatPlayer
 		for (let guid in g_PlayerAssignments)
 		{
 			let pName = g_PlayerAssignments[guid].name;
-			if (text.indexOf(pName + " ") == 0 && pName.length > match.length)
+			if (text.startsWith(pName) && pName.length > match.length)
 			{
 				match = pName;
 				playerGUID = guid;

@@ -29,6 +29,7 @@
 #include "lib/external_libraries/enet.h"
 #include "lib/types.h"
 #include "network/StunClient.h"
+#include "ps/algorithm.h"
 #include "ps/CLogger.h"
 #include "ps/ConfigDB.h"
 #include "ps/GUID.h"
@@ -355,9 +356,23 @@ bool CNetServerWorker::SendMessage(ENetPeer* peer, const CNetMessage* message)
 	return CNetHost::SendMessage(message, peer, DebugName(session).c_str());
 }
 
-bool CNetServerWorker::Broadcast(const CNetMessage* message, const std::vector<NetServerSessionState>& targetStates)
+bool CNetServerWorker::Multicast(const CNetMessage* message,
+	const std::vector<NetServerSessionState>& targetStates,
+	const std::optional<std::vector<std::string>>& receivers /* = std::nullopt */)
 {
 	ENSURE(m_Host);
+
+	const auto isReceiver = [&](const CNetServerSession& session)
+		{
+			if (!PS::contains(targetStates,
+				static_cast<NetServerSessionState>(session.GetCurrState())))
+			{
+				return false;
+			}
+			if (!receivers)
+				return true;
+			return PS::contains(*receivers, session.GetGUID());
+		};
 
 	bool ok = true;
 
@@ -365,8 +380,7 @@ bool CNetServerWorker::Broadcast(const CNetMessage* message, const std::vector<N
 	// of remote peers; could do it more efficiently if that's a real problem
 
 	for (CNetServerSession* session : m_Sessions)
-		if (std::find(targetStates.begin(), targetStates.end(), static_cast<NetServerSessionState>(session->GetCurrState())) != targetStates.end() &&
-		    !session->SendMessage(message))
+		if (isReceiver(*session) && !session->SendMessage(message))
 			ok = false;
 
 	return ok;
@@ -822,7 +836,7 @@ void CNetServerWorker::KickPlayer(const CStrW& playerName, const bool ban)
 	CKickedMessage kickedMessage;
 	kickedMessage.m_Name = playerName;
 	kickedMessage.m_Ban = ban;
-	Broadcast(&kickedMessage, { NSS_PREGAME, NSS_JOIN_SYNCING, NSS_INGAME });
+	Multicast(&kickedMessage, { NSS_PREGAME, NSS_JOIN_SYNCING, NSS_INGAME });
 }
 
 void CNetServerWorker::AssignPlayer(int playerID, const CStr& guid)
@@ -861,7 +875,7 @@ void CNetServerWorker::SendPlayerAssignments()
 {
 	CPlayerAssignmentMessage message;
 	ConstructPlayerAssignmentMessage(message);
-	Broadcast(&message, { NSS_PREGAME, NSS_JOIN_SYNCING, NSS_INGAME });
+	Multicast(&message, { NSS_PREGAME, NSS_JOIN_SYNCING, NSS_INGAME });
 }
 
 const ScriptInterface& CNetServerWorker::GetScriptInterface()
@@ -1191,7 +1205,7 @@ bool CNetServerWorker::OnSimulationCommand(CNetServerSession* session, CFsmEvent
 
 	// Send it back to all clients that have finished
 	// the loading screen (and the synchronization when rejoining)
-	server.Broadcast(message, { NSS_INGAME });
+	server.Multicast(message, { NSS_INGAME });
 
 	// Save all the received commands
 	if (server.m_SavedCommands.size() < message->m_Turn + 1)
@@ -1209,7 +1223,7 @@ bool CNetServerWorker::OnFlare(CNetServerSession* session, CFsmEvent* event)
 	CNetServerWorker& server = session->GetServer();
 	CFlareMessage* message = (CFlareMessage*)event->GetParamRef();
 	message->m_GUID = session->GetGUID();
-	server.Broadcast(message, { NSS_INGAME });
+	server.Multicast(message, { NSS_INGAME });
 
 	return true;
 }
@@ -1247,9 +1261,20 @@ bool CNetServerWorker::OnChat(CNetServerSession* session, CFsmEvent* event)
 
 	CChatMessage* message = (CChatMessage*)event->GetParamRef();
 
-	message->m_GUID = session->GetGUID();
+	message->m_SenderGUID = session->GetGUID();
 
-	server.Broadcast(message, { NSS_PREGAME, NSS_INGAME });
+	const std::vector<NetServerSessionState> receivingStates{NSS_PREGAME, NSS_INGAME};
+	const std::vector messageReceivers{std::exchange(message->m_Receivers, {})};
+
+	if (messageReceivers.empty())
+		server.Multicast(message, receivingStates);
+	else
+	{
+		auto receivers = std::make_optional<std::vector<std::string>>();
+		std::transform(messageReceivers.begin(), messageReceivers.end(), std::back_inserter(*receivers),
+			std::mem_fn(&CChatMessage::S_m_Receivers::m_ReceiverGUID));
+		server.Multicast(message, receivingStates, std::move(receivers));
+	}
 
 	return true;
 }
@@ -1267,7 +1292,7 @@ bool CNetServerWorker::OnReady(CNetServerSession* session, CFsmEvent* event)
 
 	CReadyMessage* message = (CReadyMessage*)event->GetParamRef();
 	message->m_GUID = session->GetGUID();
-	server.Broadcast(message, { NSS_PREGAME });
+	server.Multicast(message, { NSS_PREGAME });
 
 	server.m_PlayerAssignments[message->m_GUID].m_Status = message->m_Status;
 
@@ -1304,7 +1329,7 @@ bool CNetServerWorker::OnGameSetup(CNetServerSession* session, CFsmEvent* event)
 	if (session->GetGUID() == server.m_ControllerGUID)
 	{
 		CGameSetupMessage* message = (CGameSetupMessage*)event->GetParamRef();
-		server.Broadcast(message, { NSS_PREGAME });
+		server.Multicast(message, { NSS_PREGAME });
 	}
 	return true;
 }
@@ -1383,7 +1408,7 @@ bool CNetServerWorker::OnLoadedGame(CNetServerSession* loadedSession, CFsmEvent*
 
 	// Send to the client who has loaded the game but did not reach the NSS_INGAME state yet
 	loadedSession->SendMessage(&message);
-	server.Broadcast(&message, { NSS_INGAME });
+	server.Multicast(&message, { NSS_INGAME });
 
 	return true;
 }
@@ -1450,7 +1475,7 @@ bool CNetServerWorker::OnRejoined(CNetServerSession* session, CFsmEvent* event)
 	// Inform everyone of the client having rejoined
 	CRejoinedMessage* message = (CRejoinedMessage*)event->GetParamRef();
 	message->m_GUID = session->GetGUID();
-	server.Broadcast(message, { NSS_INGAME });
+	server.Multicast(message, { NSS_INGAME });
 
 	// Send all pausing players to the rejoined client.
 	for (const CStr& guid : server.m_PausingPlayers)
@@ -1536,7 +1561,7 @@ bool CNetServerWorker::CheckGameLoadStatus(CNetServerSession* changedSession)
 	loaded.m_CurrentTurn = 0;
 
 	// Notice the changedSession is still in the NSS_PREGAME state
-	Broadcast(&loaded, { NSS_PREGAME, NSS_INGAME });
+	Multicast(&loaded, { NSS_PREGAME, NSS_INGAME });
 
 	m_State = SERVER_STATE_INGAME;
 	return true;
@@ -1581,7 +1606,7 @@ void CNetServerWorker::StartGame(const CStr& initAttribs)
 
 	CGameStartMessage gameStart;
 	gameStart.m_InitAttributes = initAttribs;
-	Broadcast(&gameStart, { NSS_PREGAME });
+	Multicast(&gameStart, { NSS_PREGAME });
 }
 
 void CNetServerWorker::StartSavedGame(const CStr& initAttribs)
@@ -1590,7 +1615,7 @@ void CNetServerWorker::StartSavedGame(const CStr& initAttribs)
 
 	CGameSavedStartMessage gameSavedStart;
 	gameSavedStart.m_InitAttributes = initAttribs;
-	Broadcast(&gameSavedStart, { NSS_PREGAME });
+	Multicast(&gameSavedStart, { NSS_PREGAME });
 }
 
 CStrW CNetServerWorker::SanitisePlayerName(const CStrW& original)

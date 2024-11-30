@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -98,7 +98,7 @@ void CNetServerTurnManager::CheckClientsReady()
 	CEndCommandBatchMessage msg;
 	msg.m_TurnLength = m_TurnLength;
 	msg.m_Turn = m_ReadyTurn;
-	m_NetServer.Broadcast(&msg, { NSS_INGAME });
+	m_NetServer.Multicast(&msg, { NSS_INGAME });
 
 	ENSURE(m_SavedTurnLengths.size() == m_ReadyTurn);
 	m_SavedTurnLengths.push_back(m_TurnLength);
@@ -172,7 +172,7 @@ void CNetServerTurnManager::NotifyFinishedClientUpdate(CNetServerSession& sessio
 				h.m_Name = oosPlayername;
 				msg.m_PlayerNames.push_back(h);
 			}
-			m_NetServer.Broadcast(&msg, { NSS_INGAME });
+			m_NetServer.Multicast(&msg, { NSS_INGAME });
 			break;
 		}
 	}
