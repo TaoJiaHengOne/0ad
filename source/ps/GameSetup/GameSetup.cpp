@@ -769,76 +769,22 @@ CParamNode GetTemplate(const std::string& templateName)
 	return templateRoot;
 }
 
-/*
- * Command line options for autostart
- * (keep synchronized with binaries/system/readme.txt):
- *
- * -autostart="TYPEDIR/MAPNAME"    enables autostart and sets MAPNAME;
- *                                 TYPEDIR is skirmishes, scenarios, or random
- * -autostart-biome=BIOME          sets BIOME for a random map
- * -autostart-seed=SEED            sets randomization seed value (default 0, use -1 for random)
- * -autostart-ai=PLAYER:AI         sets the AI for PLAYER (e.g. 2:petra)
- * -autostart-aidiff=PLAYER:DIFF   sets the DIFFiculty of PLAYER's AI
- *                                 (default 3, 0: sandbox, 5: very hard)
- * -autostart-aiseed=AISEED        sets the seed used for the AI random
- *                                 generator (default 0, use -1 for random)
- * -autostart-player=NUMBER        sets the playerID in non-networked games (default 1, use -1 for observer)
- * -autostart-civ=PLAYER:CIV       sets PLAYER's civilisation to CIV (skirmish and random maps only).
- *                                 Use random for a random civ.
- * -autostart-team=PLAYER:TEAM     sets the team for PLAYER (e.g. 2:2).
- * -autostart-ceasefire=NUM        sets a ceasefire duration NUM
- *                                 (default 0 minutes)
- * -autostart-nonvisual            disable any graphics and sounds
- * -autostart-victory=SCRIPTNAME   sets the victory conditions with SCRIPTNAME
- *                                 located in simulation/data/settings/victory_conditions/
- *                                 (default conquest). When the first given SCRIPTNAME is
- *                                 "endless", no victory conditions will apply.
- * -autostart-wonderduration=NUM   sets the victory duration NUM for wonder victory condition
- *                                 (default 10 minutes)
- * -autostart-relicduration=NUM    sets the victory duration NUM for relic victory condition
- *                                 (default 10 minutes)
- * -autostart-reliccount=NUM       sets the number of relics for relic victory condition
- *                                 (default 2 relics)
- * -autostart-disable-replay       disable saving of replays
- *
- * Multiplayer:
- * -autostart-playername=NAME      sets local player NAME (default 'anonymous')
- * -autostart-host                 sets multiplayer host mode
- * -autostart-host-players=NUMBER  sets NUMBER of human players for multiplayer
- *                                 game (default 2)
- * -autostart-client=IP            sets multiplayer client to join host at
- *                                 given IP address
- * Random maps only:
- * -autostart-size=TILES           sets random map size in TILES (default 192)
- * -autostart-players=NUMBER       sets NUMBER of players on random map
- *                                 (default 2)
- *
- * Examples:
- * 1) "Bob" will host a 2 player game on the Arcadia map:
- * -autostart="scenarios/arcadia" -autostart-host -autostart-host-players=2 -autostart-playername="Bob"
- *  "Alice" joins the match as player 2:
- * -autostart-client=127.0.0.1 -autostart-playername="Alice"
- * The players use the developer overlay to control players.
- *
- * 2) Load Alpine Lakes random map with random seed, 2 players (Athens and Britons), and player 2 is PetraBot:
- * -autostart="random/alpine_lakes" -autostart-seed=-1 -autostart-players=2 -autostart-civ=1:athen -autostart-civ=2:brit -autostart-ai=2:petra
- *
- * 3) Observe the PetraBot on a triggerscript map:
- * -autostart="random/jebel_barkal" -autostart-seed=-1 -autostart-players=2 -autostart-civ=1:athen -autostart-civ=2:brit -autostart-ai=1:petra -autostart-ai=2:petra -autostart-player=-1
+/**
+ * Autostart arguments are parsed in javascript for convenience and moddability.
+ * This C++ part only handles the following arguments:
+ * -autostart=MAP		to enable regular autostart / host mode autostart
+ * -autostart-client=IP	to enable 'MP client' autostart.
+ * -autostart-host		to enable 'MP host' autostart.
+ * -autostart-nonvisual	to start in non-visual mode.
+ *  TODO: it might be nice to move these to JS too.
  */
 bool Autostart(const CmdLineArgs& args)
 {
 	if (!args.Has("autostart-client") && !args.Has("autostart"))
 		return false;
 
-	// Get optional playername.
-	CStrW userName = L"anonymous";
-	if (args.Has("autostart-playername"))
-		userName = args.Get("autostart-playername").FromUTF8();
-
 	// Create some scriptinterface to store the js values for the settings.
 	ScriptInterface scriptInterface("Engine", "Game Setup", g_ScriptContext);
-
 	ScriptRequest rq(scriptInterface);
 
 	// We use the javascript gameSettings to handle options, but that requires running JS.
@@ -864,301 +810,19 @@ bool Autostart(const CmdLineArgs& args)
 	JSI_VFS::RegisterScriptFunctions_ReadWriteAnywhere(rq);
 	JSI_Network::RegisterScriptFunctions(rq);
 
-	JS::RootedValue sessionInitData(rq.cx);
+	JS::RootedValue cmdLineArgs(rq.cx);
+	Script::ToJSVal(rq, &cmdLineArgs, args);
 
-	if (args.Has("autostart-client"))
+	if (args.Has("autostart-client") || args.Has("autostart-host"))
 	{
-		CStr ip = args.Get("autostart-client");
-		if (ip.empty())
-			ip = "127.0.0.1";
-
-		Script::CreateObject(
-			rq,
-			&sessionInitData,
-			"playerName", userName,
-			"ip", ip,
-			"port", PS_DEFAULT_PORT,
-			"storeReplay", !args.Has("autostart-disable-replay"));
+		// Pass the default port if undefined, to avoid duplicating it in JS.
+		if (!Script::HasProperty(rq, cmdLineArgs, "autostart-port"))
+			Script::SetProperty(rq, cmdLineArgs, "autostart-port", PS_DEFAULT_PORT);
 
 		JS::RootedValue global(rq.cx, rq.globalValue());
-		if (!ScriptFunction::CallVoid(rq, global, "autostartClient", sessionInitData, true))
+		if (!ScriptFunction::CallVoid(rq, global, args.Has("autostart-client") ? "autostartClient" : "autostartHost", cmdLineArgs, true))
 			return false;
 
-		bool shouldQuit = false;
-		while (!shouldQuit)
-		{
-			g_NetClient->Poll();
-			ScriptFunction::Call(rq, global, "onTick", shouldQuit);
-			std::this_thread::sleep_for(std::chrono::microseconds(200));
-		}
-
-		if (args.Has("autostart-nonvisual"))
-		{
-			LDR_NonprogressiveLoad();
-			g_Game->ReallyStartGame();
-		}
-		return true;
-	}
-
-	CStr autoStartName = args.Get("autostart");
-
-	if (autoStartName.empty())
-		return false;
-
-	JS::RootedValue attrs(rq.cx);
-	JS::RootedValue settings(rq.cx);
-	JS::RootedValue playerData(rq.cx);
-
-	Script::CreateObject(rq, &attrs);
-	Script::CreateObject(rq, &settings);
-	Script::CreateArray(rq, &playerData);
-
-	// The directory in front of the actual map name indicates which type
-	// of map is being loaded. Drawback of this approach is the association
-	// of map types and folders is hard-coded, but benefits are:
-	// - No need to pass the map type via command line separately
-	// - Prevents mixing up of scenarios and skirmish maps to some degree
-	Path mapPath = Path(autoStartName);
-	std::wstring mapDirectory = mapPath.Parent().Filename().string();
-	std::string mapType;
-
-	if (mapDirectory == L"random")
-	{
-		// Get optional map size argument (default 192)
-		uint mapSize = 192;
-		if (args.Has("autostart-size"))
-		{
-			CStr size = args.Get("autostart-size");
-			mapSize = size.ToUInt();
-		}
-
-		Script::SetProperty(rq, settings, "Size", mapSize);		// Random map size (in patches)
-
-		if (args.Has("autostart-biome"))
-		{
-			CStr biome = args.Get("autostart-biome");
-			Script::SetProperty(rq, settings, "Biome", biome);
-		}
-
-		// Get optional number of players (default 2)
-		size_t numPlayers = 2;
-		if (args.Has("autostart-players"))
-		{
-			CStr num = args.Get("autostart-players");
-			numPlayers = num.ToUInt();
-		}
-
-		// Set up player data
-		for (size_t i = 0; i < numPlayers; ++i)
-		{
-			JS::RootedValue player(rq.cx);
-
-			// We could load player_defaults.json here, but that would complicate the logic
-			// even more and autostart is only intended for developers anyway
-			Script::CreateObject(rq, &player, "Civ", "athen");
-
-			Script::SetPropertyInt(rq, playerData, i, player);
-		}
-		mapType = "random";
-	}
-	else if (mapDirectory == L"scenarios")
-		mapType = "scenario";
-	else if (mapDirectory == L"skirmishes")
-		mapType = "skirmish";
-	else
-	{
-		LOGERROR("Autostart: Unrecognized map type '%s'", utf8_from_wstring(mapDirectory));
-		throw PSERROR_Game_World_MapLoadFailed("Unrecognized map type.\nConsult readme.txt for the currently supported types.");
-	}
-
-	Script::SetProperty(rq, attrs, "mapType", mapType);
-	Script::SetProperty(rq, attrs, "map", "maps/" + autoStartName);
-	Script::SetProperty(rq, settings, "mapType", mapType);
-	Script::SetProperty(rq, settings, "CheatsEnabled", true);
-
-	// The seed is used for both random map generation and simulation
-	u32 seed = 0;
-	if (args.Has("autostart-seed"))
-	{
-		CStr seedArg = args.Get("autostart-seed");
-		if (seedArg == "-1")
-			seed = rand();
-		else
-			seed = seedArg.ToULong();
-	}
-	Script::SetProperty(rq, settings, "Seed", seed);
-
-	// Set seed for AIs
-	u32 aiseed = 0;
-	if (args.Has("autostart-aiseed"))
-	{
-		CStr seedArg = args.Get("autostart-aiseed");
-		if (seedArg == "-1")
-			aiseed = rand();
-		else
-			aiseed = seedArg.ToULong();
-	}
-	Script::SetProperty(rq, settings, "AISeed", aiseed);
-
-	// Set player data for AIs
-	//		attrs.settings = { PlayerData: [ { AI: ... }, ... ] }
-	//		            or = { PlayerData: [ null, { AI: ... }, ... ] } when gaia set
-	int offset = 1;
-	JS::RootedValue player(rq.cx);
-	if (Script::GetPropertyInt(rq, playerData, 0, &player) && player.isNull())
-		offset = 0;
-
-	// Set teams
-	if (args.Has("autostart-team"))
-	{
-		std::vector<CStr> civArgs = args.GetMultiple("autostart-team");
-		for (size_t i = 0; i < civArgs.size(); ++i)
-		{
-			int playerID = civArgs[i].BeforeFirst(":").ToInt();
-
-			// Instead of overwriting existing player data, modify the array
-			JS::RootedValue currentPlayer(rq.cx);
-			if (!Script::GetPropertyInt(rq, playerData, playerID-offset, &currentPlayer) || currentPlayer.isUndefined())
-				Script::CreateObject(rq, &currentPlayer);
-
-			int teamID = civArgs[i].AfterFirst(":").ToInt() - 1;
-			Script::SetProperty(rq, currentPlayer, "Team", teamID);
-			Script::SetPropertyInt(rq, playerData, playerID-offset, currentPlayer);
-		}
-	}
-
-	int ceasefire = 0;
-	if (args.Has("autostart-ceasefire"))
-		ceasefire = args.Get("autostart-ceasefire").ToInt();
-	Script::SetProperty(rq, settings, "Ceasefire", ceasefire);
-
-	if (args.Has("autostart-ai"))
-	{
-		std::vector<CStr> aiArgs = args.GetMultiple("autostart-ai");
-		for (size_t i = 0; i < aiArgs.size(); ++i)
-		{
-			int playerID = aiArgs[i].BeforeFirst(":").ToInt();
-
-			// Instead of overwriting existing player data, modify the array
-			JS::RootedValue currentPlayer(rq.cx);
-			if (!Script::GetPropertyInt(rq, playerData, playerID-offset, &currentPlayer) || currentPlayer.isUndefined())
-				Script::CreateObject(rq, &currentPlayer);
-
-			Script::SetProperty(rq, currentPlayer, "AI", aiArgs[i].AfterFirst(":"));
-			Script::SetProperty(rq, currentPlayer, "AIDiff", 3);
-			Script::SetProperty(rq, currentPlayer, "AIBehavior", "balanced");
-			Script::SetPropertyInt(rq, playerData, playerID-offset, currentPlayer);
-		}
-	}
-	// Set AI difficulty
-	if (args.Has("autostart-aidiff"))
-	{
-		std::vector<CStr> civArgs = args.GetMultiple("autostart-aidiff");
-		for (size_t i = 0; i < civArgs.size(); ++i)
-		{
-			int playerID = civArgs[i].BeforeFirst(":").ToInt();
-
-			// Instead of overwriting existing player data, modify the array
-			JS::RootedValue currentPlayer(rq.cx);
-			if (!Script::GetPropertyInt(rq, playerData, playerID-offset, &currentPlayer) || currentPlayer.isUndefined())
-				Script::CreateObject(rq, &currentPlayer);
-
-			Script::SetProperty(rq, currentPlayer, "AIDiff", civArgs[i].AfterFirst(":").ToInt());
-			Script::SetPropertyInt(rq, playerData, playerID-offset, currentPlayer);
-		}
-	}
-	// Set player data for Civs
-	if (args.Has("autostart-civ"))
-	{
-		if (mapDirectory != L"scenarios")
-		{
-			std::vector<CStr> civArgs = args.GetMultiple("autostart-civ");
-			for (size_t i = 0; i < civArgs.size(); ++i)
-			{
-				int playerID = civArgs[i].BeforeFirst(":").ToInt();
-
-				// Instead of overwriting existing player data, modify the array
-				JS::RootedValue currentPlayer(rq.cx);
-				if (!Script::GetPropertyInt(rq, playerData, playerID-offset, &currentPlayer) || currentPlayer.isUndefined())
-					Script::CreateObject(rq, &currentPlayer);
-
-				Script::SetProperty(rq, currentPlayer, "Civ", civArgs[i].AfterFirst(":"));
-				Script::SetPropertyInt(rq, playerData, playerID-offset, currentPlayer);
-			}
-		}
-		else
-			LOGWARNING("Autostart: Option 'autostart-civ' is invalid for scenarios");
-	}
-
-	// Add additional scripts to the TriggerScripts property
-	std::vector<CStrW> triggerScriptsVector;
-	JS::RootedValue triggerScripts(rq.cx);
-
-	if (Script::HasProperty(rq, settings, "TriggerScripts"))
-	{
-		Script::GetProperty(rq, settings, "TriggerScripts", &triggerScripts);
-		Script::FromJSVal(rq, triggerScripts, triggerScriptsVector);
-	}
-
-	if (!CRenderer::IsInitialised())
-	{
-		CStr nonVisualScript = "scripts/NonVisualTrigger.js";
-		triggerScriptsVector.push_back(nonVisualScript.FromUTF8());
-	}
-
-	Script::ToJSVal(rq, &triggerScripts, triggerScriptsVector);
-	Script::SetProperty(rq, settings, "TriggerScripts", triggerScripts);
-
-	std::vector<CStr> victoryConditions(1, "conquest");
-	if (args.Has("autostart-victory"))
-		victoryConditions = args.GetMultiple("autostart-victory");
-
-	if (victoryConditions.size() == 1 && victoryConditions[0] == "endless")
-		victoryConditions.clear();
-
-	Script::SetProperty(rq, settings, "VictoryConditions", victoryConditions);
-
-	int wonderDuration = 10;
-	if (args.Has("autostart-wonderduration"))
-		wonderDuration = args.Get("autostart-wonderduration").ToInt();
-	Script::SetProperty(rq, settings, "WonderDuration", wonderDuration);
-
-	int relicDuration = 10;
-	if (args.Has("autostart-relicduration"))
-		relicDuration = args.Get("autostart-relicduration").ToInt();
-	Script::SetProperty(rq, settings, "RelicDuration", relicDuration);
-
-	int relicCount = 2;
-	if (args.Has("autostart-reliccount"))
-		relicCount = args.Get("autostart-reliccount").ToInt();
-	Script::SetProperty(rq, settings, "RelicCount", relicCount);
-
-	// Add player data to map settings.
-	Script::SetProperty(rq, settings, "PlayerData", playerData);
-
-	// Add map settings to game attributes.
-	Script::SetProperty(rq, attrs, "settings", settings);
-
-	if (args.Has("autostart-host"))
-	{
-		int maxPlayers = 2;
-		if (args.Has("autostart-host-players"))
-			maxPlayers = args.Get("autostart-host-players").ToUInt();
-
-		Script::CreateObject(
-			rq,
-			&sessionInitData,
-			"attribs", attrs,
-			"playerName", userName,
-			"port", PS_DEFAULT_PORT,
-			"maxPlayers", maxPlayers,
-			"storeReplay", !args.Has("autostart-disable-replay"));
-
-		JS::RootedValue global(rq.cx, rq.globalValue());
-		if (!ScriptFunction::CallVoid(rq, global, "autostartHost", sessionInitData, true))
-			return false;
-
-		// In MP host mode, we need to wait until clients have loaded.
 		bool shouldQuit = false;
 		while (!shouldQuit)
 		{
@@ -1169,26 +833,8 @@ bool Autostart(const CmdLineArgs& args)
 	}
 	else
 	{
-		JS::RootedValue localPlayer(rq.cx);
-		Script::CreateObject(
-			rq,
-			&localPlayer,
-			"player", args.Has("autostart-player") ? args.Get("autostart-player").ToInt() : 1,
-			"name", userName);
-
-		JS::RootedValue playerAssignments(rq.cx);
-		Script::CreateObject(rq, &playerAssignments);
-		Script::SetProperty(rq, playerAssignments, "local", localPlayer);
-
-		Script::CreateObject(
-			rq,
-			&sessionInitData,
-			"attribs", attrs,
-			"playerAssignments", playerAssignments,
-			"storeReplay", !args.Has("autostart-disable-replay"));
-
 		JS::RootedValue global(rq.cx, rq.globalValue());
-		if (!ScriptFunction::CallVoid(rq, global, "autostartHost", sessionInitData, false))
+		if (!ScriptFunction::CallVoid(rq, global, "autostartHost", cmdLineArgs, false))
 			return false;
 	}
 

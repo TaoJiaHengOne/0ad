@@ -1,14 +1,21 @@
 class AutoStart
 {
-	constructor(initData)
+	constructor(cmdLineArgs)
 	{
+		this.playerAssignments = {
+			"local": {
+				"player": +(cmdLineArgs?.['autostart-player'] ?? 1),
+				"name": "anonymous",
+			},
+		};
 		this.settings = new GameSettings().init();
-		this.settings.fromInitAttributes(initData.attribs);
 
-		this.playerAssignments = initData.playerAssignments;
+		// Enable cheats in SP
+		this.settings.cheats.setEnabled(true);
 
-		this.settings.launchGame(this.playerAssignments, initData.storeReplay);
+		parseCmdLineArgs(this.settings, cmdLineArgs);
 
+		this.settings.launchGame(this.playerAssignments, !cmdLineArgs['autostart-disable-replay']);
 		this.onLaunch();
 	}
 

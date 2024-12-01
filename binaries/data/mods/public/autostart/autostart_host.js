@@ -1,18 +1,20 @@
 class AutoStartHost
 {
-	constructor(initData)
+	constructor(cmdLineArgs)
 	{
 		this.launched = false;
-		this.maxPlayers = initData.maxPlayers;
-		this.storeReplay = initData.storeReplay;
 		this.playerAssignments = {};
 
-		this.initAttribs = initData.attribs;
+		this.maxPlayers = cmdLineArgs['autostart-host-players'] ?? 2;
+		this.cmdLineArgs = cmdLineArgs;
 
 		try
 		{
+			const playerName = cmdLineArgs['autostart-playername'] || "anonymous";
+			const port = cmdLineArgs['autostart-port'] ?? 5073;
+
 			// Stun and password not implemented for autostart.
-			Engine.StartNetworkHost(initData.playerName, initData.port, false, "", initData.storeReplay);
+			Engine.StartNetworkHost(playerName, port, false, "", !cmdLineArgs['autostart-disable-replay']);
 		}
 		catch (e)
 		{
@@ -74,11 +76,13 @@ class AutoStartHost
 		this.launched = true;
 
 		this.settings = new GameSettings().init();
-		this.settings.fromInitAttributes(this.initAttribs);
+
+		parseCmdLineArgs(this.settings, this.cmdLineArgs);
+
 		this.settings.playerCount.setNb(Object.keys(this.playerAssignments).length);
 		this.settings.launchGame(this.playerAssignments, this.storeReplay);
 		Engine.SwitchGuiPage("page_loading.xml", {
-			"attribs": this.initAttribs,
+			"attribs": this.settings.finalizedAttributes,
 			"playerAssignments": this.playerAssignments
 		});
 	}

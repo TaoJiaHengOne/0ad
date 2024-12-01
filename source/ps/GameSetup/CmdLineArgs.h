@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2023 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -24,6 +24,13 @@
 
 #include <utility>
 #include <vector>
+
+class ScriptRequest;
+
+namespace Script {
+template<typename T>
+void ToJSVal(const ScriptRequest& rq,  JS::MutableHandleValue ret, const T& val);
+}
 
 class CmdLineArgs
 {
@@ -70,6 +77,9 @@ public:
 	std::vector<CStr> GetArgsWithoutName() const;
 
 private:
+	template<typename T>
+	friend void Script::ToJSVal(const ScriptRequest& rq,  JS::MutableHandleValue ret, const T& val);
+
 	typedef std::vector<std::pair<CStr, CStr> > ArgsT;
 	ArgsT m_Args;
 	OsPath m_Arg0;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2023 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,10 +19,13 @@
 #include "CmdLineArgs.h"
 
 #include "lib/sysdep/sysdep.h"
+#include "scriptinterface/Object.h"
+#include "scriptinterface/ScriptConversions.h"
 
 #include <algorithm>
 #include <iterator>
 #include <string_view>
+#include <unordered_map>
 
 CmdLineArgs g_CmdLineArgs;
 
@@ -112,4 +115,32 @@ OsPath CmdLineArgs::GetArg0() const
 std::vector<CStr> CmdLineArgs::GetArgsWithoutName() const
 {
 	return m_ArgsWithoutName;
+}
+
+template<> void Script::ToJSVal<CmdLineArgs>(const ScriptRequest& rq, JS::MutableHandleValue ret, const CmdLineArgs& val)
+{
+	if (!Script::CreateObject(rq, ret))
+		return;
+
+	std::unordered_map<CStr, std::vector<CStr>> args;
+	for (const std::pair<CStr, CStr>& arg : val.m_Args)
+		args.emplace(arg.first, std::vector<CStr>{}).first->second.emplace_back(arg.second);
+
+	JS::RootedValue argVal(rq.cx);
+	for (const auto& arg : args)
+	{
+		if (arg.second.size() == 1)
+		{
+			if (arg.second[0].empty())
+				argVal = JS::UndefinedHandleValue;
+			else
+				Script::ToJSVal(rq, &argVal, arg.second[0]);
+			Script::SetProperty(rq, ret, arg.first.c_str(), argVal);
+		}
+		else
+		{
+			Script::ToJSVal(rq, &argVal, arg.second);
+			Script::SetProperty(rq, ret, arg.first.c_str(), argVal);
+		}
+	}
 }

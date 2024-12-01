@@ -22,16 +22,16 @@ Engine.LoadScript("gui/common/functions_msgbox.js");
 
 var autostartInstance;
 
-function autostartClient(initData)
+function autostartClient(cmdLineArgs)
 {
-	autostartInstance = new AutoStartClient(initData);
+	autostartInstance = new AutoStartClient(cmdLineArgs);
 }
 
 /**
  * This path depends on files currently stored under gui/, which should be moved.
  * The best place would probably be a new 'engine' mod, independent from the 'mod' mod and the public mod.
  */
-function autostartHost(initData, networked = false)
+function autostartHost(cmdLineArgs, networked = false)
 {
 	Engine.LoadScript("gui/common/color.js");
 	Engine.LoadScript("gui/common/functions_utility.js");
@@ -44,9 +44,9 @@ function autostartHost(initData, networked = false)
 	Engine.LoadScript("gamesettings/attributes/");
 
 	if (networked)
-		autostartInstance = new AutoStartHost(initData);
+		autostartInstance = new AutoStartHost(cmdLineArgs);
 	else
-		autostartInstance = new AutoStart(initData);
+		autostartInstance = new AutoStart(cmdLineArgs);
 }
 
 /**

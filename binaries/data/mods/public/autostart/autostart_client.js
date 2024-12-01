@@ -1,12 +1,15 @@
 class AutoStartClient
 {
-	constructor(initData)
+	constructor(cmdLineArgs)
 	{
 		this.playerAssignments = {};
 
 		try
 		{
-			Engine.StartNetworkJoin(initData.playerName, initData.ip, initData.port, initData.storeReplay);
+			const playerName = cmdLineArgs['autostart-playername'] || "anonymous";
+			const ip = cmdLineArgs['autostart-client'] ?? "127.0.0.1";
+			const port = cmdLineArgs['autostart-port'] ?? 5073;
+			Engine.StartNetworkJoin(playerName, ip, port, !cmdLineArgs['autostart-disable-replay']);
 		}
 		catch (e)
 		{
