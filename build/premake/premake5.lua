@@ -27,6 +27,12 @@ newoption { trigger = "bindir", description = "Directory for executables (typica
 newoption { trigger = "datadir", description = "Directory for data files (typically '/usr/share/games/0ad'); default is ../data/ relative to executable" }
 newoption { trigger = "libdir", description = "Directory for libraries (typically '/usr/lib/games/0ad'); default is ./ relative to executable" }
 
+if _ACTION == "gmake" then
+	print("Premake action 'gmake' is no longer supported by pyrogenesis, use 'gmake2'")
+	print("Example: 'premake5 --file=build/premake/premake5.lua gmake2'")
+	os.exit(1)
+end
+
 -- Root directory of project checkout relative to this .lua file
 rootdir = "../.."
 
