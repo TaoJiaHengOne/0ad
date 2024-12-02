@@ -184,22 +184,22 @@ ZLIB_DIR="$(pwd)/zlib"
 
 	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# patch zlib's configure script to use our CFLAGS and LDFLAGS
-			patch -Np0 -i ../../../macos-patches/zlib_flags.diff
+			patch -Np0 -i ../../../macos-patches/zlib_flags.diff || die
 			# hand written configure script, need to set CFLAGS and LDFLAGS in env
 			CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
 				./configure \
 				--prefix="$ZLIB_DIR" \
-				--static
-			make "${JOBS}"
-			make install
+				--static || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "zlib build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -225,13 +225,13 @@ echo "Building libcurl..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
@@ -259,9 +259,9 @@ echo "Building libcurl..."
 				--disable-ldaps \
 				--without-libidn2 \
 				--with-zlib="${ZLIB_DIR}" \
-				--enable-shared=no
-			make "${JOBS}"
-			make install
+				--enable-shared=no || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "libcurl build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -286,13 +286,13 @@ ICONV_DIR="$(pwd)/iconv"
 
 	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
@@ -300,9 +300,9 @@ ICONV_DIR="$(pwd)/iconv"
 				--without-libiconv-prefix \
 				--without-libintl-prefix \
 				--disable-nls \
-				--enable-shared=no
-			make "${JOBS}"
-			make install
+				--enable-shared=no || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "libiconv build failed"
 
 		echo "$LIB_VERSION" >.already-built
@@ -327,13 +327,13 @@ echo "Building libxml2..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
@@ -342,9 +342,9 @@ echo "Building libxml2..."
 				--without-python \
 				--with-iconv="${ICONV_DIR}" \
 				--with-zlib="${ZLIB_DIR}" \
-				--enable-shared=no
-			make "${JOBS}"
-			make install
+				--enable-shared=no || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "libxml2 build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -371,13 +371,13 @@ echo "Building SDL2..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# We don't want SDL2 to pull in system iconv, force it to detect ours with flags.
 			# Don't use X11 - we don't need it and Mountain Lion removed it
 			./configure \
@@ -389,9 +389,9 @@ echo "Building SDL2..."
 				--disable-video-x11 \
 				--without-x \
 				--enable-video-cocoa \
-				--enable-shared=no
-			make "$JOBS"
-			make install
+				--enable-shared=no || die
+			make "$JOBS" || die
+			make install || die
 		) || die "SDL2 build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -417,17 +417,17 @@ echo "Building Boost..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# Can't use macosx-version, see above comment.
 			./bootstrap.sh \
 				--with-libraries=filesystem,system \
-				--prefix="$INSTALL_DIR"
+				--prefix="$INSTALL_DIR" || die
 			./b2 \
 				cflags="$CFLAGS" \
 				toolset=clang \
@@ -439,7 +439,7 @@ echo "Building Boost..."
 				link=static \
 				threading=multi \
 				variant=release \
-				install
+				install || die
 		) || die "Boost build failed"
 
 		echo "$LIB_VERSION" >.already-built
@@ -465,10 +465,10 @@ echo "Building wxWidgets..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
 			mkdir -p $LIB_DIRECTORY/build-release
@@ -503,9 +503,9 @@ echo "Building wxWidgets..."
 				CFLAGS="$ARCHLESS_CFLAGS" \
 				CXXFLAGS="$ARCHLESS_CXXFLAGS" \
 				CPPFLAGS="-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=1" \
-				LDFLAGS="$ARCHLESS_LDFLAGS" $CONF_OPTS
-			make "${JOBS}"
-			make install
+				LDFLAGS="$ARCHLESS_LDFLAGS" $CONF_OPTS || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "wxWidgets build failed"
 
 		echo "$LIB_VERSION" >.already-built
@@ -530,22 +530,22 @@ echo "Building libpng..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# libpng has no flags for zlib but the 10.12 version is too old, so link our own.
 			./configure \
 				CFLAGS="$CFLAGS" \
 				CPPFLAGS=" -I $ZLIB_DIR/include " \
 				LDFLAGS="$LDFLAGS -L$ZLIB_DIR/lib" \
 				--prefix="$INSTALL_DIR" \
-				--enable-shared=no
-			make "${JOBS}"
-			make install
+				--enable-shared=no || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "libpng build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -571,13 +571,13 @@ echo "Building freetype..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
@@ -586,9 +586,9 @@ echo "Building freetype..."
 				--enable-shared=no \
 				--with-harfbuzz=no \
 				--with-bzip2=no \
-				--with-brotli=no
-			make "${JOBS}"
-			make install
+				--with-brotli=no || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "freetype build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -614,10 +614,10 @@ OGG_DIR="$(pwd)/libogg"
 
 	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$LIB_VERSION" ]; then
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		# shellcheck disable=SC2086
 		cmake -B libogg \
@@ -627,8 +627,8 @@ OGG_DIR="$(pwd)/libogg"
 			-DBUILD_SHARED_LIBS=OFF \
 			-DINSTALL_DOCS=OFF \
 			-DCMAKE_C_FLAGS="$CFLAGS" \
-			$CMAKE_FLAGS
-		cmake --build libogg "${JOBS}" --target install
+			$CMAKE_FLAGS || die
+		cmake --build libogg "${JOBS}" --target install || die
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
 		echo "$LIB_VERSION" >.already-built
@@ -653,10 +653,10 @@ echo "Building libvorbis..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		# shellcheck disable=SC2086
 		cmake -B libvorbis \
@@ -667,8 +667,8 @@ echo "Building libvorbis..."
 			-DBUILD_SHARED_LIBS=OFF \
 			-DINSTALL_DOCS=OFF \
 			-DCMAKE_C_FLAGS="$CFLAGS" \
-			$CMAKE_FLAGS
-		cmake --build libvorbis "${JOBS}" --target install
+			$CMAKE_FLAGS || die
+		cmake --build libvorbis "${JOBS}" --target install || die
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
 		echo "$LIB_VERSION" >.already-built
@@ -694,13 +694,13 @@ GMP_DIR="$(pwd)/gmp"
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# NOTE: enable-fat in this case allows building and running on different CPUS.
 			# Otherwise CPU-specific instructions will be used with no fallback for older CPUs.
 			./configure \
@@ -711,9 +711,9 @@ GMP_DIR="$(pwd)/gmp"
 				--prefix="$INSTALL_DIR" \
 				--enable-fat \
 				--disable-shared \
-				--with-pic
-			make "${JOBS}"
-			make install
+				--with-pic || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "GMP build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -741,13 +741,13 @@ NETTLE_DIR="$(pwd)/nettle"
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# NOTE: enable-fat in this case allows building and running on different CPUS.
 			# Otherwise CPU-specific instructions will be used with no fallback for older CPUs.
 			./configure \
@@ -761,9 +761,9 @@ NETTLE_DIR="$(pwd)/nettle"
 				--disable-shared \
 				--disable-documentation \
 				--disable-openssl \
-				--disable-assembler
-			make "${JOBS}"
-			make install
+				--disable-assembler || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "Nettle build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -790,16 +790,16 @@ GNUTLS_DIR="$(pwd)/gnutls"
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# Patch GNUTLS for a linking issue with isdigit
 			# Patch by Ross Nicholson: https://gitlab.com/gnutls/gnutls/-/issues/1033#note_379529145
-			patch -Np1 -i ../../../macos-patches/03-undo-libtasn1-cisdigit.patch
+			patch -Np1 -i ../../../macos-patches/03-undo-libtasn1-cisdigit.patch || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				CXXFLAGS="$CXXFLAGS" \
@@ -825,8 +825,8 @@ GNUTLS_DIR="$(pwd)/gnutls"
 				--disable-tests \
 				--disable-doc \
 				--disable-tools \
-				--disable-nls
-			make "${JOBS}" LDFLAGS= install
+				--disable-nls || die
+			make "${JOBS}" LDFLAGS= install || die
 		) || die "GnuTLS build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -852,13 +852,13 @@ echo "Building gloox..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			# TODO: pulls in libresolv dependency from /usr/lib
 			./configure \
 				CFLAGS="$CFLAGS" \
@@ -875,9 +875,9 @@ echo "Building gloox..."
 				--without-openssl \
 				--without-tests \
 				--without-examples \
-				--disable-getaddrinfo
-			make "${JOBS}"
-			make install
+				--disable-getaddrinfo || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "gloox build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -903,10 +903,10 @@ echo "Building ICU..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib sbin share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
 			mkdir -p $LIB_DIRECTORY/source/build
@@ -920,9 +920,9 @@ echo "Building ICU..."
 				--disable-samples \
 				--enable-extras \
 				--enable-icuio \
-				--enable-tools
-			make "${JOBS}"
-			make install
+				--enable-tools || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "ICU build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -948,21 +948,21 @@ echo "Building ENet..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib sbin share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
 				--prefix="${INSTALL_DIR}" \
-				--enable-shared=no
-			make clean
-			make "${JOBS}"
-			make install
+				--enable-shared=no || die
+			make clean || die
+			make "${JOBS}" || die
+			make install || die
 		) || die "ENet build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -988,16 +988,16 @@ echo "Building MiniUPnPc..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib "$LIB_URL" $LIB_ARCHIVE
+		download_lib "$LIB_URL" $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY bin include lib share
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
-			make clean
-			make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "${JOBS}"
-			make INSTALLPREFIX="$INSTALL_DIR" install
+			cd $LIB_DIRECTORY || die
+			make clean || die
+			make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "${JOBS}" || die
+			make INSTALLPREFIX="$INSTALL_DIR" install || die
 		) || die "MiniUPnPc build failed"
 
 		# TODO: how can we not build the dylibs?
@@ -1025,21 +1025,21 @@ echo "Building libsodium..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		(
-			cd $LIB_DIRECTORY
+			cd $LIB_DIRECTORY || die
 			./configure CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
 				--prefix="${INSTALL_DIR}" \
-				--enable-shared=no
-			make clean
-			make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "${JOBS}"
-			make check
-			make INSTALLPREFIX="$INSTALL_DIR" install
+				--enable-shared=no || die
+			make clean || die
+			make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "${JOBS}" || die
+			make check || die
+			make INSTALLPREFIX="$INSTALL_DIR" install || die
 		) || die "libsodium build failed"
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
@@ -1064,13 +1064,13 @@ echo "Building fmt..."
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf $LIB_DIRECTORY include lib
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		# It appears that older versions of Clang require constexpr statements to have a user-set constructor.
-		patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff
+		patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff || die
 		# shellcheck disable=SC2086
 		cmake -B libfmt \
 			-S $LIB_DIRECTORY \
@@ -1078,8 +1078,8 @@ echo "Building fmt..."
 			-DFMT_DOC=False \
 			-DCMAKE_C_FLAGS="$CFLAGS" \
 			-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-			$CMAKE_FLAGS
-		cmake --build libfmt "${JOBS}" --target install
+			$CMAKE_FLAGS || die
+		cmake --build libfmt "${JOBS}" --target install || die
 
 		cp -f lib/pkgconfig/* "$PC_PATH"
 		echo "$FMT_VERSION" >.already-built
@@ -1103,15 +1103,15 @@ echo "Building Molten VK..."
 		INSTALL_DIR="../../../binaries/system/"
 
 		rm -f .already-built
-		download_lib $LIB_URL $LIB_ARCHIVE
+		download_lib $LIB_URL $LIB_ARCHIVE || die
 
 		rm -rf "$LIB_DIRECTORY"
-		tar -xf $LIB_ARCHIVE
+		tar -xf $LIB_ARCHIVE || die
 
 		# The CI cannot build MoltenVK so we provide prebuild binaries instead.
 		# Use mv instead of copy to preserve binary signature integrity. See:
 		# https://developer.apple.com/forums/thread/130313?answerId=410541022#410541022
-		mv $LIB_DIRECTORY/dylib/libMoltenVK.dylib $INSTALL_DIR
+		mv $LIB_DIRECTORY/dylib/libMoltenVK.dylib $INSTALL_DIR || die
 
 		echo "$MOLTENVK_VERSION" >.already-built
 	else
