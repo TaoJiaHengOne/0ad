@@ -124,7 +124,10 @@ set -e
 
 die()
 {
-	echo ERROR: "$*"
+	# Do not display a message if called with no argument
+	if [ $# -gt 0 ]; then
+		echo ERROR: "$*"
+	fi
 	exit 1
 }
 
