@@ -33,6 +33,7 @@
 # pragma GCC diagnostic ignored "-Wunused-function"
 # ifndef __clang__
 #  pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#  pragma GCC diagnostic ignored "-Wcast-function-type"
 # endif
 #endif
 
