@@ -101,7 +101,7 @@ function updateCursorAndTooltip()
 	let cursorSet = false;
 	let tooltipSet = false;
 	let informationTooltip = Engine.GetGUIObjectByName("informationTooltip");
-	if (inputState == INPUT_FLARE || inputState == INPUT_NORMAL && Engine.HotkeyIsPressed("session.flare"))
+	if (!g_IsReplay && (inputState == INPUT_FLARE || (inputState == INPUT_NORMAL && Engine.HotkeyIsPressed("session.flare"))))
 	{
 		Engine.SetCursor(
 			g_IsObserver ?
@@ -829,7 +829,7 @@ function handleInputAfterGui(ev)
 			return false;
 
 		case "mousebuttondown":
-			if (Engine.HotkeyIsPressed("session.flare"))
+			if (Engine.HotkeyIsPressed("session.flare") && !g_IsReplay)
 			{
 				triggerFlareAction(Engine.GetTerrainAtScreenPoint(ev.x, ev.y));
 				return true;
