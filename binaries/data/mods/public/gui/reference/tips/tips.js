@@ -1,4 +1,11 @@
-function init()
+var g_TipsPage;
+
+function init(initData, hotloadData)
 {
-	var g_TipsPage = new TipsPage();
+	g_TipsPage = new TipsPage(initData, hotloadData);
+}
+
+function getHotloadData()
+{
+	return g_TipsPage?.tipDisplay.getHotloadData();
 }

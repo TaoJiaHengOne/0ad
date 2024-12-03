@@ -714,10 +714,24 @@ class CheckRefs:
 
     def add_tips(self):
         self.logger.info("Loading tips...")
-        for fp, _ffp in sorted(self.find_files("gui/reference/tips/texts/", "txt")):
+        self.files.extend([fp for (fp, _ffp) in self.find_files("gui/reference/tips/", ("txt"))])
+        ffp = None
+        fp = Path("gui/reference/tips/tipfiles.json")
+        for mod in self.mods:
+            json_path = self.vfs_root / mod / fp
+            if json_path.exists():
+                ffp = json_path
+        if ffp is None:
+            self.logger.error("Failed to load tips. File tipfiles.json missing.")
+        else:
             self.files.append(fp)
             self.roots.append(fp)
-            self.deps.append((fp, Path(f"art/textures/ui/tips/{fp.stem}.png")))
+            with open(ffp, encoding="utf-8") as f:
+                tips = load(f)
+                for tip in tips:
+                    self.deps.append((fp, Path(f"gui/reference/tips/texts/{tip['textFile']}")))
+                    for image in tip.get("imageFiles", []):
+                        self.deps.append((fp, Path(f"art/textures/ui/tips/{image}")))
 
     def add_rms(self):
         self.logger.info("Loading random maps...")

@@ -36,7 +36,7 @@ var g_MainMenuItems = [
 				"caption": translate("Tips and Tricks"),
 				"tooltip": translate("Discover simple tips, tricks, and game mechanics."),
 				"onPress": () => {
-					Engine.PushGuiPage("page_tips.xml");
+					Engine.PushGuiPage("page_tips.xml", { "tipScrolling": true });
 				}
 			},
 			{

@@ -227,6 +227,77 @@
 	</sprite>
 
 
+	<!-- PREVIOUS IMAGE BUTTON -->
+
+	<sprite name="PreviousImageButton">
+		<effect add_color="255 255 255"/>
+		<image
+			texture="tipdisplay/arrow.png"
+		/>
+	</sprite>
+
+	<sprite name="PreviousImageButtonOver">
+		<effect add_color="152 133 43"/>
+		<image
+			texture="tipdisplay/arrow.png"
+		/>
+	</sprite>
+
+	<sprite name="PreviousImageButtonPressed">
+		<effect add_color="204 180 57"/>
+		<image
+			texture="tipdisplay/arrow.png"
+		/>
+	</sprite>
+
+	<sprite name="PreviousImageButtonDisabled">
+		<effect add_color="90 90 90"/>
+		<image
+			texture="tipdisplay/arrow.png"
+		/>
+	</sprite>
+
+
+	<!-- NEXT IMAGE BUTTON
+		Note that the textures are mirrored horizontally (by setting the texure_size) -->
+
+	<sprite name="NextImageButton">
+		<effect add_color="255 255 255"/>
+		<image
+			texture="tipdisplay/arrow.png"
+			texture_size="100% 0 0 100%"
+			real_texture_placement="-16 0 16 32"
+		/>
+	</sprite>
+
+	<sprite name="NextImageButtonOver">
+		<effect add_color="152 133 43"/>
+		<image
+			texture="tipdisplay/arrow.png"
+			texture_size="100% 0 0 100%"
+			real_texture_placement="-16 0 16 32"
+		/>
+	</sprite>
+
+	<sprite name="NextImageButtonPressed">
+		<effect add_color="204 180 57"/>
+		<image
+			texture="tipdisplay/arrow.png"
+			texture_size="100% 0 0 100%"
+			real_texture_placement="-16 0 16 32"
+		/>
+	</sprite>
+
+	<sprite name="NextImageButtonDisabled">
+		<effect add_color="90 90 90"/>
+		<image
+			texture="tipdisplay/arrow.png"
+			texture_size="100% 0 0 100%"
+			real_texture_placement="-16 0 16 32"
+		/>
+	</sprite>
+
+
 	<!-- TITLE DECO -->
 	<sprite name="TipTitleDecoration">
 		<image

@@ -1,8 +1,8 @@
 class TipsPage
 {
-	constructor()
+	constructor(initData, hotloadData)
 	{
-		this.tipDisplay = new TipDisplay();
+		this.tipDisplay = new TipDisplay(initData, hotloadData);
 		this.closeButton = new CloseButton(this);
 	}
 

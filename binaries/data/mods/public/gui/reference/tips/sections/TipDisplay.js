@@ -1,70 +1,122 @@
 /**
  * This class is concerned with chosing and displaying tips about how to play the game.
- * This includes a text and an image.
+ * This includes a text and one or more images.
  */
 class TipDisplay
 {
 	/**
-	 * @param {boolean} tipScrolling - Whether or not to enable the player to scroll through the tips.
+	 * @param {boolean} initData.tipScrolling - Whether or not to enable the player to scroll through the tips and the tip images.
+	 * @param {Array|undefined} hotloadData.tipFilesData - Hotloaded value storing last time's tipFilesData.
+	 * @param {number|undefined} hotloadData.tipIndex - Hotloaded value pointing to a specific tip.
+	 * @param {number|undefined} hotloadData.tipImageIndex - Hotloaded value pointing to a specific tip image.
 	 */
-	constructor(tipScrolling = true)
+	constructor(initData, hotloadData)
 	{
 		this.tipImage = Engine.GetGUIObjectByName("tipImage");
 		this.tipTitle = Engine.GetGUIObjectByName("tipTitle");
 		this.tipTitleDecoration = Engine.GetGUIObjectByName("tipTitleDecoration");
 		this.tipText = Engine.GetGUIObjectByName("tipText");
+		this.tipImageText = Engine.GetGUIObjectByName("tipImageText");
 		this.previousTipButton = Engine.GetGUIObjectByName("previousTipButton");
+		this.imageControlPanel = Engine.GetGUIObjectByName("imageControlPanel");
 		this.nextTipButton = Engine.GetGUIObjectByName("nextTipButton");
+		this.previousImageButton = Engine.GetGUIObjectByName("previousImageButton");
+		this.nextImageButton = Engine.GetGUIObjectByName("nextImageButton");
 
 		this.previousTipButton.caption = this.CaptionPreviousTip;
-		this.previousTipButton.tooltip = colorizeHotkey("%(hotkey)s: ", "item.prev") + this.TooltipPreviousTip;
-
 		this.nextTipButton.caption = this.CaptionNextTip;
+
+		this.previousTipButton.tooltip = colorizeHotkey("%(hotkey)s: ", "item.prev") + this.TooltipPreviousTip;
 		this.nextTipButton.tooltip = colorizeHotkey("%(hotkey)s: ", "item.next") + this.TooltipNextTip;
+		this.previousImageButton.tooltip = this.TooltipPreviousImage;
+		this.nextImageButton.tooltip = this.TooltipNextImage;
 
-		this.tipFiles = shuffleArray(listFiles(this.TextPath, ".txt", false));
-		if (this.tipFiles.length === 0)
-		{
-			warn("Failed to find any tips to display.");
-			return;
-		}
+		this.tipFilesData =
+			hotloadData?.tipFilesData ||
+			shuffleArray(
+				Engine.ReadJSONFile(this.TipFilesDataFile)
+			).map(tip => {
+				tip.imageFiles = shuffleArray(tip.imageFiles);
+				return tip;
+			});
 
-		const hideButtons = !tipScrolling || this.tipFiles.length < 2;
+		this.currentTip = {};
+		this.tipIndex = -1;
+		this.tipImageIndex = -1;
+
+		this.enableTipScrolling = initData.tipScrolling;
+		const hideButtons = !initData.tipScrolling || this.tipFilesData.length < 2;
 		this.previousTipButton.hidden = hideButtons;
 		this.nextTipButton.hidden = hideButtons;
-		this.tipFilesIndex = -1;
-		this.nextTipButton.onPress = () => this.onIndexChange(1);
-		this.previousTipButton.onPress = () => this.onIndexChange(-1);
-		this.onIndexChange(1);
+
+		this.previousTipButton.onPress = () => this.onTipIndexChange(-1);
+		this.nextTipButton.onPress = () => this.onTipIndexChange(1);
+		this.previousImageButton.onPress = () => this.onTipImageIndexChange(-1);
+		this.nextImageButton.onPress = () => this.onTipImageIndexChange(1);
+
+		this.onTipIndexChange(hotloadData?.tipIndex ? hotloadData.tipIndex + 1 : 1);
+		if (hotloadData?.tipImageIndex)
+			this.onTipImageIndexChange(hotloadData.tipImageIndex + 1);
 	}
 
-	onIndexChange(number)
+	getHotloadData()
 	{
-		this.tipFilesIndex += number;
-
-		this.tipFilesIndex = Math.max(0, Math.min(this.tipFilesIndex, this.tipFiles.length - 1));
-
-		this.displayTip(this.tipFiles[this.tipFilesIndex]);
-		this.rebuildButtons();
+		return {
+			"tipFilesData": this.tipFilesData,
+			"tipIndex": this.tipIndex,
+			"tipImageIndex": this.tipImageIndex
+		};
 	}
 
-	rebuildButtons()
+	onTipIndexChange(number)
 	{
-		this.previousTipButton.enabled = this.tipFilesIndex !== 0 && !this.previousTipButton.hidden;
-		this.nextTipButton.enabled = this.tipFilesIndex < this.tipFiles.length - 1 && !this.nextTipButton.hidden;
+		this.tipIndex += number;
+		this.tipIndex = Math.max(0, Math.min(this.tipIndex, this.tipFilesData.length - 1));
+		this.currentTip = this.tipFilesData[this.tipIndex];
+
+		this.updateTipText();
+		this.rebuildTipButtons();
+		this.onTipImageIndexChange(-this.tipImageIndex);
 	}
 
-	displayTip(tipFile)
+	onTipImageIndexChange(number)
 	{
-		this.tipImage.sprite = "stretched:" + this.ImagePath + tipFile + ".png";
+		this.tipImageIndex += number;
+		this.tipImageIndex = Math.max(0, Math.min(this.tipImageIndex, this.currentTip.imageFiles.length - 1));
 
-		const tipText = Engine.TranslateLines(Engine.ReadFile(
-			this.TextPath + tipFile + ".txt")).split("\n");
+		this.updateTipImage();
+		this.rebuildTipImageButtons();
+	}
+
+	updateTipText()
+	{
+		const tipText = Engine.TranslateLines(Engine.ReadFile(this.TextPath + this.currentTip.textFile)).split("\n");
 
 		this.tipTitle.caption = tipText.shift();
 		this.scaleGuiElementsToFit();
 		this.tipText.caption = tipText.map(text =>
 			text && "[icon=\"BulletPoint\"] " + text).join("\n\n");
+	}
+
+	updateTipImage()
+	{
+		this.tipImage.sprite = "stretched:" + this.ImagePath + this.currentTip.imageFiles[this.tipImageIndex];
+		this.imageControlPanel.hidden = !this.enableTipScrolling || this.currentTip.imageFiles.length === 1;
+
+		if (!this.imageControlPanel.hidden)
+			this.tipImageText.caption = (this.tipImageIndex + 1) + "  /  " + this.currentTip.imageFiles.length;
+	}
+
+	rebuildTipButtons()
+	{
+		this.previousTipButton.enabled = !this.previousTipButton.hidden && this.tipIndex !== 0;
+		this.nextTipButton.enabled = !this.nextTipButton.hidden && this.tipIndex < this.tipFilesData.length - 1;
+	}
+
+	rebuildTipImageButtons()
+	{
+		this.previousImageButton.enabled = this.tipImageIndex > 0;
+		this.nextImageButton.enabled = this.tipImageIndex < this.currentTip.imageFiles.length - 1;
 	}
 
 	scaleGuiElementsToFit()
@@ -92,12 +144,20 @@ TipDisplay.prototype.TooltipPreviousTip = translate("Switch to the previous tip.
 TipDisplay.prototype.CaptionNextTip = translateWithContext("button", "Next");
 TipDisplay.prototype.TooltipNextTip = translate("Switch to the next tip.");
 
+TipDisplay.prototype.TooltipPreviousImage = translate("Switch to the previous image.");
+TipDisplay.prototype.TooltipNextImage = translate("Switch to the next image.");
+
+/**
+ * JSON file assigning one or more tip image files (.png) to each tip text file (.txt).
+ */
+TipDisplay.prototype.TipFilesDataFile = "gui/reference/tips/tipfiles.json";
+
 /**
  * Directory storing .txt files containing the gameplay tips.
  */
 TipDisplay.prototype.TextPath = "gui/reference/tips/texts/";
 
 /**
- * Directory storing the .png images with filenames corresponding to the tip text files.
+ * Subdirectory of art/textures/ui storing the .png images illustrating the tips.
  */
 TipDisplay.prototype.ImagePath = "tips/";

@@ -15,6 +15,13 @@
 		text_valign="top"
 	/>
 
+	<style name="TipImageText"
+		font="sans-bold-16"
+		textcolor="white"
+		text_align="center"
+		text_valign="center"
+	/>
+
 	<style name="PreviousTipButton"
 		font="sans-bold-16"
 		textcolor="black"
@@ -41,6 +48,22 @@
 		sprite_pressed="NextTipButtonPressed"
 		sound_pressed="audio/interface/ui/ui_button_click.ogg"
 		mouse_event_mask="texture:tipdisplay/button_mask_right.png"
+	/>
+
+	<style name="PreviousImageButton"
+		sprite="PreviousImageButton"
+		sprite_over="PreviousImageButtonOver"
+		sprite_pressed="PreviousImageButtonPressed"
+		sprite_disabled="PreviousImageButtonDisabled"
+		sound_pressed="audio/interface/ui/ui_button_click.ogg"
+	/>
+
+	<style name="NextImageButton"
+		sprite="NextImageButton"
+		sprite_over="NextImageButtonOver"
+		sprite_pressed="NextImageButtonPressed"
+		sprite_disabled="NextImageButtonDisabled"
+		sound_pressed="audio/interface/ui/ui_button_click.ogg"
 	/>
 
 </styles>

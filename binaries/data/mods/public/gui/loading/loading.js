@@ -6,8 +6,7 @@ function init(data)
 		"initData": data,
 		"progressBar": new ProgressBar(),
 		"quoteDisplay": new QuoteDisplay(),
-		// Note that the construction parameter is set to false to disable tip scrolling.
-		"tipDisplay": new TipDisplay(false),
+		"tipDisplay": new TipDisplay({ "tipScrolling": false }),
 		"titleDisplay": new TitleDisplay(data)
 	};
 
