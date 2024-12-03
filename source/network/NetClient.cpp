@@ -116,6 +116,7 @@ CNetClient::CNetClient(CGame* game) :
 	AddTransition(NCS_INGAME, (uint)NMT_GAME_SETUP, NCS_INGAME, &OnGameSetup, this);
 	AddTransition(NCS_INGAME, (uint)NMT_PLAYER_ASSIGNMENT, NCS_INGAME, &OnPlayerAssignment, this);
 	AddTransition(NCS_INGAME, (uint)NMT_SIMULATION_COMMAND, NCS_INGAME, &OnInGame, this);
+	AddTransition(NCS_INGAME, (uint)NMT_FLARE, NCS_INGAME, &OnFlare, this);
 	AddTransition(NCS_INGAME, (uint)NMT_SYNC_ERROR, NCS_INGAME, &OnInGame, this);
 	AddTransition(NCS_INGAME, (uint)NMT_END_COMMAND_BATCH, NCS_INGAME, &OnInGame, this);
 
@@ -487,6 +488,15 @@ void CNetClient::SendStartGameMessage(const CStr& initAttribs)
 	CGameStartMessage gameStart;
 	gameStart.m_InitAttributes = initAttribs;
 	SendMessage(&gameStart);
+}
+
+void CNetClient::SendFlareMessage(const CStr& positionX, const CStr& positionY, const CStr& positionZ)
+{
+	CFlareMessage flare;
+	flare.m_PositionX = positionX;
+	flare.m_PositionY = positionY;
+	flare.m_PositionZ = positionZ;
+	SendMessage(&flare);
 }
 
 void CNetClient::SendRejoinedMessage()
@@ -960,6 +970,31 @@ bool CNetClient::OnInGame(CNetClient* client, CFsmEvent* event)
 			client->m_ClientTurnManager->FinishedAllCommands(endMessage->m_Turn, endMessage->m_TurnLength);
 		}
 	}
+
+	return true;
+}
+
+bool CNetClient::OnFlare(CNetClient* client, CFsmEvent* event)
+{
+	ENSURE(event->GetType() == static_cast<uint>(NMT_FLARE));
+
+	CFlareMessage* message = static_cast<CFlareMessage*>(event->GetParamRef());
+
+	const ScriptInterface& scriptInterface = client->m_Game->GetSimulation2()->GetScriptInterface();
+	ScriptRequest rq(scriptInterface);
+	JS::RootedValue position(rq.cx);
+	Script::CreateObject(
+		rq, &position,
+		// The coordinates are transmitted as strings (because because direct (de)serialisation of floating point numbers is not supported).
+		"x", message->m_PositionX.ToDouble(),
+		"y", message->m_PositionY.ToDouble(),
+		"z", message->m_PositionZ.ToDouble()
+	);
+
+	client->PushGuiMessage(
+		"type", "flare",
+		"guid", message->m_GUID,
+		"position", position);
 
 	return true;
 }

@@ -1271,14 +1271,9 @@ function triggerFlareAction(position)
 
 	g_LastFlareTime = now;
 
-	const guid = Engine.GetPlayerGUID();
-	displayFlare(position, guid);
-	Engine.PlayUISound(g_FlareSound, false);
-	Engine.PostNetworkCommand({
-		"type": "map-flare",
-		"position": position,
-		"guid": guid
-	});
+	renderAndPlayFlare(position, Engine.GetPlayerGUID());
+	if (Engine.HasNetClient())
+		Engine.SendNetworkFlare(position);
 }
 
 function handleUnitAction(position, action)

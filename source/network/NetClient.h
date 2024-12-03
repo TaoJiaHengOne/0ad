@@ -18,6 +18,7 @@
 #ifndef NETCLIENT_H
 #define NETCLIENT_H
 
+
 #include "network/FSM.h"
 #include "network/NetFileTransfer.h"
 #include "network/NetHost.h"
@@ -237,6 +238,11 @@ public:
 	void SendStartGameMessage(const CStr& initAttribs);
 
 	/**
+	 * Call when the client (player or observer) has sent a flare.
+	 */
+	void SendFlareMessage(const CStr& positionX, const CStr& positionY, const CStr& positionZ);
+
+	/**
 	 * Call when the client has rejoined a running match and finished
 	 * the loading screen.
 	 */
@@ -279,6 +285,7 @@ private:
 	static bool OnGameStart(CNetClient* client, CFsmEvent* event);
 	static bool OnJoinSyncStart(CNetClient* client, CFsmEvent* event);
 	static bool OnJoinSyncEndCommandBatch(CNetClient* client, CFsmEvent* event);
+	static bool OnFlare(CNetClient* client, CFsmEvent* event);
 	static bool OnRejoined(CNetClient* client, CFsmEvent* event);
 	static bool OnKicked(CNetClient* client, CFsmEvent* event);
 	static bool OnClientTimeout(CNetClient* client, CFsmEvent* event);

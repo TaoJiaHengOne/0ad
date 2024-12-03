@@ -297,6 +297,7 @@ private:
 	static bool OnClientHandshake(CNetServerSession* session, CFsmEvent* event);
 	static bool OnAuthenticate(CNetServerSession* session, CFsmEvent* event);
 	static bool OnSimulationCommand(CNetServerSession* session, CFsmEvent* event);
+	static bool OnFlare(CNetServerSession* session, CFsmEvent* event);
 	static bool OnSyncCheck(CNetServerSession* session, CFsmEvent* event);
 	static bool OnEndCommandBatch(CNetServerSession* session, CFsmEvent* event);
 	static bool OnChat(CNetServerSession* session, CFsmEvent* event);

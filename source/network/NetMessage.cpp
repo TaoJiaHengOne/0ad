@@ -207,6 +207,10 @@ CNetMessage* CNetMessageFactory::CreateMessage(const void* pData,
 		pNewMessage = new CSimulationMessage(scriptInterface);
 		break;
 
+	case NMT_FLARE:
+		pNewMessage = new CFlareMessage;
+		break;
+
 	case NMT_CLEAR_ALL_READY:
 		pNewMessage = new CClearAllReadyMessage;
 		break;

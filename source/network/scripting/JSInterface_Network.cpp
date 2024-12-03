@@ -274,6 +274,29 @@ void SetTurnLength(int length)
 		LOGERROR("Only network host can change turn length");
 }
 
+void SendNetworkFlare(JS::HandleValue position)
+{
+	ENSURE(g_NetClient);
+
+	ScriptRequest rq(g_NetClient->GetScriptInterface());
+	ENSURE(position.isObject());
+	JS::RootedObject positionObj(rq.cx, &position.toObject());
+	JS::RootedValue positionX(rq.cx);
+	JS::RootedValue positionY(rq.cx);
+	JS::RootedValue positionZ(rq.cx);
+	ENSURE(JS_GetProperty(rq.cx, positionObj, "x", &positionX));
+	ENSURE(JS_GetProperty(rq.cx, positionObj, "y", &positionY));
+	ENSURE(JS_GetProperty(rq.cx, positionObj, "z", &positionZ));
+
+	// (TODO?): Converting the doubles into strings here is a workaround because direct (de)serialisation of floating point numbers is not supported.
+	// It causes somewhat awkward message handling, but the resulting efficiency losses are negligible.
+	g_NetClient->SendFlareMessage(
+		CStr::FromDouble(positionX.toNumber()),
+		CStr::FromDouble(positionY.toNumber()),
+		CStr::FromDouble(positionZ.toNumber())
+	);
+}
+
 void RegisterScriptFunctions(const ScriptRequest& rq)
 {
 	ScriptFunction::Register<&GetDefaultPort>(rq, "GetDefaultPort");
@@ -294,5 +317,6 @@ void RegisterScriptFunctions(const ScriptRequest& rq)
 	ScriptFunction::Register<&ClearAllPlayerReady>(rq, "ClearAllPlayerReady");
 	ScriptFunction::Register<&StartNetworkGame>(rq, "StartNetworkGame");
 	ScriptFunction::Register<&SetTurnLength>(rq, "SetTurnLength");
+	ScriptFunction::Register<&SendNetworkFlare>(rq, "SendNetworkFlare");
 }
 }

@@ -673,6 +673,7 @@ void CNetServerWorker::SetupSession(CNetServerSession* session)
 	session->AddTransition(NSS_INGAME, (uint)NMT_CONNECTION_LOST, NSS_UNCONNECTED, &OnDisconnect, session);
 	session->AddTransition(NSS_INGAME, (uint)NMT_CHAT, NSS_INGAME, &OnChat, session);
 	session->AddTransition(NSS_INGAME, (uint)NMT_SIMULATION_COMMAND, NSS_INGAME, &OnSimulationCommand, session);
+	session->AddTransition(NSS_INGAME, (uint)NMT_FLARE, NSS_INGAME, &OnFlare, session);
 	session->AddTransition(NSS_INGAME, (uint)NMT_SYNC_CHECK, NSS_INGAME, &OnSyncCheck, session);
 	session->AddTransition(NSS_INGAME, (uint)NMT_END_COMMAND_BATCH, NSS_INGAME, &OnEndCommandBatch, session);
 
@@ -1191,6 +1192,18 @@ bool CNetServerWorker::OnSimulationCommand(CNetServerSession* session, CFsmEvent
 	server.m_SavedCommands[message->m_Turn].push_back(*message);
 
 	// TODO: we shouldn't send the message back to the client that first sent it
+	return true;
+}
+
+bool CNetServerWorker::OnFlare(CNetServerSession* session, CFsmEvent* event)
+{
+	ENSURE(event->GetType() == (uint)NMT_FLARE);
+
+	CNetServerWorker& server = session->GetServer();
+	CFlareMessage* message = (CFlareMessage*)event->GetParamRef();
+	message->m_GUID = session->GetGUID();
+	server.Broadcast(message, { NSS_INGAME });
+
 	return true;
 }
 

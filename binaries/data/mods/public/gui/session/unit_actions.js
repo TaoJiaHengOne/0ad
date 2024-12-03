@@ -1937,7 +1937,7 @@ function DrawTargetMarker(position)
 	});
 }
 
-function displayFlare(position, playerGUID)
+function renderAndPlayFlare(position, playerGUID)
 {
 	const playerID = g_PlayerAssignments[playerGUID].player;
 	Engine.GuiInterfaceCall("AddTargetMarker", {
@@ -1948,6 +1948,7 @@ function displayFlare(position, playerGUID)
 		"owner": playerID != -1 ? playerID : 0
 	});
 	g_MiniMapPanel.flare(position, playerID);
+	Engine.PlayUISound(g_FlareSound, false);
 	addChatMessage({
 		"type": "flare",
 		"guid": playerGUID,

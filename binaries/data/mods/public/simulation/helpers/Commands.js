@@ -4,13 +4,6 @@ var g_DebugCommands = false;
 
 function ProcessCommand(player, cmd)
 {
-	if (player == -1)
-	{
-		if (g_ObserverCommands[cmd.type])
-			g_ObserverCommands[cmd.type](player, cmd, {});
-		return;
-	}
-
 	let cmpPlayer = QueryPlayerIDInterface(player);
 	if (!cmpPlayer)
 		return;
@@ -882,17 +875,6 @@ var g_Commands = {
 		}
 	},
 
-	"map-flare": function(player, cmd, data)
-	{
-		let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
-		cmpGuiInterface.PushNotification({
-			"type": "map-flare",
-			"players": [player],
-			"guid": cmd.guid,
-			"position": cmd.position
-		});
-	},
-
 	"autoqueue-on": function(player, cmd, data)
 	{
 		for (let ent of data.entities)
@@ -913,10 +895,6 @@ var g_Commands = {
 		}
 	},
 
-};
-
-var g_ObserverCommands = {
-	"map-flare": g_Commands["map-flare"]
 };
 
 /**

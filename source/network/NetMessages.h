@@ -80,7 +80,8 @@ enum NetMessageType
 	NMT_SYNC_CHECK,	// OOS-detection hash checking
 	NMT_SYNC_ERROR,	// OOS-detection error
 
-	NMT_SIMULATION_COMMAND
+	NMT_SIMULATION_COMMAND,
+	NMT_FLARE
 };
 
 // Authentication result codes
@@ -175,6 +176,13 @@ END_NMT_CLASS()
 
 START_NMT_CLASS_(JoinSyncStart, NMT_JOIN_SYNC_START)
 	NMT_FIELD(CStr, m_InitAttributes)
+END_NMT_CLASS()
+
+START_NMT_CLASS_(Flare, NMT_FLARE)
+	NMT_FIELD(CStr, m_GUID) // ignored when client->server, valid when server->client
+	NMT_FIELD(CStr, m_PositionX)
+	NMT_FIELD(CStr, m_PositionY)
+	NMT_FIELD(CStr, m_PositionZ)
 END_NMT_CLASS()
 
 START_NMT_CLASS_(Rejoined, NMT_REJOINED)
