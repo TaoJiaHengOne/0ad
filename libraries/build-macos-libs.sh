@@ -1073,7 +1073,7 @@ echo "Building fmt..."
 		tar -xf $LIB_ARCHIVE || die
 
 		# It appears that older versions of Clang require constexpr statements to have a user-set constructor.
-		patch -Np1 -i ../../../macos-patches/fmt_constexpr.diff || die
+		patch -Np1 -d $LIB_DIRECTORY -i ../../../macos-patches/fmt_constexpr.diff || die
 		# shellcheck disable=SC2086
 		cmake -B libfmt \
 			-S $LIB_DIRECTORY \
