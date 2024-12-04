@@ -1,13 +1,11 @@
 {
-	"type": "global",
-	"affects": ["TempleOfApedemak", "ApedemakGuard"],
+	"type": "range",
+	"radius": 60,
+	"affects": ["Healer"],
+	"affectedPlayers": ["Enemy"],
 	"modifications": [
-		{ "value": "Cost/BuildTime", "multiply": 0.8 },
-		{ "value": "Cost/Resources/food", "multiply": 0.8 },
-		{ "value": "Cost/Resources/wood", "multiply": 0.8 },
-		{ "value": "Cost/Resources/stone", "multiply": 0.8 },
-		{ "value": "Cost/Resources/metal", "multiply": 0.8 }
+		{ "value": "Heal/HP", "multiply": 0 }
 	],
-	"auraName": "Follower of Apedemak",
-	"auraDescription": "Temple of Apedemak −20% resource costs and build time. Apedemak Temple Guard −20% resource costs and training time."
+	"auraName": "Slaughter of the Faithful",
+	"auraDescription": "Enemy Healers −100% healing strength."
 }
