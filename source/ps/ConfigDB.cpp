@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -464,21 +464,25 @@ bool CConfigDB::WriteFile(EConfigNamespace ns, const VfsPath& path) const
 
 	std::lock_guard<std::recursive_mutex> s(m_Mutex);
 	std::shared_ptr<u8> buf;
-	AllocateAligned(buf, 1*MiB, maxSectorSize);
+
+	const size_t buffersize = 1*MiB;
+	AllocateAligned(buf, buffersize, maxSectorSize);
+	size_t len = 0;
 	char* pos = (char*)buf.get();
 
 	for (const std::pair<const CStr, CConfigValueSet>& p : m_Map[ns])
 	{
 		size_t i;
-		pos += sprintf(pos, "%s = ", p.first.c_str());
+		pos += sprintf_s(pos, buffersize - len, "%s = ", p.first.c_str());
 		for (i = 0; i + 1 < p.second.size(); ++i)
-			pos += sprintf(pos, "\"%s\", ", EscapeString(p.second[i]).c_str());
+			pos += sprintf_s(pos, buffersize - len, "\"%s\", ", EscapeString(p.second[i]).c_str());
 		if (!p.second.empty())
-			pos += sprintf(pos, "\"%s\"\n", EscapeString(p.second[i]).c_str());
+			pos += sprintf_s(pos, buffersize - len, "\"%s\"\n", EscapeString(p.second[i]).c_str());
 		else
-			pos += sprintf(pos, "\"\"\n");
+			pos += sprintf_s(pos, buffersize - len, "\"\"\n");
+
+		len = pos - (char*)buf.get();
 	}
-	const size_t len = pos - (char*)buf.get();
 
 	Status ret = g_VFS->CreateFile(path, buf, len);
 	if (ret < 0)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ void require_(int line, bool value, const char* type, const char* message)
 {
 	if (value) return;
 	char linestr[16];
-	sprintf(linestr, "%d", line);
+	snprintf(linestr, sizeof(linestr), "%d", line);
 	throw ColladaException(std::string(type) + " (line " + linestr + "): " + message);
 }
 

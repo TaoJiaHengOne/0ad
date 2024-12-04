@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -90,7 +90,7 @@ OsPath createDateIndexSubdirectory(const OsPath& parentDir)
 
 	do
 	{
-		sprintf(directory, "%04d-%02d-%02d_%04d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, ++i);
+		sprintf_s(directory, ARRAY_SIZE(directory), "%04d-%02d-%02d_%04d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, ++i);
 		path = parentDir / CStr(directory);
 
 		if (DirectoryExists(path) || FileExists(path))
