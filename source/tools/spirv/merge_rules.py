@@ -23,7 +23,6 @@
 import argparse
 import json
 import os
-import unittest
 
 
 def make_plane_combinations(combinations):
@@ -94,9 +93,10 @@ def run():
     parser.add_argument("input_paths", help="a paths to input rules", nargs=argparse.REMAINDER)
     args = parser.parse_args()
 
-    assert args.input_paths
-    for input_path in args.input_paths:
-        assert os.path.isfile(input_path)
+    if not args.input_paths or any(
+        not os.path.isfile(input_path) for input_path in args.input_paths
+    ):
+        raise ValueError("Invalid input files.")
 
     rules = {}
     for input_path in args.input_paths:
@@ -110,71 +110,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
-
-class TestMerge(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.TEST_RULES = {
-            "canvas2d": {
-                "name": "canvas2d",
-                "combinations": [[], [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]],
-            }
-        }
-
-    def make_rules(self, program_name, combinations):
-        return {program_name: {"name": program_name, "combinations": combinations}}
-
-    def test_empty(self):
-        self.assertDictEqual(merge_rules({}, {}), {})
-        self.assertDictEqual(merge_rules(self.make_rules("A", []), {}), self.make_rules("A", []))
-        self.assertDictEqual(merge_rules({}, self.make_rules("A", [])), self.make_rules("A", []))
-        self.assertDictEqual(merge_rules(self.TEST_RULES, {}), self.TEST_RULES)
-        self.assertDictEqual(merge_rules({}, self.TEST_RULES), self.TEST_RULES)
-
-    def test_equal(self):
-        self.assertDictEqual(merge_rules(self.TEST_RULES, self.TEST_RULES), self.TEST_RULES)
-
-    def test_order(self):
-        # We need to guarantee an order for reproducible builds.
-
-        cmb_a = {"name": "A", "value": "1"}
-        cmb_a2 = {"name": "A", "value": "2"}
-        cmb_a3 = {"name": "A", "value": "3"}
-        cmb_b = {"name": "B", "value": "1"}
-        cmb_c = {"name": "C", "value": "1"}
-        cmb_d = {"name": "D", "value": "1"}
-
-        self.assertDictEqual(
-            merge_rules(
-                self.make_rules("A", [[cmb_c], [cmb_b]]),
-                self.make_rules("A", [[cmb_b], [cmb_c], [cmb_a]]),
-            ),
-            self.make_rules("A", [[cmb_a], [cmb_b], [cmb_c]]),
-        )
-
-        self.assertDictEqual(
-            merge_rules(
-                self.make_rules("A", [[cmb_c], [cmb_a], [cmb_c], [cmb_c]]),
-                self.make_rules("A", [[cmb_d], [cmb_b], [cmb_d]]),
-            ),
-            self.make_rules("A", [[cmb_a], [cmb_b], [cmb_c], [cmb_d]]),
-        )
-
-        self.assertDictEqual(
-            merge_rules(
-                self.make_rules("A", [[cmb_c], [cmb_a], [cmb_d], [cmb_c], [cmb_a3]]),
-                self.make_rules("A", [[cmb_b], [cmb_a2], [cmb_a2]]),
-            ),
-            self.make_rules("A", [[cmb_a], [cmb_a2], [cmb_a3], [cmb_b], [cmb_c], [cmb_d]]),
-        )
-
-        self.assertDictEqual(
-            merge_rules(
-                self.make_rules("A", [[cmb_b, cmb_c], [cmb_a], [cmb_b, cmb_b], [cmb_b, cmb_c]]),
-                self.make_rules("A", [[cmb_b], [cmb_b, cmb_a]]),
-            ),
-            self.make_rules(
-                "A", [[cmb_a], [cmb_a, cmb_b], [cmb_b], [cmb_b, cmb_b], [cmb_b, cmb_c]]
-            ),
-        )

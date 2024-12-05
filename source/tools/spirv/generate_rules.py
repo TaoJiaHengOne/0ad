@@ -24,7 +24,6 @@ import argparse
 import json
 import os
 import re
-import unittest
 
 from merge_rules import merge_rules
 
@@ -42,7 +41,8 @@ def generate_rules(logs):
     re_define = re.compile(r'ERROR:\s+"(.*?)": "(.*?)"')
     rules = {}
     for error in re_error.findall(logs):
-        assert error[0] == error[2]
+        if error[0] != error[2]:
+            raise ValueError("Unexpected error format.")
         program_name = error[0]
         if program_name not in rules:
             rules[program_name] = {"name": program_name, "combinations": []}
@@ -75,9 +75,10 @@ def run():
     )
     args = parser.parse_args()
 
-    assert args.input_paths
-    for input_path in args.input_paths:
-        assert os.path.isfile(input_path)
+    if not args.input_paths or any(
+        not os.path.isfile(input_path) for input_path in args.input_paths
+    ):
+        raise ValueError("Invalid input files.")
 
     rules = {}
     for input_path in args.input_paths:
@@ -91,125 +92,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
-
-class TestMerge(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.TEST_RULES = {
-            "canvas2d": {
-                "name": "canvas2d",
-                "combinations": [[], [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]],
-            }
-        }
-
-    def make_rules(self, program_name, combinations):
-        return {program_name: {"name": program_name, "combinations": combinations}}
-
-    def test_empty(self):
-        self.assertDictEqual(generate_rules(""), {})
-
-    def test_empty_combinations(self):
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
-
-        logs = """
-            ERROR: Program 'spirv/canvas2d' with required defines not found.
-            ERROR: Failed to load shader 'spirv/canvas2d'
-        """
-        self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
-
-    def test_combinations(self):
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "USE_DESCRIPTOR_INDEXING": "1"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
-
-        logs = """
-            <p class="error">ERROR: ERROR</p>
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "USE_DESCRIPTOR_INDEXING": "1"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-            <p class="error">ERROR: ERROR</p>
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "USE_DESCRIPTOR_INDEXING": "1"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-            <p class="error">ERROR: ERROR</p>
-        """
-        self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
-
-        logs = """
-            ERROR: Program 'spirv/canvas2d' with required defines not found.
-            ERROR:   "USE_DESCRIPTOR_INDEXING": "1"
-            ERROR: Failed to load shader 'spirv/canvas2d'
-        """
-        self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
-
-    def test_incorrect_logs(self):
-        logs = """
-            <p class="error">ERROR:Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:"USE_DESCRIPTOR_INDEXING": "1"</p>
-            <p class="error">ERROR:Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), {})
-
-    def test_different_eol(self):
-        logs = (
-            "ERROR:\tProgram 'spirv/canvas2d' with required defines not found.\r\n\r\n"
-            "ERROR:\tFailed to load shader 'spirv/canvas2d'\r\n\r\n"
-        )
-        self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
-
-    def test_render_debug_mode(self):
-        test_rules = {
-            "canvas2d": {
-                "name": "canvas2d",
-                "combinations": [
-                    [{"name": "RENDER_DEBUG_MODE", "value": "RENDER_DEBUG_MODE_NONE"}],
-                    [
-                        {"name": "RENDER_DEBUG_MODE", "value": "RENDER_DEBUG_MODE_NONE"},
-                        {"name": "USE_DESCRIPTOR_INDEXING", "value": "1"},
-                    ],
-                ],
-            }
-        }
-
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_NONE"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), test_rules)
-
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_AO"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), test_rules)
-
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_AO"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), test_rules)
-
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_CUSTOM"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), test_rules)
-
-        logs = """
-            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
-            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "1"</p>
-            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
-        """
-        self.assertDictEqual(generate_rules(logs), test_rules)
