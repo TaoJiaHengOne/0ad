@@ -29,15 +29,7 @@ import unittest
 def make_plane_combinations(combinations):
     plane_combinations = []
     for combination in combinations:
-        plane_combination = list(
-            map(
-                lambda define: (
-                    define["name"],
-                    define["value"],
-                ),
-                combination,
-            )
-        )
+        plane_combination = [(define["name"], define["value"]) for define in combination]
         plane_combination.sort()
         if plane_combination not in plane_combinations:
             plane_combinations.append(plane_combination)
@@ -70,7 +62,7 @@ def merge_plane_combinations(lhs, rhs):
     combinations = []
     for plane_combination in combined_plane_combinations:
         combinations.append(
-            list(map(lambda define: {"name": define[0], "value": define[1]}, plane_combination))
+            [{"name": define[0], "value": define[1]} for define in plane_combination]
         )
     return combinations
 
@@ -83,12 +75,12 @@ def merge_rules(lhs, rhs):
             "combinations": merge_plane_combinations(
                 make_plane_combinations(
                     lhs[program_name]["combinations"]
-                    if program_name in lhs.keys() and "combinations" in lhs[program_name]
+                    if program_name in lhs and "combinations" in lhs[program_name]
                     else []
                 ),
                 make_plane_combinations(
                     rhs[program_name]["combinations"]
-                    if program_name in rhs.keys() and "combinations" in rhs[program_name]
+                    if program_name in rhs and "combinations" in rhs[program_name]
                     else []
                 ),
             ),
@@ -108,11 +100,11 @@ def run():
 
     rules = {}
     for input_path in args.input_paths:
-        with open(input_path, "rt") as handle:
+        with open(input_path) as handle:
             input_rules = json.load(handle)
         rules = merge_rules(rules, input_rules)
 
-    with open(args.output_rules_path, "wt") as handle:
+    with open(args.output_rules_path, "w") as handle:
         json.dump(rules, handle, sort_keys=True)
 
 
@@ -121,12 +113,14 @@ if __name__ == "__main__":
 
 
 class TestMerge(unittest.TestCase):
-    TEST_RULES = {
-        "canvas2d": {
-            "name": "canvas2d",
-            "combinations": [[], [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]],
+    @classmethod
+    def setUpClass(cls):
+        cls.TEST_RULES = {
+            "canvas2d": {
+                "name": "canvas2d",
+                "combinations": [[], [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]],
+            }
         }
-    }
 
     def make_rules(self, program_name, combinations):
         return {program_name: {"name": program_name, "combinations": combinations}}
@@ -144,33 +138,33 @@ class TestMerge(unittest.TestCase):
     def test_order(self):
         # We need to guarantee an order for reproducible builds.
 
-        cmb_A = {"name": "A", "value": "1"}
-        cmb_A2 = {"name": "A", "value": "2"}
-        cmb_A3 = {"name": "A", "value": "3"}
-        cmb_B = {"name": "B", "value": "1"}
-        cmb_C = {"name": "C", "value": "1"}
-        cmb_D = {"name": "D", "value": "1"}
+        cmb_a = {"name": "A", "value": "1"}
+        cmb_a2 = {"name": "A", "value": "2"}
+        cmb_a3 = {"name": "A", "value": "3"}
+        cmb_b = {"name": "B", "value": "1"}
+        cmb_c = {"name": "C", "value": "1"}
+        cmb_d = {"name": "D", "value": "1"}
 
         self.assertDictEqual(
             merge_rules(
-                self.make_rules("A", [[cmb_C], [cmb_B]]),
-                self.make_rules("A", [[cmb_B], [cmb_C], [cmb_A]]),
+                self.make_rules("A", [[cmb_c], [cmb_b]]),
+                self.make_rules("A", [[cmb_b], [cmb_c], [cmb_a]]),
             ),
-            self.make_rules("A", [[cmb_A], [cmb_B], [cmb_C]]),
+            self.make_rules("A", [[cmb_a], [cmb_b], [cmb_c]]),
         )
 
         self.assertDictEqual(
             merge_rules(
-                self.make_rules("A", [[cmb_C], [cmb_A], [cmb_C], [cmb_C]]),
-                self.make_rules("A", [[cmb_D], [cmb_B], [cmb_D]]),
+                self.make_rules("A", [[cmb_c], [cmb_a], [cmb_c], [cmb_c]]),
+                self.make_rules("A", [[cmb_d], [cmb_b], [cmb_d]]),
             ),
-            self.make_rules("A", [[cmb_A], [cmb_B], [cmb_C], [cmb_D]]),
+            self.make_rules("A", [[cmb_a], [cmb_b], [cmb_c], [cmb_d]]),
         )
 
         self.assertDictEqual(
             merge_rules(
-                self.make_rules("A", [[cmb_C], [cmb_A], [cmb_D], [cmb_C], [cmb_A3]]),
-                self.make_rules("A", [[cmb_B], [cmb_A2], [cmb_A2]]),
+                self.make_rules("A", [[cmb_c], [cmb_a], [cmb_d], [cmb_c], [cmb_a3]]),
+                self.make_rules("A", [[cmb_b], [cmb_a2], [cmb_a2]]),
             ),
-            self.make_rules("A", [[cmb_A], [cmb_A2], [cmb_A3], [cmb_B], [cmb_C], [cmb_D]]),
+            self.make_rules("A", [[cmb_a], [cmb_a2], [cmb_a3], [cmb_b], [cmb_c], [cmb_d]]),
         )

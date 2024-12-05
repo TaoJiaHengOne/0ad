@@ -35,7 +35,8 @@ def is_descriptor_indexing_define(define):
 
 def generate_rules(logs):
     re_error = re.compile(
-        r"ERROR:\s+Program \'spirv/(.*?)\' with required defines not found\.(.*?)ERROR:\s+Failed to load shader \'spirv/(.*?)\'",
+        r"ERROR:\s+Program \'spirv/(.*?)\' with required defines not found\.(.*?)"
+        r"ERROR:\s+Failed to load shader 'spirv/(.*?)'",
         re.DOTALL | re.MULTILINE,
     )
     re_define = re.compile(r'ERROR:\s+"(.*?)": "(.*?)"')
@@ -54,7 +55,7 @@ def generate_rules(logs):
                 filter(lambda define: not is_descriptor_indexing_define(define), combination)
             )
         else:
-            paired_combination = combination + [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]
+            paired_combination = [*combination, {"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]
         rules[program_name]["combinations"].append(paired_combination)
     # Raw logs might contain duplicated values.
     return merge_rules(rules, {})
@@ -74,11 +75,11 @@ def run():
 
     rules = {}
     for input_path in args.input_paths:
-        with open(input_path, "rt") as handle:
+        with open(input_path) as handle:
             input_logs = handle.read()
         rules = merge_rules(rules, generate_rules(input_logs))
 
-    with open(args.output_rules_path, "wt") as handle:
+    with open(args.output_rules_path, "w") as handle:
         json.dump(rules, handle, sort_keys=True)
 
 
@@ -87,12 +88,14 @@ if __name__ == "__main__":
 
 
 class TestMerge(unittest.TestCase):
-    TEST_RULES = {
-        "canvas2d": {
-            "name": "canvas2d",
-            "combinations": [[], [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]],
+    @classmethod
+    def setUpClass(cls):
+        cls.TEST_RULES = {
+            "canvas2d": {
+                "name": "canvas2d",
+                "combinations": [[], [{"name": "USE_DESCRIPTOR_INDEXING", "value": "1"}]],
+            }
         }
-    }
 
     def make_rules(self, program_name, combinations):
         return {program_name: {"name": program_name, "combinations": combinations}}
@@ -150,5 +153,8 @@ class TestMerge(unittest.TestCase):
         self.assertDictEqual(generate_rules(logs), {})
 
     def test_different_eol(self):
-        logs = "ERROR:\tProgram 'spirv/canvas2d' with required defines not found.\r\n\r\nERROR:\tFailed to load shader 'spirv/canvas2d'\r\n\r\n"
+        logs = (
+            "ERROR:\tProgram 'spirv/canvas2d' with required defines not found.\r\n\r\n"
+            "ERROR:\tFailed to load shader 'spirv/canvas2d'\r\n\r\n"
+        )
         self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
