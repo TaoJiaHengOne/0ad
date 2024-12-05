@@ -48,7 +48,13 @@ def generate_rules(logs):
             rules[program_name] = {"name": program_name, "combinations": []}
         combination = []
         for define in re_define.findall(error[1]):
-            combination.append({"name": define[0], "value": define[1]})
+            name = define[0]
+            value = define[1]
+            # We have to avoid building all debug modes because it will cost x4
+            # of SPIR-V shaders size.
+            if name == "RENDER_DEBUG_MODE":
+                value = "RENDER_DEBUG_MODE_NONE"
+            combination.append({"name": name, "value": value})
         rules[program_name]["combinations"].append(combination)
         if any(is_descriptor_indexing_define(define) for define in combination):
             paired_combination = list(
@@ -158,3 +164,52 @@ class TestMerge(unittest.TestCase):
             "ERROR:\tFailed to load shader 'spirv/canvas2d'\r\n\r\n"
         )
         self.assertDictEqual(generate_rules(logs), self.TEST_RULES)
+
+    def test_render_debug_mode(self):
+        test_rules = {
+            "canvas2d": {
+                "name": "canvas2d",
+                "combinations": [
+                    [{"name": "RENDER_DEBUG_MODE", "value": "RENDER_DEBUG_MODE_NONE"}],
+                    [
+                        {"name": "RENDER_DEBUG_MODE", "value": "RENDER_DEBUG_MODE_NONE"},
+                        {"name": "USE_DESCRIPTOR_INDEXING", "value": "1"},
+                    ],
+                ],
+            }
+        }
+
+        logs = """
+            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
+            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_NONE"</p>
+            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
+        """
+        self.assertDictEqual(generate_rules(logs), test_rules)
+
+        logs = """
+            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
+            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_AO"</p>
+            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
+        """
+        self.assertDictEqual(generate_rules(logs), test_rules)
+
+        logs = """
+            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
+            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_AO"</p>
+            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
+        """
+        self.assertDictEqual(generate_rules(logs), test_rules)
+
+        logs = """
+            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
+            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "RENDER_DEBUG_MODE_CUSTOM"</p>
+            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
+        """
+        self.assertDictEqual(generate_rules(logs), test_rules)
+
+        logs = """
+            <p class="error">ERROR: Program 'spirv/canvas2d' with required defines not found.</p>
+            <p class="error">ERROR:   "RENDER_DEBUG_MODE": "1"</p>
+            <p class="error">ERROR: Failed to load shader 'spirv/canvas2d'</p>
+        """
+        self.assertDictEqual(generate_rules(logs), test_rules)
