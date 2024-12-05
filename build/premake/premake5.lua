@@ -188,11 +188,6 @@ function project_set_build_flags()
 	filter { "Debug", "action:vs*" }
 		defines { "DEBUG" }
 
-	filter { "Debug" }
-		if os.istarget("windows") or not _OPTIONS["minimal-flags"] then
-			optimize "Debug"
-		end
-
 	filter "Release"
 		if os.istarget("windows") or not _OPTIONS["minimal-flags"] then
 			optimize "Speed"
