@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -47,9 +47,10 @@ class CDevice;
 class CRingCommandContext
 {
 public:
-	CRingCommandContext(
+	static std::unique_ptr<CRingCommandContext> Create(
 		CDevice* device, const size_t size, const uint32_t queueFamilyIndex,
 		CSubmitScheduler& submitScheduler);
+
 	~CRingCommandContext();
 
 	/**
@@ -95,6 +96,9 @@ public:
 		const UploadBufferFunction& uploadFunction);
 
 private:
+	CRingCommandContext(
+		CDevice* device, CSubmitScheduler& submitScheduler);
+
 	void Begin();
 	void End();
 

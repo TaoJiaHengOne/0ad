@@ -318,8 +318,10 @@ std::unique_ptr<IDeviceCommandContext> CDeviceCommandContext::Create(CDevice* de
 	deviceCommandContext->m_DebugScopedLabels = device->GetCapabilities().debugScopedLabels;
 	deviceCommandContext->m_PrependCommandContext =
 		device->CreateRingCommandContext(NUMBER_OF_FRAMES_IN_FLIGHT);
+	ENSURE(deviceCommandContext->m_PrependCommandContext);
 	deviceCommandContext->m_CommandContext =
 		device->CreateRingCommandContext(NUMBER_OF_FRAMES_IN_FLIGHT);
+	ENSURE(deviceCommandContext->m_CommandContext);
 
 	deviceCommandContext->m_VertexUploadRing = std::make_unique<CUploadRing>(
 		device, IBuffer::Type::VERTEX, FRAME_INPLACE_BUFFER_INITIAL_SIZE);

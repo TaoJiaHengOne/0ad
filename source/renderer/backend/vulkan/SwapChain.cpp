@@ -182,7 +182,8 @@ std::unique_ptr<CSwapChain> CSwapChain::Create(
 
 	std::unique_ptr<CSwapChain> swapChain(new CSwapChain());
 	swapChain->m_Device = device;
-	ENSURE_VK_SUCCESS(vkCreateSwapchainKHR(
+
+	RETURN_NULLPTR_IF_NOT_VK_SUCCESS(vkCreateSwapchainKHR(
 		device->GetVkDevice(), &swapChainCreateInfo, nullptr, &swapChain->m_SwapChain));
 
 	char nameBuffer[64];

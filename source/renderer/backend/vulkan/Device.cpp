@@ -606,9 +606,11 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	device->m_RenderPassManager =
 		std::make_unique<CRenderPassManager>(device.get());
 	device->m_SamplerManager = std::make_unique<CSamplerManager>(device.get());
-	device->m_SubmitScheduler =
-		std::make_unique<CSubmitScheduler>(
-			device.get(), device->m_GraphicsQueueFamilyIndex, device->m_GraphicsQueue);
+
+	device->m_SubmitScheduler = CSubmitScheduler::Create(
+		device.get(), device->m_GraphicsQueueFamilyIndex, device->m_GraphicsQueue);
+	if (!device->m_SubmitScheduler)
+		return nullptr;
 
 	bool disableDescriptorIndexing = false;
 	CFG_GET_VAL("renderer.backend.vulkan.disabledescriptorindexing", disableDescriptorIndexing);
@@ -617,6 +619,10 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 		std::make_unique<CDescriptorManager>(device.get(), useDescriptorIndexing);
 
 	device->RecreateSwapChain();
+	// Currently we assume that we should have a valid swapchain on the device
+	// creation.
+	if (!device->m_SwapChain)
+		return nullptr;
 
 	device->m_Name = choosenDevice.properties.deviceName;
 	device->m_Version =
@@ -936,7 +942,7 @@ void CDevice::SetObjectName(VkObjectType type, const uint64_t handle, const char
 
 std::unique_ptr<CRingCommandContext> CDevice::CreateRingCommandContext(const size_t size)
 {
-	return std::make_unique<CRingCommandContext>(
+	return CRingCommandContext::Create(
 		this, size, m_GraphicsQueueFamilyIndex, *m_SubmitScheduler);
 }
 

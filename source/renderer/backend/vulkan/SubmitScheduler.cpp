@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -34,43 +34,55 @@ namespace Backend
 namespace Vulkan
 {
 
-CSubmitScheduler::CSubmitScheduler(
+std::unique_ptr<CSubmitScheduler> CSubmitScheduler::Create(
 	CDevice* device, const uint32_t queueFamilyIndex, VkQueue queue)
-	: m_Device(device), m_Queue(queue)
 {
+	std::unique_ptr<CSubmitScheduler> submitScheduler{new CSubmitScheduler{device, queue}};
+
 	// Currently we need exactly NUMBER_OF_FRAMES_IN_FLIGHT fences to avoid
 	// possible overlapping of different work between frames.
 	constexpr size_t numberOfFences = NUMBER_OF_FRAMES_IN_FLIGHT;
-	m_Fences.reserve(numberOfFences);
+	submitScheduler->m_Fences.reserve(numberOfFences);
 	for (size_t index = 0; index < numberOfFences; ++index)
 	{
 		VkFenceCreateInfo fenceCreateInfo{};
 		fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		VkFence fence = VK_NULL_HANDLE;
-		ENSURE_VK_SUCCESS(vkCreateFence(
-			m_Device->GetVkDevice(), &fenceCreateInfo, nullptr, &fence));
-		m_Fences.push_back({fence, INVALID_SUBMIT_HANDLE});
+		RETURN_NULLPTR_IF_NOT_VK_SUCCESS(vkCreateFence(
+			device->GetVkDevice(), &fenceCreateInfo, nullptr, &fence));
+		submitScheduler->m_Fences.push_back({fence, INVALID_SUBMIT_HANDLE});
 	}
 
-	for (FrameObject& frameObject : m_FrameObjects)
+	for (FrameObject& frameObject : submitScheduler->m_FrameObjects)
 	{
 		VkSemaphoreCreateInfo semaphoreCreateInfo{};
 		semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-		ENSURE_VK_SUCCESS(vkCreateSemaphore(
+		RETURN_NULLPTR_IF_NOT_VK_SUCCESS(vkCreateSemaphore(
 			device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &frameObject.acquireImageSemaphore));
 
-		ENSURE_VK_SUCCESS(vkCreateSemaphore(
+		RETURN_NULLPTR_IF_NOT_VK_SUCCESS(vkCreateSemaphore(
 			device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &frameObject.submitDone));
 	}
 
-	m_AcquireCommandContext = std::make_unique<CRingCommandContext>(
-		device, NUMBER_OF_FRAMES_IN_FLIGHT, queueFamilyIndex, *this);
-	m_PresentCommandContext = std::make_unique<CRingCommandContext>(
-		device, NUMBER_OF_FRAMES_IN_FLIGHT, queueFamilyIndex, *this);
+	submitScheduler->m_AcquireCommandContext = CRingCommandContext::Create(
+		device, NUMBER_OF_FRAMES_IN_FLIGHT, queueFamilyIndex, *submitScheduler);
+	if (!submitScheduler->m_AcquireCommandContext)
+		return nullptr;
+	submitScheduler->m_PresentCommandContext = CRingCommandContext::Create(
+		device, NUMBER_OF_FRAMES_IN_FLIGHT, queueFamilyIndex, *submitScheduler);
+	if (!submitScheduler->m_PresentCommandContext)
+		return nullptr;
 
-	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidlebeforeacquire", m_DebugWaitIdleBeforeAcquire);
-	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidlebeforepresent", m_DebugWaitIdleBeforePresent);
-	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidleafterpresent", m_DebugWaitIdleAfterPresent);
+	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidlebeforeacquire", submitScheduler->m_DebugWaitIdleBeforeAcquire);
+	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidlebeforepresent", submitScheduler->m_DebugWaitIdleBeforePresent);
+	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidleafterpresent", submitScheduler->m_DebugWaitIdleAfterPresent);
+
+	return submitScheduler;
+}
+
+CSubmitScheduler::CSubmitScheduler(CDevice* device, VkQueue queue)
+	: m_Device(device), m_Queue(queue)
+{
 }
 
 CSubmitScheduler::~CSubmitScheduler()

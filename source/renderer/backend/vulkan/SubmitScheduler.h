@@ -49,7 +49,8 @@ public:
 	using SubmitHandle = uint32_t;
 	static constexpr SubmitHandle INVALID_SUBMIT_HANDLE = 0;
 
-	CSubmitScheduler(CDevice* device, const uint32_t queueFamilyIndex, VkQueue queue);
+	static std::unique_ptr<CSubmitScheduler> Create(
+		CDevice* device, const uint32_t queueFamilyIndex, VkQueue queue);
 	~CSubmitScheduler();
 
 	bool AcquireNextImage(CSwapChain& swapChain);
@@ -65,6 +66,8 @@ public:
 	void Flush();
 
 private:
+	CSubmitScheduler(CDevice* device, VkQueue queue);
+
 	CDevice* m_Device = nullptr;
 	VkQueue m_Queue = VK_NULL_HANDLE;
 

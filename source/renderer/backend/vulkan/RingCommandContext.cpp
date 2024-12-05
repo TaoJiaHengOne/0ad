@@ -49,31 +49,33 @@ constexpr uint32_t INVALID_OFFSET = std::numeric_limits<uint32_t>::max();
 
 } // anonymous namespace
 
-CRingCommandContext::CRingCommandContext(
+std::unique_ptr<CRingCommandContext> CRingCommandContext::Create(
 	CDevice* device, const size_t size, const uint32_t queueFamilyIndex,
 	CSubmitScheduler& submitScheduler)
-	: m_Device(device), m_SubmitScheduler(submitScheduler)
 {
-	ENSURE(m_Device);
+	ENSURE(device);
 
-	m_OptimalBufferCopyOffsetAlignment = std::max(
-		1u, static_cast<uint32_t>(m_Device->GetChoosenPhysicalDevice().properties.limits.optimalBufferCopyOffsetAlignment));
+	std::unique_ptr<CRingCommandContext> ringCommandContext{
+		new CRingCommandContext{device, submitScheduler}};
+
+	ringCommandContext->m_OptimalBufferCopyOffsetAlignment = std::max(
+		1u, static_cast<uint32_t>(device->GetChoosenPhysicalDevice().properties.limits.optimalBufferCopyOffsetAlignment));
 	// In case of small amount of host memory it's better to make uploading
 	// slower rather than crashing due to OOM, because memory for a
 	// staging buffer is allocated in the host memory.
-	m_MaxStagingBufferCapacity =
-		m_Device->GetChoosenPhysicalDevice().hostTotalMemory <= SMALL_HOST_TOTAL_MEMORY_THRESHOLD
+	ringCommandContext->m_MaxStagingBufferCapacity =
+		device->GetChoosenPhysicalDevice().hostTotalMemory <= SMALL_HOST_TOTAL_MEMORY_THRESHOLD
 			? MAX_SMALL_STAGING_BUFFER_CAPACITY
 			: MAX_STAGING_BUFFER_CAPACITY;
 
-	m_Ring.resize(size);
-	for (RingItem& item : m_Ring)
+	ringCommandContext->m_Ring.resize(size);
+	for (RingItem& item : ringCommandContext->m_Ring)
 	{
 		VkCommandPoolCreateInfo commandPoolCreateInfoInfo{};
 		commandPoolCreateInfoInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		commandPoolCreateInfoInfo.queueFamilyIndex = queueFamilyIndex;
-		ENSURE_VK_SUCCESS(vkCreateCommandPool(
-			m_Device->GetVkDevice(), &commandPoolCreateInfoInfo,
+		RETURN_NULLPTR_IF_NOT_VK_SUCCESS(vkCreateCommandPool(
+			device->GetVkDevice(), &commandPoolCreateInfoInfo,
 			nullptr, &item.commandPool));
 
 		VkCommandBufferAllocateInfo allocateInfo{};
@@ -81,11 +83,19 @@ CRingCommandContext::CRingCommandContext(
 		allocateInfo.commandPool = item.commandPool;
 		allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocateInfo.commandBufferCount = 1;
-		ENSURE_VK_SUCCESS(vkAllocateCommandBuffers(
-			m_Device->GetVkDevice(), &allocateInfo, &item.commandBuffer));
+		RETURN_NULLPTR_IF_NOT_VK_SUCCESS(vkAllocateCommandBuffers(
+			device->GetVkDevice(), &allocateInfo, &item.commandBuffer));
 		device->SetObjectName(
 			VK_OBJECT_TYPE_COMMAND_BUFFER, item.commandBuffer, "RingCommandBuffer");
 	}
+
+	return ringCommandContext;
+}
+
+CRingCommandContext::CRingCommandContext(
+	CDevice* device, CSubmitScheduler& submitScheduler)
+	: m_Device(device), m_SubmitScheduler(submitScheduler)
+{
 }
 
 CRingCommandContext::~CRingCommandContext()

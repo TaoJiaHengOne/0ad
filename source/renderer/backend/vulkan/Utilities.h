@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,6 +30,17 @@
 		{ \
 			LOGERROR(#EXPR " returned %d (%s) instead of VK_SUCCESS", static_cast<int>(result), Utilities::GetVkResultName(result)); \
 			ENSURE(false && #EXPR); \
+		} \
+	} while (0)
+
+#define RETURN_NULLPTR_IF_NOT_VK_SUCCESS(EXPR) \
+	do \
+	{ \
+		const VkResult result = (EXPR); \
+		if (result != VK_SUCCESS) \
+		{ \
+			LOGERROR(#EXPR " returned %d (%s) instead of VK_SUCCESS (%s:%d)", static_cast<int>(result), Utilities::GetVkResultName(result), __func__, __LINE__); \
+			return nullptr; \
 		} \
 	} while (0)
 
