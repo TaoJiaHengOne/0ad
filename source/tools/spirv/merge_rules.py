@@ -168,3 +168,13 @@ class TestMerge(unittest.TestCase):
             ),
             self.make_rules("A", [[cmb_a], [cmb_a2], [cmb_a3], [cmb_b], [cmb_c], [cmb_d]]),
         )
+
+        self.assertDictEqual(
+            merge_rules(
+                self.make_rules("A", [[cmb_b, cmb_c], [cmb_a], [cmb_b, cmb_b], [cmb_b, cmb_c]]),
+                self.make_rules("A", [[cmb_b], [cmb_b, cmb_a]]),
+            ),
+            self.make_rules(
+                "A", [[cmb_a], [cmb_a, cmb_b], [cmb_b], [cmb_b, cmb_b], [cmb_b, cmb_c]]
+            ),
+        )
