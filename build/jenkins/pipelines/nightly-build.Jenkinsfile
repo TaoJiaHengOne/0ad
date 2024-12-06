@@ -106,6 +106,7 @@ pipeline {
 					/XD %NIGHTLY_PATH%\\binaries\\data\\mods\\mod\\shaders\\spirv ^
 					/XD %NIGHTLY_PATH%\\binaries\\data\\mods\\public\\shaders\\spirv ^
 					/XF %NIGHTLY_PATH%\\source\\tools\\spirv\\rules.json ^
+					/XF %NIGHTLY_PATH%\\binaries\\data\\mods\\public\\gui\\credits\\texts\\translators.json ^
 				/MIR /NDL /NJH /NJS /NP /NS /NC) ^& IF %ERRORLEVEL% LEQ 1 exit 0
 				"""
 				bat """
