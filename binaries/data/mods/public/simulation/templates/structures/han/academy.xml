@@ -27,7 +27,7 @@
     <GenericName>Imperial Academy</GenericName>
     <SpecificName>Dìguó Xuéyuàn</SpecificName>
     <SelectionGroupName>structures/han/academy</SelectionGroupName>
-    <Tooltip>Train Champions and research their technologies.</Tooltip>
+    <Tooltip>Train Champions.</Tooltip>
     <VisibleClasses datatype="tokens">-Village City Academy</VisibleClasses>
     <Icon>structures/embassy_italic.png</Icon>
     <Requirements>
