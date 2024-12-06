@@ -84,7 +84,7 @@
             {
                 "extractor": "javascript",
                 "filemasks": [
-                    "gui/gamesettings/attributes/**.js",
+                    "gamesettings/attributes/**.js",
                     "gui/gamesetup/**.js",
                     "gui/gamesetup_mp/**.js",
                     "gui/loading/**.js"
