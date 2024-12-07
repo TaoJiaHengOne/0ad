@@ -20,10 +20,10 @@
 #
 # --------------------------------------------------------------
 # Library versions for ease of updating:
-ZLIB_VERSION="zlib-1.2.11"
+ZLIB_VERSION="zlib-1.3.1"
 CURL_VERSION="curl-7.71.0"
-ICONV_VERSION="libiconv-1.16"
-XML2_VERSION="libxml2-2.9.10"
+ICONV_VERSION="libiconv-1.17"
+XML2_VERSION="libxml2-2.13.5"
 SDL2_VERSION="SDL2-2.24.0"
 # NOTE: remember to also update LIB_URL below when changing version
 BOOST_VERSION="boost_1_81_0"
@@ -31,22 +31,22 @@ BOOST_VERSION="boost_1_81_0"
 WXWIDGETS_VERSION="wxWidgets-3.1.4"
 # libpng was included as part of X11 but that's removed from Mountain Lion
 # (also the Snow Leopard version was ancient 1.2)
-PNG_VERSION="libpng-1.6.36"
-FREETYPE_VERSION="freetype-2.10.4"
+PNG_VERSION="libpng-1.6.44"
+FREETYPE_VERSION="freetype-2.13.3"
 OGG_VERSION="libogg-1.3.5"
 VORBIS_VERSION="libvorbis-1.3.7"
 # gloox requires GnuTLS, GnuTLS requires Nettle and GMP
-GMP_VERSION="gmp-6.2.1"
-NETTLE_VERSION="nettle-3.9"
+GMP_VERSION="gmp-6.3.0"
+NETTLE_VERSION="nettle-3.10"
 # NOTE: remember to also update LIB_URL below when changing version
-GLOOX_VERSION="gloox-1.0.24"
-GNUTLS_VERSION="gnutls-3.8.3"
+GLOOX_VERSION="gloox-1.0.28"
+GNUTLS_VERSION="gnutls-3.8.4"
 # OS X only includes part of ICU, and only the dylib
 # NOTE: remember to also update LIB_URL below when changing version
 ICU_VERSION="icu4c-69_1"
-ENET_VERSION="enet-1.3.17"
-MINIUPNPC_VERSION="miniupnpc-2.2.2"
-SODIUM_VERSION="libsodium-1.0.18"
+ENET_VERSION="enet-1.3.18"
+MINIUPNPC_VERSION="miniupnpc-2.2.8"
+SODIUM_VERSION="libsodium-1.0.20"
 FMT_VERSION="7.1.3"
 MOLTENVK_VERSION="1.2.2"
 # --------------------------------------------------------------
@@ -319,9 +319,9 @@ echo "Building libxml2..."
 
 (
 	LIB_VERSION="${XML2_VERSION}"
-	LIB_ARCHIVE="$LIB_VERSION.tar.gz"
+	LIB_ARCHIVE="$LIB_VERSION.tar.xz"
 	LIB_DIRECTORY="$LIB_VERSION"
-	LIB_URL="ftp://xmlsoft.org/libxml2/"
+	LIB_URL="https://download.gnome.org/sources/libxml2/2.13/"
 
 	mkdir -p libxml2
 	cd libxml2
@@ -803,6 +803,9 @@ GNUTLS_DIR="$(pwd)/gnutls"
 			# Patch GNUTLS for a linking issue with isdigit
 			# Patch by Ross Nicholson: https://gitlab.com/gnutls/gnutls/-/issues/1033#note_379529145
 			patch -Np1 -i ../../../macos-patches/03-undo-libtasn1-cisdigit.patch || die
+			# Patch GNUTLS for a duplicate symbol issue in nettle (should be fixed in the next version)
+			# See https://gitlab.com/gnutls/gnutls/-/merge_requests/1826
+			patch -Np1 -i ../../../macos-patches/04-fix-duplicate-symbols.patch || die
 			./configure \
 				CFLAGS="$CFLAGS" \
 				CXXFLAGS="$CXXFLAGS" \
@@ -982,7 +985,7 @@ echo "Building MiniUPnPc..."
 	LIB_VERSION="${MINIUPNPC_VERSION}"
 	LIB_ARCHIVE="$LIB_VERSION.tar.gz"
 	LIB_DIRECTORY="$LIB_VERSION"
-	LIB_URL="http://miniupnp.tuxfamily.org/files/download.php?file="
+	LIB_URL="http://miniupnp.free.fr/files/"
 
 	mkdir -p miniupnpc
 	cd miniupnpc
