@@ -3,13 +3,13 @@
   <Attack>
     <Ranged>
       <Damage>
-        <Pierce>160</Pierce>
+        <Pierce>132</Pierce>
       </Damage>
       <PrepareTime>1500</PrepareTime>
       <RepeatTime>3000</RepeatTime>
       <Splash>
         <Damage>
-          <Pierce>50</Pierce>
+          <Pierce>44</Pierce>
         </Damage>
       </Splash>
     </Ranged>
