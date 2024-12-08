@@ -7,8 +7,8 @@
     <BuildTime>200</BuildTime>
     <Resources>
       <wood>0</wood>
-      <stone>300</stone>
-      <metal>300</metal>
+      <stone>150</stone>
+      <metal>150</metal>
     </Resources>
   </Cost>
   <Footprint>
@@ -36,8 +36,8 @@
   </Identity>
   <Loot>
     <wood>0</wood>
-    <stone>60</stone>
-    <metal>60</metal>
+    <stone>30</stone>
+    <metal>30</metal>
   </Loot>
   <Obstruction>
     <Static depth="22.0" width="22.0"/>

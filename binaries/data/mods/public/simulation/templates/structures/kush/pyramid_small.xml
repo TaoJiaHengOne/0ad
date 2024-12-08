@@ -4,10 +4,10 @@
     structures/kush_pyramids_economic
   </Auras>
   <Cost>
-    <BuildTime>120</BuildTime>
+    <BuildTime>100</BuildTime>
     <Resources>
-      <stone>150</stone>
-      <metal>75</metal>
+      <stone>100</stone>
+      <metal>100</metal>
     </Resources>
   </Cost>
   <Footprint>
@@ -30,8 +30,8 @@
     </Requirements>
   </Identity>
   <Loot>
-    <stone>30</stone>
-    <metal>15</metal>
+    <stone>20</stone>
+    <metal>20</metal>
   </Loot>
   <Obstruction>
     <Static width="16.0" depth="16.0"/>
