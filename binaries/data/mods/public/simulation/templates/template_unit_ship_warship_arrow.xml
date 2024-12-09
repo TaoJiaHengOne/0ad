@@ -4,20 +4,26 @@
     <Ranged>
       <Damage>
         <Hack>0</Hack>
-        <Pierce>15</Pierce>
+        <Pierce>32</Pierce>
         <Crush>0</Crush>
       </Damage>
-      <PrepareTime op="mul">0.5</PrepareTime>
+      <Bonuses>
+        <BonusShip>
+          <Classes>Ship</Classes>
+          <Multiplier>3.0</Multiplier>
+        </BonusShip>
+      </Bonuses>
+      <PrepareTime op="mul">0.25</PrepareTime>
       <RepeatTime op="mul">0.5</RepeatTime>
       <MaxRange op="mul">1.25</MaxRange>
     </Ranged>
   </Attack>
   <Cost>
-    <Population>3</Population>
+    <Population>1</Population>
     <BuildTime>24</BuildTime>
     <Resources>
       <wood>120</wood>
-      <metal>80</metal>
+      <metal>100</metal>
     </Resources>
   </Cost>
   <GarrisonHolder>
@@ -26,13 +32,13 @@
     <List datatype="tokens">Siege</List>
   </GarrisonHolder>
   <Health>
-    <Max>500</Max>
+    <Max>1000</Max>
   </Health>
   <Identity>
     <GenericName>Arrow Ship</GenericName>
     <VisibleClasses datatype="tokens">ArrowShip Ranged</VisibleClasses>
     <Classes datatype="tokens">Trireme</Classes>
-    <Tooltip>Garrison units for transport across water. Countered by Siege Ships.</Tooltip>
+    <Tooltip>Counters: 3× vs Ships. Garrison units for transport across water. Strong against Fire Ships.</Tooltip>
     <Requirements>
       <Techs datatype="tokens">
         phase_town
@@ -42,22 +48,22 @@
   <Loot>
     <xp>50</xp>
     <wood>12</wood>
-    <metal>8</metal>
+    <metal>10</metal>
   </Loot>
   <Position>
-    <TurnRate>1.0</TurnRate>
+    <TurnRate>1.3</TurnRate>
   </Position>
   <Resistance>
     <Entity>
       <Damage>
-        <Hack>5</Hack>
-        <Pierce>6</Pierce>
-        <Crush>3</Crush>
+        <Hack>3</Hack>
+        <Pierce>5</Pierce>
+        <Crush>1</Crush>
       </Damage>
     </Entity>
   </Resistance>
   <UnitMotion>
-    <WalkSpeed op="mul">1.4</WalkSpeed>
-    <Acceleration op="mul">1.8</Acceleration>
+    <WalkSpeed op="mul">1.5</WalkSpeed>
+    <Acceleration op="mul">4</Acceleration>
   </UnitMotion>
 </Entity>

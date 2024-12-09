@@ -3,10 +3,17 @@
   <Attack>
     <Ranged>
       <PreferredClasses datatype="tokens">-Human</PreferredClasses>
+      <PrepareTime op="mul">0.25</PrepareTime>
+      <Bonuses>
+        <BonusShip>
+          <Classes>Ship</Classes>
+          <Multiplier>3.0</Multiplier>
+        </BonusShip>
+      </Bonuses>
     </Ranged>
   </Attack>
   <Cost>
-    <Population>2</Population>
+    <Population>1</Population>
     <BuildTime>12</BuildTime>
     <Resources>
       <food>50</food>
@@ -17,16 +24,16 @@
     <Max>10</Max>
   </GarrisonHolder>
   <Health>
-    <Max>200</Max>
+    <Max>500</Max>
   </Health>
   <Identity>
     <GenericName>Scout Ship</GenericName>
     <VisibleClasses datatype="tokens">ScoutShip Ranged</VisibleClasses>
     <Classes datatype="tokens">Bireme</Classes>
-    <Tooltip>Scout for coastlines. Garrison units for transport across water.</Tooltip>
+    <Tooltip>Counters: 3× vs Ships. Scout for coastlines. Garrison units for transport across water.</Tooltip>
     <Requirements>
       <Techs datatype="tokens">
-        phase_village
+        phase_town
       </Techs>
     </Requirements>
   </Identity>
@@ -35,11 +42,14 @@
     <food>5</food>
     <wood>8</wood>
   </Loot>
+  <Position>
+    <TurnRate>1.5</TurnRate>
+  </Position>
   <Resistance>
     <Entity>
       <Damage>
         <Hack>4</Hack>
-        <Pierce>2</Pierce>
+        <Pierce>3</Pierce>
         <Crush>5</Crush>
       </Damage>
     </Entity>
@@ -51,7 +61,7 @@
     <MaxDistance>7</MaxDistance>
   </TreasureCollector>
   <UnitMotion>
-    <WalkSpeed op="mul">1.6</WalkSpeed>
-    <Acceleration op="mul">3.0</Acceleration>
+    <WalkSpeed op="mul">1.7</WalkSpeed>
+    <Acceleration op="mul">5.0</Acceleration>
   </UnitMotion>
 </Entity>

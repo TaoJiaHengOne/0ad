@@ -22,7 +22,7 @@
     <Max>1</Max>
   </GarrisonHolder>
   <Health>
-    <Max>120</Max>
+    <Max>220</Max>
   </Health>
   <Identity>
     <GenericName>Fishing Boat</GenericName>
@@ -44,6 +44,15 @@
       <food>40</food>
     </Capacities>
   </ResourceGatherer>
+  <Resistance>
+    <Entity>
+      <Damage>
+        <Hack>5</Hack>
+        <Pierce>3</Pierce>
+        <Crush>3</Crush>
+      </Damage>
+    </Entity>
+  </Resistance>
   <Selectable>
     <Overlay>
       <Texture>

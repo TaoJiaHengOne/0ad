@@ -5,33 +5,32 @@
     <Melee>
       <AttackName>Naval Ram</AttackName>
       <Damage>
-        <Hack>200.0</Hack>
+        <Hack>350</Hack>
         <Pierce>0.0</Pierce>
-        <Crush>0.0</Crush>
+        <Crush>70</Crush>
       </Damage>
       <MaxRange>12.0</MaxRange>
       <PrepareTime>0</PrepareTime>
-      <RepeatTime>8000</RepeatTime>
+      <RepeatTime>3000</RepeatTime>
       <RestrictedClasses datatype="tokens">
         Organic
       </RestrictedClasses>
       <PreferredClasses datatype="tokens">
-        NavalSiege
         Warship
       </PreferredClasses>
     </Melee>
   </Attack>
   <Cost>
-    <Population>3</Population>
-    <BuildTime>24</BuildTime>
+    <Population>1</Population>
+    <BuildTime>18</BuildTime>
     <Resources>
       <food>50</food>
       <wood>100</wood>
-      <metal>50</metal>
+      <metal>25</metal>
     </Resources>
   </Cost>
   <Footprint>
-    <Square width="11.0" depth="44.0"/>
+    <Square width="9.0" depth="36.0"/>
     <Height>8.0</Height>
   </Footprint>
   <GarrisonHolder>
@@ -41,11 +40,11 @@
     <LoadingRange>10</LoadingRange>
   </GarrisonHolder>
   <Health>
-    <Max>400</Max>
+    <Max>800</Max>
   </Health>
   <Identity>
     <GenericName>Ramming Ship</GenericName>
-    <Tooltip>Garrison units for transport across water. Strong against Siege Ships. Countered by Arrow Ships.</Tooltip>
+    <Tooltip>Garrison units for transport across water. Strong against Arrow Ships.</Tooltip>
     <VisibleClasses datatype="tokens">NavalRam Melee</VisibleClasses>
     <Classes datatype="tokens">Trireme</Classes>
     <Requirements>
@@ -58,7 +57,7 @@
     <xp>50</xp>
     <food>5</food>
     <wood>10</wood>
-    <metal>5</metal>
+    <metal>2</metal>
   </Loot>
   <Position>
     <TurnRate>1.5</TurnRate>
@@ -67,8 +66,8 @@
     <Entity>
       <Damage>
         <Hack>5</Hack>
-        <Pierce>3</Pierce>
-        <Crush>8</Crush>
+        <Pierce>5</Pierce>
+        <Crush>1</Crush>
       </Damage>
     </Entity>
   </Resistance>
@@ -87,6 +86,6 @@
   </StatusBars>
   <UnitMotion>
     <WalkSpeed op="mul">1.6</WalkSpeed>
-    <Acceleration op="mul">3.0</Acceleration>
+    <Acceleration op="mul">1.25</Acceleration>
   </UnitMotion>
 </Entity>

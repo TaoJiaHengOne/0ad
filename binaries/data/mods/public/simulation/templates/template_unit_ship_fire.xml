@@ -1,22 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_ship">
+  <Attack>
+    <Melee>
+      <ApplyStatus>
+        <Burning>
+          <Interval>2000</Interval>
+          <Damage>
+            <Fire>2</Fire>
+          </Damage>
+          <Stackability>Stack</Stackability>
+          <Duration>10000</Duration>
+        </Burning>
+      </ApplyStatus>
+      <AttackName>Flames</AttackName>
+      <Bonuses>
+        <BonusShip>
+          <Classes>Ship Building</Classes>
+          <Multiplier>3.0</Multiplier>
+        </BonusShip>
+      </Bonuses>
+      <Damage>
+        <Fire>15</Fire>
+      </Damage>
+      <MaxRange>15</MaxRange>
+      <PrepareTime>100</PrepareTime>
+      <RepeatTime>800</RepeatTime>
+      <PreferredClasses datatype="tokens">Ship</PreferredClasses>
+    </Melee>
+  </Attack>
   <Cost>
-    <BuildTime>30</BuildTime>
+    <BuildTime>18</BuildTime>
     <Resources>
-      <wood>200</wood>
+      <wood>175</wood>
+      <food>50</food>
+      <metal>50</metal>
     </Resources>
   </Cost>
   <Footprint>
-    <Square width="10.0" depth="22.0"/>
+    <Square width="8.0" depth="16.0"/>
     <Height>8.0</Height>
   </Footprint>
   <GarrisonHolder disable=""/>
   <Health>
-    <Max>500</Max>
+    <Max>800</Max>
+    <DamageVariants>
+      <lightdamage>1.0</lightdamage>
+    </DamageVariants>
   </Health>
   <Identity>
     <GenericName>Fire Ship</GenericName>
-    <Tooltip>Unrepairable. Gradually loses health after ignition.</Tooltip>
+    <Tooltip>Counters: 3× vs Ships and Buildings. Cannot be garrisoned, and after ignition, it cannot be repaired. Strong against Ram Ships.</Tooltip>
     <VisibleClasses datatype="tokens">Warship Fireship Melee Fire</VisibleClasses>
     <Requirements>
       <Techs datatype="tokens">
@@ -24,26 +57,35 @@
       </Techs>
     </Requirements>
   </Identity>
+  <Resistance>
+    <Entity>
+      <Damage>
+        <Pierce>1</Pierce>
+      </Damage>
+    </Entity>
+  </Resistance>
   <StatusBars>
     <BarWidth>6.0</BarWidth>
     <BarHeight>0.5</BarHeight>
     <HeightOffset>6.0</HeightOffset>
   </StatusBars>
-  <Loot disable=""/>
-  <Repairable disable=""/>
-  <TreasureCollector disable=""/>
+  <Loot>
+    <wood>17</wood>
+    <food>5</food>
+    <metal>5</metal>
+  </Loot>
   <UnitMotion>
     <PassabilityClass>ship-small</PassabilityClass>
-    <WalkSpeed>10</WalkSpeed>
+    <WalkSpeed>16</WalkSpeed>
   </UnitMotion>
   <Upgrade>
     <Ignition>
       <Entity>units/{civ}/ship_fire_fire</Entity>
-      <Tooltip>Ignite the Fire Ship to damage nearby enemy Ships.</Tooltip>
-      <Time>2</Time>
+      <Tooltip>Add fuel to send the Fire Ship into a massive blaze, causing area damage.</Tooltip>
+      <Time>0</Time>
     </Ignition>
   </Upgrade>
   <Vision>
-    <Range>50</Range>
+    <Range>80</Range>
   </Vision>
 </Entity>
