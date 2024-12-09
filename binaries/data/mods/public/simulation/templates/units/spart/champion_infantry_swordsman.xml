@@ -7,6 +7,13 @@
       -structures/{civ}/wallset_stone
     </Entities>
   </Builder>
+  <Attack>
+    <Melee>
+      <Damage>
+        <Hack>9.5</Hack>
+      </Damage>
+    </Melee>
+  </Attack>
   <Cost>
     <Resources>
       <metal op="add">25</metal>
@@ -23,6 +30,14 @@
       <Techs datatype="tokens">phase_town</Techs>
     </Requirements>
   </Identity>
+  <Resistance>
+    <Entity>
+      <Damage>
+        <Hack>5</Hack>
+        <Pierce>5</Pierce>
+      </Damage>
+    </Entity>
+  </Resistance>
   <Loot>
     <metal op="add">3</metal>
   </Loot>

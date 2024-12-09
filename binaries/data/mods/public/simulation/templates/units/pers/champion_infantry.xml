@@ -47,7 +47,7 @@
       <Entity>units/pers/champion_infantry_archer_upgrade</Entity>
       <Tooltip>Switch to using the bow and arrow.</Tooltip>
       <Variant>upgrading</Variant>
-      <Time>6</Time>
+      <Time>4</Time>
     </Immortal_archer>
   </Upgrade>
   <VisualActor>
