@@ -4,8 +4,8 @@
     <Melee>
       <AttackName>Axe</AttackName>
       <Damage>
-        <Hack>13.8</Hack>
-        <Crush>4.6</Crush>
+        <Hack>20</Hack>
+        <Crush>7</Crush>
       </Damage>
       <MaxRange>4</MaxRange>
       <PrepareTime>500</PrepareTime>
@@ -20,13 +20,6 @@
     <VisibleClasses datatype="tokens">Melee Axeman</VisibleClasses>
     <GenericName>Champion Cavalry Axeman</GenericName>
   </Identity>
-  <Resistance>
-    <Entity>
-      <Damage>
-        <Pierce op="add">2</Pierce>
-      </Damage>
-    </Entity>
-  </Resistance>
   <Sound>
     <SoundGroups>
       <attack_melee>attack/weapon/sword_attack.xml</attack_melee>

@@ -30,8 +30,8 @@
   <Resistance>
     <Entity>
       <Damage>
-        <Hack>5</Hack>
-        <Pierce>5</Pierce>
+        <Hack>3</Hack>
+        <Pierce>3</Pierce>
         <Crush>20</Crush>
       </Damage>
     </Entity>
@@ -52,6 +52,9 @@
       <death>actor/human/death/{phenotype}_death.xml</death>
     </SoundGroups>
   </Sound>
+  <UnitMotion>
+    <WalkSpeed>9.5</WalkSpeed>
+  </UnitMotion>
   <Vision>
     <Range>80</Range>
   </Vision>

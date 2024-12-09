@@ -4,8 +4,8 @@
     <Melee>
       <AttackName>Pike</AttackName>
       <Damage>
-        <Hack>8</Hack>
-        <Pierce>12</Pierce>
+        <Hack>12</Hack>
+        <Pierce>16</Pierce>
       </Damage>
       <MaxRange>8</MaxRange>
       <PrepareTime>1000</PrepareTime>

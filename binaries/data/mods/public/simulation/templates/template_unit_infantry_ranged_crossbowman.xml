@@ -4,7 +4,7 @@
     <Ranged>
       <AttackName>Crossbow</AttackName>
       <Damage>
-        <Pierce>28</Pierce>
+        <Pierce>24</Pierce>
       </Damage>
       <MaxRange>45</MaxRange>
       <PrepareTime>600</PrepareTime>
@@ -46,7 +46,7 @@
     </SoundGroups>
   </Sound>
   <UnitMotion>
-    <WalkSpeed op="add">0.6</WalkSpeed>
+    <WalkSpeed op="add">1.0</WalkSpeed>
     <Acceleration op="add">1.2</Acceleration>
   </UnitMotion>
 </Entity>

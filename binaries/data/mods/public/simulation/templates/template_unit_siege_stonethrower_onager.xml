@@ -5,7 +5,10 @@
       <Damage>
         <Crush>40</Crush>
       </Damage>
-      <MaxRange>70</MaxRange>
+      <Projectile>
+        <Spread>2</Spread>
+      </Projectile>
+      <MaxRange>60</MaxRange>
       <MinRange>20</MinRange>
       <PrepareTime>1000</PrepareTime>
       <RepeatTime>5000</RepeatTime>
@@ -15,7 +18,7 @@
         <Range>4</Range>
         <FriendlyFire>false</FriendlyFire>
         <Damage>
-          <Crush>80</Crush>
+          <Crush>160</Crush>
         </Damage>
       </Splash>
     </Ranged>
@@ -51,6 +54,6 @@
     </Foundation>
   </Resistance>
   <Vision>
-    <Range>88</Range>
+    <Range>80</Range>
   </Vision>
 </Entity>

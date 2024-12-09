@@ -4,7 +4,7 @@
     <Ranged>
       <AttackName>Crossbow</AttackName>
       <Damage>
-        <Pierce>40</Pierce>
+        <Pierce>30</Pierce>
       </Damage>
       <MaxRange>60</MaxRange>
       <PrepareTime>200</PrepareTime>
@@ -26,14 +26,6 @@
     <GenericName>Champion Infantry Crossbowman</GenericName>
     <VisibleClasses datatype="tokens">Ranged Crossbowman</VisibleClasses>
   </Identity>
-  <Resistance>
-    <Entity>
-      <Damage>
-        <Hack op="add">-2</Hack>
-        <Pierce op="add">-2</Pierce>
-      </Damage>
-    </Entity>
-  </Resistance>
   <Sound>
     <SoundGroups>
       <attack_impact_ranged>attack/impact/arrow_impact.xml</attack_impact_ranged>
@@ -47,7 +39,7 @@
     </Formations>
   </UnitAI>
   <UnitMotion>
-    <WalkSpeed op="add">0.6</WalkSpeed>
+    <WalkSpeed op="add">0.1</WalkSpeed>
     <Acceleration op="add">1.2</Acceleration>
   </UnitMotion>
 </Entity>

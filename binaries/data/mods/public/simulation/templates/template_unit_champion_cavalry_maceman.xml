@@ -4,7 +4,8 @@
     <Melee>
       <AttackName>Mace</AttackName>
       <Damage>
-        <Crush>16</Crush>
+        <Hack>11</Hack>
+        <Crush>14</Crush>
       </Damage>
       <MaxRange>4</MaxRange>
       <PrepareTime>500</PrepareTime>
@@ -19,13 +20,6 @@
     <GenericName>Champion Cavalry Maceman</GenericName>
     <VisibleClasses datatype="tokens">Melee Maceman</VisibleClasses>
   </Identity>
-  <Resistance>
-    <Entity>
-      <Damage>
-        <Pierce op="add">1</Pierce>
-      </Damage>
-    </Entity>
-  </Resistance>
   <Sound>
     <SoundGroups>
       <attack_melee>attack/weapon/sword_attack.xml</attack_melee>

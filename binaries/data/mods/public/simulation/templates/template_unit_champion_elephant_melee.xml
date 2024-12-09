@@ -13,7 +13,7 @@
         <Range>2</Range>
         <FriendlyFire>false</FriendlyFire>
         <Damage>
-          <Hack>20</Hack>
+          <Hack>30</Hack>
         </Damage>
       </Splash>
       <MaxRange>5</MaxRange>

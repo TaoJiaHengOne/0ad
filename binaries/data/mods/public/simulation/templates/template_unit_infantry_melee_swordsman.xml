@@ -4,7 +4,7 @@
     <Melee>
       <AttackName context="Name of an attack using a double-edged sword.">Sword</AttackName>
       <Damage>
-        <Hack>5.5</Hack>
+        <Hack>8</Hack>
       </Damage>
       <MaxRange>3</MaxRange>
       <PrepareTime>375</PrepareTime>
@@ -26,14 +26,6 @@
     <wood>4</wood>
     <metal>1</metal>
   </Loot>
-  <Resistance>
-    <Entity>
-      <Damage>
-        <Hack>5</Hack>
-        <Pierce>5</Pierce>
-      </Damage>
-    </Entity>
-  </Resistance>
   <Sound>
     <SoundGroups>
       <attack_melee>attack/weapon/sword_attack.xml</attack_melee>

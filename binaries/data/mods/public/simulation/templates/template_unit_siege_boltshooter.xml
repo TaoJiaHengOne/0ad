@@ -6,7 +6,7 @@
       <Damage>
         <Pierce>240</Pierce>
       </Damage>
-      <MaxRange>90</MaxRange>
+      <MaxRange>80</MaxRange>
       <MinRange>15</MinRange>
       <PrepareTime>2000</PrepareTime>
       <RepeatTime>6000</RepeatTime>
@@ -58,7 +58,7 @@
     <metal>50</metal>
   </Loot>
   <Pack>
-    <Time>10000</Time>
+    <Time>5000</Time>
   </Pack>
   <Sound>
     <SoundGroups>
@@ -70,8 +70,8 @@
     <DefaultStance>standground</DefaultStance>
   </UnitAI>
   <UnitMotion>
-    <WalkSpeed op="mul">0.9</WalkSpeed>
-    <Acceleration op="mul">0.9</Acceleration>
+    <WalkSpeed op="mul">0.75</WalkSpeed>
+    <Acceleration op="mul">0.75</Acceleration>
   </UnitMotion>
   <Vision>
     <Range>100</Range>

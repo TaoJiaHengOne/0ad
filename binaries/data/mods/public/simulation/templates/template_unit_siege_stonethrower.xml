@@ -4,7 +4,7 @@
     <Ranged>
       <AttackName>Stone</AttackName>
       <Damage>
-        <Crush>250</Crush>
+        <Crush>230</Crush>
       </Damage>
       <MaxRange>85</MaxRange>
       <MinRange>26</MinRange>
@@ -27,10 +27,10 @@
       </RangeOverlay>
       <Splash>
         <Shape>Circular</Shape>
-        <Range>1</Range>
+        <Range>1.5</Range>
         <FriendlyFire>false</FriendlyFire>
         <Damage>
-          <Crush>100</Crush>
+          <Crush>120</Crush>
         </Damage>
       </Splash>
     </Ranged>
@@ -59,7 +59,7 @@
     <stone>50</stone>
   </Loot>
   <Pack>
-    <Time>10000</Time>
+    <Time>5000</Time>
   </Pack>
   <Sound>
     <SoundGroups>

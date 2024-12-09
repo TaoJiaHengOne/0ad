@@ -35,7 +35,7 @@
         </Poisoned>
       </ApplyStatus>
       <Damage>
-        <Hack>1</Hack>
+        <Hack>6</Hack>
         <Pierce>25</Pierce>
         <Crush>5</Crush>
       </Damage>

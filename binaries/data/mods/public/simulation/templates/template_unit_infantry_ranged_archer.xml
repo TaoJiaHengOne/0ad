@@ -4,14 +4,14 @@
     <Ranged>
       <AttackName>Bow</AttackName>
       <Damage>
-        <Pierce>6.7</Pierce>
+        <Pierce>7.2</Pierce>
       </Damage>
       <MaxRange>60</MaxRange>
       <PrepareTime>800</PrepareTime>
-      <RepeatTime>1000</RepeatTime>
+      <RepeatTime>1250</RepeatTime>
       <Projectile>
         <Speed>100</Speed>
-        <Spread>2.5</Spread>
+        <Spread>2.25</Spread>
         <Gravity>50</Gravity>
         <FriendlyFire>false</FriendlyFire>
         <LaunchPoint y="3"/>
@@ -47,7 +47,7 @@
     </SoundGroups>
   </Sound>
   <UnitMotion>
-    <WalkSpeed op="add">1.2</WalkSpeed>
+    <WalkSpeed op="add">1.3</WalkSpeed>
     <Acceleration op="add">2.4</Acceleration>
   </UnitMotion>
 </Entity>
