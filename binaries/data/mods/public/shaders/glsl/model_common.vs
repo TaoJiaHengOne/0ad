@@ -8,16 +8,12 @@
 
 VERTEX_INPUT_ATTRIBUTE(0, vec3, a_vertex);
 VERTEX_INPUT_ATTRIBUTE(1, vec3, a_normal);
-#if (USE_INSTANCING || USE_GPU_SKINNING)
+#if USE_INSTANCING
 VERTEX_INPUT_ATTRIBUTE(2, vec4, a_tangent);
 #endif
 VERTEX_INPUT_ATTRIBUTE(3, vec2, a_uv0);
 #if USE_AO
 VERTEX_INPUT_ATTRIBUTE(4, vec2, a_uv1);
-#endif
-#if USE_GPU_SKINNING
-VERTEX_INPUT_ATTRIBUTE(5, vec4, a_skinJoints);
-VERTEX_INPUT_ATTRIBUTE(6, vec4, a_skinWeights);
 #endif
 
 vec4 fakeCos(vec4 x)
@@ -28,24 +24,6 @@ vec4 fakeCos(vec4 x)
 
 void main()
 {
-  #if USE_GPU_SKINNING
-    vec3 p = vec3(0.0);
-    vec3 n = vec3(0.0);
-    for (int i = 0; i < MAX_INFLUENCES; ++i) {
-      int joint = int(a_skinJoints[i]);
-      if (joint != 0xff) {
-        mat4 m = skinBlendMatrices[joint];
-        p += vec3(m * vec4(a_vertex, 1.0)) * a_skinWeights[i];
-        n += vec3(m * vec4(a_normal, 0.0)) * a_skinWeights[i];
-      }
-    }
-    vec4 position = instancingTransform * vec4(p, 1.0);
-    mat3 normalMatrix = mat3(instancingTransform[0].xyz, instancingTransform[1].xyz, instancingTransform[2].xyz);
-    vec3 normal = normalMatrix * normalize(n);
-    #if (USE_NORMAL_MAP || USE_PARALLAX)
-      vec3 tangent = normalMatrix * a_tangent.xyz;
-    #endif
-  #else
   #if (USE_INSTANCING)
     vec4 position = instancingTransform * vec4(a_vertex, 1.0);
     mat3 normalMatrix = mat3(instancingTransform[0].xyz, instancingTransform[1].xyz, instancingTransform[2].xyz);
@@ -57,8 +35,6 @@ void main()
     vec4 position = vec4(a_vertex, 1.0);
     vec3 normal = a_normal;
   #endif
-  #endif
-
 
   #if USE_WIND
     vec2 wind = windData.xy;
@@ -99,7 +75,7 @@ void main()
   #if USE_NORMAL_MAP || USE_SPECULAR_MAP || USE_PARALLAX
     v_normal.xyz = normal;
 
-    #if (USE_INSTANCING || USE_GPU_SKINNING) && (USE_NORMAL_MAP || USE_PARALLAX)
+    #if USE_INSTANCING && (USE_NORMAL_MAP || USE_PARALLAX)
       v_tangent.xyz = tangent;
       vec3 bitangent = cross(v_normal.xyz, v_tangent.xyz) * a_tangent.w;
       v_normal.w = bitangent.x;
@@ -113,7 +89,7 @@ void main()
         vec3 sunVec = -sunDir;
         v_half = normalize(sunVec + normalize(eyeVec));
       #endif
-      #if (USE_INSTANCING || USE_GPU_SKINNING) && USE_PARALLAX
+      #if USE_INSTANCING && USE_PARALLAX
         v_eyeVec = eyeVec;
       #endif
     #endif
@@ -123,7 +99,7 @@ void main()
 
   v_tex = a_uv0;
 
-  #if (USE_INSTANCING || USE_GPU_SKINNING) && USE_AO
+  #if USE_INSTANCING && USE_AO
     v_tex2 = a_uv1;
   #endif
 

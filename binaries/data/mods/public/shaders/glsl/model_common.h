@@ -1,11 +1,6 @@
 #include "common/shadows.h"
 #include "common/stage.h"
 
-#if USE_GPU_SKINNING
-const int MAX_INFLUENCES = 4;
-const int MAX_BONES = 64;
-#endif
-
 BEGIN_DRAW_TEXTURES
 	TEXTURE_2D(0, baseTex)
 	TEXTURE_2D(1, aoTex)
@@ -48,26 +43,23 @@ BEGIN_MATERIAL_UNIFORMS
 #if USE_SHADOW
 	SHADOWS_UNIFORMS
 #endif
-#if USE_GPU_SKINNING
-	UNIFORM(mat4, skinBlendMatrices[MAX_BONES]);
-#endif
 END_MATERIAL_UNIFORMS
 
 VERTEX_OUTPUT(0, vec4, v_lighting);
 VERTEX_OUTPUT(1, vec2, v_tex);
-#if (USE_INSTANCING || USE_GPU_SKINNING) && USE_AO
+#if USE_INSTANCING && USE_AO
 VERTEX_OUTPUT(2, vec2, v_tex2);
 #endif
 #if USE_NORMAL_MAP || USE_SPECULAR_MAP || USE_PARALLAX
 VERTEX_OUTPUT(3, vec4, v_normal);
-#if (USE_INSTANCING || USE_GPU_SKINNING) && (USE_NORMAL_MAP || USE_PARALLAX)
+#if USE_INSTANCING && (USE_NORMAL_MAP || USE_PARALLAX)
 VERTEX_OUTPUT(4, vec4, v_tangent);
 //VERTEX_OUTPUT(5, vec3, v_bitangent);
 #endif
 #if USE_SPECULAR_MAP
 VERTEX_OUTPUT(6, vec3, v_half);
 #endif
-#if (USE_INSTANCING || USE_GPU_SKINNING) && USE_PARALLAX
+#if USE_INSTANCING && USE_PARALLAX
 VERTEX_OUTPUT(7, vec3, v_eyeVec);
 #endif
 #endif

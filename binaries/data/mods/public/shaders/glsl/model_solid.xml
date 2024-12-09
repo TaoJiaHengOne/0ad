@@ -6,9 +6,7 @@
 		<stream name="normal" attribute="a_normal"/>
 		<stream name="uv0" attribute="a_uv0"/>
 		<stream name="uv1" attribute="a_uv1" if="USE_AO"/>
-		<stream name="uv2" attribute="a_skinJoints" if="USE_GPU_SKINNING"/>
-		<stream name="uv3" attribute="a_skinWeights" if="USE_GPU_SKINNING"/>
-		<stream name="uv4" attribute="a_tangent" if="USE_INSTANCING || USE_GPU_SKINNING"/>
+		<stream name="uv2" attribute="a_tangent" if="USE_INSTANCING"/>
 	</vertex>
 
 	<fragment file="glsl/model_solid.fs"/>
