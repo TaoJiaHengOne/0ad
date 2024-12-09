@@ -3,8 +3,8 @@
   <Cost>
     <BuildTime>200</BuildTime>
     <Resources>
-      <stone>200</stone>
-      <metal>200</metal>
+      <stone>150</stone>
+      <metal>150</metal>
     </Resources>
   </Cost>
   <Footprint>
@@ -31,8 +31,8 @@
     </Requirements>
   </Identity>
   <Loot>
-    <stone>40</stone>
-    <metal>40</metal>
+    <stone>30</stone>
+    <metal>30</metal>
   </Loot>
   <Obstruction>
     <Static width="15.0" depth="25.0"/>
@@ -44,6 +44,9 @@
       <constructed>interface/complete/building/complete_gymnasium.xml</constructed>
     </SoundGroups>
   </Sound>
+  <Population>
+    <Bonus>10</Bonus>
+  </Population>
   <TerritoryInfluence>
     <Root>false</Root>
     <Radius>38</Radius>
@@ -53,11 +56,13 @@
     <BatchTimeModifier>0.7</BatchTimeModifier>
     <Entities datatype="tokens">
       units/{civ}/champion_infantry_spear
-      units/{civ}/hero_leonidas
-      units/{civ}/hero_brasidas
-      units/{civ}/hero_agis
     </Entities>
   </Trainer>
+  <Researcher>
+    <Technologies datatype="tokens">
+      tyrtean_paeans
+    </Technologies>
+  </Researcher>
   <Vision>
     <Range>40</Range>
   </Vision>

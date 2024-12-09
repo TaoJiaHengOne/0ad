@@ -37,11 +37,17 @@
     <Static width="20.0" depth="20.0"/>
   </Obstruction>
   <ProductionQueue/>
+  <Trainer>
+    <BatchTimeModifier>0.7</BatchTimeModifier>
+    <Entities datatype="tokens">
+      units/{civ}/hero_leonidas
+      units/{civ}/hero_brasidas
+      units/{civ}/hero_agis
+    </Entities>
+  </Trainer>
   <Researcher>
     <Technologies datatype="tokens">
-      agoge
       krypteia
-      tyrtean_paeans
       unlock_neodamodes
     </Technologies>
   </Researcher>
