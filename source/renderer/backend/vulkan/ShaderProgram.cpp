@@ -53,7 +53,8 @@ enum class BindingSlotType
 	PUSH_CONSTANT,
 	UNIFORM,
 	TEXTURE,
-	STORAGE_IMAGE
+	STORAGE_IMAGE,
+	STORAGE_BUFFER
 };
 
 constexpr uint32_t BINDING_SLOT_TYPE_SHIFT{16u};
@@ -247,6 +248,10 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(
 	uint32_t storageImageDescriptorSetSize = 0;
 	std::unordered_map<CStrIntern, uint32_t> storageImageMapping;
 
+	VkDescriptorType storageBufferDescriptorType = VK_DESCRIPTOR_TYPE_MAX_ENUM;
+	uint32_t storageBufferDescriptorSetSize = 0;
+	std::unordered_map<CStrIntern, uint32_t> storageBufferMapping;
+
 	auto addDescriptorSets = [&](const XMBElement& element) -> bool
 	{
 		const bool useDescriptorIndexing =
@@ -325,18 +330,31 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(
 							texturesDescriptorSetSize =
 								std::max(texturesDescriptorSetSize, binding + 1);
 						}
-						else if (type == "storageImage" || type == "storageBuffer")
+						else if (type == "storageImage")
 						{
 							const CStrIntern name{attributes.GetNamedItem(at_name)};
 							storageImageMapping[name] = binding;
 							storageImageDescriptorSetSize =
 								std::max(storageImageDescriptorSetSize, binding + 1);
-							const VkDescriptorType descriptorType = type == "storageBuffer"
-								? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-								: VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+							const VkDescriptorType descriptorType{VK_DESCRIPTOR_TYPE_STORAGE_IMAGE};
 							if (storageImageDescriptorType == VK_DESCRIPTOR_TYPE_MAX_ENUM)
 								storageImageDescriptorType = descriptorType;
 							else if (storageImageDescriptorType != descriptorType)
+							{
+								LOGERROR("Shader should have storages of the same type.");
+								return false;
+							}
+						}
+						else if (type == "storageBuffer")
+						{
+							const CStrIntern name{attributes.GetNamedItem(at_name)};
+							storageBufferMapping[name] = binding;
+							storageBufferDescriptorSetSize =
+								std::max(storageBufferDescriptorSetSize, binding + 1);
+							const VkDescriptorType descriptorType{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER};
+							if (storageBufferDescriptorType == VK_DESCRIPTOR_TYPE_MAX_ENUM)
+								storageBufferDescriptorType = descriptorType;
+							else if (storageBufferDescriptorType != descriptorType)
 							{
 								LOGERROR("Shader should have storages of the same type.");
 								return false;
@@ -573,6 +591,12 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(
 			device, storageImageDescriptorType, storageImageDescriptorSetSize, std::move(storageImageMapping));
 		layouts.emplace_back(shaderProgram->m_StorageImageBinding->GetDescriptorSetLayout());
 	}
+	if (storageBufferDescriptorSetSize > 0)
+	{
+		shaderProgram->m_StorageBufferBinding.emplace(
+			device, storageBufferDescriptorType, storageBufferDescriptorSetSize, std::move(storageBufferMapping));
+		layouts.emplace_back(shaderProgram->m_StorageBufferBinding->GetDescriptorSetLayout());
+	}
 
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -620,6 +644,8 @@ int32_t CShaderProgram::GetBindingSlot(const CStrIntern name) const
 		return (static_cast<uint32_t>(BindingSlotType::TEXTURE) << BINDING_SLOT_TYPE_SHIFT) | bindingSlot;
 	if (const int32_t bindingSlot = m_StorageImageBinding.has_value() ? m_StorageImageBinding->GetBindingSlot(name) : -1; bindingSlot != -1)
 		return (static_cast<uint32_t>(BindingSlotType::STORAGE_IMAGE) << BINDING_SLOT_TYPE_SHIFT) | bindingSlot;
+	if (const int32_t bindingSlot = m_StorageBufferBinding.has_value() ? m_StorageBufferBinding->GetBindingSlot(name) : -1; bindingSlot != -1)
+		return (static_cast<uint32_t>(BindingSlotType::STORAGE_BUFFER) << BINDING_SLOT_TYPE_SHIFT) | bindingSlot;
 	return -1;
 }
 
@@ -646,6 +672,8 @@ void CShaderProgram::Unbind()
 		m_TextureBinding->Unbind();
 	if (m_StorageImageBinding.has_value())
 		m_StorageImageBinding->Unbind();
+	if (m_StorageBufferBinding.has_value())
+		m_StorageBufferBinding->Unbind();
 }
 
 void CShaderProgram::PreDraw(CRingCommandContext& commandContext)
@@ -730,6 +758,15 @@ void CShaderProgram::BindOutdatedDescriptorSets(
 		constexpr uint32_t STORAGE_IMAGE_BINDING_SET = 2u;
 		descriptortSets.emplace_back(STORAGE_IMAGE_BINDING_SET, m_StorageImageBinding->UpdateAndReturnDescriptorSet());
 	}
+	if (m_StorageBufferBinding.has_value() && m_StorageBufferBinding->IsOutdated())
+	{
+		// Currently we assume that in computer shaders we use either textures
+		// or buffers but not together.
+		const uint32_t STORAGE_BUFFER_BINDING_SET{
+			m_Device->GetDescriptorManager().UseDescriptorIndexing() ? 2u : 1u};
+		descriptortSets.emplace_back(
+			STORAGE_BUFFER_BINDING_SET, m_StorageBufferBinding->UpdateAndReturnDescriptorSet());
+	}
 
 	for (const auto& [firstSet, descriptorSet] : descriptortSets)
 	{
@@ -801,8 +838,7 @@ std::pair<std::byte*, uint32_t> CShaderProgram::GetUniformData(
 		m_MaterialConstantsDataOutdated = true;
 		const uint32_t size = uniform.size;
 		const uint32_t offset = uniform.offset;
-		ENSURE(size <= dataSize);
-		return {m_MaterialConstantsData.get() + offset, size};
+		return {m_MaterialConstantsData.get() + offset, std::min(dataSize, size)};
 	}
 }
 
@@ -839,6 +875,16 @@ void CShaderProgram::SetStorageTexture(const int32_t bindingSlot, CTexture* text
 	const uint32_t index{bindingSlot & BINDING_SLOT_VALUE_MASK};
 	ENSURE(m_StorageImageBinding.has_value());
 	m_StorageImageBinding->SetObject(index, texture);
+}
+
+void CShaderProgram::SetStorageBuffer(const int32_t bindingSlot, CBuffer* buffer)
+{
+	if (bindingSlot < 0)
+		return;
+	ENSURE(static_cast<BindingSlotType>(bindingSlot >> BINDING_SLOT_TYPE_SHIFT) == BindingSlotType::STORAGE_BUFFER);
+	const uint32_t index{bindingSlot & BINDING_SLOT_VALUE_MASK};
+	ENSURE(m_StorageBufferBinding.has_value());
+	m_StorageBufferBinding->SetObject(index, buffer);
 }
 
 } // namespace Vulkan

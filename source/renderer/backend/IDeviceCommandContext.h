@@ -19,6 +19,7 @@
 #define INCLUDED_RENDERER_BACKEND_IDEVICECOMMANDCONTEXT
 
 #include "ps/containers/Span.h"
+#include "renderer/backend/Barrier.h"
 #include "renderer/backend/Format.h"
 #include "renderer/backend/IDeviceObject.h"
 #include "renderer/backend/PipelineState.h"
@@ -185,6 +186,15 @@ public:
 		const uint32_t groupCountZ) = 0;
 
 	/**
+	 * Inserts a memory barrier which guarantees that all memory accesses
+	 * matched by `srcAccessMask` in src are completed before all memory accesses
+	 * described by `dstAccessMask` in dst.
+	 */
+	virtual void InsertMemoryBarrier(
+		const uint32_t srcStageMask, const uint32_t dstStageMask,
+		const uint32_t srcAccessMask, const uint32_t dstAccessMask) = 0;
+
+	/**
 	 * Sets a read-only texture to the binding slot.
 	 */
 	virtual void SetTexture(const int32_t bindingSlot, ITexture* texture) = 0;
@@ -193,6 +203,7 @@ public:
 	 * Sets a read & write resource to the binding slot.
 	 */
 	virtual void SetStorageTexture(const int32_t bindingSlot, ITexture* texture) = 0;
+	virtual void SetStorageBuffer(const int32_t bindingSlot, IBuffer* buffer) = 0;
 
 	virtual void SetUniform(
 		const int32_t bindingSlot,

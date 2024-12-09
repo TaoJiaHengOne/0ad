@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include "renderer/backend/vulkan/Utilities.h"
 
 #include <array>
+#include <iterator>
 #include <numeric>
 
 namespace Renderer
@@ -306,6 +307,56 @@ VkDescriptorSet CDescriptorManager::GetSingleTypeDescritorSet(
 	return set;
 }
 
+VkDescriptorSet CDescriptorManager::GetSingleTypeDescritorSet(
+	VkDescriptorType type, VkDescriptorSetLayout layout,
+	const std::vector<DeviceObjectUID>& buffersUID,
+	const std::vector<CBuffer*>& buffers)
+{
+	ENSURE(buffersUID.size() == buffers.size());
+	ENSURE(!buffersUID.empty());
+	const auto[set, justCreated] = GetSingleTypeDescritorSetImpl(type, layout, buffersUID);
+	if (!justCreated)
+		return set;
+
+	ENSURE(
+		type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER || type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC ||
+		type == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER || type == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC);
+	const VkPhysicalDeviceLimits& physicalDeviceLimits = m_Device->GetChoosenPhysicalDevice().properties.limits;
+	const uint32_t maxBufferRange =
+		type == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER || type == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		? physicalDeviceLimits.maxStorageBufferRange
+		: physicalDeviceLimits.maxUniformBufferRange;
+
+	PS::StaticVector<VkDescriptorBufferInfo, 16> infos;
+	std::transform(buffers.begin(), buffers.end(), std::back_inserter(infos),
+		[maxBufferRange](CBuffer* buffer)
+		{
+			ENSURE(buffer);
+			ENSURE(buffer->GetUsage() & IBuffer::Usage::STORAGE);
+			ENSURE(buffer->GetSize() <= maxBufferRange);
+
+			VkDescriptorBufferInfo descriptorBufferInfo{};
+			descriptorBufferInfo.buffer = buffer->GetVkBuffer();
+			descriptorBufferInfo.offset = 0;
+			descriptorBufferInfo.range = buffer->GetSize();
+			return descriptorBufferInfo;
+		});
+
+	VkWriteDescriptorSet writeDescriptorSet{};
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.dstSet = set;
+	writeDescriptorSet.dstBinding = 0;
+	writeDescriptorSet.dstArrayElement = 0;
+	writeDescriptorSet.descriptorType = type;
+	writeDescriptorSet.descriptorCount = static_cast<uint32_t>(infos.size());
+	writeDescriptorSet.pBufferInfo = infos.data();
+
+	vkUpdateDescriptorSets(
+		m_Device->GetVkDevice(), 1, &writeDescriptorSet, 0, nullptr);
+
+	return set;
+}
+
 uint32_t CDescriptorManager::GetUniformSet() const
 {
 	return m_UseDescriptorIndexing ? 1 : 0;
@@ -377,24 +428,34 @@ void CDescriptorManager::OnTextureDestroy(const DeviceObjectUID uid)
 	}
 	else
 	{
-		auto it = m_UIDToSingleTypePoolMap.find(uid);
-		if (it == m_UIDToSingleTypePoolMap.end())
-			return;
-		for (const auto& entry : it->second)
-		{
-			SingleTypePool& pool = GetSingleTypePool(entry.type, entry.size);
-			SingleTypePool::Element& element = pool.elements[entry.elementIndex];
-			// Multiple textures might be used by the same descriptor set and
-			// we don't need to reset it if it was already.
-			if (element.version == entry.version && element.nextFreeIndex == SingleTypePool::INVALID_INDEX)
-			{
-				ENSURE(pool.firstFreeIndex != entry.elementIndex);
-				element.nextFreeIndex = pool.firstFreeIndex;
-				pool.firstFreeIndex = entry.elementIndex;
-			}
-		}
-		m_UIDToSingleTypePoolMap.erase(it);
+		OnDeviceObjectDestroy(uid);
 	}
+}
+
+void CDescriptorManager::OnBufferDestroy(const DeviceObjectUID uid)
+{
+	OnDeviceObjectDestroy(uid);
+}
+
+void CDescriptorManager::OnDeviceObjectDestroy(const DeviceObjectUID uid)
+{
+	auto it = m_UIDToSingleTypePoolMap.find(uid);
+	if (it == m_UIDToSingleTypePoolMap.end())
+		return;
+	for (const auto& entry : it->second)
+	{
+		SingleTypePool& pool = GetSingleTypePool(entry.type, entry.size);
+		SingleTypePool::Element& element = pool.elements[entry.elementIndex];
+		// Multiple textures might be used by the same descriptor set and
+		// we don't need to reset it if it was already.
+		if (element.version == entry.version && element.nextFreeIndex == SingleTypePool::INVALID_INDEX)
+		{
+			ENSURE(pool.firstFreeIndex != entry.elementIndex);
+			element.nextFreeIndex = pool.firstFreeIndex;
+			pool.firstFreeIndex = entry.elementIndex;
+		}
+	}
+	m_UIDToSingleTypePoolMap.erase(it);
 }
 
 } // namespace Vulkan

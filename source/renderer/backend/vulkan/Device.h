@@ -145,6 +145,8 @@ public:
 
 	void ScheduleTextureToDestroy(const DeviceObjectUID uid);
 
+	void ScheduleBufferToDestroy(const DeviceObjectUID uid);
+
 	void SetObjectName(VkObjectType type, const void* handle, const char* name)
 	{
 		SetObjectName(type, reinterpret_cast<uint64_t>(handle), name);
@@ -174,7 +176,7 @@ private:
 	void RecreateSwapChain();
 	bool IsSwapChainValid();
 	void ProcessObjectToDestroyQueue(const bool ignoreFrameID = false);
-	void ProcessTextureToDestroyQueue(const bool ignoreFrameID = false);
+	void ProcessDeviceObjectToDestroyQueue(const bool ignoreFrameID = false);
 
 	bool IsFormatSupportedForUsage(const Format format, const uint32_t usage) const;
 
@@ -216,6 +218,7 @@ private:
 	};
 	std::queue<ObjectToDestroy> m_ObjectToDestroyQueue;
 	std::queue<std::pair<uint32_t, DeviceObjectUID>> m_TextureToDestroyQueue;
+	std::queue<std::pair<uint32_t, DeviceObjectUID>> m_BufferToDestroyQueue;
 
 	std::unique_ptr<CRenderPassManager> m_RenderPassManager;
 	std::unique_ptr<CSamplerManager> m_SamplerManager;

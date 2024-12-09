@@ -580,6 +580,7 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	capabilities.ARBShaders = false;
 	capabilities.ARBShadersShadow = false;
 	capabilities.computeShaders = true;
+	capabilities.storage = choosenDevice.properties.limits.maxStorageBufferRange >= GiB;
 	capabilities.instancing = true;
 	capabilities.maxSampleCount = 1;
 	const VkSampleCountFlags sampleCountFlags =
@@ -657,7 +658,7 @@ CDevice::~CDevice()
 
 	m_SubmitScheduler.reset();
 
-	ProcessTextureToDestroyQueue(true);
+	ProcessDeviceObjectToDestroyQueue(true);
 
 	m_RenderPassManager.reset();
 	m_SamplerManager.reset();
@@ -813,7 +814,7 @@ void CDevice::Present()
 	m_SubmitScheduler->Present(*m_SwapChain);
 
 	ProcessObjectToDestroyQueue();
-	ProcessTextureToDestroyQueue();
+	ProcessDeviceObjectToDestroyQueue();
 
 	++m_FrameID;
 }
@@ -928,6 +929,11 @@ void CDevice::ScheduleTextureToDestroy(const DeviceObjectUID uid)
 	m_TextureToDestroyQueue.push({m_FrameID, uid});
 }
 
+void CDevice::ScheduleBufferToDestroy(const DeviceObjectUID uid)
+{
+	m_BufferToDestroyQueue.push({m_FrameID, uid});
+}
+
 void CDevice::SetObjectName(VkObjectType type, const uint64_t handle, const char* name)
 {
 	if (!m_Capabilities.debugLabels)
@@ -1013,13 +1019,20 @@ void CDevice::ProcessObjectToDestroyQueue(const bool ignoreFrameID)
 	}
 }
 
-void CDevice::ProcessTextureToDestroyQueue(const bool ignoreFrameID)
+void CDevice::ProcessDeviceObjectToDestroyQueue(const bool ignoreFrameID)
 {
 	while (!m_TextureToDestroyQueue.empty() &&
 		(ignoreFrameID || m_TextureToDestroyQueue.front().first + NUMBER_OF_FRAMES_IN_FLIGHT < m_FrameID))
 	{
 		GetDescriptorManager().OnTextureDestroy(m_TextureToDestroyQueue.front().second);
 		m_TextureToDestroyQueue.pop();
+	}
+
+	while (!m_BufferToDestroyQueue.empty() &&
+		(ignoreFrameID || m_BufferToDestroyQueue.front().first + NUMBER_OF_FRAMES_IN_FLIGHT < m_FrameID))
+	{
+		GetDescriptorManager().OnBufferDestroy(m_BufferToDestroyQueue.front().second);
+		m_BufferToDestroyQueue.pop();
 	}
 }
 

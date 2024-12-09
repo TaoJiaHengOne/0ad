@@ -441,12 +441,23 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 
 #if CONFIG2_GLES
 	capabilities.instancing = false;
+	capabilities.storage = false;
 #else
 	capabilities.instancing =
 		!device->m_ARB &&
 		(ogl_HaveVersion(3, 3) ||
 		(ogl_HaveExtension("GL_ARB_draw_instanced") &&
 		ogl_HaveExtension("GL_ARB_instanced_arrays")));
+	GLint maxStorageBufferSize{0};
+	if (ogl_HaveExtension("GL_ARB_shader_storage_buffer_object"))
+		glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &maxStorageBufferSize);
+	capabilities.storage =
+		capabilities.computeShaders && maxStorageBufferSize > 0
+		&& static_cast<size_t>(maxStorageBufferSize) >= 128 * MiB
+		&& ogl_HaveExtension("GL_ARB_uniform_buffer_object")
+		&& ogl_HaveExtension("GL_ARB_shader_storage_buffer_object")
+		&& ogl_HaveExtension("GL_ARB_half_float_vertex")
+		&& ogl_HaveExtension("GL_ARB_program_interface_query");
 #endif
 
 	return device;
@@ -760,6 +771,18 @@ void CDevice::Report(const ScriptRequest& rq, JS::HandleValue settings)
 		INTEGER(MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB);
 		INTEGER(MAX_GEOMETRY_VARYING_COMPONENTS_ARB);
 		INTEGER(MAX_VERTEX_VARYING_COMPONENTS_ARB);
+	}
+
+	if (ogl_HaveExtension("GL_ARB_uniform_buffer_object"))
+	{
+		INTEGER(MAX_UNIFORM_BLOCK_SIZE);
+		INTEGER(MAX_UNIFORM_BUFFER_BINDINGS);
+	}
+
+	if (ogl_HaveExtension("GL_ARB_shader_storage_buffer_object"))
+	{
+		INTEGER(MAX_SHADER_STORAGE_BLOCK_SIZE);
+		INTEGER(MAX_SHADER_STORAGE_BUFFER_BINDINGS);
 	}
 
 #else // CONFIG2_GLES

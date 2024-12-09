@@ -40,6 +40,8 @@ VkBufferUsageFlags ToVkBufferUsageFlags(const uint32_t usage)
 		usageFlags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 	if (usage & IBuffer::Usage::TRANSFER_DST)
 		usageFlags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	if (usage & IBuffer::Usage::STORAGE)
+		usageFlags |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	return usageFlags;
 }
 
@@ -51,19 +53,20 @@ std::tuple<VkBufferUsageFlags, VkMemoryPropertyFlags, VmaMemoryUsage> MakeCreati
 	switch (type)
 	{
 	case IBuffer::Type::VERTEX:
-		ENSURE(usage & IBuffer::Usage::TRANSFER_DST);
+		ENSURE(usage & (IBuffer::Usage::TRANSFER_DST | IBuffer::Usage::STORAGE));
 		return {
 			commonFlags | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE};
 	case IBuffer::Type::INDEX:
-		ENSURE(usage & IBuffer::Usage::TRANSFER_DST);
+		ENSURE(usage & (IBuffer::Usage::TRANSFER_DST | IBuffer::Usage::STORAGE));
 		return {
 			commonFlags | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE};
 	case IBuffer::Type::UPLOAD:
 		ENSURE(usage & IBuffer::Usage::TRANSFER_SRC);
+		ENSURE(!(usage & IBuffer::Usage::STORAGE));
 		return {
 			commonFlags,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -131,6 +134,8 @@ CBuffer::~CBuffer()
 	if (m_Allocation != VK_NULL_HANDLE)
 		m_Device->ScheduleObjectToDestroy(
 			VK_OBJECT_TYPE_BUFFER, m_Buffer, m_Allocation);
+
+	m_Device->ScheduleBufferToDestroy(m_UID);
 }
 
 IDevice* CBuffer::GetDevice()

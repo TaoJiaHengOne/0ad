@@ -122,6 +122,7 @@ public:
 
 	void SetTexture(const int32_t bindingSlot, CTexture* texture);
 	void SetStorageTexture(const int32_t bindingSlot, CTexture* texture);
+	void SetStorageBuffer(const int32_t bindingSlot, CBuffer* buffer);
 
 	// TODO: rename to something related to buffer.
 	bool IsMaterialConstantsDataOutdated() const { return m_MaterialConstantsDataOutdated; }
@@ -178,6 +179,7 @@ private:
 
 	std::optional<CSingleTypeDescriptorSetBinding<CTexture>> m_TextureBinding;
 	std::optional<CSingleTypeDescriptorSetBinding<CTexture>> m_StorageImageBinding;
+	std::optional<CSingleTypeDescriptorSetBinding<CBuffer>> m_StorageBufferBinding;
 
 	std::unordered_map<VertexAttributeStream, uint32_t> m_StreamLocations;
 };

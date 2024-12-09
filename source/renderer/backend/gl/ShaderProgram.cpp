@@ -28,6 +28,7 @@
 #include "ps/Filesystem.h"
 #include "ps/Profile.h"
 #include "ps/XML/Xeromyces.h"
+#include "renderer/backend/gl/Buffer.h"
 #include "renderer/backend/gl/Device.h"
 #include "renderer/backend/gl/DeviceCommandContext.h"
 
@@ -80,17 +81,22 @@ GLint GLSizeFromFormat(const Format format)
 {
 	GLint size = 1;
 	if (format == Renderer::Backend::Format::R32_SFLOAT ||
-		format == Renderer::Backend::Format::R16_SINT)
+		format == Renderer::Backend::Format::R16_SINT ||
+		format == Renderer::Backend::Format::R16_SFLOAT)
 		size = 1;
 	else if (
 		format == Renderer::Backend::Format::R8G8_UNORM ||
 		format == Renderer::Backend::Format::R8G8_UINT ||
 		format == Renderer::Backend::Format::R16G16_SINT ||
+		format == Renderer::Backend::Format::R16G16_SFLOAT ||
 		format == Renderer::Backend::Format::R32G32_SFLOAT)
 		size = 2;
-	else if (format == Renderer::Backend::Format::R32G32B32_SFLOAT)
+	else if (
+		format == Renderer::Backend::Format::R16G16B16_SFLOAT ||
+		format == Renderer::Backend::Format::R32G32B32_SFLOAT)
 		size = 3;
 	else if (
+		format == Renderer::Backend::Format::R16G16B16A16_SFLOAT ||
 		format == Renderer::Backend::Format::R32G32B32A32_SFLOAT ||
 		format == Renderer::Backend::Format::R8G8B8A8_UNORM ||
 		format == Renderer::Backend::Format::R8G8B8A8_UINT)
@@ -108,6 +114,13 @@ GLenum GLTypeFromFormat(const Format format)
 		format == Renderer::Backend::Format::R32G32B32_SFLOAT ||
 		format == Renderer::Backend::Format::R32G32B32A32_SFLOAT)
 		type = GL_FLOAT;
+#if !CONFIG2_GLES
+	else if (format == Renderer::Backend::Format::R16_SFLOAT ||
+		format == Renderer::Backend::Format::R16G16_SFLOAT ||
+		format == Renderer::Backend::Format::R16G16B16_SFLOAT ||
+		format == Renderer::Backend::Format::R16G16B16A16_SFLOAT)
+		type = GL_HALF_FLOAT;
+#endif
 	else if (
 		format == Renderer::Backend::Format::R16_SINT ||
 		format == Renderer::Backend::Format::R16G16_SINT)
@@ -442,6 +455,12 @@ public:
 		textureUnit.target = m_BindingSlots[bindingSlot].elementType;
 		textureUnit.unit = m_BindingSlots[bindingSlot].fragmentProgramLocation;
 		return textureUnit;
+	}
+
+	GLuint GetStorageBuffer(const int32_t UNUSED(bindingSlot)) override
+	{
+		debug_warn("ARB shaders don't support storage buffers.");
+		return 0;
 	}
 
 	void SetUniform(
@@ -789,6 +808,59 @@ public:
 
 		std::vector<uint8_t> occupiedUnits;
 
+#if !CONFIG2_GLES
+		const bool isStorageSupported{m_Device->GetCapabilities().storage};
+		if (isStorageSupported)
+		{
+			constexpr GLint maxBlockNameLength{128};
+			char name[maxBlockNameLength];
+
+			GLint maxUniformBlockNameLength{0};
+			glGetProgramInterfaceiv(m_Program, GL_UNIFORM_BLOCK, GL_MAX_NAME_LENGTH, &maxUniformBlockNameLength);
+			ogl_WarnIfError();
+
+			GLint numberOfActiveUniformBlocks{0};
+			glGetProgramInterfaceiv(m_Program, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numberOfActiveUniformBlocks);
+			ogl_WarnIfError();
+			// Currently we support the only one uniform buffer per shader.
+			if (numberOfActiveUniformBlocks == 1)
+			{
+				GLsizei length{0};
+				glGetProgramResourceName(m_Program, GL_UNIFORM_BLOCK, 0, maxBlockNameLength, &length, name);
+
+				const GLuint location{glGetProgramResourceIndex(m_Program, GL_UNIFORM_BLOCK, name)};
+				glUniformBlockBinding(m_Program, location, location);
+
+				m_UniformBufferLocation = location;
+			}
+
+			GLint maxStorageNameLength{0};
+			glGetProgramInterfaceiv(m_Program, GL_SHADER_STORAGE_BLOCK, GL_MAX_NAME_LENGTH, &maxStorageNameLength);
+			ogl_WarnIfError();
+			ENSURE(maxStorageNameLength <= maxBlockNameLength);
+			GLint numberOfActiveStorages{0};
+			glGetProgramInterfaceiv(m_Program, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &numberOfActiveStorages);
+			ogl_WarnIfError();
+			for (GLint index{0}; index < numberOfActiveStorages; ++index)
+			{
+				GLsizei length{0};
+				glGetProgramResourceName(m_Program, GL_SHADER_STORAGE_BLOCK, index, maxBlockNameLength, &length, name);
+
+				const GLuint location{glGetProgramResourceIndex(m_Program, GL_SHADER_STORAGE_BLOCK, name)};
+				glShaderStorageBlockBinding(m_Program, location, location);
+
+				const CStrIntern nameIntern(name);
+
+				m_BindingSlotsMapping[nameIntern] = m_BindingSlots.size();
+				BindingSlot bindingSlot{};
+				bindingSlot.name = nameIntern;
+				bindingSlot.location = location;
+				bindingSlot.isStorageBuffer = true;
+				m_BindingSlots.emplace_back(std::move(bindingSlot));
+			}
+		}
+#endif
+
 		GLint numUniforms = 0;
 		glGetProgramiv(m_Program, GL_ACTIVE_UNIFORMS, &numUniforms);
 		ogl_WarnIfError();
@@ -824,6 +896,7 @@ public:
 			bindingSlot.size = size;
 			bindingSlot.type = type;
 			bindingSlot.isTexture = false;
+			bindingSlot.isStorageBuffer = false;
 
 #define CASE(TYPE, ELEMENT_TYPE, ELEMENT_COUNT) \
 			case GL_ ## TYPE: \
@@ -871,6 +944,7 @@ public:
 			case GL_IMAGE_2D:
 				bindingSlot.elementType = GL_IMAGE_2D;
 				bindingSlot.isTexture = true;
+				m_HasImageUniforms = true;
 				break;
 #endif
 			default:
@@ -895,6 +969,31 @@ public:
 				LOGERROR("CShaderProgramGLSL::Link: unsupported uniform type: 0x%04x", static_cast<int>(type));
 			}
 
+#if !CONFIG2_GLES
+			if (isStorageSupported)
+			{
+				GLuint uniformIndex{0};
+				const GLchar* nameToQuery{name};
+				glGetUniformIndices(m_Program, 1, &nameToQuery, &uniformIndex);
+				ogl_WarnIfError();
+
+				GLint uniformOffset{0};
+				glGetActiveUniformsiv(m_Program, 1, &uniformIndex, GL_UNIFORM_OFFSET, &uniformOffset);
+				ogl_WarnIfError();
+
+				// According to the OpenGL spec:
+				//  https://registry.khronos.org/OpenGL-Refpages/es3/html/glGetActiveUniformsiv.xhtml
+				//  For uniforms in the default uniform block, -1 will be returned.
+				if (uniformOffset >= 0)
+				{
+					const uint32_t sizeInBytes{static_cast<uint32_t>(bindingSlot.size * bindingSlot.elementCount * sizeof(float))};
+					m_UniformBufferSize = std::max(m_UniformBufferSize, uniformOffset + sizeInBytes);
+					bindingSlot.location = -1;
+					bindingSlot.offset = uniformOffset;
+				}
+			}
+#endif
+
 			m_BindingSlots.emplace_back(std::move(bindingSlot));
 		}
 
@@ -918,6 +1017,13 @@ public:
 			ogl_WarnIfError();
 		}
 
+		if (m_UniformBufferSize > 0 && m_UniformBufferLocation != -1)
+		{
+			m_UniformBuffer = m_Device->CreateBuffer(
+				"ShaderProgramUniformBuffer", IBuffer::Type::UNIFORM, m_UniformBufferSize,
+				IBuffer::Usage::DYNAMIC | IBuffer::Usage::TRANSFER_DST);
+		}
+
 		// TODO: verify that we're not using more samplers than is supported
 
 		Unbind();
@@ -933,6 +1039,8 @@ public:
 		ENSURE(this != previousShaderProgramGLSL);
 
 		glUseProgram(m_Program);
+		if (m_UniformBuffer)
+			glBindBufferBase(GL_UNIFORM_BUFFER, m_UniformBufferLocation, m_UniformBuffer->As<CBuffer>()->GetHandle());
 
 		if (previousShaderProgramGLSL)
 		{
@@ -1007,6 +1115,15 @@ public:
 		textureUnit.target = m_BindingSlots[bindingSlot].elementType;
 		textureUnit.unit = m_BindingSlots[bindingSlot].elementCount;
 		return textureUnit;
+	}
+
+	GLuint GetStorageBuffer(const int32_t bindingSlot) override
+	{
+		if (bindingSlot < 0 || bindingSlot >= static_cast<int32_t>(m_BindingSlots.size()))
+			return 0;
+		if (!m_BindingSlots[bindingSlot].isStorageBuffer)
+			LOGERROR("CShaderProgramGLSL::GetStorageBuffer(): Invalid slot (expected storage buffer): '%s'", m_BindingSlots[bindingSlot].name.c_str());
+		return m_BindingSlots[bindingSlot].location;
 	}
 
 	void SetUniform(
@@ -1094,6 +1211,17 @@ public:
 		const GLint location = m_BindingSlots[bindingSlot].location;
 		const GLenum type = m_BindingSlots[bindingSlot].type;
 
+		if (location == -1)
+		{
+			const uint32_t sizeInBytes{
+				static_cast<uint32_t>(m_BindingSlots[bindingSlot].size * m_BindingSlots[bindingSlot].elementCount * sizeof(float))};
+			const uint32_t dataSizeToUpload{std::min(
+				static_cast<uint32_t>(values.size() * sizeof(float)), sizeInBytes)};
+			m_Device->GetActiveCommandContext()->UploadBufferRegion(
+				m_UniformBuffer.get(), values.data(), m_BindingSlots[bindingSlot].offset, dataSizeToUpload);
+			return;
+		}
+
 		if (type == GL_FLOAT)
 			glUniform1fv(location, 1, values.data());
 		else if (type == GL_FLOAT_VEC2)
@@ -1172,14 +1300,20 @@ private:
 	{
 		CStrIntern name;
 		GLint location;
+		GLint offset;
 		GLint size;
 		GLenum type;
 		GLenum elementType;
 		GLint elementCount;
 		bool isTexture;
+		bool isStorageBuffer;
 	};
 	std::vector<BindingSlot> m_BindingSlots;
 	std::unordered_map<CStrIntern, int32_t> m_BindingSlotsMapping;
+
+	GLint m_UniformBufferLocation{-1};
+	uint32_t m_UniformBufferSize{0};
+	std::unique_ptr<IBuffer> m_UniformBuffer;
 };
 
 CShaderProgram::CShaderProgram(int streamflags)

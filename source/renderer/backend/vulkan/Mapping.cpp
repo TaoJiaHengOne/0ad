@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -175,9 +175,15 @@ VkFormat FromFormat(const Format format)
 	CASE(R16_UNORM)
 	CASE(R16_UINT)
 	CASE(R16_SINT)
+	CASE(R16_SFLOAT)
 	CASE(R16G16_UNORM)
 	CASE(R16G16_UINT)
 	CASE(R16G16_SINT)
+	CASE(R16G16_SFLOAT)
+
+	CASE(R16G16B16_SFLOAT)
+
+	CASE(R16G16B16A16_SFLOAT)
 
 	CASE(R32_SFLOAT)
 	CASE(R32G32_SFLOAT)
@@ -271,6 +277,68 @@ VkAttachmentStoreOp FromAttachmentStoreOp(const AttachmentStoreOp storeOp)
 		break;
 	}
 	return resultStoreOp;
+}
+
+VkPipelineStageFlags FromPipelineStageMask(const uint32_t mask)
+{
+	VkPipelineStageFlags flags{0};
+	uint32_t checkedMask{0};
+#define CASE(NAME) \
+	if (mask & PipelineStage::NAME) { flags |= VK_PIPELINE_STAGE_##NAME##_BIT; checkedMask |= PipelineStage::NAME; }
+#define CASE2(NAME, VK_NAME) \
+	if (mask & PipelineStage::NAME) { flags |= VK_NAME; checkedMask |= PipelineStage::NAME; }
+
+	CASE(DRAW_INDIRECT)
+	CASE(VERTEX_INPUT)
+	CASE(VERTEX_SHADER)
+	CASE(FRAGMENT_SHADER)
+	CASE(EARLY_FRAGMENT_TESTS)
+	CASE(LATE_FRAGMENT_TESTS)
+	CASE(COLOR_ATTACHMENT_OUTPUT)
+	CASE(COMPUTE_SHADER)
+	CASE(TRANSFER)
+	CASE(HOST)
+	CASE2(ACCELERATION_STRUCTURE_BUILD, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR)
+	CASE2(RAY_TRACING_SHADER, VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR)
+	CASE2(TASK_SHADER, VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT)
+	CASE2(MESH_SHADER, VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT)
+#undef CASE
+#undef CASE2
+	ENSURE(mask == checkedMask);
+	return flags;
+}
+
+VkAccessFlags FromAccessMask(const uint32_t mask)
+{
+	VkAccessFlags flags{0};
+	uint32_t checkedMask{0};
+#define CASE(NAME) \
+	if (mask & Access::NAME) { flags |= VK_ACCESS_##NAME##_BIT; checkedMask |= Access::NAME; }
+#define CASE2(NAME, VK_NAME) \
+	if (mask & Access::NAME) { flags |= VK_NAME; checkedMask |= Access::NAME; }
+
+	CASE(INDIRECT_COMMAND_READ)
+	CASE(INDEX_READ)
+	CASE(VERTEX_ATTRIBUTE_READ)
+	CASE(UNIFORM_READ)
+	CASE(INPUT_ATTACHMENT_READ)
+	CASE(SHADER_READ)
+	CASE(SHADER_WRITE)
+	CASE(COLOR_ATTACHMENT_READ)
+	CASE(COLOR_ATTACHMENT_WRITE)
+	CASE(DEPTH_STENCIL_ATTACHMENT_READ)
+	CASE(DEPTH_STENCIL_ATTACHMENT_WRITE)
+	CASE(TRANSFER_READ)
+	CASE(TRANSFER_WRITE)
+	CASE(HOST_READ)
+	CASE(HOST_WRITE)
+	CASE(MEMORY_READ)
+	CASE(MEMORY_WRITE)
+	CASE2(ACCELERATION_STRUCTURE_READ, VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR)
+	CASE2(ACCELERATION_STRUCTURE_WRITE, VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR)
+#undef CASE
+	ENSURE(mask == checkedMask);
+	return flags;
 }
 
 } // namespace Mapping

@@ -29,6 +29,7 @@
 #include "renderer/backend/vulkan/DescriptorManager.h"
 #include "renderer/backend/vulkan/Device.h"
 #include "renderer/backend/vulkan/Framebuffer.h"
+#include "renderer/backend/vulkan/Mapping.h"
 #include "renderer/backend/vulkan/PipelineState.h"
 #include "renderer/backend/vulkan/RingCommandContext.h"
 #include "renderer/backend/vulkan/ShaderProgram.h"
@@ -51,7 +52,7 @@ namespace Vulkan
 namespace
 {
 
-constexpr uint32_t UNIFORM_BUFFER_INITIAL_SIZE = 1024 * 1024;
+constexpr uint32_t UNIFORM_BUFFER_INITIAL_SIZE = 1024 * 1024 * 32;
 constexpr uint32_t FRAME_INPLACE_BUFFER_INITIAL_SIZE = 128 * 1024;
 
 struct SBaseImageState
@@ -915,6 +916,17 @@ void CDeviceCommandContext::Dispatch(
 	m_ShaderProgram->PostDispatch(*m_CommandContext);
 }
 
+void CDeviceCommandContext::InsertMemoryBarrier(
+	const uint32_t srcStageMask, const uint32_t dstStageMask,
+	const uint32_t srcAccessMask, const uint32_t dstAccessMask)
+{
+	ENSURE(!m_InsideFramebufferPass);
+	Utilities::SubmitMemoryBarrier(
+		m_CommandContext->GetCommandBuffer(),
+		Mapping::FromAccessMask(srcAccessMask), Mapping::FromAccessMask(dstAccessMask),
+		Mapping::FromPipelineStageMask(srcStageMask), Mapping::FromPipelineStageMask(dstStageMask));
+}
+
 void CDeviceCommandContext::SetTexture(const int32_t bindingSlot, ITexture* texture)
 {
 	if (bindingSlot < 0)
@@ -946,6 +958,16 @@ void CDeviceCommandContext::SetStorageTexture(const int32_t bindingSlot, ITextur
 	CTexture* textureToBind = texture->As<CTexture>();
 	ENSURE(textureToBind->GetUsage() & ITexture::Usage::STORAGE);
 	m_ShaderProgram->SetStorageTexture(bindingSlot, textureToBind);
+}
+
+void CDeviceCommandContext::SetStorageBuffer(const int32_t bindingSlot, IBuffer* buffer)
+{
+	ENSURE(m_InsidePass || m_InsideComputePass);
+	ENSURE(buffer);
+	CBuffer* bufferToBind = buffer->As<CBuffer>();
+	ENSURE(bufferToBind->GetType() == IBuffer::Type::VERTEX || bufferToBind->GetType() == IBuffer::Type::INDEX);
+	ENSURE(bufferToBind->GetUsage() & IBuffer::Usage::STORAGE);
+	m_ShaderProgram->SetStorageBuffer(bindingSlot, bufferToBind);
 }
 
 void CDeviceCommandContext::SetUniform(

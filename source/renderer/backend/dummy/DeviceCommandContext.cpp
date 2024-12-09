@@ -202,11 +202,20 @@ void CDeviceCommandContext::Dispatch(const uint32_t, const uint32_t, const uint3
 {
 }
 
+void CDeviceCommandContext::InsertMemoryBarrier(
+	const uint32_t, const uint32_t, const uint32_t, const uint32_t)
+{
+}
+
 void CDeviceCommandContext::SetTexture(const int32_t, ITexture*)
 {
 }
 
 void CDeviceCommandContext::SetStorageTexture(const int32_t, ITexture*)
+{
+}
+
+void CDeviceCommandContext::SetStorageBuffer(const int32_t, IBuffer*)
 {
 }
 

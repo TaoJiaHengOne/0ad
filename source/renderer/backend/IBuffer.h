@@ -46,6 +46,7 @@ public:
 		static constexpr uint32_t DYNAMIC = 1u << 0u;
 		static constexpr uint32_t TRANSFER_SRC = 1u << 1u;
 		static constexpr uint32_t TRANSFER_DST = 1u << 2u;
+		static constexpr uint32_t STORAGE = 1u << 3u;
 	};
 
 	virtual Type GetType() const = 0;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #ifndef INCLUDED_RENDERER_BACKEND_VULKAN_MAPPING
 #define INCLUDED_RENDERER_BACKEND_VULKAN_MAPPING
 
+#include "renderer/backend/Barrier.h"
 #include "renderer/backend/Format.h"
 #include "renderer/backend/IFramebuffer.h"
 #include "renderer/backend/PipelineState.h"
@@ -60,6 +61,10 @@ VkSamplerAddressMode FromAddressMode(const Sampler::AddressMode addressMode);
 VkAttachmentLoadOp FromAttachmentLoadOp(const AttachmentLoadOp loadOp);
 
 VkAttachmentStoreOp FromAttachmentStoreOp(const AttachmentStoreOp storeOp);
+
+VkPipelineStageFlags FromPipelineStageMask(const uint32_t mask);
+
+VkAccessFlags FromAccessMask(const uint32_t mask);
 
 } // namespace Mapping
 

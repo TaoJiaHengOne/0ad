@@ -61,6 +61,7 @@ public:
 		float maxAnisotropy;
 		uint32_t maxTextureSize;
 		bool instancing;
+		bool storage;
 	};
 
 	virtual ~IDevice() {}

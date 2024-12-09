@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -43,9 +43,13 @@ enum class Format
 	R16_UNORM,
 	R16_UINT,
 	R16_SINT,
+	R16_SFLOAT,
 	R16G16_UNORM,
 	R16G16_UINT,
 	R16G16_SINT,
+	R16G16_SFLOAT,
+	R16G16B16_SFLOAT,
+	R16G16B16A16_SFLOAT,
 
 	R32_SFLOAT,
 	R32G32_SFLOAT,

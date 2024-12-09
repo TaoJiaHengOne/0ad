@@ -20,6 +20,7 @@
 
 #include "ps/CStrIntern.h"
 #include "renderer/backend/Sampler.h"
+#include "renderer/backend/vulkan/Buffer.h"
 #include "renderer/backend/vulkan/Device.h"
 #include "renderer/backend/vulkan/Texture.h"
 
@@ -61,11 +62,18 @@ public:
 		const std::vector<DeviceObjectUID>& texturesUID,
 		const std::vector<CTexture*>& textures);
 
+	VkDescriptorSet GetSingleTypeDescritorSet(
+		VkDescriptorType type, VkDescriptorSetLayout layout,
+		const std::vector<DeviceObjectUID>& buffersUID,
+		const std::vector<CBuffer*>& buffers);
+
 	uint32_t GetUniformSet() const;
 
 	uint32_t GetTextureDescriptor(CTexture* texture);
 
 	void OnTextureDestroy(const DeviceObjectUID uid);
+
+	void OnBufferDestroy(const DeviceObjectUID uid);
 
 	const VkDescriptorSetLayout& GetDescriptorIndexingSetLayout() const { return m_DescriptorIndexingSetLayout; }
 	const VkDescriptorSetLayout& GetUniformDescriptorSetLayout() const { return m_UniformDescriptorSetLayout; }
@@ -93,6 +101,8 @@ private:
 	std::pair<VkDescriptorSet, bool> GetSingleTypeDescritorSetImpl(
 		VkDescriptorType type, VkDescriptorSetLayout layout,
 		const std::vector<DeviceObjectUID>& uids);
+
+	void OnDeviceObjectDestroy(const DeviceObjectUID uid);
 
 	CDevice* m_Device = nullptr;
 

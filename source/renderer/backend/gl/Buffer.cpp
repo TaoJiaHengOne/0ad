@@ -35,19 +35,42 @@ namespace Backend
 namespace GL
 {
 
+namespace
+{
+
+GLenum GetTargetFromBufferType(const IBuffer::Type type)
+{
+	GLenum target{GL_ARRAY_BUFFER};
+	switch (type)
+	{
+	case IBuffer::Type::INDEX:
+		target = GL_ELEMENT_ARRAY_BUFFER;
+		break;
+	case IBuffer::Type::UNIFORM:
+		target = GL_UNIFORM_BUFFER;
+		break;
+	default:
+		target = GL_ARRAY_BUFFER;
+		break;
+	}
+	return target;
+}
+
+} // anonymous namespace
+
 // static
 std::unique_ptr<CBuffer> CBuffer::Create(
 	CDevice* device, const char* name,
 	const Type type, const uint32_t size, const uint32_t usage)
 {
-	ENSURE(type == Type::VERTEX || type == Type::INDEX);
+	ENSURE(type == Type::VERTEX || type == Type::INDEX || type == Type::UNIFORM);
 	std::unique_ptr<CBuffer> buffer(new CBuffer());
 	buffer->m_Device = device;
 	buffer->m_Type = type;
 	buffer->m_Size = size;
 	buffer->m_Usage = usage;
 	glGenBuffersARB(1, &buffer->m_Handle);
-	const GLenum target = type == Type::INDEX ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER;
+	const GLenum target{GetTargetFromBufferType(type)};
 	glBindBufferARB(target, buffer->m_Handle);
 	glBufferDataARB(target, size, nullptr, (usage & IBuffer::Usage::DYNAMIC) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 #if !CONFIG2_GLES

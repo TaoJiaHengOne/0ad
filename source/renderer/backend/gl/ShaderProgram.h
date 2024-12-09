@@ -116,6 +116,8 @@ public:
 	};
 	virtual TextureUnit GetTextureUnit(const int32_t bindingSlot) = 0;
 
+	virtual GLuint GetStorageBuffer(const int32_t bindingSlot) = 0;
+
 	virtual void SetUniform(
 		const int32_t bindingSlot,
 		const float value) = 0;
@@ -141,6 +143,8 @@ public:
 
 	bool IsStreamActive(const VertexAttributeStream stream) const;
 
+	bool HasImageUniforms() const { return m_HasImageUniforms; }
+
 	/**
 	 * Checks that all the required vertex attributes have been set.
 	 * Call this before calling Draw/DrawIndexed etc to avoid potential crashes.
@@ -161,6 +165,8 @@ protected:
 	void BindClientStates();
 	void UnbindClientStates();
 	int m_ValidStreams; // which streams have been specified via VertexPointer etc since the last Bind
+
+	bool m_HasImageUniforms{false};
 };
 
 } // namespace GL

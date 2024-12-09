@@ -103,8 +103,10 @@ GLenum BufferTypeToGLTarget(const CBuffer::Type type)
 	case CBuffer::Type::INDEX:
 		target = GL_ELEMENT_ARRAY_BUFFER;
 		break;
-	case CBuffer::Type::UPLOAD:
 	case CBuffer::Type::UNIFORM:
+		target = GL_UNIFORM_BUFFER;
+		break;
+	case CBuffer::Type::UPLOAD:
 		debug_warn("Unsupported buffer type.");
 		break;
 	};
@@ -451,7 +453,9 @@ void CDeviceCommandContext::UploadBufferRegion(
 	ENSURE(dataOffset + dataSize <= buffer->GetSize());
 	const GLenum target = BufferTypeToGLTarget(buffer->GetType());
 	ScopedBufferBind scopedBufferBind(this, buffer->As<CBuffer>());
-	if (buffer->IsDynamic())
+	// Uniform buffers is a relatively new feature so we don't need to use a
+	// dynamic upload.
+	if (buffer->IsDynamic() && buffer->GetType() != IBuffer::Type::UNIFORM)
 	{
 		UploadDynamicBufferRegionImpl(target, buffer->GetSize(), dataOffset, dataSize, [data, dataSize](u8* mappedData)
 		{
@@ -1257,16 +1261,49 @@ void CDeviceCommandContext::Dispatch(
 	const uint32_t groupCountY,
 	const uint32_t groupCountZ)
 {
-#if !CONFIG2_GLES 
+#if !CONFIG2_GLES
 	ENSURE(m_InsideComputePass);
 	glDispatchCompute(groupCountX, groupCountY, groupCountZ);
-	// TODO: we might want to do binding tracking to avoid redundant barriers.
-	glMemoryBarrier(
-		GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT | GL_TEXTURE_UPDATE_BARRIER_BIT | GL_FRAMEBUFFER_BARRIER_BIT);
+	// Storage buffers should be managed explicitly by InsertMemoryBarrier.
+	if (m_ShaderProgram->HasImageUniforms())
+	{
+		// TODO: we might want to do binding tracking to avoid redundant barriers.
+		glMemoryBarrier(
+			GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT | GL_TEXTURE_UPDATE_BARRIER_BIT | GL_FRAMEBUFFER_BARRIER_BIT );
+	}
 #else
 	UNUSED2(groupCountX);
 	UNUSED2(groupCountY);
 	UNUSED2(groupCountZ);
+#endif
+}
+
+void CDeviceCommandContext::InsertMemoryBarrier(
+	const uint32_t UNUSED(srcStageMask), const uint32_t dstStageMask,
+	const uint32_t srcAccessMask, const uint32_t dstAccessMask)
+{
+#if !CONFIG2_GLES
+	ENSURE(!m_InsideFramebufferPass);
+	GLbitfield barriers{0};
+	if (srcAccessMask & Access::SHADER_WRITE)
+	{
+		if (dstStageMask & PipelineStage::VERTEX_INPUT)
+		{
+			if (dstAccessMask & Access::VERTEX_ATTRIBUTE_READ)
+				barriers |= GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT;
+			if (dstAccessMask & Access::INDEX_READ)
+				barriers |= GL_ELEMENT_ARRAY_BARRIER_BIT;
+		}
+		if (dstStageMask & (PipelineStage::VERTEX_SHADER | PipelineStage::FRAGMENT_SHADER | PipelineStage::COMPUTE_SHADER))
+		{
+			if (dstAccessMask & (Access::SHADER_READ | Access::SHADER_WRITE))
+				barriers |= GL_SHADER_STORAGE_BARRIER_BIT;
+			if (dstAccessMask & Access::UNIFORM_READ)
+				barriers |= GL_UNIFORM_BARRIER_BIT;
+		}
+	}
+	if (barriers)
+		glMemoryBarrier(barriers);
 #endif
 }
 
@@ -1329,6 +1366,21 @@ void CDeviceCommandContext::SetStorageTexture(const int32_t bindingSlot, ITextur
 #else
 	UNUSED2(bindingSlot);
 	UNUSED2(texture);
+#endif
+}
+
+void CDeviceCommandContext::SetStorageBuffer(const int32_t bindingSlot, IBuffer* buffer)
+{
+#if !CONFIG2_GLES
+	if (bindingSlot < 0)
+		return;
+	ENSURE(m_ShaderProgram);
+	ENSURE(buffer);
+	ENSURE(buffer->GetUsage() & Renderer::Backend::IBuffer::Usage::STORAGE);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ShaderProgram->GetStorageBuffer(bindingSlot), buffer->As<CBuffer>()->GetHandle());
+#else
+	UNUSED2(bindingSlot);
+	UNUSED2(buffer);
 #endif
 }
 

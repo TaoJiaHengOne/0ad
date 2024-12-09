@@ -129,9 +129,14 @@ public:
 		const uint32_t groupCountY,
 		const uint32_t groupCountZ) override;
 
+	void InsertMemoryBarrier(
+		const uint32_t srcStageMask, const uint32_t dstStageMask,
+		const uint32_t srcAccessMask, const uint32_t dstAccessMask) override;
+
 	void SetTexture(const int32_t bindingSlot, ITexture* texture) override;
 
 	void SetStorageTexture(const int32_t bindingSlot, ITexture* texture) override;
+	void SetStorageBuffer(const int32_t bindingSlot, IBuffer* buffer) override;
 
 	void SetUniform(
 		const int32_t bindingSlot,
