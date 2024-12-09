@@ -29,6 +29,15 @@ tar xfJ "${FOLDER}.tar.xz"
 # patch
 (
 	cd "${FOLDER}"
+
+	# Fix build on recent macOS versions.
+	# https://bugzilla.mozilla.org/show_bug.cgi?id=1844694
+	# The --enable-bootstrap fix mentioned on the ticket does not fix the issue. Instead,
+	# use Homebrew's workaround.
+	if [ "${OS}" = "Darwin" ]; then
+		sed -i '' 's/\["-Wl,--version"]/["-Wl,-ld_classic,--version"]/g' build/moz.configure/toolchain.configure
+	fi
+
 	# shellcheck disable=SC1091
 	. ../patches/patch.sh
 )
