@@ -254,14 +254,14 @@ void CRenderingOptions::ReadConfigAndSetupHooks()
 	m_ConfigHooks->Setup("gpuskinning", [this]() {
 		bool enabled;
 		CFG_GET_VAL("gpuskinning", enabled);
+		const Renderer::Backend::IDevice::Capabilities& capabilities{
+			g_VideoMode.GetBackendDevice()->GetCapabilities()};
 		if (enabled)
 		{
-			if (g_VideoMode.GetBackendDevice()->GetBackend() == Renderer::Backend::Backend::GL_ARB)
-				LOGWARNING("GPUSkinning has been disabled, because it is not supported with ARB shaders.");
-			else if (g_VideoMode.GetBackendDevice()->GetBackend() == Renderer::Backend::Backend::VULKAN)
-				LOGWARNING("GPUSkinning has been disabled, because it is not supported for Vulkan backend yet.");
-			else
+			if (capabilities.computeShaders && capabilities.storage)
 				m_GPUSkinning = true;
+			else
+				LOGMESSAGE("GPU skinning isn't supported on the current hardware.");
 		}
 	});
 

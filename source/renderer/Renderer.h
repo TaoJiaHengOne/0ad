@@ -152,6 +152,7 @@ protected:
 	friend class CPatchRData;
 	friend class CPUSkinnedModelVertexRenderer;
 	friend class CRenderingOptions;
+	friend class GPUSkinnedModelModelRenderer;
 	friend class InstancingModelRenderer;
 
 	bool ShouldRender() const;

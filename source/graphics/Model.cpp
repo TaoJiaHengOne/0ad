@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -239,8 +239,7 @@ void CModel::ValidatePosition()
 	// in the vertex shader instead.
 	// Using g_RenderingOptions to detect CPU vs GPU is a bit hacky,
 	// and this doesn't allow the setting to change at runtime, but there isn't
-	// an obvious cleaner way to determine what data needs to be computed,
-	// and GPU skinning is a rarely-used experimental feature anyway.
+	// an obvious cleaner way to determine what data needs to be computed.
 	bool worldSpaceBoneMatrices = !g_RenderingOptions.GetGPUSkinning();
 	bool computeBlendMatrices = !g_RenderingOptions.GetGPUSkinning();
 

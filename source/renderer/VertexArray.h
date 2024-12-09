@@ -168,6 +168,10 @@ public:
 	// Add vertex attributes
 	void AddAttribute(Attribute* attr);
 
+	// Sets the minimum alignment for each attribute to have offsets multiples
+	// of `minimumAttributeAlignment`.
+	void SetMinimumAttributeAlignment(const uint32_t minimumAttributeAlignment);
+
 	size_t GetNumberOfVertices() const { return m_NumberOfVertices; }
 	uint32_t GetStride() const { return m_Stride; }
 
@@ -203,13 +207,14 @@ private:
 	}
 
 	Renderer::Backend::IBuffer::Type m_Type;
-	uint32_t m_Usage = 0;
-	size_t m_NumberOfVertices;
+	uint32_t m_Usage{0};
+	uint32_t m_MinimumAttributeAlignment{0};
+	size_t m_NumberOfVertices{0};
 	std::vector<Attribute*> m_Attributes;
 
 	CVertexBufferManager::Handle m_VB;
-	uint32_t m_Stride;
-	char* m_BackingStore; // 16-byte aligned, to allow fast SSE access
+	uint32_t m_Stride{0};
+	char* m_BackingStore{nullptr}; // 16-byte aligned, to allow fast SSE access
 };
 
 /**

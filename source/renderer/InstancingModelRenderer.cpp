@@ -42,8 +42,6 @@ struct IModelDef : public CModelDefRPrivate
 	VertexArray::Attribute m_Position;
 	VertexArray::Attribute m_Normal;
 	VertexArray::Attribute m_Tangent;
-	VertexArray::Attribute m_BlendJoints; // valid iff gpuSkinning == true
-	VertexArray::Attribute m_BlendWeights; // valid iff gpuSkinning == true
 
 	/// The number of UVs is determined by the model
 	std::vector<VertexArray::Attribute> m_UVs;
@@ -53,11 +51,11 @@ struct IModelDef : public CModelDefRPrivate
 	/// Indices are the same for all models, so share them
 	VertexIndexArray m_IndexArray;
 
-	IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateTangents);
+	IModelDef(const CModelDefPtr& mdef, bool calculateTangents);
 };
 
 
-IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateTangents)
+IModelDef::IModelDef(const CModelDefPtr& mdef, bool calculateTangents)
 	: m_IndexArray(Renderer::Backend::IBuffer::Usage::TRANSFER_DST),
 	m_Array(Renderer::Backend::IBuffer::Type::VERTEX, Renderer::Backend::IBuffer::Usage::TRANSFER_DST)
 {
@@ -76,22 +74,6 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 		m_Array.AddAttribute(&m_UVs[i]);
 	}
 
-	if (gpuSkinning)
-	{
-		// We can't use a lot of bones because it costs uniform memory. Recommended
-		// number of bones per model is 32.
-		// Add 1 to NumBones because of the special 'root' bone.
-		if (mdef->GetNumBones() + 1 > 64)
-			LOGERROR("Model '%s' has too many bones %zu/64", mdef->GetName().string8().c_str(), mdef->GetNumBones() + 1);
-		ENSURE(mdef->GetNumBones() + 1 <= 64);
-
-		m_BlendJoints.format = Renderer::Backend::Format::R8G8B8A8_UINT;
-		m_Array.AddAttribute(&m_BlendJoints);
-
-		m_BlendWeights.format = Renderer::Backend::Format::R8G8B8A8_UNORM;
-		m_Array.AddAttribute(&m_BlendWeights);
-	}
-
 	if (calculateTangents)
 	{
 		// Generate tangents for the geometry:-
@@ -99,12 +81,8 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 		m_Tangent.format = Renderer::Backend::Format::R32G32B32A32_SFLOAT;
 		m_Array.AddAttribute(&m_Tangent);
 
-		// floats per vertex; position + normal + tangent + UV*sets [+ GPUskinning]
+		// floats per vertex; position + normal + tangent + UV*sets
 		int numVertexAttrs = 3 + 3 + 4 + 2 * mdef->GetNumUVsPerVertex();
-		if (gpuSkinning)
-		{
-			numVertexAttrs += 8;
-		}
 
 		// the tangent generation can increase the number of vertices temporarily
 		// so reserve a bit more memory to avoid reallocations in GenTangents (in most cases)
@@ -112,7 +90,7 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 		newVertices.reserve(numVertexAttrs * numVertices * 2);
 
 		// Generate the tangents
-		ModelRenderer::GenTangents(mdef, newVertices, gpuSkinning);
+		ModelRenderer::GenTangents(mdef, newVertices, false);
 
 		// how many vertices do we have after generating tangents?
 		int newNumVert = newVertices.size() / numVertexAttrs;
@@ -133,14 +111,6 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 		VertexArrayIterator<CVector3D> Normal = m_Normal.GetIterator<CVector3D>();
 		VertexArrayIterator<CVector4D> Tangent = m_Tangent.GetIterator<CVector4D>();
 
-		VertexArrayIterator<u8[4]> BlendJoints;
-		VertexArrayIterator<u8[4]> BlendWeights;
-		if (gpuSkinning)
-		{
-			BlendJoints = m_BlendJoints.GetIterator<u8[4]>();
-			BlendWeights = m_BlendWeights.GetIterator<u8[4]>();
-		}
-
 		// copy everything into the vertex array
 		for (int i = 0; i < numVertices2; i++)
 		{
@@ -155,16 +125,6 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 			Tangent[i] = CVector4D(vertexDataOut[q + 0], vertexDataOut[q + 1], vertexDataOut[q + 2],
 					vertexDataOut[q + 3]);
 			q += 4;
-
-			if (gpuSkinning)
-			{
-				for (size_t j = 0; j < 4; ++j)
-				{
-					BlendJoints[i][j] = (u8)vertexDataOut[q + 0 + 2 * j];
-					BlendWeights[i][j] = (u8)vertexDataOut[q + 1 + 2 * j];
-				}
-				q += 8;
-			}
 
 			for (size_t j = 0; j < mdef->GetNumUVsPerVertex(); j++)
 			{
@@ -214,21 +174,6 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 			ModelRenderer::BuildUV(mdef, UVit, i);
 		}
 
-		if (gpuSkinning)
-		{
-			VertexArrayIterator<u8[4]> BlendJoints = m_BlendJoints.GetIterator<u8[4]>();
-			VertexArrayIterator<u8[4]> BlendWeights = m_BlendWeights.GetIterator<u8[4]>();
-			for (size_t i = 0; i < numVertices; ++i)
-			{
-				const SModelVertex& vtx = mdef->GetVertices()[i];
-				for (size_t j = 0; j < 4; ++j)
-				{
-					BlendJoints[i][j] = vtx.m_Blend.m_Bone[j];
-					BlendWeights[i][j] = (u8)(255.f * vtx.m_Blend.m_Weight[j]);
-				}
-			}
-		}
-
 		m_Array.Upload();
 		m_Array.FreeBackingStore();
 
@@ -261,23 +206,10 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 			Renderer::Backend::VertexAttributeRate::PER_VERTEX, 0});
 	}
 
-	// GPU skinning requires extra attributes to compute positions/normals.
-	if (gpuSkinning)
-	{
-		attributes.push_back({
-			Renderer::Backend::VertexAttributeStream::UV2,
-			m_BlendJoints.format, m_BlendJoints.offset, stride,
-			Renderer::Backend::VertexAttributeRate::PER_VERTEX, 0});
-		attributes.push_back({
-			Renderer::Backend::VertexAttributeStream::UV3,
-			m_BlendWeights.format, m_BlendWeights.offset, stride,
-			Renderer::Backend::VertexAttributeRate::PER_VERTEX, 0});
-	}
-
 	if (calculateTangents)
 	{
 		attributes.push_back({
-			Renderer::Backend::VertexAttributeStream::UV4,
+			Renderer::Backend::VertexAttributeStream::UV2,
 			m_Tangent.format, m_Tangent.offset, stride,
 			Renderer::Backend::VertexAttributeRate::PER_VERTEX, 0});
 	}
@@ -287,23 +219,17 @@ IModelDef::IModelDef(const CModelDefPtr& mdef, bool gpuSkinning, bool calculateT
 
 struct InstancingModelRendererInternals
 {
-	bool gpuSkinning;
-
 	bool calculateTangents;
 
 	/// Previously prepared modeldef
 	IModelDef* imodeldef;
-
-	/// Index base for imodeldef
-	u8* imodeldefIndexBase;
 };
 
 
 // Construction and Destruction
-InstancingModelRenderer::InstancingModelRenderer(bool gpuSkinning, bool calculateTangents)
+InstancingModelRenderer::InstancingModelRenderer(bool calculateTangents)
 {
 	m = new InstancingModelRendererInternals;
-	m->gpuSkinning = gpuSkinning;
 	m->calculateTangents = calculateTangents;
 	m->imodeldef = 0;
 }
@@ -320,14 +246,11 @@ CModelRData* InstancingModelRenderer::CreateModelData(const void* key, CModel* m
 	CModelDefPtr mdef = model->GetModelDef();
 	IModelDef* imodeldef = (IModelDef*)mdef->GetRenderData(m);
 
-	if (m->gpuSkinning)
- 		ENSURE(model->IsSkinned());
-	else
-		ENSURE(!model->IsSkinned());
+	ENSURE(!model->IsSkinned());
 
 	if (!imodeldef)
 	{
-		imodeldef = new IModelDef(mdef, m->gpuSkinning, m->calculateTangents);
+		imodeldef = new IModelDef(mdef, m->calculateTangents);
 		mdef->SetRenderData(m, imodeldef);
 	}
 
@@ -371,20 +294,9 @@ void InstancingModelRenderer::PrepareModelDef(
 // Render one model
 void InstancingModelRenderer::RenderModel(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
-	Renderer::Backend::IShaderProgram* shader, CModel* model, CModelRData* UNUSED(data))
+	Renderer::Backend::IShaderProgram* UNUSED(shader), CModel* model, CModelRData* UNUSED(data))
 {
 	const CModelDefPtr& mdldef = model->GetModelDef();
-
-	if (m->gpuSkinning)
-	{
-		// Bind matrices for current animation state.
-		// Add 1 to NumBones because of the special 'root' bone.
-		deviceCommandContext->SetUniform(
-			shader->GetBindingSlot(str_skinBlendMatrices),
-			PS::span<const float>(
-				model->GetAnimatedBoneMatrices()[0]._data,
-				model->GetAnimatedBoneMatrices()[0].AsFloatArray().size() * (mdldef->GetNumBones() + 1)));
-	}
 
 	// Render the lot.
 	const size_t numberOfFaces = mdldef->GetNumFaces();

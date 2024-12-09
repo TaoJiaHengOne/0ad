@@ -15,31 +15,27 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Special ModelVertexRender that only works for non-animated models,
- * but is very fast for instanced models.
- */
-
-#ifndef INCLUDED_INSTANCINGMODELRENDERER
-#define INCLUDED_INSTANCINGMODELRENDERER
+#ifndef INCLUDED_RENDERER_GPUSKINNEDMODELRENDERER
+#define INCLUDED_RENDERER_GPUSKINNEDMODELRENDERER
 
 #include "renderer/ModelVertexRenderer.h"
 
-struct InstancingModelRendererInternals;
+#include <memory>
 
 /**
- * Render non-animated (but potentially moving) models using a ShaderRenderModifier.
+ * Render animated models using a ShaderRenderModifier.
+ * It calculates vertex data for models on the GPU side.
  * This computes and binds per-vertex data; the modifier is responsible
- * for setting any shader uniforms etc (including the instancing transform).
+ * for setting any shader uniforms etc.
  */
-class InstancingModelRenderer : public ModelVertexRenderer
+class GPUSkinnedModelModelRenderer : public ModelVertexRenderer
 {
 public:
-	InstancingModelRenderer(bool calculateTangents);
-	~InstancingModelRenderer();
+	GPUSkinnedModelModelRenderer();
+	~GPUSkinnedModelModelRenderer();
 
-	// Implementations
 	CModelRData* CreateModelData(const void* key, CModel* model) override;
+
 	void UpdateModelsData(
 		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 		PS::span<CModel*> models) override;
@@ -54,8 +50,14 @@ public:
 	void RenderModel(Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 		Renderer::Backend::IShaderProgram* shader, CModel* model, CModelRData* data) override;
 
-protected:
-	InstancingModelRendererInternals* m;
+private:
+	void UpdateModelData(
+		Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
+		Renderer::Backend::IShaderProgram* shaderProgram,
+		CModel* model, CModelRData* data, int updateflags);
+
+	struct Internals;
+	const std::unique_ptr<Internals> m;
 };
 
-#endif // INCLUDED_INSTANCINGMODELRENDERER
+#endif // INCLUDED_RENDERER_GPUSKINNEDMODELRENDERER

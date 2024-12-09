@@ -149,8 +149,10 @@ CVertexBufferManager::Handle CVertexBufferManager::AllocateChunk(
 
 	char bufferName[64] = {0};
 	snprintf(
-		bufferName, std::size(bufferName), "%s (%s, %zu%s)",
-		GetBufferTypeName(type), GetGroupName(group), vertexSize, ((usage & Renderer::Backend::IBuffer::Usage::DYNAMIC) ? ", dynamic" : ""));
+		bufferName, std::size(bufferName), "%s (%s, %zu%s%s)",
+		GetBufferTypeName(type), GetGroupName(group), vertexSize,
+		((usage & Renderer::Backend::IBuffer::Usage::DYNAMIC) ? ", dynamic" : ""),
+		((usage & Renderer::Backend::IBuffer::Usage::STORAGE) ? ", storage" : ""));
 
 	// got this far; need to allocate a new buffer
 	buffers.emplace_back(

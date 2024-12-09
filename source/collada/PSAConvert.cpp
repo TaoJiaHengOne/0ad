@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -91,8 +91,8 @@ public:
 			// (TODO: sort out the timing/looping problems)
 
 			const size_t boneCount = skeleton.GetBoneCount();
-			if (boneCount > 64)
-				Log(LOG_ERROR, "Skeleton has too many bones %zu/64", boneCount);
+			if (boneCount > 192)
+				Log(LOG_ERROR, "Skeleton has too many bones %zu/192", boneCount);
 
 			std::vector<BoneTransform> boneTransforms;
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -46,6 +46,7 @@
 #include "renderer/backend/IDevice.h"
 #include "renderer/CPUSkinnedModelRenderer.h"
 #include "renderer/DebugRenderer.h"
+#include "renderer/GPUSkinnedModelRenderer.h"
 #include "renderer/InstancingModelRenderer.h"
 #include "renderer/ModelRenderer.h"
 #include "renderer/OverlayRenderer.h"
@@ -151,10 +152,7 @@ public:
 	{
 		CShaderDefines contextSkinned = context;
 		if (g_RenderingOptions.GetGPUSkinning())
-		{
 			contextSkinned.Add(str_USE_INSTANCING, str_1);
-			contextSkinned.Add(str_USE_GPU_SKINNING, str_1);
-		}
 		Model.NormalSkinned->Render(deviceCommandContext, Model.ModShader, contextSkinned, cullGroup, flags);
 
 		if (Model.NormalUnskinned != Model.NormalSkinned)
@@ -174,10 +172,7 @@ public:
 	{
 		CShaderDefines contextSkinned = context;
 		if (g_RenderingOptions.GetGPUSkinning())
-		{
 			contextSkinned.Add(str_USE_INSTANCING, str_1);
-			contextSkinned.Add(str_USE_GPU_SKINNING, str_1);
-		}
 		Model.TranspSkinned->Render(deviceCommandContext, Model.ModShader, contextSkinned, cullGroup, flags);
 
 		if (Model.TranspUnskinned != Model.TranspSkinned)
@@ -246,11 +241,11 @@ void CSceneRenderer::ReloadShaders(Renderer::Backend::IDevice* device)
 
 	ENSURE(g_RenderingOptions.GetRenderPath() != RenderPath::FIXED);
 	m->Model.VertexRendererShader = ModelVertexRendererPtr(new CPUSkinnedModelVertexRenderer());
-	m->Model.VertexInstancingShader = ModelVertexRendererPtr(new InstancingModelRenderer(false, device->GetBackend() != Renderer::Backend::Backend::GL_ARB));
+	m->Model.VertexInstancingShader = ModelVertexRendererPtr(new InstancingModelRenderer(device->GetBackend() != Renderer::Backend::Backend::GL_ARB));
 
-	if (g_RenderingOptions.GetGPUSkinning()) // TODO: should check caps and GLSL etc too
+	if (g_RenderingOptions.GetGPUSkinning())
 	{
-		m->Model.VertexGPUSkinningShader = ModelVertexRendererPtr(new InstancingModelRenderer(true, device->GetBackend() != Renderer::Backend::Backend::GL_ARB));
+		m->Model.VertexGPUSkinningShader = ModelVertexRendererPtr(new GPUSkinnedModelModelRenderer());
 		m->Model.NormalSkinned = ModelRendererPtr(new ShaderModelRenderer(m->Model.VertexGPUSkinningShader));
 		m->Model.TranspSkinned = ModelRendererPtr(new ShaderModelRenderer(m->Model.VertexGPUSkinningShader));
 	}
