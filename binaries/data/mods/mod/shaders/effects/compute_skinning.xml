@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<effect>
+	<technique>
+		<require shaders="glsl"/>
+		<compute shader="glsl/compute_skinning"/>
+	</technique>
+	<technique>
+		<require shaders="spirv"/>
+		<compute shader="spirv/compute_skinning"/>
+	</technique>
+</effect>

@@ -44,11 +44,15 @@
 	#define END_DRAW_UNIFORMS DrawTextures drawTextures; };
 	#define BEGIN_MATERIAL_UNIFORMS layout (std140, set = 1, binding = 0) uniform MaterialUniforms {
 	#define END_MATERIAL_UNIFORMS };
+	#define BEGIN_UNIFORM_BUFFER(NAME) layout (std140, set = 1, binding = 0) uniform NAME {
+	#define END_UNIFORM_BUFFER };
 #else
 	#define BEGIN_DRAW_UNIFORMS layout (push_constant) uniform DrawUniforms {
 	#define END_DRAW_UNIFORMS };
 	#define BEGIN_MATERIAL_UNIFORMS layout (std140, set = 0, binding = 0) uniform MaterialUniforms {
 	#define END_MATERIAL_UNIFORMS };
+	#define BEGIN_UNIFORM_BUFFER(NAME) layout (std140, set = 0, binding = 0) uniform NAME {
+	#define END_UNIFORM_BUFFER };
 #endif
 
 #define UNIFORM(TYPE, NAME) \
@@ -84,6 +88,8 @@
 #define END_DRAW_UNIFORMS
 #define BEGIN_MATERIAL_UNIFORMS
 #define END_MATERIAL_UNIFORMS
+#define BEGIN_UNIFORM_BUFFER(NAME) layout (std140) uniform NAME {
+#define END_UNIFORM_BUFFER };
 
 #define UNIFORM(TYPE, NAME) \
 	uniform TYPE NAME;
