@@ -188,6 +188,15 @@
 			},
 			{
 				"type": "boolean",
+				"label": "GPU skinning",
+				"tooltip": "Use GPU to update geometry for animated models. It reduces a CPU load during rendering especially on a modern hardware.",
+				"dependencies": [
+					{ "config": "rendererbackend", "op": "!=", "value": "glarb" }
+				],
+				"config": "gpuskinning"
+			},
+			{
+				"type": "boolean",
 				"label": "Post-processing",
 				"tooltip": "Use screen-space post-processing filters (HDR, Bloom, DOF, etc).",
 				"config": "postproc"
