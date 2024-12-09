@@ -21,6 +21,7 @@
 #include "lib/os_path.h"
 #include "ps/containers/Span.h"
 #include "ps/CStr.h"
+#include "scriptinterface/ScriptTypes.h"
 
 #include <utility>
 #include <vector>
