@@ -159,7 +159,7 @@ ATLASDLLIMPEXP void Atlas_StartWindow(const wchar_t* type)
 #ifndef __WXOSX__
 	wxEntry(argc, argv);
 #else
-	// Fix for OS X init (see http://trac.wildfiregames.com/ticket/2427 )
+	// Fix for OS X init (see https://gitea.wildfiregames.com/0ad/0ad/issues/2427 )
 	// If we launched from in-game, SDL started NSApplication which will
 	// break some things in wxWidgets
 	wxEntryStart(argc, argv);

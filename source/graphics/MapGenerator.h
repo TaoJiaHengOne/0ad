@@ -39,7 +39,7 @@
  *	`g_MapSettings` also respects this flags.
  * @return If there is an error `nullptr` is returned. Otherwise random map
  *	data, according to this format:
- *	https://trac.wildfiregames.com/wiki/Random_Map_Generator_Internals#Dataformat
+ *	https://gitea.wildfiregames.com/0ad/0ad/wiki/Random_Map_Generator_Internals#Dataformat
  */
 Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::atomic<int>& progress,
 	ScriptInterface& scriptInterface, const VfsPath& script, const std::string& settings,

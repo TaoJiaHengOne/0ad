@@ -266,7 +266,7 @@ void CModelDef::BlendBoneMatrices(
 		//	which we indicate by setting the bone ID to the total number of bones.
 		//	It should be blended with the world space transform and we have already
 		//	set up this matrix in boneMatrices.
-		//	(see http://trac.wildfiregames.com/ticket/1012)
+		//	(see https://gitea.wildfiregames.com/0ad/0ad/issues/1012)
 
 		boneMatrix.Blend(boneMatrices[blend.m_Bone[0]], blend.m_Weight[0]);
 		for (size_t j = 1; j < SVertexBlend::SIZE && blend.m_Bone[j] != 0xFF; ++j)

@@ -24,7 +24,7 @@
 
 		<object name="url" type="button" style="ModernButtonRed" size="100%-214 100%-52 100%-24 100%-24">
 			<translatableAttribute id="caption">View Online</translatableAttribute>
-			<action on="Press">openURL("https://trac.wildfiregames.com/wiki/0adManual");</action>
+			<action on="Press">openURL("https://gitea.wildfiregames.com/0ad/0ad/wiki/0adManual");</action>
 		</object>
 	</object>
 

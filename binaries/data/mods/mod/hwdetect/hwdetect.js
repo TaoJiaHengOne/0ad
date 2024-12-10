@@ -258,7 +258,7 @@ function RunDetection(settings)
 		dialog_warnings.push("You are using 260.19.* series NVIDIA drivers, which may crash the game. Please upgrade to 260.19.21 or later.");
 	}
 
-	// https://trac.wildfiregames.com/ticket/684
+	// https://gitea.wildfiregames.com/0ad/0ad/issues/684
 	// https://bugs.freedesktop.org/show_bug.cgi?id=24047
 	// R600 drivers will advertise support for S3TC but not actually support it,
 	// and will draw everything in grey instead, so forcibly disable S3TC.
@@ -266,7 +266,7 @@ function RunDetection(settings)
 	if (os_unix && GL_RENDERER.match(/^Mesa DRI R600 /))
 		disable_s3tc = true;
 
-	// https://trac.wildfiregames.com/ticket/623
+	// https://gitea.wildfiregames.com/0ad/0ad/issues/623
 	// Shadows are reportedly very slow on various drivers:
 	//   r300 classic
 	//   Intel 945
@@ -297,7 +297,7 @@ function RunDetection(settings)
 		disable_shadowpcf = true;
 	}
 
-	// https://trac.wildfiregames.com/ticket/780
+	// https://gitea.wildfiregames.com/0ad/0ad/issues/780
 	// r300 classic has problems with shader mode, so fall back to non-shader
 	if (os_unix && GL_RENDERER.match(/^Mesa DRI R[123]00 /))
 	{
@@ -313,7 +313,7 @@ function RunDetection(settings)
 		disable_allwater = true;
 	}
 
-	// https://trac.wildfiregames.com/ticket/964
+	// https://gitea.wildfiregames.com/0ad/0ad/issues/964
 	// SiS Mirage 3 drivers apparently crash with shaders, so fall back to non-shader
 	// (The other known SiS cards don't advertise GL_ARB_fragment_program so we
 	// don't need to do anything special for them)

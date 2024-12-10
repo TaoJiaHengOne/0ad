@@ -318,7 +318,7 @@ void CModel::ValidatePosition()
 		//	which we indicate with the blending bone ID set to the total number
 		//	of bones. But since we're skinning in world space, we use the model's
 		//	world space transform and store that matrix in this special index.
-		//	(see http://trac.wildfiregames.com/ticket/1012)
+		//	(see https://gitea.wildfiregames.com/0ad/0ad/issues/1012)
 		m_BoneMatrices[m_pModelDef->GetNumBones()] = m_Transform;
 
 		if (computeBlendMatrices)

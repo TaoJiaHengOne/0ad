@@ -444,7 +444,7 @@ static Status InitStructures()
 		if(header->id == 127)	// end
 			break;
 		if(header->length < sizeof(Header))
-			return ERR::_3; // NOWARN (happens on some unknown BIOS, see http://trac.wildfiregames.com/ticket/2985)
+			return ERR::_3; // NOWARN (happens on some unknown BIOS, see https://gitea.wildfiregames.com/0ad/0ad/issues/2985)
 
 		const Header* next;
 		const Strings strings = ExtractStrings(header, (const char*)end, next);

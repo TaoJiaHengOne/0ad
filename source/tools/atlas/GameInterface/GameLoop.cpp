@@ -132,7 +132,7 @@ bool BeginAtlas(const CmdLineArgs& args, const DllLoader& dll)
 	state.glCanvas = NULL;
 
 	// Start Atlas UI on main thread
-	// (required for wxOSX/Cocoa compatibility - see http://trac.wildfiregames.com/ticket/500)
+	// (required for wxOSX/Cocoa compatibility - see https://gitea.wildfiregames.com/0ad/0ad/issues/500)
 	Atlas_StartWindow(L"ScenarioEditor");
 
 	// TODO: delete all remaining messages, to avoid memory leak warnings

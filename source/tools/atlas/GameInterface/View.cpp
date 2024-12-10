@@ -146,7 +146,7 @@ void AtlasViewActor::SetParam(const std::wstring& name, bool value)
 		m_ActorViewer->SetGroundEnabled(value);
 	// TODO: this causes corruption of WaterManager's global state
 	//	which should be asociated with terrain or simulation instead
-	//	see http://trac.wildfiregames.com/ticket/2692
+	//	see https://gitea.wildfiregames.com/0ad/0ad/issues/2692
 	//else if (name == L"water")
 		//m_ActorViewer->SetWaterEnabled(value);
 	else if (name == L"shadows")

@@ -65,7 +65,7 @@ void CArchiveBuilder::Build(const OsPath& archive, bool compress)
 	// size for releases (which re-compress all files with better compression
 	// algorithms) - it's probably most important currently to optimise for
 	// download size rather than install size or startup performance.
-	// (See http://trac.wildfiregames.com/ticket/671)
+	// (See https://gitea.wildfiregames.com/0ad/0ad/issues/671)
 	const bool noDeflate = !compress;
 
 	PIArchiveWriter writer = CreateArchiveWriter_Zip(archive, noDeflate);

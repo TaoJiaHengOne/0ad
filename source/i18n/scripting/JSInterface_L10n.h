@@ -27,7 +27,7 @@ class ScriptRequest;
  * This namespace defines JavaScript interfaces to functions defined in L10n and
  * related helper functions.
  *
- * @sa http://trac.wildfiregames.com/wiki/Internationalization_and_Localization
+ * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Internationalization_and_Localization
  */
 namespace JSI_L10n
 {

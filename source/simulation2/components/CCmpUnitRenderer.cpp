@@ -300,7 +300,7 @@ public:
 					continue;
 
 				// Fall back to using old AABB selection method for decals
-				//	see: http://trac.wildfiregames.com/ticket/1032
+				//	see: https://gitea.wildfiregames.com/0ad/0ad/issues/1032
 				// Decals are flat objects without a selectionShape defined,
 				// but they should still be selectable in the editor to move them
 				// around or delete them after they are placed.

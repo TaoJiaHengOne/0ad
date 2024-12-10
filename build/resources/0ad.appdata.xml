@@ -29,8 +29,8 @@
     <category>StrategyGame</category>
   </categories>
   <url type="homepage">https://play0ad.com/</url>
-  <url type="bugtracker">https://trac.wildfiregames.com/</url>
-  <url type="translate">https://trac.wildfiregames.com/wiki/Localization</url>
+  <url type="bugtracker">https://gitea.wildfiregames.com/0ad/0ad/issues/</url>
+  <url type="translate">https://gitea.wildfiregames.com/0ad/0ad/wiki/Localization</url>
   <url type="donation">https://play0ad.com/community/donate/</url>
   <screenshots>
     <screenshot type="default">https://play0ad.com/wp-content/gallery/screenshots/screenshot0072.jpg</screenshot>

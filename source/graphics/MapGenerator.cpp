@@ -175,7 +175,7 @@ private:
 	/**
 	 * Finalize map generation and pass results from the script to the engine.
 	 * The `data` has to be according to this format:
-	 * https://trac.wildfiregames.com/wiki/Random_Map_Generator_Internals#Dataformat
+	 * https://gitea.wildfiregames.com/0ad/0ad/wiki/Random_Map_Generator_Internals#Dataformat
 	 */
 	void ExportMap(JS::HandleValue data)
 	{

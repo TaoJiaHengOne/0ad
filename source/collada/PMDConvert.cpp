@@ -285,7 +285,7 @@ public:
 						//	To indicate this special case, we use a bone ID set to the total number
 						//	of bones in the model, which will have a special "bone matrix" reserved
 						//	that contains the world space transform of the model during skinning.
-						//	(see http://trac.wildfiregames.com/ticket/1012)
+						//	(see https://gitea.wildfiregames.com/0ad/0ad/issues/1012)
 						influences.bones[j] = (uint8)jointCount;
 						influences.weights[j] = vertexInfluences[i].GetPair(j)->weight;
 					}

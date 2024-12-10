@@ -71,8 +71,8 @@ std::string GetNameImpl()
 {
 	// GL_VENDOR+GL_RENDERER are good enough here, so we don't use WMI to detect the cards.
 	// On top of that WMI can cause crashes with Nvidia Optimus and some netbooks
-	// see http://trac.wildfiregames.com/ticket/1952
-	//     http://trac.wildfiregames.com/ticket/1575
+	// see https://gitea.wildfiregames.com/0ad/0ad/issues/1952
+	//     https://gitea.wildfiregames.com/0ad/0ad/issues/1575
 	char cardName[128];
 	const char* vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
 	const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));

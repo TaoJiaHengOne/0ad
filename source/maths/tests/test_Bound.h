@@ -189,7 +189,7 @@ public:
 	}
 
 	// Verify that transforming a flat AABB to an OBB does not produce NaN basis vectors in the
-	// resulting OBB (see http://trac.wildfiregames.com/ticket/1121)
+	// resulting OBB (see https://gitea.wildfiregames.com/0ad/0ad/issues/1121)
 	void test_degenerate_aabb_to_obb_transform()
 	{
 		// create a flat AABB, transform it with some matrix (can even be the identity matrix),

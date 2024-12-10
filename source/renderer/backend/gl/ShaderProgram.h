@@ -83,7 +83,7 @@ private:
  * Setting uniforms that the shader .xml doesn't support is harmless.
  *
  * For a high-level overview of shaders and materials, see
- * http://trac.wildfiregames.com/wiki/MaterialSystem
+ * https://gitea.wildfiregames.com/0ad/0ad/wiki/MaterialSystem
  */
 class CShaderProgram : public IShaderProgram
 {

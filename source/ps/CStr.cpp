@@ -266,7 +266,7 @@ unsigned long CStr::ToULong() const
 
 /**
  * libc++ and libstd++ differ on how they handle string-to-number parsing for floating-points numbers.
- * See https://trac.wildfiregames.com/ticket/2780#comment:4 for details.
+ * See https://gitea.wildfiregames.com/0ad/0ad/issues/2780#comment:4 for details.
  * To prevent this, only consider [0-9.-+], replace the others in-place with a neutral character.
  */
 CStr ParseableAsNumber(CStr cleaned_copy)

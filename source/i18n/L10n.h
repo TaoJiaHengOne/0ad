@@ -42,7 +42,7 @@ class Dictionary;
 /**
  * %Singleton for internationalization and localization.
  *
- * @sa http://trac.wildfiregames.com/wiki/Internationalization_and_Localization
+ * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Internationalization_and_Localization
  */
 class L10n : public Singleton<L10n>
 {
@@ -144,7 +144,7 @@ public:
 	 * @sa GetAllLocales()
 	 * @sa GetCurrentLocale()
 	 *
-	 * @sa http://trac.wildfiregames.com/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
+	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
 	 */
 	std::vector<std::string> GetSupportedLocaleBaseNames() const;
 
@@ -162,7 +162,7 @@ public:
 	 *
 	 * @sa GetSupportedLocaleBaseNames()
 	 *
-	 * @sa http://trac.wildfiregames.com/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
+	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
 	 */
 	std::vector<std::wstring> GetSupportedLocaleDisplayNames() const;
 
@@ -252,7 +252,7 @@ public:
 	 *        empty string to check the system locale directly.
 	 * @return Code of a locale that the game supports.
 	 *
-	 * @sa http://trac.wildfiregames.com/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
+	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
 	 */
 	std::string GetDictionaryLocale(const std::string& configLocaleString) const;
 
@@ -275,7 +275,7 @@ public:
 	 *        empty string to check the system locale directly.
 	 * @param outLocale The recommended locale.
 	 *
-	 * @sa http://trac.wildfiregames.com/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
+	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
 	 */
 	void GetDictionaryLocale(const std::string& configLocaleString, icu::Locale& outLocale) const;
 
@@ -469,7 +469,7 @@ public:
 	 * @param sourcePath %Path to localize.
 	 * @return Localized path if it exists, @c sourcePath otherwise.
 	 *
-	 * @sa http://trac.wildfiregames.com/wiki/Localization#LocalizingImages
+	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Localization#LocalizingImages
 	 */
 	VfsPath LocalizePath(const VfsPath& sourcePath) const;
 
@@ -527,7 +527,7 @@ private:
 	 * Whether the game is using the special game locale with the longest
 	 * strings of each translation (@c true) or not (@c false).
 	 *
-	 * @sa http://trac.wildfiregames.com/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
+	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
 	 */
 	bool m_UseLongStrings{false};
 

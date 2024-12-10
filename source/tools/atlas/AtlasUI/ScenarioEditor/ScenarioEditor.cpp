@@ -1008,7 +1008,7 @@ void ScenarioEditor::OnHelp(wxCommandEvent& event)
 
 void ScenarioEditor::OnMenuOpen(wxMenuEvent& event)
 {
-	// Ignore wxMSW system menu events, see https://trac.wildfiregames.com/ticket/5501
+	// Ignore wxMSW system menu events, see https://gitea.wildfiregames.com/0ad/0ad/issues/5501
 	const wxMenu* menu = event.GetMenu();
 	if (!menu)
 		return;

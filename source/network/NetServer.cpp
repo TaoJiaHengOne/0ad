@@ -92,7 +92,7 @@ static CStr DebugName(CNetServerSession* session)
 
 /*
  * XXX: We use some non-threadsafe functions from the worker thread.
- * See http://trac.wildfiregames.com/ticket/654
+ * See https://gitea.wildfiregames.com/0ad/0ad/issues/654
  */
 
 CNetServerWorker::CNetServerWorker(bool useLobbyAuth) :

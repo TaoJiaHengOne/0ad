@@ -211,7 +211,7 @@ void CBoundingBoxAligned::IntersectFrustumConservative(const CFrustum& frustum)
 {
 	// if this bound is empty, then the result must be empty (we should not attempt to intersect with
 	// a brush, may cause crashes due to the numeric representation of empty bounds -- see
-	// http://trac.wildfiregames.com/ticket/1027)
+	// https://gitea.wildfiregames.com/0ad/0ad/issues/1027)
 	if (IsEmpty())
 		return;
 

@@ -42,7 +42,7 @@ var g_CommunityButtons = [
 		"tooltip": translate("Click to visit 0 A.D. Trac to report a bug, crash, or error."),
 		"size": "8 100%-108 50%-4 100%-80",
 		"onPress": () => {
-			openURL("https://trac.wildfiregames.com/wiki/ReportingErrors/");
+			openURL("https://gitea.wildfiregames.com/0ad/0ad/wiki/ReportingErrors/");
 		}
 	},
 	{
@@ -50,7 +50,7 @@ var g_CommunityButtons = [
 		"tooltip": translate("Click to visit the Frequently Asked Questions page in your browser."),
 		"size": "50%+4 100%-108 100%-8 100%-80",
 		"onPress": () => {
-			openURL("https://trac.wildfiregames.com/wiki/FAQ");
+			openURL("https://gitea.wildfiregames.com/0ad/0ad/wiki/FAQ");
 		}
 	},
 	{
@@ -58,7 +58,7 @@ var g_CommunityButtons = [
 		"tooltip": translate("Click to open the 0 A.D. translate page in your browser."),
 		"size": "8 100%-72 100%-8 100%-44",
 		"onPress": () => {
-			openURL("https://trac.wildfiregames.com/wiki/Localization");
+			openURL("https://gitea.wildfiregames.com/0ad/0ad/wiki/Localization");
 		}
 	},
 	{

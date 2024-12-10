@@ -6,7 +6,7 @@ each individual glyph in the image (see `fileformat.txt` for details).
 
 See the wiki page for more information:
 
-    http://trac.wildfiregames.com/wiki/Font_Builder2
+    https://gitea.wildfiregames.com/0ad/0ad/wiki/Font_Builder2
 
 ## Prerequisites
 

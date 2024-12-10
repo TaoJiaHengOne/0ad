@@ -77,4 +77,4 @@ Wildfire Games does not perform any automated decision making affecting natural 
 
 If parts of the terms are held to be illegal or otherwise unenforceable, the remainder of the terms shall still apply ('severability').
 
-For further information on Wildfire Games Privacy Policies, visit https://trac.wildfiregames.com/wiki/UserDataProtection
+For further information on Wildfire Games Privacy Policies, visit https://gitea.wildfiregames.com/0ad/0ad/wiki/UserDataProtection

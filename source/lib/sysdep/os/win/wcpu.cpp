@@ -119,7 +119,7 @@ size_t os_cpu_LargePageSize()
 		{
 			largePageSize = pGetLargePageMinimum();
 			// Note: checks disabled due to failing on Vista SP2 with old Xeon CPU
-			//	see http://trac.wildfiregames.com/ticket/2346
+			//	see https://gitea.wildfiregames.com/0ad/0ad/issues/2346
 			//ENSURE(largePageSize != 0);	// IA-32 and AMD64 definitely support large pages
 			//ENSURE(largePageSize > os_cpu_PageSize());
 		}

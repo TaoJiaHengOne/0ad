@@ -116,7 +116,7 @@ uintptr_t os_cpu_SetThreadAffinityMask(uintptr_t UNUSED(processorMask))
 // glibc __CPU_SETSIZE=1024 is smaller than required on some Linux (4096),
 // but the CONFIG_NR_CPUS in a header may not reflect the actual kernel,
 // so we have to detect the limit at runtime.
-// (see http://trac.wildfiregames.com/ticket/547 for additional information)
+// (see https://gitea.wildfiregames.com/0ad/0ad/issues/547 for additional information)
 static size_t maxCpus;
 
 static bool IsMaxCpusSufficient()

@@ -103,7 +103,7 @@ void CUnit::ReloadObject()
 	// randomly select any remain selections necessary to completely identify a variation (e.g., the new selection
 	// made might define some additional props that require a random variant choice). Also, FindObjectVariation
 	// expects the selectors passed to it to be complete.
-	// see http://trac.wildfiregames.com/ticket/979
+	// see https://gitea.wildfiregames.com/0ad/0ad/issues/979
 
 	// If these selections give a different object, change this unit to use it
 	// Use the entity ID as randomization seed (same as when the unit was first created)

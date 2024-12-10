@@ -541,7 +541,7 @@ ObjectBottomBar::ObjectBottomBar(
 		viewerButtonsLeft->Add(Tooltipped(new wxButton(m_ViewerPanel, ID_ViewerWireframe,   _("Wireframe")),      _("Toggle wireframe / solid rendering")), wxSizerFlags().Expand());
 		viewerButtonsLeft->Add(Tooltipped(new wxButton(m_ViewerPanel, ID_ViewerMove,        _("Move")),           _("Toggle movement along ground when playing walk/run animations")), wxSizerFlags().Expand());
 		viewerButtonsLeft->Add(Tooltipped(new wxButton(m_ViewerPanel, ID_ViewerGround,      _("Ground")),         _("Toggle the ground plane")), wxSizerFlags().Expand());
-		// TODO: disabled until http://trac.wildfiregames.com/ticket/2692 is fixed
+		// TODO: disabled until https://gitea.wildfiregames.com/0ad/0ad/issues/2692 is fixed
 		wxButton* waterButton = new wxButton(m_ViewerPanel, ID_ViewerWater, _("Water"));
 		waterButton->Enable(false);
 		viewerButtonsLeft->Add(Tooltipped(waterButton, _("Toggle the water plane")), wxSizerFlags().Expand());

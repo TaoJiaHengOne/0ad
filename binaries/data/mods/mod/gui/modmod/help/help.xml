@@ -23,7 +23,7 @@
 		</object>
 		<object type="button" style="ModernButtonRed" size="100%-408 100%-52 100%-218 100%-24">
 			<translatableAttribute id="caption">Modding Guide</translatableAttribute>
-			<action on="Press">Engine.OpenURL("https://trac.wildfiregames.com/wiki/Modding_Guide");</action>
+			<action on="Press">Engine.OpenURL("https://gitea.wildfiregames.com/0ad/0ad/wiki/Modding_Guide");</action>
 		</object>
 		<object type="button" style="ModernButtonRed" size="100%-214 100%-52 100%-24 100%-24">
 			<translatableAttribute id="caption">Visit mod.io</translatableAttribute>

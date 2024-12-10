@@ -19,7 +19,7 @@
 
 @page writing-components How to write components
 
-<i>See the <a href="http://trac.wildfiregames.com/wiki/TDD_Simulation">Trac wiki</a> for more documentation about this system.</i>
+<i>See the <a href="https://gitea.wildfiregames.com/0ad/0ad/wiki/TDD_Simulation">Trac wiki</a> for more documentation about this system.</i>
 
 <!--
   egrep '@(sub)*section' source/simulation2/docs/SimulationDocs.h|sed 's/@//; s/section/- @ref/; s/^sub/ /g; s/\(- \S* \S*\).*$/\1/'
@@ -51,7 +51,7 @@ Think of a name for the component. We'll use "Example" in this example; replace
 it with your chosen name in all the filenames and code samples below.
 
 (If you copy-and-paste from the examples below, be aware that the
-<a href="http://trac.wildfiregames.com/wiki/Coding_Conventions">coding conventions</a>
+<a href="https://gitea.wildfiregames.com/0ad/0ad/wiki/Coding_Conventions">coding conventions</a>
 require indentation with tabs, not spaces, so make sure you get it right.)
 
 Create the file @b simulation2/components/ICmpExample.h:

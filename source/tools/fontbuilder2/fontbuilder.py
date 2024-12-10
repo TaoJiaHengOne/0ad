@@ -171,7 +171,7 @@ def generate_font(outname, ttf_names, loadopts, size, renderstyle, dsizes):
             for g in glyphs:
                 x0 = g.x0
                 y0 = g.y0
-                # UGLY HACK: see http://trac.wildfiregames.com/ticket/1039 ;
+                # UGLY HACK: see https://gitea.wildfiregames.com/0ad/0ad/issues/1039 ;
                 # to handle a-macron-acute characters without the hassle of
                 # doing proper OpenType GPOS layout (which the  font
                 # doesn't support anyway), we'll just shift the combining acute

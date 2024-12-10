@@ -21,7 +21,7 @@
 	TDD		:	http://www.wildfiregames.com/forum/index.php?showtopic=1125
 	OVERVIEW:
 
-	JavaScript: Check this documentation: http://trac.wildfiregames.com/wiki/Exposed_ConfigDB_Functions
+	JavaScript: Check this documentation: https://gitea.wildfiregames.com/0ad/0ad/wiki/Exposed_ConfigDB_Functions
 */
 
 #ifndef INCLUDED_CONFIGDB

@@ -260,7 +260,7 @@ size_t TexCodecPng::hdr_size(const u8* UNUSED(file)) const
 static void user_warning_fn(png_structp UNUSED(png_ptr), png_const_charp warning_msg)
 {
 	// Suppress this warning because it's useless and occurs on a large number of files
-	// see http://trac.wildfiregames.com/ticket/2184
+	// see https://gitea.wildfiregames.com/0ad/0ad/issues/2184
 	if (strcmp(warning_msg, "iCCP: known incorrect sRGB profile") == 0)
 		return;
 	debug_printf("libpng warning: %s\n", warning_msg);

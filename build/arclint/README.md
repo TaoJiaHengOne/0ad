@@ -15,7 +15,7 @@ https://secure.phabricator.com/book/phabricator/article/arcanist_lint/
 ## Installation
 
 This assumes you have arcanist already installed. If not, consult
-https://trac.wildfiregames.com/wiki/Phabricator#UsingArcanist .
+https://gitea.wildfiregames.com/0ad/0ad/wiki/Phabricator#UsingArcanist .
 
 The linting is done via custom PHP scripts, residing in `pyrolint/`.
 Configuration is at the root of the project, under `.arclint`.
