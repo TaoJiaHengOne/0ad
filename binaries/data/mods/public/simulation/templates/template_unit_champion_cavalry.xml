@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Entity parent="template_unit_champion">
+  <Attack>
+    <Capture>
+      <Capture>3.5</Capture>
+    </Capture>
+  </Attack>
   <Cost>
     <BuildTime>25</BuildTime>
     <Resources>
