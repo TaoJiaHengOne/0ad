@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 # This should match the version in config/milestone.txt
 FOLDER="mozjs-115.16.1"
 # If same-version changes are needed, increment this.
-LIB_VERSION="115.16.1+0"
+LIB_VERSION="115.16.1+1"
 LIB_NAME="mozjs115"
 
 if [ -e .already-built ] && [ "$(cat .already-built)" = "${LIB_VERSION}" ]; then
