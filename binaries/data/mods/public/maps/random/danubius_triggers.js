@@ -13,7 +13,7 @@
 const showDebugLog = false;
 
 const danubiusAttackerTemplates = deepfreeze({
-	"ships": TriggerHelper.GetTemplateNamesByClasses("Warship", "gaul", undefined, undefined, true),
+	"ships": TriggerHelper.GetTemplateNamesByClasses("Trireme", "gaul", undefined, undefined, true),
 	"siege": TriggerHelper.GetTemplateNamesByClasses("Siege", "gaul", undefined, undefined, true),
 	"females": TriggerHelper.GetTemplateNamesByClasses("FemaleCitizen", "gaul", undefined, undefined, true),
 	"healers": TriggerHelper.GetTemplateNamesByClasses("Healer", "gaul", undefined, undefined, true),
