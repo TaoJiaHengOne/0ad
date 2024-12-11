@@ -213,7 +213,12 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
     if module.get("descriptor_sets"):
         for descriptor_set in module["descriptor_sets"]:
             uniform_set = 1 if use_descriptor_indexing else 0
-            storage_set = 2
+            is_storage_buffer_set = (
+                descriptor_set["binding_count"] > 0
+                and descriptor_set["bindings"][0]["descriptor_type"]
+                == VkDescriptorType.STORAGE_BUFFER.value
+            )
+            storage_set = uniform_set + 1 if is_storage_buffer_set else 2
             bindings = []
             if descriptor_set["set"] == uniform_set:
                 assert descriptor_set["binding_count"] > 0
@@ -256,13 +261,15 @@ def compile_and_reflect(input_mod_path, dependencies, stage, path, out_path, def
                     assert binding["image"]["arrayed"] == 0
                     assert binding["image"]["ms"] == 0
                     binding_type = "storageImage"
+                    binding_name = binding["name"]
                     if is_storage_buffer:
                         binding_type = "storageBuffer"
+                        binding_name = binding["type_description"]["type_name"]
                     bindings.append(
                         {
                             "binding": binding["binding"],
                             "type": binding_type,
-                            "name": binding["name"],
+                            "name": binding_name,
                         }
                     )
             elif use_descriptor_indexing:
