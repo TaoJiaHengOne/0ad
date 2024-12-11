@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -67,20 +67,35 @@ int GetPlayerID()
 	return g_Game->GetPlayerID();
 }
 
-void SetPlayerID(int id)
+void SetPlayerID(const ScriptRequest& rq, int id)
 {
 	if (!g_Game)
 		return;
 
-	g_Game->SetPlayerID(id);
+	int currentID = g_Game->GetPlayerID();
+	if (currentID == id)
+		return;
+
+	if (g_Game->CheatsEnabled())
+		g_Game->SetPlayerID(id);
+	else
+		ScriptException::Raise(rq, "Changing player ID with cheats disabled is prohibited");
 }
 
-void SetViewedPlayer(int id)
+void SetViewedPlayer(const ScriptRequest& rq, int id)
 {
 	if (!g_Game)
 		return;
 
-	g_Game->SetViewedPlayerID(id);
+	int playerID = g_Game->GetPlayerID();
+	if (playerID == id)
+		return;
+
+	// Forbid active players to reveal the map by changing perspective, unless cheats are allowed.
+	if (playerID == -1 || g_Game->CheatsEnabled() || g_Game->PlayerFinished(playerID))
+		g_Game->SetViewedPlayerID(id);
+	else
+		ScriptException::Raise(rq, "Changing the perspective with cheats disabled is prohibited");
 }
 
 float GetSimRate()

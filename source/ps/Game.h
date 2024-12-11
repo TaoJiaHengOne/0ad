@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -114,6 +114,8 @@ public:
 	int GetViewedPlayerID();
 	void SetViewedPlayerID(player_id_t playerID);
 
+	bool CheatsEnabled() const;
+
 	/**
 	 * Check if the game is finished by testing if there's a winner.
 	 * It is used to end a non visual autostarted game.
@@ -121,6 +123,11 @@ public:
 	 * @return true if there's a winner, false otherwise.
 	 */
 	bool IsGameFinished() const;
+
+	/**
+	 * Check if the given player has been defeated or won the game.
+	 */
+	bool PlayerFinished(player_id_t playerID) const;
 
 	/**
 	 * Retrieving player colors from scripts is slow, so this updates an
@@ -213,6 +220,8 @@ private:
 
 	int LoadInitialState(const std::string& savedState);
 	bool m_IsSavedGame; // true if loading a saved game; false for a new game
+
+	bool m_CheatsEnabled;
 
 	int LoadVisualReplayData();
 	OsPath m_ReplayPath;

@@ -74,6 +74,7 @@ CGame::CGame(bool replayLog):
 	// should be created outside only if needed.
 	m_GameView(CRenderer::IsInitialised() ? new CGameView(g_VideoMode.GetBackendDevice(), this) : nullptr),
 	m_GameStarted(false),
+	m_CheatsEnabled(false),
 	m_Paused(false),
 	m_SimRate(1.0f),
 	m_PlayerID(-1),
@@ -221,6 +222,15 @@ void CGame::RegisterInit(const JS::HandleValue attribs, const std::string& saved
 	std::string mapType;
 	Script::GetProperty(rq, attribs, "mapType", mapType);
 
+	JS::RootedValue settings(rq.cx);
+	Script::GetProperty(rq, attribs, "settings", &settings);
+
+	if (Script::HasProperty(rq, attribs, "settings") &&
+	    Script::HasProperty(rq, settings, "CheatsEnabled"))
+	{
+		Script::GetProperty(rq, settings, "CheatsEnabled", m_CheatsEnabled);
+	}
+
 	float speed;
 	if (Script::HasProperty(rq, attribs, "gameSpeed"))
 	{
@@ -249,19 +259,14 @@ void CGame::RegisterInit(const JS::HandleValue attribs, const std::string& saved
 	{
 		// Load random map attributes
 		std::wstring scriptFile;
-		JS::RootedValue settings(rq.cx);
-
 		Script::GetProperty(rq, attribs, "script", scriptFile);
-		Script::GetProperty(rq, attribs, "settings", &settings);
 
 		m_World->RegisterInitRMS(scriptFile, scriptInterface.GetContext(), settings, m_PlayerID);
 	}
 	else
 	{
 		std::wstring mapFile;
-		JS::RootedValue settings(rq.cx);
 		Script::GetProperty(rq, attribs, "map", mapFile);
-		Script::GetProperty(rq, attribs, "settings", &settings);
 
 		m_World->RegisterInit(mapFile, scriptInterface.GetContext(), settings, m_PlayerID);
 	}
@@ -379,6 +384,11 @@ void CGame::SetViewedPlayerID(player_id_t playerID)
 	m_ViewedPlayerID = playerID;
 }
 
+bool CGame::CheatsEnabled() const
+{
+	return m_CheatsEnabled;
+}
+
 void CGame::StartGame(JS::MutableHandleValue attribs, const std::string& savedState)
 {
 	if (m_ReplayLogger)
@@ -474,4 +484,14 @@ bool CGame::IsGameFinished() const
 	}
 
 	return false;
+}
+
+bool CGame::PlayerFinished(player_id_t playerID) const
+{
+	CmpPtr<ICmpPlayerManager> cmpPlayerManager(*m_Simulation2, SYSTEM_ENTITY);
+	if (!cmpPlayerManager)
+		return false;
+
+	CmpPtr<ICmpPlayer> cmpPlayer(*m_Simulation2, cmpPlayerManager->GetPlayerByID(playerID));
+	return cmpPlayer && cmpPlayer->GetState() != "active";
 }
