@@ -9,6 +9,7 @@ ruff\\.toml @Dunedan
 (build|libraries)/.* @Itms @Stan
 
 ## == Engine
+source/(lib|maths|ps)/.* @vladislavbelov
 ## GUI
 #source/gui/
 ## Rendering
@@ -22,6 +23,8 @@ source/simulation2/.* @wraitii @Itms
 source/tools/.*\\.py @Dunedan
 ## Atlas
 source/tools/atlas/.* @vladislavbelov @trompetin17
+## SPIR-V
+source/tools/spirv/.* @vladislavbelov
 
 ## == Scripts
 ## GUI
@@ -34,7 +37,10 @@ binaries/data/mods/public/simulation/(data|templates)/.* @0ad/Balancers
 ## == Assets
 ## Art
 binaries/data/mods/public/art/.* @wowgetoffyourcellphone @wackyserious @Stan
+binaries/data/mods/(mod|public)/art/materials/.* @vladislavbelov
 ## Sound
 binaries/data/mods/public/audio/.* @Samulis @Stan
 ## Maps
 binaries/data/mods/public/maps/.* @smiley @marder
+## Shaders
+binaries/data/mods/(mod|public)/shaders/.* @vladislavbelov
