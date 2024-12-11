@@ -94,6 +94,7 @@ else
 		f:close()
 	end
 	-- Special handling on mac os where xcode needs special flags.
+	-- TODO: We should look into "universal" macOS compilation.
 	if os.istarget("macosx") then
 		if string.find(machine, "arm64") then
 			arch = "aarch64"

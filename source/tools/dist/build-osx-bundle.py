@@ -20,6 +20,8 @@ import dmgbuild
 
 parser = argparse.ArgumentParser()
 parser.add_argument('bundle_version', help='Bundle version')
+parser.add_argument('--architecture', help='aarch64 (arm64) or x86_64 (amd64)',
+    default='aarch64')
 parser.add_argument('--min_osx', help='Minimum supported OSX version',
     default='10.12')
 parser.add_argument('--bundle_identifier', help='Bundle identifier',
@@ -28,11 +30,12 @@ parser.add_argument('--dev', help='Turn on dev mode, which isn\'t fit for releas
     action="store_true")
 args = parser.parse_args()
 
+ARCH = args.architecture
 BUNDLE_IDENTIFIER = args.bundle_identifier
 BUNDLE_VERSION = args.bundle_version
 BUNDLE_MIN_OSX_VERSION = args.min_osx
 
-BUNDLE_DMG_NAME = f"0ad-{BUNDLE_VERSION}-alpha-osx64"
+BUNDLE_DMG_NAME = f"0ad-{BUNDLE_VERSION}-macos-{ARCH}"
 BUNDLE_OUTPUT = "0 A.D..app"
 BUNDLE_CONTENTS = BUNDLE_OUTPUT + "/Contents"
 BUNDLE_BIN = BUNDLE_CONTENTS + "/MacOS"

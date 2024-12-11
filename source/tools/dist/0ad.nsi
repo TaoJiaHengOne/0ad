@@ -1,6 +1,7 @@
 ; To generate the installer (on Linux):
-;  Do an 'svn export' into a directory called e.g. "export-win32"
-;  makensis -nocd -dcheckoutpath=export-win32 -dversion=0.1.2 -dprefix=0ad-0.1.2-alpha export-win32/source/tools/dist/0ad.nsi
+;  Export the nightly build into a directory called e.g. "nightly-build"
+;  Archivebuild the mod and public mods into e.g. "archives"
+;  makensis -nocd -dcheckoutpath=nightly-build -dversion=0.xxx.0 -dprefix=0ad-0.xxx.0 -darchive_path=archives nightly-build/source/tools/dist/0ad.nsi
 
   SetCompressor /SOLID LZMA
 

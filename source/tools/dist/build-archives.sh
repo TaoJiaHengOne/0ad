@@ -8,7 +8,7 @@ die()
 }
 
 # Build the mod .zip using the pyrogenesis executable.
-# Assumes it is being run from trunk/
+# This must be run from the trunk of a nightly build (containing all translations and SPIR-V shaders)
 
 echo "Building archives"
 
@@ -37,48 +37,6 @@ else
 	done
 fi
 cd - || die
-
-BUILD_SHADERS="${BUILD_SHADERS:=true}"
-if [ "${BUILD_SHADERS}" = true ]; then
-	PYTHON=${PYTHON:=$(command -v python3 || command -v python || true)}
-	GLSLC=${GLSLC:=$(command -v glslc || true)}
-	SPIRV_REFLECT=${SPIRV_REFLECT:=$(command -v spirv-reflect || true)}
-	if [ -e "$(realpath libraries/source/spirv-reflect/bin/spirv-reflect || true)" ]; then
-		: "${SPIRV_REFLECT:=$(realpath libraries/source/spirv-reflect/bin/spirv-reflect || true)}"
-	fi
-	export SPIRV_REFLECT
-
-	[ -n "${PYTHON}" ] || die "Error: python is not available. Install it before proceeding."
-	[ -n "${GLSLC}" ] ||
-		die "Error: glslc is not available." \
-			" Install it with the Vulkan SDK or shaderc package before proceeding."
-	[ -n "${SPIRV_REFLECT}" ] ||
-		die "Error: spirv-reflect is not available." \
-			" Install it with the Vulkan SDK or build vendored spirv-reflect before proceeding."
-
-	cd source/tools/spirv || die
-
-	ENGINE_VERSION=${ENGINE_VERSION:="0.0.xx"}
-	rulesFile="rules.${ENGINE_VERSION}.json"
-
-	if [ ! -e "$rulesFile" ]; then
-		# The rules.json file should be present in release tarballs, for
-		# some Linux CIs don't have access to the internet.
-		download="$(command -v wget || echo "curl -sLo ""${rulesFile}""")"
-		$download "https://releases.wildfiregames.com/spir-v/$rulesFile"
-	fi
-
-	for modname in $archives; do
-		modLocation="../../../binaries/data/mods/${modname}"
-		if [ -e "${modLocation}/shaders/spirv/" ]; then
-			echo "Removing existing spirv shaders for '${modname}'..."
-			rm -rf "${modLocation}/shaders/spirv"
-		fi
-		echo "Building shader for '${modname}'..."
-		$PYTHON compile.py "$modLocation" "$rulesFile" "$modLocation" --dependency "../../../binaries/data/mods/mod/"
-	done
-	cd - || die
-fi
 
 for modname in $archives; do
 	echo "Building archive for '${modname}'..."

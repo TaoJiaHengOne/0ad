@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -15,89 +15,88 @@
  * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// This pipeline is used to generate bundles (Windows installer, macOS package, and source tarballs).
+
 pipeline {
-	agent { label 'MacSlave' }
+	agent {
+		node {
+			label 'macOSAgentVentura'
+		}
+	}
 
 	// Archive the installer for public download; keep only the latest one.
 	options {
-		buildDiscarder(logRotator(artifactNumToKeepStr: '1'))
+		buildDiscarder logRotator(artifactNumToKeepStr: '1')
+		skipDefaultCheckout true
 	}
 
 	parameters {
-		string(name: 'BUNDLE_VERSION', defaultValue: '0.0.27dev', description: 'Bundle Version')
-		string(name: 'ENGINE_VERSION', defaultValue: '0.0.27', description: 'Engine Version')
-		string(name: 'SVN_REV', defaultValue: 'HEAD', description: 'For instance 21000')
-		booleanParam(name: 'ONLY_MOD', defaultValue: true, description: 'Only archive the mod mod.')
+		string(name: 'BUNDLE_VERSION', defaultValue: '0.27.0dev', description: 'Bundle Version')
 		booleanParam(name: 'DO_GZIP', defaultValue: true, description: 'Create .gz unix tarballs as well as .xz')
-		booleanParam(name: 'FULL_REBUILD', defaultValue: true, description: 'Do a full rebuild (safer for release, slower).')
-		booleanParam(name: 'WINDOWS_UNIX', defaultValue: true, description: 'Build windows and unix bundles.')
-		booleanParam(name: 'BUILD_SHADERS', defaultValue: true, description: 'Build the spir-v shaders (very slow).')
+	}
+
+	environment {
+		MIN_OSX_VERSION = "10.12"
 	}
 
 	stages {
-		stage ("Checkout") {
-			options {
-				retry(3)
-			}
+		stage("Checkout Nightly Build") {
 			steps {
-				script {
-					try {
-						sh "svn co https://svn.wildfiregames.com/public/ps/trunk@${params.SVN_REV} ."
-					} catch(e) {
-						sh "svn cleanup"
-						sleep 300
-						throw e
-					}
-					sh "svn cleanup"
-					// Delete unknown files everywhere except libraries/
-					sh "svn st --no-ignore . --depth immediates | cut -c 9- | xargs rm -rfv"
-					sh "svn st --no-ignore {binaries/,build/,source/} | cut -c 9- | xargs rm -rfv"
-					if (params.FULL_REBUILD) {
-						// Also delete libraries/
-						sh "svn st --no-ignore | cut -c 9- | xargs rm -rfv"
-					}
-					sh "svn revert . -R"
-				}
+				checkout changelog: false, poll: false, scm: [
+					$class: 'SubversionSCM',
+					locations: [[local: '.', remote: 'https://svn.wildfiregames.com/nightly-build/trunk']],
+					quietOperation: false,
+					workspaceUpdater: [$class: 'UpdateWithCleanUpdater']]
+				sh "svn cleanup"
 			}
 		}
-		stage("Compile Mac Executable") {
+
+		stage("Compile Native macOS Executable") {
 			steps {
-				sh "JOBS=\"-j\$(sysctl -n hw.ncpu)\" FULL_REBUILD=${params.FULL_REBUILD} source/tools/dist/build-osx-executable.sh"
+				sh "cd libraries/ && MIN_OSX_VERSION=${env.MIN_OSX_VERSION} ./build-macos-libs.sh --force-rebuild"
+				sh "cd build/workspaces/ && ./update-workspaces.sh --macosx-version-min=${env.MIN_OSX_VERSION}"
+				sh "cd build/workspaces/gcc/ && make"
+				sh "svn cleanup --remove-unversioned build"
+				sh "svn cleanup --remove-unversioned libraries"
 			}
 		}
-		stage("Create archive data") {
+
+		stage("Create Mod Archives") {
 			steps {
-				sh "JOBS=\"-j\$(sysctl -n hw.ncpu)\" ONLY_MOD=${params.ONLY_MOD} BUILD_SHADERS=${params.BUILD_SHADERS} ENGINE_VERSION=${params.ENGINE_VERSION} source/tools/dist/build-archives.sh"
+				sh "source/tools/dist/build-archives.sh"
 			}
 		}
-		stage("Create Mac Bundle") {
+
+		stage("Create Native macOS Bundle") {
 			steps {
-				sh "python3 source/tools/dist/build-osx-bundle.py ${params.BUNDLE_VERSION}"
+				sh "/opt/wfg/venv/bin/python3 source/tools/dist/build-osx-bundle.py --min_osx=${env.MIN_OSX_VERSION} ${params.BUNDLE_VERSION}"
 			}
 		}
-		stage("Create Windows installer & *nix files") {
+
+		stage("Compile Intel macOS Executable") {
+			environment {
+				ARCH = "x86_64"
+				HOSTTYPE = "x86_64"
+			}
 			steps {
-				script {
-					if(params.WINDOWS_UNIX)
-					{
-						// The files created by the mac compilation need to be deleted
-						sh "svn st {binaries/,build/} --no-ignore | cut -c 9- | xargs rm -rfv"
-						// Hide the libraries folder.
-						sh "mv libraries/ temp_libraries/"
-						sh "svn revert libraries/ -R"
-						// The generated tests use hardcoded paths so they must be deleted as well.
-						sh 'python3 -c \"import glob; print(\\\" \\\".join(glob.glob(\\\"source/**/tests/**.cpp\\\", recursive=True)));\" | xargs rm -v'
-						sh "svn revert build/ -R"
-						try {
-							// Then run the core object.
-							sh "JOBS=\"-j\$(sysctl -n hw.ncpu)\" BUNDLE_VERSION=${params.BUNDLE_VERSION} DO_GZIP=${params.DO_GZIP} source/tools/dist/build-unix-win32.sh"
-						} finally {
-							// Un-hide the libraries.
-							sh "rm -rfv libraries/"
-							sh "mv temp_libraries/ libraries/"
-						}
-					}
-				}
+				sh "cd libraries/ && MIN_OSX_VERSION=${env.MIN_OSX_VERSION} ./build-macos-libs.sh --force-rebuild"
+				sh "cd build/workspaces/ && ./update-workspaces.sh --macosx-version-min=${env.MIN_OSX_VERSION}"
+				sh "cd build/workspaces/gcc/ && make clean"
+				sh "cd build/workspaces/gcc/ && make"
+				sh "svn cleanup --remove-unversioned build"
+				sh "svn cleanup --remove-unversioned libraries"
+			}
+		}
+
+		stage("Create Intel macOS Bundle") {
+			steps {
+				sh "/opt/wfg/venv/bin/python3 source/tools/dist/build-osx-bundle.py --architecture=x86_64 --min_osx=${env.MIN_OSX_VERSION} ${params.BUNDLE_VERSION}"
+			}
+		}
+
+		stage("Create Windows Installer & Tarballs") {
+			steps {
+				sh "BUNDLE_VERSION=${params.BUNDLE_VERSION} DO_GZIP=${params.DO_GZIP} source/tools/dist/build-unix-win32.sh"
 			}
 		}
 	}
@@ -105,6 +104,7 @@ pipeline {
 	post {
 		success {
 			archiveArtifacts '*.dmg,*.exe,*.tar.gz,*.tar.xz'
+			sh "shasum -a 1 *.{dmg,exe,tar.gz,tar.xz}"
 		}
 	}
 }
