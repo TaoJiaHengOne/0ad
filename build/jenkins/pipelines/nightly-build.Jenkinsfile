@@ -167,6 +167,7 @@ pipeline {
 				ws("workspace/nightly-svn") {
 					bat "svn add --force ."
 					bat "(for /F \"tokens=* delims=! \" %%A in ('svn status ^| findstr /R \"^!\"') do (svn delete %%A)) || (echo No deleted files found) ^& exit 0"
+					bat "for /R %%F in (*.sh) do (svn propset svn:executable ON %%F)"
 					withCredentials([usernamePassword(credentialsId: 'nightly-autobuild', passwordVariable: 'SVNPASS', usernameVariable: 'SVNUSER')]) {
 						script { env.GITHASH = gitHash
 							bat 'svn commit --username %SVNUSER% --password %SVNPASS% --no-auth-cache --non-interactive -m "Nightly build for %GITHASH% (%DATE%)"'
