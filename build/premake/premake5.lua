@@ -538,8 +538,10 @@ end
 
 
 -- Add command-line options to set up the manifest dependencies for Windows
--- (See lib/sysdep/os/win/manifest.cpp)
 function project_add_manifest()
+	-- To use XP-style themed controls, we need to use the manifest to specify the
+	-- desired version. (This must be set in the game's .exe in order to affect Atlas.)
+	-- We can remove it once we remove wxWidgets
 	linkoptions { "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df'\"" }
 end
 
