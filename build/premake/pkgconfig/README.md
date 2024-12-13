@@ -1,4 +1,4 @@
-This premake module adds supports for pkgconfig.
+# This premake module adds supports for pkgconfig
 
 It allows one to use the `pkg-config` command (or an alternative one like
 `sdl2-config` to determine the names of libraries to be passed to the linker.

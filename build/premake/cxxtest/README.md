@@ -1,1 +1,1 @@
-This premake module adds supports for CxxTest (http://cxxtest.com/).
+# This premake module adds supports for CxxTest (http://cxxtest.com/)
