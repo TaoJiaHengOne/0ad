@@ -5,11 +5,9 @@ repos:
     hooks:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
-        exclude: ^build/premake/premake5
       - id: check-json
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
-        exclude: ^build/premake/premake5
       - id: check-symlinks
       - id: check-toml
       - id: check-xml
@@ -50,12 +48,10 @@ repos:
           - --diff
           - --simplify
         stages: [pre-commit]
-        exclude: ^build/premake/premake5/
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
       - id: shellcheck
-        exclude: ^build/premake/premake5/
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.41.0
     hooks:
@@ -63,7 +59,6 @@ repos:
         exclude: |
           (?x)(
             ^.gitea/ISSUE_TEMPLATE/|
-            ^build/premake/|
             ^source/third_party/
           )
   - repo: https://github.com/adrienverge/yamllint
@@ -72,4 +67,3 @@ repos:
       - id: yamllint
         args:
           - --strict
-        exclude: ^build/premake/premake5/
