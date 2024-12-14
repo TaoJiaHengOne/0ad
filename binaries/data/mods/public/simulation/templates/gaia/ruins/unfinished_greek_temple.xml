@@ -11,7 +11,7 @@
     <Static width="17.5" depth="30.0"/>
   </Obstruction>
   <ResourceSupply>
-    <Max>2000</Max>
+    <Max>1000</Max>
     <MaxGatherers>30</MaxGatherers>
   </ResourceSupply>
   <StatusBars>

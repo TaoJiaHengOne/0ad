@@ -2,11 +2,14 @@
 <actor version="1">
   <castshadow/>
   <group>
-    <variant frequency="1" name="fallen columns d">
+    <variant frequency="3" name="fallen columns d">
       <mesh>props/column_fallen_d.dae</mesh>
     </variant>
-    <variant frequency="1" name="fallen columns e">
+    <variant frequency="2" name="fallen columns e">
       <mesh>props/column_fallen_e.dae</mesh>
+    </variant>
+    <variant frequency="2" name="fallen columns f">
+      <mesh>props/column_fallen_f.dae</mesh>
     </variant>
   </group>
   <group>

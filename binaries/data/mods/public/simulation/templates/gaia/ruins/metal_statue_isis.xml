@@ -16,11 +16,6 @@
     <Max>800</Max>
     <Type>metal.ruins</Type>
   </ResourceSupply>
-  <Sound>
-    <SoundGroups>
-      <select>interface/select/building/sel_universal.xml</select>
-    </SoundGroups>
-  </Sound>
   <VisualActor>
     <Actor>structures/ptolemies/statue_isis.xml</Actor>
   </VisualActor>

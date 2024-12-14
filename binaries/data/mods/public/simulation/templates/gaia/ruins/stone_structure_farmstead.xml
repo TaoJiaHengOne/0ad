@@ -16,11 +16,6 @@
   <ResourceSupply>
     <Max>500</Max>
   </ResourceSupply>
-  <Sound>
-    <SoundGroups>
-      <select>interface/select/building/sel_universal.xml</select>
-    </SoundGroups>
-  </Sound>
   <VisualActor>
     <Actor>structures/carthaginians/fndn_farmstead.xml</Actor>
   </VisualActor>
