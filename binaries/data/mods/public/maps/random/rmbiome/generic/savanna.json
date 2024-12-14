@@ -85,7 +85,7 @@
 		"trees": {
 			"min": 500,
 			"max": 1500,
-			"forestProbability": 0
+			"forestProbability": 0.3
 		}
 	}
 }
