@@ -15,7 +15,7 @@
 	"requirements": { "tech": "phase_town" },
 	"requirementsTooltip": "Unlocked in Town Phase.",
 	"icon": "armor_leather.png",
-	"researchTime": 40,
+	"researchTime": 20,
 	"tooltip": "Soldiers +1 hack resistance.",
 	"modifications": [
 		{ "value": "Resistance/Entity/Damage/Hack", "add": 1 }

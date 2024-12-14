@@ -16,7 +16,7 @@
 	"requirements": { "tech": "phase_town" },
 	"requirementsTooltip": "Unlocked in Town Phase.",
 	"icon": "sword_01.png",
-	"researchTime": 40,
+	"researchTime": 20,
 	"tooltip": "Soldiers +15% melee attack damage.",
 	"modifications": [
 		{ "value": "Attack/Melee/Damage/Hack", "multiply": 1.15 },

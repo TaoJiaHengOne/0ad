@@ -8,7 +8,7 @@
 	"requirements": { "tech": "phase_town" },
 	"requirementsTooltip": "Unlocked in Town Phase.",
 	"icon": "arrow_01.png",
-	"researchTime": 40,
+	"researchTime": 20,
 	"tooltip": "Soldiers +15% ranged attack damage.",
 	"modifications": [
 		{ "value": "Attack/Ranged/Damage/Hack", "multiply": 1.15 },

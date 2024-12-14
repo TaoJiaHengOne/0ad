@@ -8,7 +8,7 @@
 	"requirements": { "tech": "phase_town" },
 	"requirementsTooltip": "Unlocked in Town Phase.",
 	"icon": "shields_generic_wood.png",
-	"researchTime": 40,
+	"researchTime": 20,
 	"tooltip": "Soldiers +1 pierce resistance.",
 	"modifications": [
 		{ "value": "Resistance/Entity/Damage/Pierce", "add": 1 }
