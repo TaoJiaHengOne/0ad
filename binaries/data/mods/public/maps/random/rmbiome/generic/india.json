@@ -89,8 +89,8 @@
 	},
 	"ResourceCounts": {
 		"trees": {
-			"min": 1000,
-			"max": 6000,
+			"min": 900,
+			"max": 1500,
 			"forestProbability": 0.8
 		}
 	}
