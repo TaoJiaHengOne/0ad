@@ -62,7 +62,7 @@
 	},
 	"Gaia": {
 		"tree1": "gaia/tree/acacia",
-		"tree2": "gaia/tree/bush_tropic",
+		"tree2": "gaia/tree/acacia",
 		"fruitBush": "gaia/fruit/date",
 		"startingAnimal": "gaia/fauna_chicken",
 		"fish": "gaia/fish/generic",
