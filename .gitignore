@@ -4,7 +4,7 @@ binaries/system/*
 !binaries/system/readme.txt
 
 # Workspaces
-build/workspaces
+build/workspaces/*
 !build/workspaces/clean-workspaces.sh
 !build/workspaces/update-workspaces.bat
 !build/workspaces/update-workspaces.sh
