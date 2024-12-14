@@ -8,13 +8,17 @@
 	"requirements": {
 		"all": [
 			{ "tech": "phase_city" },
-			{
-				"any": [
-					{ "civ": "brit" },
-					{ "civ": "gaul" },
-					{ "civ": "iber" }
-				]
-			}
+			{ "notciv": "athen" },
+			{ "notciv": "cart" },
+			{ "notciv": "han" },
+			{ "notciv": "kush" },
+			{ "notciv": "mace" },
+			{ "notciv": "maur" },
+			{ "notciv": "pers" },
+			{ "notciv": "ptol" },
+			{ "notciv": "rome" },
+			{ "notciv": "sele" },
+			{ "notciv": "spart" }
 		]
 	},
 	"requirementsTooltip": "Unlocked in City Phase. Requires “Naval Construction.”",

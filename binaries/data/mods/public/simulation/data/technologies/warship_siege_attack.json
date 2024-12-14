@@ -8,16 +8,15 @@
 	"requirements": {
 		"all": [
 			{ "tech": "phase_city" },
-			{
-				"any": [
-					{ "civ": "cart" },
-					{ "civ": "han" },
-					{ "civ": "mace" },
-					{ "civ": "ptol" },
-					{ "civ": "rome" },
-					{ "civ": "sele" }
-				]
-			}
+			{ "notciv": "athen" },
+			{ "notciv": "brit" },
+			{ "notciv": "gaul" },
+			{ "notciv": "iber" },
+			{ "notciv": "kush" },
+			{ "notciv": "mace" },
+			{ "notciv": "maur" },
+			{ "notciv": "pers" },
+			{ "notciv": "spart" }
 		]
 	},
 	"requirementsTooltip": "Unlocked in City Phase.",

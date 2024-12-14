@@ -17,18 +17,12 @@
 	"requirements": {
 		"all": [
 			{ "tech": "phase_town" },
-			{
-				"any": [
-					{ "civ": "athen" },
-					{ "civ": "cart" },
-					{ "civ": "mace" },
-					{ "civ": "pers" },
-					{ "civ": "ptol" },
-					{ "civ": "rome" },
-					{ "civ": "sele" },
-					{ "civ": "spart" }
-				]
-			}
+			{ "notciv": "brit" },
+			{ "notciv": "gaul" },
+			{ "notciv": "han" },
+			{ "notciv": "iber" },
+			{ "notciv": "kush" },
+			{ "notciv": "maur" }
 		]
 	},
 	"requirementsTooltip": "Unlocked in Town Phase.",
