@@ -46,7 +46,7 @@ pipeline {
 				bat "cd libraries && get-windows-libs.bat"
 				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\lib libraries\\win32\\wxwidgets\\lib) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 				bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\include libraries\\win32\\wxwidgets\\include) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
-				bat "cd build\\workspaces && update-workspaces.bat --atlas --jenkins-tests"
+				bat "cd build\\workspaces && update-workspaces.bat --jenkins-tests"
 
 				script {
 					if (params.CLEANBUILD) {

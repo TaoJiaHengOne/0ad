@@ -20,36 +20,20 @@ cd "$(dirname "$0")" || die
 premake_args=""
 
 with_system_premake5=false
-enable_atlas=true
 
 for i in "$@"; do
 	case $i in
 		--with-system-premake5) with_system_premake5=true ;;
-		--enable-atlas) enable_atlas=true ;;
-		--disable-atlas) enable_atlas=false ;;
 		# Assume any other --options are for Premake
 		--*) premake_args="${premake_args} $i" ;;
 	esac
 done
 
-if [ "$enable_atlas" = "true" ]; then
-	premake_args="${premake_args} --atlas"
-	if [ "$OS" = "Darwin" ]; then
-		# Provide path to wx-config on OS X (as wxwidgets doesn't support pkgconfig)
-		export WX_CONFIG="${WX_CONFIG:="$(pwd)/../../libraries/macos/wxwidgets/bin/wx-config"}"
-	else
-		export WX_CONFIG="${WX_CONFIG:="wx-config"}"
-	fi
-
-	if [ ! -x "$(command -v "$WX_CONFIG")" ]; then
-		echo 'WX_CONFIG must be set and valid or wx-config must be present when --atlas is passed as argument.'
-		exit 1
-	fi
-fi
-
 if [ "$OS" = "Darwin" ]; then
 	# Set minimal SDK version
-	export MIN_OSX_VERSION="${MIN_OSX_VERSION:="10.12"}"
+	: "${MIN_OSX_VERSION:=10.12}"
+	: "${WX_CONFIG:=$(realpath ../../libraries/macos/wxwidgets/bin/wx-config)}"
+	export MIN_OSX_VERSION WX_CONFIG
 fi
 
 # Now build Premake or use system's.

@@ -59,6 +59,17 @@ local function add_third_party_include_paths(extern_lib)
 	end
 end
 
+local function wx_config_path()
+	local wx_config = os.getenv("WX_CONFIG") or "wx-config"
+	local _, error_code = os.outputof("command -v " .. wx_config)
+	if error_code ~= 0 then
+		print("WX_CONFIG must be set and valid or wx-config must be present when atlas is enabled")
+		print("current value: " .. wx_config)
+		os.exit(1)
+	end
+	return wx_config
+end
+
 pkgconfig = require "pkgconfig"
 
 -- Configure pkgconfig for MacOSX systems
@@ -727,16 +738,14 @@ extern_lib_defs = {
 			else
 				-- wxwidgets does not come with a definition file for pkg-config,
 				-- so we have to use wxwidgets' own config tool
-				wx_config_path = os.getenv("WX_CONFIG") or "wx-config"
-				pkgconfig.add_includes(nil, wx_config_path, "--unicode=yes --cxxflags")
+				pkgconfig.add_includes(nil, wx_config_path(), "--unicode=yes --cxxflags")
 			end
 		end,
 		link_settings = function()
 			if os.istarget("windows") then
 				libdirs { libraries_dir.."wxwidgets/lib/vc_lib" }
 			else
-				wx_config_path = os.getenv("WX_CONFIG") or "wx-config"
-				pkgconfig.add_links(nil, wx_config_path, "--unicode=yes --libs std,gl")
+				pkgconfig.add_links(nil, wx_config_path(), "--unicode=yes --libs std,gl")
 			end
 		end,
 	},

@@ -1,5 +1,4 @@
 newoption { trigger = "android", description = "Use non-working Android cross-compiling mode" }
-newoption { trigger = "atlas", description = "Include Atlas scenario editor projects" }
 newoption { trigger = "coverage", description = "Enable code coverage data collection (GCC only)" }
 newoption { trigger = "gles", description = "Use non-working OpenGL ES 2.0 mode" }
 newoption { trigger = "icc", description = "Use Intel C++ Compiler (Linux only; should use either \"--cc icc\" or --without-pch too, and then set CXX=icpc before calling make)" }
@@ -12,6 +11,7 @@ newoption { trigger = "with-system-mozjs", description = "Search standard paths 
 newoption { trigger = "with-system-nvtt", description = "Search standard paths for nvidia-texture-tools library, instead of using bundled copy" }
 newoption { trigger = "with-valgrind", description = "Enable Valgrind support (non-Windows only)" }
 newoption { trigger = "without-audio", description = "Disable use of OpenAL/Ogg/Vorbis APIs" }
+newoption { trigger = "without-atlas", description = "Disable Atlas scenario/map editor and ActorEditor" }
 newoption { trigger = "without-lobby", description = "Disable the use of gloox and the multiplayer lobby" }
 newoption { trigger = "without-miniupnpc", description = "Disable use of miniupnpc for port forwarding" }
 newoption { trigger = "without-nvtt", description = "Disable use of NVTT" }
@@ -31,6 +31,15 @@ if _ACTION == "gmake" then
 	print("Premake action 'gmake' is no longer supported by pyrogenesis, use 'gmake2'")
 	print("Example: 'premake5 --file=build/premake/premake5.lua gmake2'")
 	os.exit(1)
+end
+
+-- On Windows check if wxWidgets is available, if not disable atlas and emit warning.
+-- This is because there are currently not prebuilt binaries provided.
+if not _OPTIONS["without-atlas"] and os.istarget("windows") then
+	if not os.isfile("../../libraries/win32/wxwidgets/include/wx/wx.h") then
+		print("wxWidgets not found, disableing atlas")
+		_OPTIONS["without-atlas"] = ""
+	end
 end
 
 -- Root directory of project checkout relative to this .lua file
@@ -1439,7 +1448,7 @@ function setup_tests()
 		-- Don't include sysdep tests on the wrong sys
 		-- Don't include Atlas tests unless Atlas is being built
 		if not (string.find(v, "/sysdep/os/win/") and not os.istarget("windows")) and
-		   not (string.find(v, "/tools/atlas/") and not _OPTIONS["atlas"]) and
+		   not (string.find(v, "/tools/atlas/") and _OPTIONS["without-atlas"]) and
 		   not (string.find(v, "/sysdep/arch/x86_x64/") and ((arch ~= "amd64") or (arch ~= "x86")))
 		then
 			table.insert(test_files, v)
@@ -1460,7 +1469,7 @@ function setup_tests()
 	filter { }
 
 	links { "mocks_test" }
-	if _OPTIONS["atlas"] then
+	if not _OPTIONS["without-atlas"] then
 		links { "AtlasObject" }
 	end
 	extra_params = {
@@ -1554,7 +1563,7 @@ project("pyrogenesis") -- Set the main project active
 		links { static_lib_names_release }
 	filter { }
 
-if _OPTIONS["atlas"] then
+if not _OPTIONS["without-atlas"] then
 	setup_atlas_projects()
 	setup_atlas_frontends()
 end
