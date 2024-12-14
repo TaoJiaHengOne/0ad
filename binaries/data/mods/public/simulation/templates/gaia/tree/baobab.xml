@@ -11,7 +11,7 @@
     <Static width="3.0" depth="3.0"/>
   </Obstruction>
   <ResourceSupply>
-    <Max>400</Max>
+    <Max>600</Max>
     <MaxGatherers>9</MaxGatherers>
   </ResourceSupply>
   <VisualActor>
