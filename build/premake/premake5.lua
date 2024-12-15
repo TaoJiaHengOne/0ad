@@ -42,25 +42,15 @@ newoption { category = "Pyrogenesis", trigger = "libdir", description = "Directo
 -- Root directory of project checkout relative to this .lua file
 rootdir = "../.."
 
--- detect compiler for non-Windows
-if os.istarget("macosx") then
-	cc = "clang"
-elseif os.istarget("bsd") and os.getversion().description == "FreeBSD" then
-	cc = "clang"
-elseif not os.istarget("windows") then
+-- Determine C compiler
+local cc = nil
+if os.getenv("CC") then
 	cc = os.getenv("CC")
-	if cc == nil or cc == "" then
-		local hasgcc = os.execute("which gcc > .gccpath")
-		local f = io.open(".gccpath", "r")
-		local gccpath = f:read("*line")
-		f:close()
-		os.execute("rm .gccpath")
-		if gccpath == nil then
-			cc = "clang"
-		else
-			cc = "gcc"
-		end
-	end
+elseif _OPTIONS["cc"] then
+	cc = _OPTIONS["cc"]
+else
+	-- assumes cc name is toolset name
+	cc = premake.action.current().toolset
 end
 
 -- detect CPU architecture (simplistic)
