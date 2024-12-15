@@ -5,8 +5,20 @@ cd "$(dirname "$0")"
 
 LIB_VERSION=28209
 
-if [ -e .already-built ] && [ "$(cat .already-built)" = "${LIB_VERSION}" ]; then
-	echo "FCollada is already up to date."
+echo "Building FCollada..."
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild) rm -f .already-built ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+	esac
+	shift
+done
+
+if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
+	echo "Skipping - already built (use --force-rebuild to override)"
 	exit
 fi
 

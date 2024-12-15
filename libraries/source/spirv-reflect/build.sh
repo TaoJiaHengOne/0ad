@@ -6,8 +6,20 @@ cd "$(dirname "$0")"
 PV=1.3.290.0
 LIB_VERSION=${PV}
 
+echo "Building SPIRV-Reflect..."
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild) rm -f .already-built ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+	esac
+	shift
+done
+
 if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
-	echo "spirv-reflect is already up to date."
+	echo "Skipping - already built (use --force-rebuild to override)"
 	exit
 fi
 

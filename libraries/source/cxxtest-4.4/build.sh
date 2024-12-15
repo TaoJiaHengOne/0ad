@@ -6,8 +6,20 @@ cd "$(dirname "$0")"
 PV=4.4
 LIB_VERSION=${PV}+wfg1
 
+echo "Building CxxTest..."
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild) rm -f .already-built ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+	esac
+	shift
+done
+
 if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
-	echo "CxxTest is already up to date."
+	echo "Skipping - already built (use --force-rebuild to override)"
 	exit
 fi
 

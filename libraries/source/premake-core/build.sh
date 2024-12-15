@@ -10,8 +10,20 @@ cd "$(dirname "$0")"
 PV=5.0.0-beta2
 LIB_VERSION=${PV}+wfg2
 
+echo "Building Premake..."
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild) rm -f .already-built ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+	esac
+	shift
+done
+
 if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
-	echo "premake is already up to date."
+	echo "Skipping - already built (use --force-rebuild to override)"
 	exit
 fi
 

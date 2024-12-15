@@ -154,11 +154,19 @@ fi
 # Parse command-line options:
 force_rebuild=false
 
-for i in "$@"; do
-	case $i in
-		--force-rebuild) force_rebuild=true ;;
-		-j*) JOBS=$i ;;
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild)
+			force_rebuild=true
+			build_sh_options="$build_sh_options --force-rebuild"
+			;;
+		-j*) JOBS="$1" ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
 	esac
+	shift
 done
 
 cd "$(dirname "$0")" # Now in libraries/ (where we assume this script resides)
@@ -172,6 +180,7 @@ if [ $force_rebuild = "true" ]; then
 fi
 mkdir -p "$PC_PATH"
 
+echo "Building third-party dependencies..."
 # --------------------------------------------------------------
 echo "Building zlib..."
 
@@ -393,7 +402,7 @@ echo "Building SDL2..."
 				--without-x \
 				--enable-video-cocoa \
 				--enable-shared=no || die
-			make "$JOBS" || die
+			make "${JOBS}" || die
 			make install || die
 		) || die "SDL2 build failed"
 
@@ -1134,26 +1143,21 @@ echo "Building Molten VK..."
 export ARCH CXXFLAGS CFLAGS LDFLAGS CMAKE_FLAGS JOBS
 
 # --------------------------------------------------------------
-echo "Building cxxtest..."
-
-./../source/cxxtest-4.4/build.sh || die "cxxtest build failed"
-
-# --------------------------------------------------------------
-echo "Building FCollada..."
-
-./../source/fcollada/build.sh || die "FCollada build failed"
+# shellcheck disable=SC2086
+./../source/cxxtest-4.4/build.sh $build_sh_options || die "cxxtest build failed"
 
 # --------------------------------------------------------------
-echo "Building nvtt..."
-
-./../source/nvtt/build.sh || die "NVTT build failed"
-
-# --------------------------------------------------------------
-echo "Building Premake..."
-
-./../source/premake-core/build.sh || die "Premake build failed"
+# shellcheck disable=SC2086
+./../source/fcollada/build.sh $build_sh_options || die "FCollada build failed"
 
 # --------------------------------------------------------------
-echo "Building Spidermonkey..."
+# shellcheck disable=SC2086
+./../source/nvtt/build.sh $build_sh_options || die "NVTT build failed"
 
-./../source/spidermonkey/build.sh || die "SpiderMonkey build failed"
+# --------------------------------------------------------------
+# shellcheck disable=SC2086
+./../source/premake-core/build.sh $build_sh_options || die "Premake build failed"
+
+# --------------------------------------------------------------
+# shellcheck disable=SC2086
+./../source/spidermonkey/build.sh $build_sh_options || die "SpiderMonkey build failed"

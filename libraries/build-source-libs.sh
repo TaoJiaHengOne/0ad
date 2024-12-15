@@ -30,16 +30,22 @@ with_spirv_reflect=false
 
 JOBS=${JOBS:="-j2"}
 
-for i in "$@"; do
-	case $i in
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild) build_sh_options="$build_sh_options --force-rebuild" ;;
 		--without-nvtt) without_nvtt=true ;;
 		--with-system-cxxtest) with_system_cxxtest=true ;;
 		--with-system-nvtt) with_system_nvtt=true ;;
 		--with-system-mozjs) with_system_mozjs=true ;;
 		--with-system-premake) with_system_mozjs=true ;;
 		--with-spirv-reflect) with_spirv_reflect=true ;;
-		-j*) JOBS=$i ;;
+		-j*) JOBS="$1" ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
 	esac
+	shift
 done
 
 # Some of our makefiles depend on GNU make, so we set some sane defaults if MAKE
@@ -57,30 +63,30 @@ export MAKE JOBS
 
 # Build/update bundled external libraries
 echo "Building third-party dependencies..."
-echo
 
 if [ "$with_system_cxxtest" = "false" ]; then
-	./source/cxxtest-4.4/build.sh || die "cxxtest build failed"
+	# shellcheck disable=SC2086
+	./source/cxxtest-4.4/build.sh $build_sh_options || die "cxxtest build failed"fi
 fi
-echo
-./source/fcollada/build.sh || die "FCollada build failed"
-echo
+# shellcheck disable=SC2086
+./source/fcollada/build.sh $build_sh_options || die "FCollada build failed"
 if [ "$with_system_nvtt" = "false" ] && [ "$without_nvtt" = "false" ]; then
-	./source/nvtt/build.sh || die "NVTT build failed"
+	# shellcheck disable=SC2086
+	./source/nvtt/build.sh $build_sh_options || die "NVTT build failed"
 	cp source/nvtt/bin/* ../binaries/system/
 fi
-echo
 if [ "$with_system_premake" = "false" ]; then
-	./source/premake-core/build.sh || die "Premake build failed"
+	# shellcheck disable=SC2086
+	./source/premake-core/build.sh $build_sh_options || die "Premake build failed"
 fi
-echo
 if [ "$with_system_mozjs" = "false" ]; then
-	./source/spidermonkey/build.sh || die "SpiderMonkey build failed"
+	# shellcheck disable=SC2086
+	./source/spidermonkey/build.sh $build_sh_options || die "SpiderMonkey build failed"
 	cp source/spidermonkey/lib/* ../binaries/system/
 fi
-echo
 if [ "$with_spirv_reflect" = "true" ]; then
-	./source/spirv-reflect/build.sh || die "spirv-reflect build failed"
+	# shellcheck disable=SC2086
+	./source/spirv-reflect/build.sh $build_sh_options || die "spirv-reflect build failed"
 fi
 
 echo "Done."

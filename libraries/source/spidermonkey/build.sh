@@ -9,8 +9,20 @@ FOLDER="mozjs-115.16.1"
 LIB_VERSION="115.16.1+1"
 LIB_NAME="mozjs115"
 
-if [ -e .already-built ] && [ "$(cat .already-built)" = "${LIB_VERSION}" ]; then
-	echo "Spidermonkey is already up to date."
+echo "Building SpiderMonkey..."
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--force-rebuild) rm -f .already-built ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+	esac
+	shift
+done
+
+if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
+	echo "Skipping - already built (use --force-rebuild to override)"
 	exit
 fi
 
