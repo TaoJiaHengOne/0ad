@@ -13,17 +13,6 @@ die()
 
 OS=${OS:="$(uname -s)"}
 
-# Some of our makefiles depend on GNU make, so we set some sane defaults if MAKE
-# is not set.
-case "$OS" in
-	"FreeBSD" | "OpenBSD")
-		MAKE=${MAKE:="gmake"}
-		;;
-	*)
-		MAKE=${MAKE:="make"}
-		;;
-esac
-
 cd "$(dirname "$0")" || die
 # Now in build/workspaces/ (where we assume this script resides)
 
@@ -33,14 +22,11 @@ premake_args=""
 with_system_premake5=false
 enable_atlas=true
 
-JOBS=${JOBS:="-j2"}
-
 for i in "$@"; do
 	case $i in
 		--with-system-premake5) with_system_premake5=true ;;
 		--enable-atlas) enable_atlas=true ;;
 		--disable-atlas) enable_atlas=false ;;
-		-j*) JOBS=$i ;;
 		# Assume any other --options are for Premake
 		--*) premake_args="${premake_args} $i" ;;
 	esac
