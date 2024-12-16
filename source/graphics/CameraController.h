@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
 * This file is part of 0 A.D.
 *
 * 0 A.D. is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 
 #include "graphics/ICameraController.h"
 #include "graphics/SmoothedValue.h"
+#include "ps/ConfigDB.h"
 
 class CCameraController : public ICameraController
 {
@@ -99,6 +100,7 @@ private:
 	float m_ViewRotateYDefault;
 	float m_ViewRotateSpeedModifier;
 	float m_ViewDragSpeed;
+	bool m_ViewDragInverted;
 	float m_ViewZoomSpeed;
 	float m_ViewZoomSpeedWheel;
 	float m_ViewZoomMin;
@@ -118,6 +120,9 @@ private:
 	CSmoothedValue m_Zoom;
 	CSmoothedValue m_RotateX; // inclination around x axis (relative to camera)
 	CSmoothedValue m_RotateY; // rotation around y (vertical) axis
+
+	std::unique_ptr<CConfigDBHook> m_ViewDragInvertedConfigHook;
+	std::unique_ptr<CConfigDBHook> m_ViewDragSpeedConfigHook;
 };
 
 #endif // INCLUDED_CAMERACONTROLLER

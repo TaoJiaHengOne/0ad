@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -68,6 +68,7 @@ CCameraController::CCameraController(CCamera& camera)
 	  m_ViewRotateYDefault(0),
 	  m_ViewRotateSpeedModifier(1),
 	  m_ViewDragSpeed(0),
+	  m_ViewDragInverted(false),
 	  m_ViewZoomSpeed(0),
 	  m_ViewZoomSpeedWheel(0),
 	  m_ViewZoomMin(0),
@@ -87,6 +88,13 @@ CCameraController::CCameraController(CCamera& camera)
 	  m_RotateX(0, 0, 0.001f),
 	  m_RotateY(0, 0, 0.001f)
 {
+	m_ViewDragInvertedConfigHook = std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("view.drag.inverted", [this]() {
+		CFG_GET_VAL("view.drag.inverted", m_ViewDragInverted);
+	}));
+	m_ViewDragSpeedConfigHook = std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("view.drag.speed", [this]() {
+		CFG_GET_VAL("view.drag.speed", m_ViewDragSpeed);
+	}));
+
 	SViewPort vp;
 	vp.m_X = 0;
 	vp.m_Y = 0;
@@ -115,6 +123,7 @@ void CCameraController::LoadConfig()
 	CFG_GET_VAL("view.rotate.y.default", m_ViewRotateYDefault);
 	CFG_GET_VAL("view.rotate.speed.modifier", m_ViewRotateSpeedModifier);
 	CFG_GET_VAL("view.drag.speed", m_ViewDragSpeed);
+	CFG_GET_VAL("view.drag.inverted", m_ViewDragInverted);
 	CFG_GET_VAL("view.zoom.speed", m_ViewZoomSpeed);
 	CFG_GET_VAL("view.zoom.speed.wheel", m_ViewZoomSpeedWheel);
 	CFG_GET_VAL("view.zoom.min", m_ViewZoomMin);
@@ -180,8 +189,14 @@ void CCameraController::Update(const float deltaRealTime)
 
 	if (HotkeyIsPressed("camera.pan"))
 	{
-		moveRightward += m_ViewDragSpeed * mouse_dx;
-		moveForward += m_ViewDragSpeed * -mouse_dy;
+		if (m_ViewDragInverted) {
+			moveRightward += m_ViewDragSpeed * -mouse_dx;
+			moveForward += m_ViewDragSpeed * mouse_dy;
+		}
+		else {
+			moveRightward += m_ViewDragSpeed * mouse_dx;
+			moveForward += m_ViewDragSpeed * -mouse_dy;
+		}
 	}
 
 	if (g_mouse_active && m_ViewScrollMouseDetectDistance > 0)
