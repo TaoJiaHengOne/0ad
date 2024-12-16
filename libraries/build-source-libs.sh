@@ -21,6 +21,25 @@ case "$(realpath .)" in
 		;;
 esac
 
+print_help()
+{
+	cat <<EOF
+usage:
+	build-source-libs.sh [<options>]
+
+options:
+	--help                  - print this help
+	--force-rebuild         - rebuild all
+	--without-nvtt          - don't build nvtt
+	--with-system-cxxtest   - don't build cxxtest
+	--with-system-nvtt      - don't build nvtt
+	--with-system-mozjs     - don't build spidermonkey
+	--with-system-premake   - don't build premake
+	--with-spirv-reflect    - build spirv-reflect
+	-j<N>                   - use N threads
+EOF
+}
+
 without_nvtt=false
 with_system_cxxtest=false
 with_system_nvtt=false
@@ -32,6 +51,10 @@ JOBS=${JOBS:="-j2"}
 
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+		--help)
+			print_help
+			exit
+			;;
 		--force-rebuild) build_sh_options="$build_sh_options --force-rebuild" ;;
 		--without-nvtt) without_nvtt=true ;;
 		--with-system-cxxtest) with_system_cxxtest=true ;;
@@ -41,7 +64,8 @@ while [ "$#" -gt 0 ]; do
 		--with-spirv-reflect) with_spirv_reflect=true ;;
 		-j*) JOBS="$1" ;;
 		*)
-			echo "Unknown option: $1"
+			printf "Unknown option: %s\n\n" "$1"
+			print_help
 			exit 1
 			;;
 	esac
