@@ -21,21 +21,18 @@
 #include "lib/os_path.h"
 #include "ps/containers/Span.h"
 #include "ps/CStr.h"
-#include "scriptinterface/ScriptTypes.h"
 
 #include <utility>
 #include <vector>
 
 class ScriptRequest;
 
-namespace Script {
-template<typename T>
-void ToJSVal(const ScriptRequest& rq,  JS::MutableHandleValue ret, const T& val);
-}
 
 class CmdLineArgs
 {
 public:
+	using ArgsT = std::vector<std::pair<CStr, CStr>>;
+
 	CmdLineArgs() {}
 
 	/**
@@ -75,13 +72,14 @@ public:
 	/**
 	 * Returns all arguments that don't have a name (string started with '-').
 	 */
+	const ArgsT& GetArgs() const;
+
+	/**
+	 * Returns all arguments that don't have a name (string started with '-').
+	 */
 	std::vector<CStr> GetArgsWithoutName() const;
 
 private:
-	template<typename T>
-	friend void Script::ToJSVal(const ScriptRequest& rq,  JS::MutableHandleValue ret, const T& val);
-
-	typedef std::vector<std::pair<CStr, CStr> > ArgsT;
 	ArgsT m_Args;
 	OsPath m_Arg0;
 	std::vector<CStr> m_ArgsWithoutName;

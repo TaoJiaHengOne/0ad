@@ -112,6 +112,11 @@ OsPath CmdLineArgs::GetArg0() const
 	return m_Arg0;
 }
 
+const CmdLineArgs::ArgsT& CmdLineArgs::GetArgs() const
+{
+	return m_Args;
+}
+
 std::vector<CStr> CmdLineArgs::GetArgsWithoutName() const
 {
 	return m_ArgsWithoutName;
@@ -123,7 +128,7 @@ template<> void Script::ToJSVal<CmdLineArgs>(const ScriptRequest& rq, JS::Mutabl
 		return;
 
 	std::unordered_map<CStr, std::vector<CStr>> args;
-	for (const std::pair<CStr, CStr>& arg : val.m_Args)
+	for (const std::pair<CStr, CStr>& arg : val.GetArgs())
 		args.emplace(arg.first, std::vector<CStr>{}).first->second.emplace_back(arg.second);
 
 	JS::RootedValue argVal(rq.cx);
