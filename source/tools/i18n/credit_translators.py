@@ -40,6 +40,9 @@ from babel import Locale, UnknownLocaleError
 from i18n_helper import L10N_FOLDER_NAME, PROJECT_ROOT_DIRECTORY, TRANSIFEX_CLIENT_FOLDER
 
 
+# Set of translators by name to exclude from the credits.
+EXCLUDE_TRANSLATORS = {"WFG Transifex"}
+
 po_locations = []
 for root, folders, _filenames in os.walk(PROJECT_ROOT_DIRECTORY):
     for folder in folders:
@@ -104,7 +107,7 @@ for location in po_locations:
 for lang in langs_lists:
     translators = {}
     for name in sorted(langs_lists[lang], reverse=True):
-        if name.lower() not in translators or name.istitle():
+        if (name.lower() not in translators or name.istitle()) and name not in EXCLUDE_TRANSLATORS:
             translators[name.lower()] = name
     langs_lists[lang] = sorted(translators.values(), key=lambda s: s.lower())
 
