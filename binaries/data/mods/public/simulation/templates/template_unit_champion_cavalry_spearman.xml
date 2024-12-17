@@ -16,7 +16,7 @@
       </Bonuses>
       <PrepareTime>500</PrepareTime>
       <RepeatTime>1250</RepeatTime>
-      <PreferredClasses datatype="tokens">Human</PreferredClasses>
+      <PreferredClasses datatype="tokens">Unit+!Ship</PreferredClasses>
     </Melee>
   </Attack>
   <Health>
