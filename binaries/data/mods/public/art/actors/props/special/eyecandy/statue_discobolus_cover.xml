@@ -8,7 +8,6 @@
         <texture file="props/statue_discobolus_diffuse.png" name="baseTex"/>
         <texture file="props/statue_discobolus_spec.png" name="specTex"/>
         <texture file="props/statue_discobolus_norm.png" name="normTex"/>
-        <texture file="props/ao/statue_discobolus.png" name="aoTex"/>
       </textures>
     </variant>
   </group>
