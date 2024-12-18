@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -236,8 +236,18 @@ public:
 		callbacks.seek_func = Adapter::Seek;
 		callbacks.tell_func = Adapter::Tell;
 		const int ret = ov_open_callbacks(&adapter, &vf, 0, 0, callbacks);
-		if(ret != 0)
-			WARN_RETURN(LibErrorFromVorbis(ret));
+		switch (ret)
+		{
+			case 0:
+				break;
+			case OV_EBADHEADER:
+			case OV_EREAD:
+			case OV_ENOTVORBIS:
+			case OV_EVERSION:
+				return LibErrorFromVorbis(ret);
+			default:
+				WARN_RETURN(LibErrorFromVorbis(ret));
+		}
 
 		const int link = -1;	// retrieve info for current bitstream
 		info = ov_info(&vf, link);
