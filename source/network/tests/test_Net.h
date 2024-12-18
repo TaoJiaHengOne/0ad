@@ -150,7 +150,7 @@ public:
 		CGame client2Game(false);
 		CGame client3Game(false);
 
-		CNetServer server("no_secret");
+		CNetServer server{false};
 
 		JS::RootedValue attrs(rq.cx);
 		Script::CreateObject(
@@ -229,7 +229,7 @@ public:
 		CGame client2Game(false);
 		CGame client3Game(false);
 
-		CNetServer server("no_secret");
+		CNetServer server{false};
 
 		JS::RootedValue attrs(rq.cx);
 		Script::CreateObject(
