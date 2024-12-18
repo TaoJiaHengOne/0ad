@@ -109,12 +109,7 @@ class CNetServer
 {
 	NONCOPYABLE(CNetServer);
 public:
-	/**
-	 * Construct a new network server.
-	 * once this many players are connected (intended for the command-line testing mode).
-	 */
 	CNetServer(const bool isSavedGame, const bool useLobbyAuth = false);
-
 	~CNetServer();
 
 	/**
