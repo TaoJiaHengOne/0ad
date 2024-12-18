@@ -90,14 +90,12 @@ CXXFLAGS="$CXXFLAGS $C_FLAGS -stdlib=libc++ -std=c++17"
 OBJCFLAGS="$OBJCFLAGS $C_FLAGS"
 OBJCXXFLAGS="$OBJCXXFLAGS $C_FLAGS"
 
-# Force x86_64 architecture on MacOS for now.
-# NB: annoyingly, this is rather unstandardised. Some libs expect -arch, others different things.
-# Further: wxWidgets uses its own system and actually fails to compile with arch arguments.
+# Annoyingly, ARCH use is rather unstandardised. Some libs expect -arch, others different things.
 ARCHLESS_CFLAGS=$CFLAGS
 ARCHLESS_CXXFLAGS=$CXXFLAGS
 ARCHLESS_LDFLAGS="$LDFLAGS -stdlib=libc++"
 
-# If ARCH isn't set, select either x86_64 or arm64
+# If ARCH isn't set, use the native architecture
 if [ -z "${ARCH}" ]; then
 	ARCH=$(uname -m)
 fi
@@ -108,6 +106,12 @@ else
 	CXXFLAGS="$CXXFLAGS -msse4.1"
 	# Some libs want this passed to configure for cross compilation.
 	HOST_PLATFORM="--host=x86_64-apple-darwin"
+fi
+if [ "$ARCH" != "$(uname -m)" ]; then
+	# wxWidgets cross-compilation does not seem to work, unless we build both architectures at once.
+	WX_UNIVERSAL="--enable-universal-binary=x86_64,arm64"
+	ICU_CROSS_BUILD=true
+	LIBSODIUM_SKIP_TESTS=true
 fi
 
 CFLAGS="$CFLAGS -arch $ARCH"
@@ -247,6 +251,7 @@ echo "Building libcurl..."
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
+				"$HOST_PLATFORM" \
 				--prefix="$INSTALL_DIR" \
 				--enable-ipv6 \
 				--with-darwinssl \
@@ -308,6 +313,7 @@ ICONV_DIR="$(pwd)/iconv"
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
+				"$HOST_PLATFORM" \
 				--prefix="$ICONV_DIR" \
 				--without-libiconv-prefix \
 				--without-libintl-prefix \
@@ -349,6 +355,7 @@ echo "Building libxml2..."
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
+				"$HOST_PLATFORM" \
 				--prefix="$INSTALL_DIR" \
 				--without-lzma \
 				--without-python \
@@ -397,6 +404,7 @@ echo "Building SDL2..."
 				CFLAGS="$CFLAGS" \
 				CXXFLAGS="$CXXFLAGS" \
 				LDFLAGS="$LDFLAGS -L${ICONV_DIR}/lib" \
+				"$HOST_PLATFORM" \
 				--prefix="$INSTALL_DIR" \
 				--disable-video-x11 \
 				--without-x \
@@ -493,7 +501,7 @@ echo "Building wxWidgets..."
 				--with-cocoa
 				--with-opengl
 				--with-libiconv-prefix=${ICONV_DIR}
-				--enable-universal-binary=${ARCH}
+				${WX_UNIVERSAL:=""}
 				--with-expat=builtin
 				--with-libpng=builtin
 				--without-libtiff
@@ -554,6 +562,7 @@ echo "Building libpng..."
 				CFLAGS="$CFLAGS" \
 				CPPFLAGS=" -I $ZLIB_DIR/include " \
 				LDFLAGS="$LDFLAGS -L$ZLIB_DIR/lib" \
+				"$HOST_PLATFORM" \
 				--prefix="$INSTALL_DIR" \
 				--enable-shared=no || die
 			make "${JOBS}" || die
@@ -593,8 +602,8 @@ echo "Building freetype..."
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
-				--prefix="$INSTALL_DIR" \
 				"$HOST_PLATFORM" \
+				--prefix="$INSTALL_DIR" \
 				--enable-shared=no \
 				--with-harfbuzz=no \
 				--with-bzip2=no \
@@ -766,6 +775,7 @@ NETTLE_DIR="$(pwd)/nettle"
 				CFLAGS="$CFLAGS" \
 				CXXFLAGS="$CXXFLAGS" \
 				LDFLAGS="$LDFLAGS" \
+				"$HOST_PLATFORM" \
 				--with-include-path="${GMP_DIR}/include" \
 				--with-lib-path="${GMP_DIR}/lib" \
 				--prefix="$INSTALL_DIR" \
@@ -925,10 +935,19 @@ echo "Building ICU..."
 
 		(
 			mkdir -p $LIB_DIRECTORY/source/build
-			cd $LIB_DIRECTORY/source/build
-			CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
+			# If cross-compiling, ICU first needs a native build then a cross-build:
+			# https://unicode-org.github.io/icu/userguide/icu4c/build.html#how-to-cross-compile-icu
+			# Do the former in all cases (without make install), then the latter if
+			# needed.
+			if [ "$ICU_CROSS_BUILD" = "true" ]; then
+				mkdir -p $LIB_DIRECTORY/source/build-native
+				cd $LIB_DIRECTORY/source/build-native
+				ICU_NATIVE_BUILD_DIR="$(pwd)"
+			else
+				cd $LIB_DIRECTORY/source/build
+			fi
+			CFLAGS="$ARCHLESS_CFLAGS" CXXFLAGS="$ARCHLESS_CXXFLAGS" LDFLAGS="$ARCHLESS_LDFLAGS" \
 				../runConfigureICU MacOSX \
-				"$HOST_PLATFORM" \
 				--prefix="$INSTALL_DIR" \
 				--disable-shared \
 				--enable-static \
@@ -937,6 +956,21 @@ echo "Building ICU..."
 				--enable-icuio \
 				--enable-tools || die
 			make "${JOBS}" || die
+			if [ "$ICU_CROSS_BUILD" = "true" ]; then
+				cd ../build || die
+				CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
+					../runConfigureICU MacOSX \
+					"$HOST_PLATFORM" \
+					--with-cross-build="$ICU_NATIVE_BUILD_DIR" \
+					--prefix="$INSTALL_DIR" \
+					--disable-shared \
+					--enable-static \
+					--disable-samples \
+					--enable-extras \
+					--enable-icuio \
+					--enable-tools || die
+				make "${JOBS}" || die
+			fi
 			make install || die
 		) || die "ICU build failed"
 
@@ -973,6 +1007,7 @@ echo "Building ENet..."
 			./configure \
 				CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
+				"$HOST_PLATFORM" \
 				--prefix="${INSTALL_DIR}" \
 				--enable-shared=no || die
 			make clean || die
@@ -1049,11 +1084,14 @@ echo "Building libsodium..."
 			cd $LIB_DIRECTORY || die
 			./configure CFLAGS="$CFLAGS" \
 				LDFLAGS="$LDFLAGS" \
+				"$HOST_PLATFORM" \
 				--prefix="${INSTALL_DIR}" \
 				--enable-shared=no || die
 			make clean || die
 			make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "${JOBS}" || die
-			make check || die
+			if [ "$LIBSODIUM_SKIP_TESTS" != "true" ]; then
+				make check || die
+			fi
 			make INSTALLPREFIX="$INSTALL_DIR" install || die
 		) || die "libsodium build failed"
 
@@ -1135,8 +1173,8 @@ echo "Building Molten VK..."
 ) || die "Failed to build MoltenVK"
 
 # --------------------------------------------------------------------
-# The following libraries are shared on different OSes and may
-# be customized, so we build and install them from bundled sources
+# The following libraries and build tools are shared on different OSes
+# and may be customized, so we build and install them from bundled sources
 # (served over SVN or other sources)
 # --------------------------------------------------------------------
 
@@ -1156,8 +1194,17 @@ export ARCH CXXFLAGS CFLAGS LDFLAGS CMAKE_FLAGS JOBS
 
 # --------------------------------------------------------------
 # shellcheck disable=SC2086
-./../source/premake-core/build.sh $build_sh_options || die "Premake build failed"
+./../source/spidermonkey/build.sh $build_sh_options || die "SpiderMonkey build failed"
+
+# --------------------------------------------------------------------
+# Build tools must be compiled for the build arch, not the target arch.
+# premake needs this to be very explicit.
+# --------------------------------------------------------------------
 
 # --------------------------------------------------------------
 # shellcheck disable=SC2086
-./../source/spidermonkey/build.sh $build_sh_options || die "SpiderMonkey build failed"
+ARCH="$(uname -m)" \
+CFLAGS="${ARCHLESS_CFLAGS} -arch $(uname -m)" \
+CXXFLAGS="${ARCHLESS_CXXFLAGS} -arch $(uname -m)" \
+LDFLAGS="${ARCHLESS_LDFLAGS} -arch $(uname -m)" \
+	./../source/premake-core/build.sh $build_sh_options || die "Premake build failed"
