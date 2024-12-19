@@ -4,11 +4,11 @@
     <Ranged>
       <AttackName>Bow</AttackName>
       <Damage>
-        <Pierce>10</Pierce>
+        <Pierce>8</Pierce>
       </Damage>
       <MaxRange>60</MaxRange>
-      <PrepareTime>1200</PrepareTime>
-      <RepeatTime>2000</RepeatTime>
+      <PrepareTime>400</PrepareTime>
+      <RepeatTime>3500</RepeatTime>
       <Projectile>
         <Speed>100</Speed>
         <Spread>1.5</Spread>
@@ -33,8 +33,8 @@
     </Distance>
   </BuildRestrictions>
   <BuildingAI>
-    <DefaultArrowCount>3</DefaultArrowCount>
-    <MaxArrowCount>15</MaxArrowCount>
+    <DefaultArrowCount>5</DefaultArrowCount>
+    <MaxArrowCount>18</MaxArrowCount>
     <GarrisonArrowMultiplier>1</GarrisonArrowMultiplier>
     <GarrisonArrowClasses>Soldier</GarrisonArrowClasses>
   </BuildingAI>
@@ -112,7 +112,8 @@
       units/{civ}/infantry_spearman_a
       units/{civ}/infantry_pikeman_a
       units/{civ}/infantry_legionary
-      units/{civ}/infantry_lanciarius
+      units/{civ}/infantry_antesignanus
+	  units/{civ}/siege_onager_packed
       units/{civ}/siege_ram
     </Entities>
   </Trainer>

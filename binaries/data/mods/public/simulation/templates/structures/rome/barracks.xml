@@ -14,7 +14,7 @@
   <Trainer>
     <Entities datatype="tokens">
       units/{civ}/infantry_legionary
-      units/{civ}/infantry_lanciarius
+      units/{civ}/infantry_antesignanus
     </Entities>
   </Trainer>
   <Obstruction>

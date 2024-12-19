@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Entity parent="template_unit_siege_stonethrower_onager">
-  <Obstruction>
-    <Unit disable=""/>
-    <Active>true</Active>
-    <BlockMovement>true</BlockMovement>
-    <BlockPathfinding>true</BlockPathfinding>
-    <BlockFoundation>true</BlockFoundation>
-    <BlockConstruction>true</BlockConstruction>
-    <DisableBlockMovement>false</DisableBlockMovement>
-    <DisableBlockPathfinding>false</DisableBlockPathfinding>
-    <Static width="6.0" depth="8.0"/>
-  </Obstruction>
+<Entity parent="units/rome/siege_onager_packed">
+  <Footprint replace="">
+    <Square width="9.0" depth="15.0"/>
+    <Height>5.0</Height>
+  </Footprint>
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Onager</SpecificName>
-    <Icon>units/rome/siege_onager.png</Icon>
   </Identity>
   <Pack>
     <Entity>units/rome/siege_onager_packed</Entity>
@@ -25,7 +17,5 @@
   </UnitMotion>
   <VisualActor>
     <Actor>units/romans/siege_onager_pivot.xml</Actor>
-    <ConstructionPreview/>
-    <FoundationActor>structures/fndn_2x2.xml</FoundationActor>
   </VisualActor>
 </Entity>

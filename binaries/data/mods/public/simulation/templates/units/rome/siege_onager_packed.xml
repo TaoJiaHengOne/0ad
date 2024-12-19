@@ -4,13 +4,6 @@
     <Square width="6.0" depth="14.0"/>
     <Height>5.0</Height>
   </Footprint>
-  <Attack>
-    <Ranged>
-      <AttackName>Stone</AttackName>
-      <MaxRange>70</MaxRange>
-      <MinRange>20</MinRange>
-    </Ranged>
-  </Attack>
   <Identity>
     <Civ>rome</Civ>
     <SpecificName>Onager</SpecificName>
