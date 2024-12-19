@@ -34,39 +34,41 @@
     </variant>
   </group>
   <group>
-    <variant frequency="5" name="Helmet Roman">
+    <variant frequency="1" name="Helmet Eastern a">
       <props>
-        <prop actor="props/units/helmets/rome_helmet_coolus.xml" attachpoint="helmet"/>
+        <prop actor="props/units/helmets/pers_conical_a1.xml" attachpoint="helmet"/>
       </props>
     </variant>
-    <variant frequency="1" name="Helmet Hellenic">
+    <variant frequency="1" name="Helmet Eastern b">
       <props>
-        <prop actor="props/units/helmets/hele_thracian_a8.xml" attachpoint="helmet"/>
+        <prop actor="props/units/helmets/pers_conical_b1.xml" attachpoint="helmet"/>
       </props>
     </variant>
-    <variant frequency="1" name="Helmet Gallic">
+    <variant frequency="1" name="Helmet Hellenic a">
       <props>
-        <prop actor="props/units/helmets/rome_helmet_gallic.xml" attachpoint="helmet"/>
+        <prop actor="props/units/helmets/hele_boeotian_b3.xml" attachpoint="helmet"/>
+      </props>
+    </variant>
+    <variant frequency="1" name="Helmet Hellenic b">
+      <props>
+        <prop actor="props/units/helmets/hele_thracian_b8.xml" attachpoint="helmet"/>
       </props>
     </variant>
   </group>
   <group>
-    <variant frequency="1" name="rome-chainmail-1a">
+    <variant frequency="1" name="linothorax_01_01">
       <textures>
-        <texture file="skeletal/rome/chainmail_01_01.png" name="baseTex"/>
-        <texture file="skeletal/rome/chainmail_01_spec.png" name="specTex"/>
+        <texture file="skeletal/cart/linothorax_01_01.png" name="baseTex"/>
       </textures>
     </variant>
-    <variant frequency="1" name="rome-chainmail-1b">
+    <variant frequency="1" name="linothorax_01_03">
       <textures>
-        <texture file="skeletal/rome/chainmail_01_02.png" name="baseTex"/>
-        <texture file="skeletal/rome/chainmail_01_spec.png" name="specTex"/>
+        <texture file="skeletal/cart/linothorax_01_03.png" name="baseTex"/>
       </textures>
     </variant>
-    <variant frequency="1" name="rome-chainmail-1c">
+    <variant frequency="2" name="chainmail white">
       <textures>
-        <texture file="skeletal/rome/chainmail_01_03.png" name="baseTex"/>
-        <texture file="skeletal/rome/chainmail_01_spec.png" name="specTex"/>
+        <texture file="skeletal/rome/chainmail_04_padded_01_white.png" name="baseTex"/>
       </textures>
     </variant>
   </group>

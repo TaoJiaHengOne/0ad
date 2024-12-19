@@ -44,7 +44,7 @@
     </variant>
   </group>
   <group>
-    <variant frequency="1" name="rome_helmet_gallic_centurion">
+    <variant frequency="2" name="rome_helmet_gallic_centurion">
       <props>
         <prop actor="props/units/helmets/rome_helmet_gallic_centurion.xml" attachpoint="helmet"/>
       </props>
@@ -62,16 +62,6 @@
     <variant frequency="2" name="Apulo-Corinthian-e2">
       <props>
         <prop actor="props/units/helmets/rome_apulo_corinthian_e2.xml" attachpoint="helmet"/>
-      </props>
-    </variant>
-    <variant frequency="1" name="hele_thracian_b2_crested">
-      <props>
-        <prop actor="props/units/helmets/hele_thracian_b2_crested.xml" attachpoint="helmet"/>
-      </props>
-    </variant>
-    <variant frequency="1" name="hele_thracian_a8">
-      <props>
-        <prop actor="props/units/helmets/hele_thracian_a8.xml" attachpoint="helmet"/>
       </props>
     </variant>
   </group>

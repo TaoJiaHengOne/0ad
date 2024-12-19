@@ -4,7 +4,7 @@
     <Rank>Elite</Rank>
   </Identity>
   <Promotion>
-    <Entity>units/rome/cavalry_auxiliary_b</Entity>
+    <Entity>units/rome/cavalry_spearman_auxiliary_b</Entity>
     <RequiredXp>2000</RequiredXp>
   </Promotion>
   <VisualActor>
