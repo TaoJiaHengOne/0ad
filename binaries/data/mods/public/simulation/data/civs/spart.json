@@ -37,7 +37,7 @@
 		{
 			"Name": "Agoge",
 			"History": "The institution of the Agoge was established to rigorously train Spartan boys from the age of 6 to be fearsome warriors.",
-			"Description": "Champion Hoplites 10% faster attack rate."
+			"Description": "Champion Hoplites -10% attack time."
 		}
 	],
 	"WallSets": [
