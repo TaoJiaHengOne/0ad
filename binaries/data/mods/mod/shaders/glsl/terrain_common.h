@@ -49,7 +49,7 @@ VERTEX_OUTPUT(3, vec3, v_tex);
 VERTEX_OUTPUT(3, vec2, v_tex);
 #endif
 #if USE_NORMAL_MAP
-VERTEX_OUTPUT(4, vec4, v_tangent);
+VERTEX_OUTPUT(4, vec3, v_tangent);
 VERTEX_OUTPUT(5, vec3, v_bitangent);
 #endif
 #if USE_SPECULAR_MAP

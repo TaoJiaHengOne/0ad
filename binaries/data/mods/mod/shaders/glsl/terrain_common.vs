@@ -57,10 +57,13 @@ void main()
 
   #if USE_NORMAL_MAP || USE_SPECULAR_MAP || USE_TRIPLANAR
     #if USE_NORMAL_MAP
-      vec3 t = vec3(1.0, 0.0, 0.0);
-      t = normalize(t - v_normal * dot(v_normal, t));
-      v_tangent = vec4(t, -1.0);
-      v_bitangent = cross(v_normal, t);
+      #if DECAL || USE_TRIPLANAR
+        // TODO: this should be fixed for decals/triplanar mapping.
+        v_tangent = vec3(1.0, 0.0, 0.0);
+      #else
+        v_tangent = normalize(vec3(c, 0.0, -s));
+      #endif
+      v_bitangent = cross(v_normal, v_tangent);
     #endif
 
     #if USE_SPECULAR_MAP

@@ -89,8 +89,7 @@ void main()
   #endif
 
   #if USE_NORMAL_MAP
-    float sign = v_tangent.w;
-    mat3 tbn = mat3(v_tangent.xyz, v_bitangent * -sign, v_normal);
+    mat3 tbn = mat3(v_tangent, v_bitangent, v_normal);
     #if USE_TRIPLANAR
       vec3 ntex = triplanarNormals(GET_DRAW_TEXTURE_2D(normTex), v_tex).rgb;
     #else
