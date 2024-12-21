@@ -1,9 +1,16 @@
 {
 	"genericName": "Town Phase",
 	"specificName": {
+		"brit": "Bona",
+		"cart": "Ir",
+		"gaul": "Bona",
 		"han": "Xìan",
+		"iber": "Contrebia",
+		"kush": "Niwt",
 		"mace": "Kōmopolis",
+		"maur": "Nayara",
 		"ptol": "Kōmopolis",
+		"rome": "Oppidum",
 		"sele": "Kōmopolis",
 		"spart": "Kōmopolis"
 	},
