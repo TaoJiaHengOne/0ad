@@ -11,8 +11,8 @@
     </Ranged>
   </Attack>
   <BuildingAI>
-    <DefaultArrowCount>2</DefaultArrowCount>
-    <MaxArrowCount>10</MaxArrowCount>
+    <DefaultArrowCount op ="add">2</DefaultArrowCount>
+    <MaxArrowCount>12</MaxArrowCount>
   </BuildingAI>
   <BuildRestrictions>
     <Category>GreatTower</Category>

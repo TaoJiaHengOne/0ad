@@ -3,16 +3,16 @@
 	"description": "Murder holes allow hitting enemies at the foot of the tower.",
 	"cost": {
 		"wood": 250,
-		"stone": 100
+		"stone": 150
 	},
 	"requirements": { "tech": "phase_city" },
 	"requirementsTooltip": "Unlocked in City Phase.",
 	"icon": "murder_holes.png",
 	"researchTime": 40,
-	"tooltip": "Sentry and Stone Towers have 0 minimum attack range.",
+	"tooltip": "Fortresses, Sentry Towers, and Stone Towers have 0 minimum attack range.",
 	"modifications": [
 		{ "value": "Attack/Ranged/MinRange", "replace": 0 }
 	],
-	"affects": ["SentryTower", "StoneTower", "GreatTower"],
+	"affects": ["SentryTower", "StoneTower", "GreatTower","Fortress"],
 	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
 }

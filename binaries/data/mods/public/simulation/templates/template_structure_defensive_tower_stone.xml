@@ -9,6 +9,9 @@
       </Origin>
     </Ranged>
   </Attack>
+  <BuildingAI>
+    <DefaultArrowCount op="add">2</DefaultArrowCount>
+  </BuildingAI>
   <Cost>
     <BuildTime>150</BuildTime>
     <Resources>

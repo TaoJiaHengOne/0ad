@@ -7,11 +7,12 @@
         <Pierce>10</Pierce>
       </Damage>
       <MaxRange>60</MaxRange>
-      <PrepareTime>1200</PrepareTime>
-      <RepeatTime>2000</RepeatTime>
+      <MinRange>10</MinRange>
+      <PrepareTime>400</PrepareTime>
+      <RepeatTime>3500</RepeatTime>
       <Projectile>
         <Speed>100</Speed>
-        <Spread>1.5</Spread>
+        <Spread>2.0</Spread>
         <Gravity>50</Gravity>
         <FriendlyFire>false</FriendlyFire>
         <LaunchPoint y="3"/>
@@ -32,7 +33,7 @@
     </Distance>
   </BuildRestrictions>
   <BuildingAI>
-    <DefaultArrowCount>4</DefaultArrowCount>
+    <DefaultArrowCount>10</DefaultArrowCount>
     <GarrisonArrowMultiplier>1</GarrisonArrowMultiplier>
     <GarrisonArrowClasses>Soldier</GarrisonArrowClasses>
   </BuildingAI>
@@ -83,6 +84,8 @@
   <Researcher>
     <Technologies datatype="tokens">
       attack_soldiers_will
+      tower_murderholes
+      tower_garrison
       art_of_war
       poison_arrows
       poison_blades

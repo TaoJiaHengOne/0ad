@@ -10,7 +10,7 @@
     </Ranged>
   </Attack>
   <BuildingAI>
-    <MaxArrowCount>4</MaxArrowCount>
+    <MaxArrowCount>6</MaxArrowCount>
   </BuildingAI>
   <Cost>
     <BuildTime>40</BuildTime>

@@ -6,7 +6,7 @@
     </Ranged>
   </Attack>
   <BuildingAI>
-    <DefaultArrowCount>2</DefaultArrowCount>
+    <DefaultArrowCount op="add">1</DefaultArrowCount>
   </BuildingAI>
   <Cost>
     <BuildTime>200</BuildTime>
