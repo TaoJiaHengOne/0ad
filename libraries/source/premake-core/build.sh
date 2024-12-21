@@ -8,7 +8,7 @@ set -e
 cd "$(dirname "$0")"
 
 PV=5.0.0-beta3
-LIB_VERSION=${PV}+wfg0
+LIB_VERSION=${PV}+wfg1
 
 echo "Building Premake..."
 while [ "$#" -gt 0 ]; do
@@ -37,9 +37,17 @@ fi
 rm -Rf "premake-core-${PV}"
 tar -xf "premake-core-${PV}.tar.gz"
 
-#patch
+# patch
+# ffcb7790f013bdceacc14ba5fda1c5cd107aac08
 patch -d "premake-core-${PV}" -p1 <patches/0001-Use-_SC_NPROCESSORS_ONLN-for-CPU-detection-in-BSDs.-.patch
+# https://github.com/premake/premake-core/issues/2338
 patch -d "premake-core-${PV}" -p1 <patches/0002-Make-clang-default-toolset-for-BSD.patch
+# 82c9d90495940e2d0d574e1c7849e9698f23b090
+patch -d "premake-core-${PV}" -p1 <patches/0003-Add-support-for-riscv64-2356.patch
+# 928397f72c00979d57ec4688cb1fb26ec7f2449b
+patch -d "premake-core-${PV}" -p1 <patches/0004-Add-support-for-loongarch64-2363.patch
+# 5c524b6d53307bcb4ba7b02c9dba20100df68943
+patch -d "premake-core-${PV}" -p1 <patches/0005-premake.h-added-e2k-definition-2349.patch
 
 #build
 (
