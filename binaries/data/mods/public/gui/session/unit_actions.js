@@ -1027,6 +1027,86 @@ var g_UnitActions =
 		"specificness": 41,
 	},
 
+	"focus-fire":
+	{
+		"execute": function(position, action, selection, queued, pushFront)
+		{
+			Engine.PostNetworkCommand({
+				"type": "focus-fire",
+				"entities": selection,
+				"x": position.x,
+				"z": position.z,
+				"target": action.target,
+				"data": action.data,
+				"queued": queued,
+				"pushFront": pushFront
+			});
+
+			if (action.data.sound)
+				Engine.GuiInterfaceCall("PlaySound", {
+					"name": "focus_fire",
+					"entity": action.firstAbleEntity
+				});
+
+			return true;
+		},
+		"getActionInfo": function(entState, targetState)
+		{
+			if (!entState.rallyPoint)
+				return false;
+
+			let tooltip;
+			let data = { "command": "walk" };
+			let cursor = "";
+			data.sound = false;
+
+			if (entState.attack && Engine.HotkeyIsPressed("session.focusfire"))
+			{
+				cursor = "action-target";
+				data.command = "attack-only";
+				if (targetState && playerCheck(entState, targetState, ["Enemy"]) && !targetState.resourceSupply)
+				{
+					data.target = targetState.id;
+					data.sound = true;
+				}
+				return {
+					"possible": true,
+					"data": data,
+					"position": targetState && targetState.position,
+					"cursor": cursor,
+					"tooltip": tooltip
+				};
+			}
+		},
+		"hotkeyActionCheck": function(target, selection)
+		{
+			// Hotkeys are checked in the actionInfo.
+			return this.actionCheck(target, selection);
+		},
+		"actionCheck": function(target, selection)
+		{
+			// We want commands to units take precedence.
+			if (selection.some(ent => {
+				let entState = GetEntityState(ent);
+				return entState && !!entState.unitAI;
+			}))
+				return false;
+
+			let actionInfo = getActionInfo("focus-fire", target, selection);
+			
+			return actionInfo.possible && {
+				"type": "focus-fire",
+				"cursor": actionInfo.cursor,
+				"data": actionInfo.data,
+				"target": target,
+				"tooltip": actionInfo.tooltip,
+				"position": actionInfo.position,
+				"firstAbleEntity": actionInfo.entity
+			};
+		},
+		"specificness": 6,
+	},
+
 	"set-rallypoint":
 	{
 		"execute": function(position, action, selection, queued, pushFront)

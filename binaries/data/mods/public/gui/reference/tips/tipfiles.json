@@ -42,6 +42,12 @@
     ]
   },
   {
+    "textFile": "building_control.txt",
+    "imageFiles": [
+      "building_control.png"
+    ]
+  },
+  {
     "textFile": "carth_sacred_band.txt",
     "imageFiles": [
       "carth_sacred_band.png"

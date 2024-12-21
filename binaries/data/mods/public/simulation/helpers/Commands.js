@@ -431,6 +431,14 @@ var g_Commands = {
 		}
 	},
 
+	"focus-fire": function (player, cmd, data)
+	{
+		for (let ent of data.entities)
+		{
+			Engine.QueryInterface(ent, IID_BuildingAI)?.AddFocusTarget(cmd.target, cmd.queued, cmd.pushFront);
+		}
+	},
+
 	"set-rallypoint": function(player, cmd, data)
 	{
 		for (let ent of data.entities)
