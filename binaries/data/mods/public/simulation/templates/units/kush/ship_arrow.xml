@@ -7,7 +7,7 @@
   <Identity>
     <Civ>kush</Civ>
     <Classes datatype="tokens">KushTrireme</Classes>
-    <SpecificName>shry ʿȝ</SpecificName>
+    <SpecificName>Shry ʿȝ</SpecificName>
     <Icon>units/kush/ship_arrow.png</Icon>
   </Identity>
   <VisualActor>

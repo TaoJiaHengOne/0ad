@@ -13,7 +13,7 @@
     <Lang>napatan</Lang>
     <SelectionGroupName>units/kush/infantry_swordsman_b</SelectionGroupName>
     <GenericName>Meroitic Swordsman</GenericName>
-    <SpecificName>knw hps</SpecificName>
+    <SpecificName>Knw hps</SpecificName>
     <Icon>units/kush/infantry_swordsman.png</Icon>
     <Requirements>
       <Techs datatype="tokens">phase_town</Techs>

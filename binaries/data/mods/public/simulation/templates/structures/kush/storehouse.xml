@@ -2,7 +2,7 @@
 <Entity parent="template_structure_economic_storehouse">
   <Identity>
     <Civ>kush</Civ>
-    <SpecificName>wdȝt</SpecificName>
+    <SpecificName>Wdȝt</SpecificName>
   </Identity>
   <VisualActor>
     <Actor>structures/kushites/storehouse.xml</Actor>

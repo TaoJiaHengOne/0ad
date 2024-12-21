@@ -15,7 +15,7 @@
     <Lang>napatan</Lang>
     <SelectionGroupName>units/kush/cavalry_javelineer_merc_b</SelectionGroupName>
     <GenericName>Blemmye Desert Raider</GenericName>
-    <SpecificName>nhw Bulahau gml</SpecificName>
+    <SpecificName>Nhw Bulahau gml</SpecificName>
     <VisibleClasses datatype="tokens">Camel</VisibleClasses>
     <Icon>units/kush/camel_javelinist.png</Icon>
     <Requirements>

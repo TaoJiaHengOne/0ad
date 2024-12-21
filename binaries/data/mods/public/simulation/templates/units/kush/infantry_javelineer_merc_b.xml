@@ -13,7 +13,7 @@
     <Lang>napatan</Lang>
     <SelectionGroupName>units/kush/infantry_javelineer_merc_b</SelectionGroupName>
     <GenericName>Noba Skirmisher</GenericName>
-    <SpecificName>nhw ʿhȝw Noba</SpecificName>
+    <SpecificName>Nhw ʿhȝw Noba</SpecificName>
     <Icon>units/kush/infantry_javelinist.png</Icon>
     <Requirements>
       <Techs datatype="tokens">phase_town</Techs>
