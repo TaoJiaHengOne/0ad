@@ -177,6 +177,18 @@ var g_MainMenuItems = [
 		"tooltip": translate("Fight against one or more human players in a multiplayer game."),
 		"submenu": [
 			{
+				"caption": translate("Game Lobby"),
+				"tooltip":
+					colorizeHotkey(translate("%(hotkey)s: Launch the multiplayer lobby to join and host publicly visible games and chat with other players."), "lobby") +
+					(Engine.StartXmppClient ? "" : translate("Launch the multiplayer lobby. \\[DISABLED BY BUILD]")),
+				"enabled": () => !!Engine.StartXmppClient,
+				"hotkey": "lobby",
+				"onPress": () => {
+					 if (Engine.StartXmppClient)
+						 Engine.PushGuiPage("page_prelobby_entrance.xml");
+				}
+			},
+			{
 				// Translation: Join a game by specifying the host's IP address.
 				"caption": translate("Join Game"),
 				"tooltip": translate("Joining an existing multiplayer game."),
@@ -201,18 +213,6 @@ var g_MainMenuItems = [
 						"multiplayerGameType": "host",
 						"loadSavedGame": true
 					})
-			},
-			{
-				"caption": translate("Game Lobby"),
-				"tooltip":
-					colorizeHotkey(translate("%(hotkey)s: Launch the multiplayer lobby to join and host publicly visible games and chat with other players."), "lobby") +
-					(Engine.StartXmppClient ? "" : translate("Launch the multiplayer lobby. \\[DISABLED BY BUILD]")),
-				"enabled": () => !!Engine.StartXmppClient,
-				"hotkey": "lobby",
-				"onPress": () => {
-					 if (Engine.StartXmppClient)
-						 Engine.PushGuiPage("page_prelobby_entrance.xml");
-				}
 			},
 			{
 				"caption": translate("Replays"),
