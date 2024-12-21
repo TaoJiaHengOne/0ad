@@ -1,31 +1,31 @@
-newoption { trigger = "android", description = "Use non-working Android cross-compiling mode" }
-newoption { trigger = "coverage", description = "Enable code coverage data collection (GCC only)" }
-newoption { trigger = "gles", description = "Use non-working OpenGL ES 2.0 mode" }
-newoption { trigger = "icc", description = "Use Intel C++ Compiler (Linux only; should use either \"--cc icc\" or --without-pch too, and then set CXX=icpc before calling make)" }
-newoption { trigger = "jenkins-tests", description = "Configure CxxTest to use the XmlPrinter runner which produces Jenkins-compatible output" }
-newoption { trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
-newoption { trigger = "outpath", description = "Location for generated project files", default="../workspaces/default" }
-newoption { trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
-newoption { trigger = "with-lto", description = "Enable Link Time Optimization (LTO)" }
-newoption { trigger = "with-system-mozjs", description = "Search standard paths for libmozjs115, instead of using bundled copy" }
-newoption { trigger = "with-system-nvtt", description = "Search standard paths for nvidia-texture-tools library, instead of using bundled copy" }
-newoption { trigger = "with-valgrind", description = "Enable Valgrind support (non-Windows only)" }
-newoption { trigger = "without-audio", description = "Disable use of OpenAL/Ogg/Vorbis APIs" }
-newoption { trigger = "without-atlas", description = "Disable Atlas scenario/map editor and ActorEditor" }
-newoption { trigger = "without-lobby", description = "Disable the use of gloox and the multiplayer lobby" }
-newoption { trigger = "without-miniupnpc", description = "Disable use of miniupnpc for port forwarding" }
-newoption { trigger = "without-nvtt", description = "Disable use of NVTT" }
-newoption { trigger = "without-pch", description = "Disable generation and usage of precompiled headers" }
-newoption { trigger = "without-tests", description = "Disable generation of test projects" }
+newoption { category = "Pyrogenesis", trigger = "android", description = "Use non-working Android cross-compiling mode" }
+newoption { category = "Pyrogenesis", trigger = "coverage", description = "Enable code coverage data collection (GCC only)" }
+newoption { category = "Pyrogenesis", trigger = "gles", description = "Use non-working OpenGL ES 2.0 mode" }
+newoption { category = "Pyrogenesis", trigger = "icc", description = "Use Intel C++ Compiler (Linux only; should use either \"--cc icc\" or --without-pch too, and then set CXX=icpc before calling make)" }
+newoption { category = "Pyrogenesis", trigger = "jenkins-tests", description = "Configure CxxTest to use the XmlPrinter runner which produces Jenkins-compatible output" }
+newoption { category = "Pyrogenesis", trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
+newoption { category = "Pyrogenesis", trigger = "outpath", description = "Location for generated project files", default="../workspaces/default" }
+newoption { category = "Pyrogenesis", trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
+newoption { category = "Pyrogenesis", trigger = "with-lto", description = "Enable Link Time Optimization (LTO)" }
+newoption { category = "Pyrogenesis", trigger = "with-system-mozjs", description = "Search standard paths for libmozjs115, instead of using bundled copy" }
+newoption { category = "Pyrogenesis", trigger = "with-system-nvtt", description = "Search standard paths for nvidia-texture-tools library, instead of using bundled copy" }
+newoption { category = "Pyrogenesis", trigger = "with-valgrind", description = "Enable Valgrind support (non-Windows only)" }
+newoption { category = "Pyrogenesis", trigger = "without-audio", description = "Disable use of OpenAL/Ogg/Vorbis APIs" }
+newoption { category = "Pyrogenesis", trigger = "without-atlas", description = "Disable Atlas scenario/map editor and ActorEditor" }
+newoption { category = "Pyrogenesis", trigger = "without-lobby", description = "Disable the use of gloox and the multiplayer lobby" }
+newoption { category = "Pyrogenesis", trigger = "without-miniupnpc", description = "Disable use of miniupnpc for port forwarding" }
+newoption { category = "Pyrogenesis", trigger = "without-nvtt", description = "Disable use of NVTT" }
+newoption { category = "Pyrogenesis", trigger = "without-pch", description = "Disable generation and usage of precompiled headers" }
+newoption { category = "Pyrogenesis", trigger = "without-tests", description = "Disable generation of test projects" }
 
 -- OS X specific options
-newoption { trigger = "macosx-version-min", description = "Set minimum required version of the OS X API, the build will possibly fail if an older SDK is used, while newer API functions will be weakly linked (i.e. resolved at runtime)" }
-newoption { trigger = "sysroot", description = "Set compiler system root path, used for building against a non-system SDK. For example /usr/local becomes SYSROOT/user/local" }
+newoption { category = "Pyrogenesis", trigger = "macosx-version-min", description = "Set minimum required version of the OS X API, the build will possibly fail if an older SDK is used, while newer API functions will be weakly linked (i.e. resolved at runtime)" }
+newoption { category = "Pyrogenesis", trigger = "sysroot", description = "Set compiler system root path, used for building against a non-system SDK. For example /usr/local becomes SYSROOT/user/local" }
 
 -- Install options
-newoption { trigger = "bindir", description = "Directory for executables (typically '/usr/games'); default is to be relocatable" }
-newoption { trigger = "datadir", description = "Directory for data files (typically '/usr/share/games/0ad'); default is ../data/ relative to executable" }
-newoption { trigger = "libdir", description = "Directory for libraries (typically '/usr/lib/games/0ad'); default is ./ relative to executable" }
+newoption { category = "Pyrogenesis", trigger = "bindir", description = "Directory for executables (typically '/usr/games'); default is to be relocatable" }
+newoption { category = "Pyrogenesis", trigger = "datadir", description = "Directory for data files (typically '/usr/share/games/0ad'); default is ../data/ relative to executable" }
+newoption { category = "Pyrogenesis", trigger = "libdir", description = "Directory for libraries (typically '/usr/lib/games/0ad'); default is ./ relative to executable" }
 
 if _ACTION == "gmake" then
 	print("Premake action 'gmake' is no longer supported by pyrogenesis, use 'gmake2'")
