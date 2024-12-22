@@ -4,6 +4,5 @@
 	<script directory="gui/common/"/>
 	<script directory="gamesettings/"/>
 	<script directory="gamesettings/attributes/"/>
-	<script file="autostart/autostart.js"/>
 	<script file="gui/autostart/autostart.js"/>
 </objects>
