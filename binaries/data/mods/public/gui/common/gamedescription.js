@@ -317,6 +317,15 @@ function getGameDescription(initAttributes, mapCache)
 			});
 	}
 
+	if (initAttributes.settings.PlayerPlacement)
+	{
+		const playerPlacement = g_Settings.PlayerPlacements.find(placement => placement.Id === initAttributes.settings.PlayerPlacement);
+		titles.push({
+			"label": playerPlacement ? playerPlacement.Name : translateWithContext("player placement", "Random Player Placement"),
+			"value": playerPlacement ? playerPlacement.Description : translate("Randomly select a player placement from the list.")
+		});
+	}
+
 	if (initAttributes.settings.Biome)
 	{
 		let biome = g_Settings.Biomes.find(b => b.Id == initAttributes.settings.Biome);

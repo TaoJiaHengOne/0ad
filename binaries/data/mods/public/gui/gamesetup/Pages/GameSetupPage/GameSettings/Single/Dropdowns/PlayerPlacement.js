@@ -26,7 +26,7 @@ GameSettingControls.PlayerPlacement = class PlayerPlacement extends GameSettingC
 		let patterns = [randomItem];
 
 		for (let pattern of g_GameSettings.playerPlacement.available)
-			patterns.push(g_GameSettings.playerPlacement.StartingPositions
+			patterns.push(g_Settings.PlayerPlacements
 				.find(pObj => pObj.Id == pattern));
 
 		this.values = prepareForDropdown(patterns);

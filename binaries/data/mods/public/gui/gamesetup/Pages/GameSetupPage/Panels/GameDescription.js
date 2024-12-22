@@ -26,6 +26,7 @@ class GameDescription
 		g_GameSettings.mapExploration.watch(update, ["allied"]);
 		g_GameSettings.nomad.watch(update, ["enabled"]);
 		g_GameSettings.population.watch(update, ["perPlayer", "cap", "capType"]);
+		g_GameSettings.playerPlacement.watch(update, ["value"]);
 		g_GameSettings.rating.watch(update, ["enabled"]);
 		g_GameSettings.regicideGarrison.watch(update, ["enabled"]);
 		g_GameSettings.relic.watch(update, ["count", "duration"]);
