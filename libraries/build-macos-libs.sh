@@ -868,7 +868,7 @@ echo "Building gloox..."
 	LIB_VERSION="${GLOOX_VERSION}"
 	LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
 	LIB_DIRECTORY="$LIB_VERSION"
-	LIB_URL="http://camaya.net/download/"
+	LIB_URL="https://releases.wildfiregames.com/libs/"
 
 	mkdir -p gloox
 	cd gloox
