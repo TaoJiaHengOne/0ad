@@ -68,7 +68,7 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 		"skirmishes": "skirmish",
 	}[mapType]);
 	settings.map.selectMap("maps/" + cmdLineArgs['autostart']);
-	settings.mapSize.setSize(cmdLineArgs['autostart-size'] || 192);
+	settings.mapSize.setSize(+cmdLineArgs['autostart-size'] || 192);
 	settings.biome.setBiome(cmdLineArgs['autostart-biome'] || "random");
 
 	settings.playerCount.setNb(cmdLineArgs['autostart-players'] || 2);
