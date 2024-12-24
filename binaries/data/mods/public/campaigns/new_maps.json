@@ -1,7 +1,51 @@
 {
 	"Name": "Demo campaign - new maps",
 	"Description": "Discover the new and improved maps in Alpha XXVII with a demo campaign, taking you through all of them.",
-	"Levels": {},
-	"Order": [],
+	"Levels": {
+		"Arabian Oases": {
+			"Map": "skirmishes/arabian_oases_2p.xml",
+			"MapType": "skirmish",
+			"useGameSetup": true
+		},
+		"Coast Range": {
+			"Map": "random/coast_range",
+			"MapType": "random",
+			"useGameSetup": true
+		},
+		"Foothills": {
+			"Map": "random/foothills",
+			"MapType": "random",
+			"useGameSetup": true
+		},
+		"Isthmus of Corinth": {
+			"Map": "skirmishes/isthmus_of_corinth_2p.xml",
+			"MapType": "skirmish",
+			"useGameSetup": true
+		},
+		"Migration": {
+			"Map": "random/migration",
+			"MapType": "random",
+			"useGameSetup": true
+		},
+		"Sporades Islands": {
+			"Map": "skirmishes/sporades_islands_2p.xml",
+			"MapType": "skirmish",
+			"useGameSetup": true
+		},
+		"Zagros Mountains": {
+			"Map": "skirmishes/zagros_mountains_2p.xml",
+			"MapType": "skirmish",
+			"useGameSetup": true
+		}
+	},
+	"Order": [
+		"Arabian Oases",
+		"Isthmus of Corinth",
+		"Sporades Islands",
+		"Zagros Mountains",
+		"Coast Range",
+		"Foothills",
+		"Migration"
+	],
 	"ShowUnavailable": true
 }
