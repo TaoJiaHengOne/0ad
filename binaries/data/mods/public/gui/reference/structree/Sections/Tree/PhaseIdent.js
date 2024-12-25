@@ -47,7 +47,10 @@ class PhaseIdent
 	drawPhaseIcon(phaseIcon, phaseIndex, civCode)
 	{
 		let phaseName = this.page.TemplateParser.phaseList[phaseIndex];
-		let prodPhaseTemplate = this.page.TemplateParser.getTechnology(phaseName + "_" + civCode, civCode) || this.page.TemplateParser.getTechnology(phaseName, civCode);
+		let prodPhaseTemplate =
+			this.page.TemplateParser.getTechnology(phaseName + "_" + civCode, civCode) ||
+			this.page.TemplateParser.getTechnology(phaseName + "_generic", civCode) ||
+			this.page.TemplateParser.getTechnology(phaseName, civCode);
 
 		phaseIcon.sprite = "stretched:" + this.page.IconPath + prodPhaseTemplate.icon;
 		phaseIcon.tooltip = getEntityNamesFormatted(prodPhaseTemplate);

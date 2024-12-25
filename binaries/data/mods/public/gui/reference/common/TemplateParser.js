@@ -371,6 +371,9 @@ class TemplateParser
 
 	derivePhaseList(technologyList, civCode)
 	{
+		// Wipe all cached phase data. It contains the previous civ's SpecificNames which wouldn't be reloaded otherwise.
+		this.phases = {};
+
 		// Load all of a civ's specific phase technologies
 		for (let techcode of technologyList)
 			if (this.TemplateLoader.isPhaseTech(techcode))
