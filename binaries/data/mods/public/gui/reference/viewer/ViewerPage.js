@@ -127,8 +127,8 @@ class ViewerPage extends ReferencePage
 		entityStats.caption = this.constructor.buildText(this.currentTemplate, this.StatsFunctions);
 
 		let infoSize = this.guiElements.entityInfo.size;
-		// The magic '8' below provides a gap between the bottom of the icon, and the start of the info text.
-		infoSize.top = Math.max(entityIcon.size.bottom + 8, entityStats.size.top + entityStats.getTextSize().height);
+		const infoTopMargin = 8;
+		infoSize.top = Math.max(entityIcon.size.bottom + infoTopMargin, entityStats.size.top + entityStats.getTextSize().height + infoTopMargin);
 		this.guiElements.entityInfo.size = infoSize;
 
 		this.guiElements.entityInfo.caption = this.constructor.buildText(this.currentTemplate, this.InfoFunctions, "\n\n");
