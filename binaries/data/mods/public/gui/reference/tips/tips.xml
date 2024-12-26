@@ -4,7 +4,7 @@
 	<script directory="gui/reference/tips/"/>
 	<script directory="gui/reference/common/Buttons/"/>
     <object type="image" sprite="BackgroundTranslucent"/>
-	<object type="image" size="50%-502 50%-255 50%+502 50%+255" sprite="ModernDialog">
+	<object type="image" size="50%-488 50%-255 50%+488 50%+255" sprite="ModernDialog">
 		<object style="TitleText" type="text" size="50%-128 -18 50%+128 14">
 			<translatableAttribute id="caption">Tips and Tricks</translatableAttribute>
 		</object>

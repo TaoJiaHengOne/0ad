@@ -133,7 +133,7 @@ class TipDisplay
 		);
 
 		const textSize = this.tipText.size;
-		textSize.top = this.tipTitleDecoration.size.bottom + 10;
+		textSize.top = this.tipTitleDecoration.size.bottom + 16;
 		this.tipText.size = textSize;
 	}
 
