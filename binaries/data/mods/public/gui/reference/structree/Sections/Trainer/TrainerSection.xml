@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<object size="100%-124 54+64 100%-16 100%-66" name="trainerSection">
+<object size="100%-124 140 100%-16 100%-66" name="trainerSection">
 	<object
 		name="trainerSectionHeading"
 		type="text"
