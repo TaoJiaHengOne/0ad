@@ -9,6 +9,7 @@ class GameSettingWarning
 
 		g_GameSettings.cheats.watch(() => this.onSettingsChange(), ["enabled"]);
 		g_GameSettings.rating.watch(() => this.onSettingsChange(), ["enabled"]);
+		this.onSettingsChange();
 	}
 
 	onSettingsChange()
