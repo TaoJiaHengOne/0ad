@@ -6,8 +6,8 @@
       <mesh>props/hele_fortress_up_shields.dae</mesh>
       <textures>
         <texture file="props/athen_prop_shields.png" name="baseTex"/>
-        <texture name="specTex" file="null_white.dds"/>
-        <texture file="default_norm.png" name="normTex"/>
+        <texture file="props/athen_prop_shields_norm.png" name="normTex"/>
+        <texture file="props/athen_prop_shields_spec.png" name="specTex"/>
       </textures>
     </variant>
   </group>

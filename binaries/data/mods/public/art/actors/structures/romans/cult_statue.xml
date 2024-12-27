@@ -6,6 +6,7 @@
       <mesh>props/capitoline_wolf_cult.dae</mesh>
       <textures>
         <texture file="props/capitoline_wolf_norm.png" name="normTex"/>
+        <texture file="props/ao/capitoline_wolf.png" name="aoTex"/>
       </textures>
     </variant>
   </group>
@@ -23,5 +24,5 @@
       </textures>
     </variant>
   </group>
-  <material>no_trans_norm_spec.xml</material>
+  <material>no_trans_ao_norm_spec.xml</material>
 </actor>

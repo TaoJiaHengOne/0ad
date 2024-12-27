@@ -6,8 +6,9 @@
       <mesh>structural/colossus_statue.dae</mesh>
       <textures>
         <texture file="structural/colossus_diffuse.png" name="baseTex"/>
-        <texture file="structural/specular_bronze.png" name="specTex"/>
+        <texture file="structural/ao/colossus.png" name="aoTex"/>
         <texture file="structural/colossus_norm.png" name="normTex"/>
+        <texture file="structural/specular_bronze.png" name="specTex"/>
       </textures>
     </variant>
   </group>
@@ -15,5 +16,5 @@
     <variant frequency="1" name="alive"/>
     <variant file="structures/destruction_small.xml"/>
   </group>
-  <material>no_trans_norm_spec.xml</material>
+  <material>no_trans_ao_norm_spec.xml</material>
 </actor>
