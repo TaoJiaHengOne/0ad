@@ -129,9 +129,11 @@ class SavegameList
 		let list = this.savedGamesMetadata.map(metadata => {
 			let isCompatible = this.isCompatibleSavegame(metadata, engineInfo) &&
 			                   this.campaignFilter(metadata, this.campaignRun);
+			// Backwards compatibility for pre-A25 savegames
+			const mapName = metadata.initAttributes.settings?.mapName ?? metadata.initAttributes.settings.Name;
 			return {
 				"date": this.generateSavegameDateString(metadata, engineInfo),
-				"mapName": compatibilityColor(translate(metadata.initAttributes.settings.mapName), isCompatible),
+				"mapName": compatibilityColor(translate(mapName), isCompatible),
 				"mapType": compatibilityColor(translateMapType(metadata.initAttributes.mapType), isCompatible),
 				"description": compatibilityColor(metadata.description, isCompatible)
 			};
