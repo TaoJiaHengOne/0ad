@@ -32,17 +32,6 @@
 
 class CCmpOverlayRenderer final : public ICmpOverlayRenderer
 {
-	enum class LocalLosVisibility : u8
-	{
-		HIDDEN = 0,
-		FOGGED = 1,
-		VISIBLE = 2,
-		DIRTY = 3,
-	};
-	static_assert(LocalLosVisibility::HIDDEN == static_cast<LocalLosVisibility>(LosVisibility::HIDDEN), "Desynced");
-	static_assert(LocalLosVisibility::FOGGED == static_cast<LocalLosVisibility>(LosVisibility::FOGGED), "Desynced");
-	static_assert(LocalLosVisibility::VISIBLE == static_cast<LocalLosVisibility>(LosVisibility::VISIBLE), "Desynced");
-
 public:
 	static void ClassInit(CComponentManager &componentManager)
 	{
@@ -63,7 +52,9 @@ public:
 
 	// NOT SAFE TO SERIALIZE - used to hide status bars/auras of entities invisible to the player.
 	// We also can't just deserialize it because annoyingly the range manager computes LOS data on deserialize...
-	LocalLosVisibility m_VisibilityToCurrentPlayer = LocalLosVisibility::DIRTY;
+	LosVisibility m_VisibilityToCurrentPlayer = LosVisibility::VISIBLE;
+	// So to work around that, just store which player we saved this for last.
+	player_id_t m_LastStoredPlayerVisibility = INVALID_PLAYER;
 
 	static std::string GetSchema()
 	{
@@ -112,7 +103,7 @@ public:
 		{
 			const CMessageVisibilityChanged &msgData = static_cast<const CMessageVisibilityChanged &>(msg);
 			if (msgData.player == GetSimContext().GetCurrentDisplayedPlayer())
-				m_VisibilityToCurrentPlayer = static_cast<LocalLosVisibility>(msgData.newVisibility);
+				m_VisibilityToCurrentPlayer = static_cast<LosVisibility>(msgData.newVisibility);
 			break;
 		}
 		}
@@ -157,19 +148,21 @@ public:
 		m_Sprites.push_back(sprite);
 		m_SpriteOffsets.push_back(CVector3D(position));
 
-		if (m_VisibilityToCurrentPlayer == LocalLosVisibility::DIRTY)
-		{
-			CmpPtr<ICmpRangeManager> cmpRangeManager(GetSystemEntity());
-			m_VisibilityToCurrentPlayer = static_cast<LocalLosVisibility>(cmpRangeManager->GetLosVisibility(GetEntityHandle(), GetSimContext().GetCurrentDisplayedPlayer()));
-		}
-
 		UpdateMessageSubscriptions();
 	}
 
 	void Interpolate(float UNUSED(frameTime), float frameOffset)
 	{
+		// Recompute our visibility if needed.
+		if (m_LastStoredPlayerVisibility != GetSimContext().GetCurrentDisplayedPlayer())
+		{
+			CmpPtr<ICmpRangeManager> cmpRangeManager(GetSystemEntity());
+			m_VisibilityToCurrentPlayer = static_cast<LosVisibility>(cmpRangeManager->GetLosVisibility(GetEntityHandle(), GetSimContext().GetCurrentDisplayedPlayer()));
+			m_LastStoredPlayerVisibility = GetSimContext().GetCurrentDisplayedPlayer();
+		}
+
 		// Skip all the following computations if we have no sprites
-		if (m_Sprites.empty() || m_VisibilityToCurrentPlayer == LocalLosVisibility::HIDDEN)
+		if (m_Sprites.empty() || m_VisibilityToCurrentPlayer == LosVisibility::HIDDEN)
 		{
 			m_Enabled = false;
 			return;
