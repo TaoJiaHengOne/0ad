@@ -2,9 +2,9 @@
 <terrain>
 	<textures>
 		<texture name="baseTex" file="types/tropic_swamp_a.png"/>
-		<texture name="normTex" file="types/default_norm.png"/>
-		<texture name="specTex" file="types/blackness.dds"/>
+		<texture name="normTex" file="types/tropic_swamp_a_norm.png"/>
+		<texture name="specTex" file="types/tropic_swamp_a.png"/>
 	</textures>
-	<props angle="45.0" size="32.0"/>
+	<props size="32.0" angle="0.0"/>
 	<material>terrain_norm_spec.xml</material>
 </terrain>

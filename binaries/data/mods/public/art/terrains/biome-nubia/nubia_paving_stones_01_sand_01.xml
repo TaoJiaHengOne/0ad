@@ -5,6 +5,6 @@
 		<texture name="normTex" file="types/alpine_arctic/paving_stones_01_norm.png"/>
 		<texture name="specTex" file="types/alpine_arctic/paving_stones_01_spec.png"/>
 	</textures>
-	<props size="30.0"/> 
+	<props size="30.0" angle="45.0"/> 
 	<material>terrain_norm_spec.xml</material>
 </terrain>
