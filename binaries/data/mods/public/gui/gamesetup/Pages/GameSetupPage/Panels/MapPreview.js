@@ -9,19 +9,19 @@ class MapPreview
 		this.mapInfoName = Engine.GetGUIObjectByName("mapInfoName");
 		this.mapPreview = Engine.GetGUIObjectByName("mapPreview");
 
-		if (isSavedGame)
-		{
-			// Delay the settings registration handler until we have the map cache.
-			setupWindow.controls.gameSettingsController.registerSettingsLoadedHandler(() => {
-				this.renderName();
-				this.renderPreview();
-			});
-			return;
-		}
+		// Delay the settings registration handler until we have the map cache.
+		setupWindow.controls.gameSettingsController.registerSettingsLoadedHandler(
+			this.onSettingsLoaded.bind(this));
 
 		// TODO: Why does onPress not work? CGUI.cpp seems to support it.
 		this.mapPreview.onMouseLeftPress = this.onPress.bind(this, isSavedGame);
 		this.mapPreview.tooltip = this.Tooltip;
+	}
+
+	onSettingsLoaded()
+	{
+		this.renderName();
+		this.renderPreview();
 		g_GameSettings.map.watch(() => this.renderName(), ["map"]);
 		g_GameSettings.mapPreview.watch(() => this.renderPreview(), ["value"]);
 	}
