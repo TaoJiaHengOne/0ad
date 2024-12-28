@@ -41,3 +41,8 @@ patch -p1 <"${PATCHES}"/FixClang19.diff
 # Fix build with Python >=3.12.8 and Python >=3.13.1
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1935621
 patch -p1 <"${PATCHES}"/FixPython3.12.8.diff
+
+# Fix build for profiling with samply.
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1876415
+# Fixed in ESR 128
+patch -p1 <"${PATCHES}"/FixProfiling.diff

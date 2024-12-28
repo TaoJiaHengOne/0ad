@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 # This should match the version in config/milestone.txt
 FOLDER="mozjs-115.16.1"
 # If same-version changes are needed, increment this.
-LIB_VERSION="115.16.1+1"
+LIB_VERSION="115.16.1+2"
 LIB_NAME="mozjs115"
 
 echo "Building SpiderMonkey..."
