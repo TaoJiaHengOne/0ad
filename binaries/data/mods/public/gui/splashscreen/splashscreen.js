@@ -9,7 +9,7 @@ function init(data)
 function closePage()
 {
 	Engine.ConfigDB_CreateValue("user", "gui.splashscreen.enable", String(Engine.GetGUIObjectByName("displaySplashScreen").checked));
-	Engine.ConfigDB_CreateValue("user", "gui.splashscreen.version", Engine.GetFileMTime(g_SplashScreenFile));
+	Engine.ConfigDB_CreateValue("user", "gui.splashscreen.version", Engine.CalculateMD5(Engine.ReadFile(g_SplashScreenFile)));
 	Engine.ConfigDB_SaveChanges("user");
 	Engine.PopGuiPage();
 }
