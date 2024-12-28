@@ -4,6 +4,14 @@ class ChatInputPanel
 	{
 		this.chatInputAutocomplete = chatInputAutocomplete;
 
+		this.chatSubmitButton = Engine.GetGUIObjectByName("chatSubmitButton");
+		resizeGUIObjectToCaption(this.chatSubmitButton, { "horizontal": "left" }, { "horizontal": 8 });
+
+		this.chatInput = Engine.GetGUIObjectByName("chatInput");
+		let size = this.chatInput.size;
+		size.right = this.chatSubmitButton.size.left;
+		this.chatInput.size = size;
+
 		this.chatInput = Engine.GetGUIObjectByName("chatInput");
 		this.chatInput.tooltip = colorizeAutocompleteHotkey(this.Tooltip);
 		this.chatInput.onPress = this.onPress.bind(this);

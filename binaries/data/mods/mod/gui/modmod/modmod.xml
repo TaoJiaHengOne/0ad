@@ -13,7 +13,7 @@
 		</object>
 
 		<!-- Filter Panel -->
-		<object size="0 40 312 64">
+		<object size="0 40 350 64">
 			<object name="modGenericFilter"
 				type="input"
 				style="ModernInput"
@@ -38,7 +38,7 @@
 			</object>
 		</object>
 
-		<object size = "100%-200 40 100%-20 64">
+		<object size = "100%-275 40 100%-20 64">
 			<object name="modCompatibleFilter"
 						type="checkbox"
 						checked="false"
@@ -55,7 +55,7 @@
 		<object
 			name="globalModDescription"
 			type="text"
-			size="312 32 100%-16 69"
+			size="350 32 100%-16 69"
 			textcolor="180 180 180"
 			text_align="left"
 			text_valign="center"

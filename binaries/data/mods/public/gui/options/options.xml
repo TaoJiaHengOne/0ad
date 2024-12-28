@@ -9,23 +9,23 @@
 	<object type="image" sprite="ModernFade"/>
 
 	<!-- Settings Window -->
-	<object name="options" type="image" style="ModernDialog" size="50%-350 50%-374 50%+350 50%+374">
+	<object name="options" type="image" style="ModernDialog" size="50%-400 50%-374 50%+400 50%+374">
 
 		<object style="ModernLabelText" type="text" size="50%-128 -16 50%+128 16">
 			<translatableAttribute id="caption">Game Options</translatableAttribute>
 		</object>
 
 		<!-- Category Tabs -->
-		<object size="15 16 210 100%-52">
+		<object size="15 16 230 100%-52">
 			<include file="gui/common/tab_buttons.xml"/>
 		</object>
 
 		<!-- Option Controls -->
-		<object name="option_controls" type="image" sprite="ModernDarkBoxGold" size="220 16 685 100%-52">
+		<object name="option_controls" type="image" sprite="ModernDarkBoxGold" size="240 16 785 100%-52">
 			<repeat count="25">
 				<object name="option_control[n]" size="0 0 100% 0">
-					<object name="option_label[n]" size="0 0 60% 100%" type="text" style="ModernLeftLabelText"/>
-					<object name="option_control_boolean[n]" size="90% 2 100% 100%+2" type="checkbox" style="ModernTickBox"/>
+					<object name="option_label[n]" size="0 0 65%-10 100%" type="text" style="ModernLeftLabelText"/>
+					<object name="option_control_boolean[n]" size="95% 2 100% 100%+2" type="checkbox" style="ModernTickBox"/>
 					<object name="option_control_string[n]" size="65% 0 100%-8 100%" type="input" style="ModernInput"/>
 					<object name="option_control_color[n]" size="65%+40 0 100%-8 100%" type="input" style="ModernInput">
 						<object type="image" size="-40 4 -24 100%-4" sprite="color:gold"/>

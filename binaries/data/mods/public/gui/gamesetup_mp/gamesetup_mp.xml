@@ -116,8 +116,8 @@
 				</object>
 			</object>
 
-			<object name="hostSTUNWrapper" size="120 136 100% 180">
-				<object name="useSTUN" size="0 10 32 100%" type="checkbox" style="ModernTickBox">
+			<object name="hostSTUNWrapper" size="80 152 100%-20 180">
+				<object name="useSTUN" size="0 4 32 100%" type="checkbox" style="ModernTickBox">
 					<action on="Press">Engine.ConfigDB_CreateAndSaveValue("user", "lobby.stun.enabled", String(this.checked));</action>
 				</object>
 				<object type="text" size="26 0 100% 100%" style="ModernLeftLabelText">

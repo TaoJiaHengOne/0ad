@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object name="tradeDialogPanelBarter">
 
-	<object type="text" size="8 0 100% 32" style="ModernLeftLabelText">
+	<object type="text" size="0 0 100% 32" style="ModernLeftLabelText">
 		<translatableAttribute id="caption">Barter</translatableAttribute>
 	</object>
 
@@ -9,19 +9,19 @@
 
 	<object size="0 38 100% 122">
 
-		<object type="text" size="0 0 60 41" style="ModernRightLabelText">
+		<object type="text" size="0 0 100 41" style="ModernLeftLabelText">
 			<translatableAttribute id="caption">Sell:</translatableAttribute>
 		</object>
 
-		<object type="text" size="0 100%-41 60 100%" style="ModernRightLabelText">
+		<object type="text" size="0 100%-41 100 100%" style="ModernLeftLabelText">
 			<translatableAttribute id="caption">Buy:</translatableAttribute>
 		</object>
 
-		<object name="barterNoMarketsMessage" type="text" size="72 0 100% 100%" style="ModernLabelText">
+		<object name="barterNoMarketsMessage" type="text" size="112 0 100%-8 100%" style="ModernLabelText">
 			<translatableAttribute id="caption">No Markets Available</translatableAttribute>
 		</object>
 
-		<object name="barterResources" size="92 0 100% 100%" hotkey="session.massbarter">
+		<object name="barterResources" size="112 0 100% 100%" hotkey="session.massbarter">
 			<repeat count="10">
 				<object size="0 0 58 100%">
 					<include file="gui/session/trade/BarterButton.xml"/>

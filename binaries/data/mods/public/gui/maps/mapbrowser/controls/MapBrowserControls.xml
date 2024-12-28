@@ -4,13 +4,11 @@
 
 	<!-- Page controls -->
 	<object>
-		<object name="mapBrowserPageStatus" type="text" style="ModernLabelText" size="0 0 180 30"/>
-
-		<object size="180 0 100%-60 30">
+		<object size="20% 0 80%-58 28">
 			<object name="mapBrowserPreviousButton" type="button" style="ModernButtonRed" size="0 0 50% 100%"/>
 			<object name="mapBrowserNextButton" type="button" style="ModernButtonRed" size="50% 0 100% 100%"/>
 		</object>
-		<object size="100%-60 0 100% 30">
+		<object size="100%-58 0 100% 28">
 			<object name="mapsZoomIn" type="button" style="ModernButtonRed" size="0 0 50% 100%">
 				<translatableAttribute id="caption" context="zoom in">+</translatableAttribute>
 			</object>
@@ -18,9 +16,11 @@
 				<translatableAttribute id="caption" context="zoom out">−</translatableAttribute>
 			</object>
 		</object>
+
+		<object name="mapBrowserPageStatus" type="text" style="ModernLabelText" size="5% 32 95%-60 60"/>
 	</object>
 
-	<object size="0 35 100% 100%-60">
+	<object size="0 72 100% 100%-58">
 		<object size="0 0 100% 40">
 			<object name="mapBrowserSearchBoxLabel" type="text" style="ModernLeftLabelText" size="2 0 0 35">
 				<translatableAttribute id="caption">Search Map:</translatableAttribute>

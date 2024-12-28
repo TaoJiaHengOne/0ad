@@ -11,14 +11,14 @@
 	<object name="mapSizeFilter"
 		type="dropdown"
 		style="ModernDropDown"
-		size="58%-5 0 74%-10 100%"
+		size="55%-5 0 72%-10 100%"
 		font="sans-bold-13">
 	</object>
 
 	<object name="mapTypeFilter"
 		type="dropdown"
 		style="ModernDropDown"
-		size="74%-5 0 90%-10 100%"
+		size="72%-5 0 90%-10 100%"
 		font="sans-bold-13">
 	</object>
 

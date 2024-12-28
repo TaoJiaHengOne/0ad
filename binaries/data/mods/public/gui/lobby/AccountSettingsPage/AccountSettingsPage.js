@@ -52,6 +52,7 @@ var AccountSettingsPage = {
 		let timeout;
 		try
 		{
+			requestResult.textcolor = "white";
 			requestResult.caption = "Changing password…";
 			const encryptedPassword = AccountSettingsPage._readAndValidatePassword(SetPasswordError);
 			Engine.LobbyChangePassword(encryptedPassword);
@@ -72,7 +73,10 @@ var AccountSettingsPage = {
 		catch (e)
 		{
 			if (e instanceof SetPasswordError)
+			{
+				requestResult.textcolor = "red";
 				requestResult.caption = e.message;
+			}
 			else
 			{
 				requestResult.caption = "";

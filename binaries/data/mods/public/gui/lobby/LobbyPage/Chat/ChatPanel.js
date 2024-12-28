@@ -22,5 +22,14 @@ class ChatPanel
 		for (let name in ChatMessageEvents)
 			this.chatMessageEvents[name] = new ChatMessageEvents[name](
 				xmppMessages, this.chatMessagesPanel, this.statusMessageFormat, this.systemMessageFormat);
+
+		this.chatSubmit = Engine.GetGUIObjectByName("chatSubmit");
+		resizeGUIObjectToCaption(this.chatSubmit, { "horizontal": "left" }, { "horizontal": 8 });
+
+		this.chatInput = Engine.GetGUIObjectByName("chatInput");
+		let size = this.chatInput.size;
+		size.right = this.chatSubmit.size.left;
+		this.chatInput.size = size;
+		this.chatInput = Engine.GetGUIObjectByName("chatInput");
 	}
 }

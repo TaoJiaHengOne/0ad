@@ -18,7 +18,7 @@
 			<translatableAttribute id="caption">Category:</translatableAttribute>
 		</object>
 
-		<object name="hotkeyFilter" type="dropdown" style="ModernDropDown" size="132 32 300 58"/>
+		<object name="hotkeyFilter" type="dropdown" style="ModernDropDown" size="132 32 350 58"/>
 
 		<object style="ModernLabelText" type="text" size="100%-300 32 100%-200 58" text_align="left">
 			<translatableAttribute id="caption">Filter:</translatableAttribute>

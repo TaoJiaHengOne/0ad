@@ -9,6 +9,21 @@ class MapBrowserPageControls
 		this.gridBrowser = gridBrowser;
 
 		this.setupButtons();
+
+        const alignmentHelper = new AlignmentHelper("max");
+        const labelMargin = 5;
+
+		this.mapBrowserSearchBoxLabel = Engine.GetGUIObjectByName("mapBrowserSearchBoxLabel");
+		this.mapBrowserSearchBoxControl = Engine.GetGUIObjectByName("mapBrowserSearchBoxControl");
+        alignmentHelper.setObject(this.mapBrowserSearchBoxControl, "left", this.mapBrowserSearchBoxLabel.size.right + labelMargin);
+
+		this.mapBrowserMapTypeLabel = Engine.GetGUIObjectByName("mapBrowserMapTypeLabel");
+		this.mapBrowserMapTypeControl = Engine.GetGUIObjectByName("mapBrowserMapTypeControl");
+        alignmentHelper.setObject(this.mapBrowserMapTypeControl, "left", this.mapBrowserMapTypeLabel.size.right + labelMargin);
+
+		this.mapBrowserMapFilterLabel = Engine.GetGUIObjectByName("mapBrowserMapFilterLabel");
+		this.mapBrowserMapFilterControl = Engine.GetGUIObjectByName("mapBrowserMapFilterControl");
+        alignmentHelper.setObject(this.mapBrowserMapFilterControl, "left", this.mapBrowserMapFilterLabel.size.right + labelMargin);
 	}
 
 	setupButtons()
