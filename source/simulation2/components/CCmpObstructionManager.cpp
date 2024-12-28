@@ -578,6 +578,10 @@ private:
 	{
 		m_DebugOverlayDirty = true;
 
+		// Early exit to speed up the map initialisation.
+		if (m_UpdateInformations.globallyDirty)
+			return;
+
 		if (flags & (FLAG_BLOCK_PATHFINDING | FLAG_BLOCK_FOUNDATION))
 		{
 			m_UpdateInformations.dirty = true;
@@ -617,6 +621,10 @@ private:
 	void MakeDirtyUnit(flags_t flags, u32 index, const UnitShape& shape)
 	{
 		m_DebugOverlayDirty = true;
+
+		// Early exit to speed up the map initialisation.
+		if (m_UpdateInformations.globallyDirty)
+			return;
 
 		if (flags & (FLAG_BLOCK_PATHFINDING | FLAG_BLOCK_FOUNDATION))
 		{
