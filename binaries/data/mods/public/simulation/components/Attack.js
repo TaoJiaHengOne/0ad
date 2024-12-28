@@ -695,7 +695,7 @@ Attack.prototype.PerformAttack = function(type, target)
 		let predictedHeight = cmpTargetPosition.GetHeightAt(predictedPosition.x, predictedPosition.z);
 
 		// Add inaccuracy based on spread.
-		let distanceModifiedSpread = ApplyValueModificationsToEntity("Attack/" + type + "/Spread", +this.template[type].Projectile.Spread, this.entity) *
+		const distanceModifiedSpread = ApplyValueModificationsToEntity("Attack/" + type + "/Projectile/Spread", +this.template[type].Projectile.Spread, this.entity) *
 			predictedPosition.horizDistanceTo(selfPosition) / 100;
 
 		let randNorm = randomNormal2D();

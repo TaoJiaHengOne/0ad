@@ -469,9 +469,9 @@ def compute_unit_efficiency_diff(templates_by_parent, civs):
                     )
 
                     diff = float(tp[1]["Spread"]) - float(templates[parent]["Spread"])
-                    efficiency_table[(parent, tp[0], "Attack/" + att_type + "/Ranged/Spread")] = (
-                        diff
-                    )
+                    efficiency_table[
+                        (parent, tp[0], "Attack/" + att_type + "/Ranged/Projectile/Spread")
+                    ] = diff
 
             for rtype in RESOURCES:
                 diff = +1j + (

@@ -356,7 +356,7 @@ Trigger.prototype.RemoveSpread = function()
 {
 	let cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
 	cmpModifiersManager.AddModifiers("no_promotion", {
-		"Attack/Ranged/Spread": [{ "affects": ["Unit"], "replace": 0 }],
+		"Attack/Ranged/Projectile/Spread": [{ "affects": ["Unit"], "replace": 0 }],
 	}, 4); // player 2 is ent 4
 };
 
