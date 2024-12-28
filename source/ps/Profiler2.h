@@ -96,8 +96,6 @@ class CProfiler2GPU;
 class CProfiler2
 {
 	friend class CProfiler2GPUARB;
-	friend class CProfile2SpikeRegion;
-	friend class CProfile2AggregatedRegion;
 public:
 	// Items stored in the buffers:
 
@@ -141,8 +139,6 @@ private:
 		ThreadStorage(CProfiler2& profiler, const std::string& name);
 		~ThreadStorage();
 
-		enum { BUFFER_NORMAL, BUFFER_SPIKE, BUFFER_AGGREGATE };
-
 		void RecordSyncMarker(double t)
 		{
 			// Store the magic string followed by the absolute time
@@ -185,12 +181,6 @@ private:
 			va_end(argp);
 		}
 
-		size_t HoldLevel();
-		u8 HoldType();
-		void PutOnHold(u8 type);
-		void HoldToBuffer(bool condensed);
-		void ThrowawayHoldBuffer();
-
 		CProfiler2& GetProfiler()
 		{
 			return m_Profiler;
@@ -222,36 +212,6 @@ private:
 		double m_LastTime; // used for computing relative times
 
 		u8* m_Buffer;
-
-		struct HoldBuffer
-		{
-			friend class ThreadStorage;
-		public:
-			HoldBuffer()
-			{
-				buffer = new u8[HOLD_BUFFER_SIZE];
-				memset(buffer, ITEM_NOP, HOLD_BUFFER_SIZE);
-				pos = 0;
-			}
-			~HoldBuffer()
-			{
-				delete[] buffer;
-			}
-			void clear()
-			{
-				pos = 0;
-			}
-			void setType(u8 newType)
-			{
-				type = newType;
-			}
-			u8* buffer;
-			u32 pos;
-			u8 type;
-		};
-
-		HoldBuffer m_HoldBuffers[8];
-		size_t m_HeldDepth;
 
 		// To allow hopefully-safe reading of the buffer from a separate thread,
 		// without any expensive synchronisation in the recording thread,
@@ -373,32 +333,6 @@ public:
 	void RecordGPURegionLeave(const char* id);
 
 	/**
-	* Hold onto messages until a call to release or write the held messages.
-	*/
-	size_t HoldLevel()
-	{
-		return GetThreadStorage().HoldLevel();
-	}
-
-	u8 HoldType()
-	{
-		return GetThreadStorage().HoldType();
-	}
-
-	void HoldMessages(u8 type)
-	{
-		GetThreadStorage().PutOnHold(type);
-	}
-
-	void StopHoldingMessages(bool writeToBuffer, bool condensed = false)
-	{
-		if (writeToBuffer)
-			GetThreadStorage().HoldToBuffer(condensed);
-		else
-			GetThreadStorage().ThrowawayHoldBuffer();
-	}
-
-	/**
 	 * Call in any thread to produce a JSON representation of the general
 	 * state of the application.
 	 */
@@ -479,36 +413,6 @@ protected:
 };
 
 /**
-* Scope-based enter/leave helper.
-*/
-class CProfile2SpikeRegion
-{
-public:
-	CProfile2SpikeRegion(const char* name, double spikeLimit);
-	~CProfile2SpikeRegion();
-private:
-	const char* m_Name;
-	double m_Limit;
-	double m_StartTime;
-	bool m_PushedHold;
-};
-
-/**
-* Scope-based enter/leave helper.
-*/
-class CProfile2AggregatedRegion
-{
-public:
-	CProfile2AggregatedRegion(const char* name, double spikeLimit);
-	~CProfile2AggregatedRegion();
-private:
-	const char* m_Name;
-	double m_Limit;
-	double m_StartTime;
-	bool m_PushedHold;
-};
-
-/**
  * Scope-based GPU enter/leave helper.
  */
 class CProfile2GPURegion
@@ -534,10 +438,6 @@ private:
  * it hurts the visualisation.
  */
 #define PROFILE2(region) CProfile2Region profile2__(region)
-
-#define PROFILE2_IFSPIKE(region, limit) CProfile2SpikeRegion profile2__(region, limit)
-
-#define PROFILE2_AGGREGATED(region, limit) CProfile2AggregatedRegion profile2__(region, limit)
 
 #define PROFILE2_GPU(region) CProfile2GPURegion profile2gpu__(region)
 

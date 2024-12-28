@@ -47,7 +47,6 @@ const size_t CProfiler2::MAX_ATTRIBUTE_LENGTH = 256;
 
 // TODO: what's a good size?
 const size_t CProfiler2::BUFFER_SIZE = 4 * 1024 * 1024;
-const size_t CProfiler2::HOLD_BUFFER_SIZE = 128 * 1024;
 
 // A human-recognisable pattern (for debugging) followed by random bytes (for uniqueness)
 const u8 CProfiler2::RESYNC_MAGIC[8] = {0x11, 0x22, 0x33, 0x44, 0xf4, 0x93, 0xbe, 0x15};
@@ -313,7 +312,7 @@ void CProfiler2::RemoveThreadStorage(ThreadStorage* storage)
 }
 
 CProfiler2::ThreadStorage::ThreadStorage(CProfiler2& profiler, const std::string& name) :
-m_Profiler(profiler), m_Name(name), m_BufferPos0(0), m_BufferPos1(0), m_LastTime(timer_Time()), m_HeldDepth(0)
+m_Profiler(profiler), m_Name(name), m_BufferPos0(0), m_BufferPos1(0), m_LastTime(timer_Time())
 {
 	m_Buffer = new u8[BUFFER_SIZE];
 	memset(m_Buffer, ITEM_NOP, BUFFER_SIZE);
@@ -326,11 +325,6 @@ CProfiler2::ThreadStorage::~ThreadStorage()
 
 void CProfiler2::ThreadStorage::Write(EItem type, const void* item, u32 itemSize)
 {
-	if (m_HeldDepth > 0)
-	{
-		WriteHold(type, item, itemSize);
-		return;
-	}
 	// See m_BufferPos0 etc for comments on synchronisation
 
 	u32 size = 1 + itemSize;
@@ -358,19 +352,6 @@ void CProfiler2::ThreadStorage::Write(EItem type, const void* item, u32 itemSize
 
 	COMPILER_FENCE; // must write m_BufferPos1 after m_Buffer
 	m_BufferPos1 = start + size;
-}
-
-void CProfiler2::ThreadStorage::WriteHold(EItem type, const void* item, u32 itemSize)
-{
-	u32 size = 1 + itemSize;
-
-	if (m_HoldBuffers[m_HeldDepth - 1].pos + size > CProfiler2::HOLD_BUFFER_SIZE)
-		return;	// we held on too much data, ignore the rest
-
-	m_HoldBuffers[m_HeldDepth - 1].buffer[m_HoldBuffers[m_HeldDepth - 1].pos] = (u8)type;
-	memcpy(&m_HoldBuffers[m_HeldDepth - 1].buffer[m_HoldBuffers[m_HeldDepth - 1].pos + 1], item, itemSize);
-
-	m_HoldBuffers[m_HeldDepth - 1].pos += size;
 }
 
 std::string CProfiler2::ThreadStorage::GetBuffer()
@@ -414,24 +395,6 @@ void CProfiler2::ThreadStorage::RecordAttribute(const char* fmt, va_list argp)
 	memcpy(buffer, &len, sizeof(len));
 
 	Write(ITEM_ATTRIBUTE, buffer, 4 + len);
-}
-
-size_t CProfiler2::ThreadStorage::HoldLevel()
-{
-	return m_HeldDepth;
-}
-
-u8 CProfiler2::ThreadStorage::HoldType()
-{
-	ENSURE(m_HeldDepth > 0);
-	return m_HoldBuffers[m_HeldDepth - 1].type;
-}
-
-void CProfiler2::ThreadStorage::PutOnHold(u8 newType)
-{
-	m_HeldDepth++;
-	m_HoldBuffers[m_HeldDepth - 1].clear();
-	m_HoldBuffers[m_HeldDepth - 1].setType(newType);
 }
 
 // this flattens the stack, use it sensibly
@@ -618,7 +581,7 @@ void rewriteBuffer(u8* buffer, u32& bufferSize)
 			if (time_attrib != time_per_attribute.end())
 				basic += " " + CStr::FromInt(1000000*time_attrib->second) + "us";
 
-			u32 length = basic.size();
+			u32 length = static_cast<u32>(basic.size());
 			memcpy(buffer + writePos, &length, sizeof(length));
 			writePos += sizeof(length);
 			memcpy(buffer + writePos, basic.c_str(), length);
@@ -673,56 +636,6 @@ void rewriteBuffer(u8* buffer, u32& bufferSize)
 		writePos += sizeof(float) + 1;
 	}
 	bufferSize = writePos;
-}
-
-void CProfiler2::ThreadStorage::HoldToBuffer(bool condensed)
-{
-	ENSURE(m_HeldDepth);
-	if (condensed)
-	{
-		// rewrite the buffer to show aggregated data
-		rewriteBuffer(m_HoldBuffers[m_HeldDepth - 1].buffer, m_HoldBuffers[m_HeldDepth - 1].pos);
-	}
-
-	if (m_HeldDepth > 1)
-	{
-		// copy onto buffer below
-		HoldBuffer& copied = m_HoldBuffers[m_HeldDepth - 1];
-		HoldBuffer& target = m_HoldBuffers[m_HeldDepth - 2];
-		if (target.pos + copied.pos > HOLD_BUFFER_SIZE)
-			return;	// too much data, too bad
-
-		memcpy(&target.buffer[target.pos], copied.buffer, copied.pos);
-
-		target.pos += copied.pos;
-	}
-	else
-	{
-		u32 size = m_HoldBuffers[m_HeldDepth - 1].pos;
-		u32 start = m_BufferPos0;
-		if (start + size > BUFFER_SIZE)
-		{
-			m_BufferPos0 = size;
-			COMPILER_FENCE;
-			memset(m_Buffer + start, 0, BUFFER_SIZE - start);
-			start = 0;
-		}
-		else
-		{
-			m_BufferPos0 = start + size;
-			COMPILER_FENCE; // must write m_BufferPos0 before m_Buffer
-		}
-		memcpy(&m_Buffer[start], m_HoldBuffers[m_HeldDepth - 1].buffer, size);
-		COMPILER_FENCE; // must write m_BufferPos1 after m_Buffer
-		m_BufferPos1 = start + size;
-	}
-	m_HeldDepth--;
-}
-void CProfiler2::ThreadStorage::ThrowawayHoldBuffer()
-{
-	if (!m_HeldDepth)
-		return;
-	m_HeldDepth--;
 }
 
 void CProfiler2::ConstructJSONOverview(std::ostream& stream)
@@ -954,46 +867,4 @@ void CProfiler2::SaveToFile()
 		first_time = false;
 	}
 	stream << "\n]});\n";
-}
-
-CProfile2SpikeRegion::CProfile2SpikeRegion(const char* name, double spikeLimit) :
-	m_Name(name), m_Limit(spikeLimit), m_PushedHold(true)
-{
-	if (g_Profiler2.HoldLevel() < 8 && (g_Profiler2.HoldLevel() == 0 || g_Profiler2.HoldType() != CProfiler2::ThreadStorage::BUFFER_AGGREGATE))
-		g_Profiler2.HoldMessages(CProfiler2::ThreadStorage::BUFFER_SPIKE);
-	else
-		m_PushedHold = false;
-	COMPILER_FENCE;
-	g_Profiler2.RecordRegionEnter(m_Name);
-	m_StartTime = g_Profiler2.GetTime();
-}
-CProfile2SpikeRegion::~CProfile2SpikeRegion()
-{
-	double time = g_Profiler2.GetTime();
-	g_Profiler2.RecordRegionLeave();
-	bool shouldWrite = time - m_StartTime > m_Limit;
-
-	if (m_PushedHold)
-		g_Profiler2.StopHoldingMessages(shouldWrite);
-}
-
-CProfile2AggregatedRegion::CProfile2AggregatedRegion(const char* name, double spikeLimit) :
-	m_Name(name), m_Limit(spikeLimit), m_PushedHold(true)
-{
-	if (g_Profiler2.HoldLevel() < 8 && (g_Profiler2.HoldLevel() == 0 || g_Profiler2.HoldType() != CProfiler2::ThreadStorage::BUFFER_AGGREGATE))
-		g_Profiler2.HoldMessages(CProfiler2::ThreadStorage::BUFFER_AGGREGATE);
-	else
-		m_PushedHold = false;
-	COMPILER_FENCE;
-	g_Profiler2.RecordRegionEnter(m_Name);
-	m_StartTime = g_Profiler2.GetTime();
-}
-CProfile2AggregatedRegion::~CProfile2AggregatedRegion()
-{
-	double time = g_Profiler2.GetTime();
-	g_Profiler2.RecordRegionLeave();
-	bool shouldWrite = time - m_StartTime > m_Limit;
-
-	if (m_PushedHold)
-		g_Profiler2.StopHoldingMessages(shouldWrite, true);
 }
