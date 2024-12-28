@@ -51,7 +51,7 @@ class GameSettings
 
 		// Remove the gaia entry.
 		initAttributes.settings.PlayerData.splice(0, 1);
-		this.fromInitAttributes(initAttributes);
+		this.fromInitAttributes(initAttributes, false);
 
 		return this;
 	}
@@ -79,7 +79,7 @@ class GameSettings
 	 * TODO: this could/should maybe support partial deserialization,
 	 * which means MP might actually send only the bits that change.
 	 */
-	fromInitAttributes(attribs)
+	fromInitAttributes(attribs, fromPersistentSettings)
 	{
 		// Settings may depend on eachother. Some selections of settings
 		// might be illegal. So keep looping through all settings until
@@ -100,7 +100,7 @@ class GameSettings
 			{
 				const oldSettings = clone(getComponentData(comp));
 				if (this[comp].fromInitAttributes)
-					this[comp].fromInitAttributes(attribs);
+					this[comp].fromInitAttributes(attribs, fromPersistentSettings);
 				reInit = reInit || !deepCompare(oldSettings, getComponentData(comp));
 			}
 			if (!reInit)

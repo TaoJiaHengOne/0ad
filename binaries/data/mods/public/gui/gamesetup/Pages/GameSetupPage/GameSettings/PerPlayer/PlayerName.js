@@ -5,7 +5,6 @@ PlayerSettingControls.PlayerName = class PlayerName extends GameSettingControl
 	constructor(...args)
 	{
 		super(...args);
-		g_GameSettings.playerName.isSavedGame = this.isSavedGame;
 
 		this.playerName = Engine.GetGUIObjectByName("playerName[" + this.playerIndex + "]");
 		g_GameSettings.playerCount.watch(() => this.render(), ["nbPlayers"]);

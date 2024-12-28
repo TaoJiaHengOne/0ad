@@ -85,7 +85,7 @@ class GameSettingsController
 			// Also include hotloaded data because that can also fail and having to restart isn't very useful.
 			try {
 				if (hotloadData)
-					this.parseSettings(hotloadData.initAttributes);
+					this.parseSettings(hotloadData.initAttributes, false);
 				else if (g_IsController && (initData?.gameSettings || this.persistentMatchSettings.enabled))
 				{
 					// Allow opting-in to persistence when sending initial data (though default off)
@@ -93,7 +93,7 @@ class GameSettingsController
 						this.persistentMatchSettings.enabled = !!initData.gameSettings?.usePersistence;
 					const settings = initData?.gameSettings || this.persistentMatchSettings.loadFile();
 						if (settings)
-							this.parseSettings(settings);
+							this.parseSettings(settings, true);
 				}
 			} catch(err) {
 				error("There was an error loading game settings. You may need to disable persistent match settings.");
@@ -177,7 +177,7 @@ class GameSettingsController
 			this.setLoading(false);
 		}
 
-		this.parseSettings(message.data.initAttribs);
+		this.parseSettings(message.data.initAttribs, false);
 
 		// This assumes that messages aren't sent spuriously without changes
 		// (which is generally fair), but technically it would be good
@@ -199,11 +199,11 @@ class GameSettingsController
 	/**
 	 * Parse the following settings.
 	 */
-	parseSettings(settings)
+	parseSettings(settings, fromPersistentSettings)
 	{
 		if (settings.guiData)
 			this.guiData.Deserialize(settings.guiData);
-		g_GameSettings.fromInitAttributes(settings);
+		g_GameSettings.fromInitAttributes(settings, fromPersistentSettings);
 	}
 
 	setLoading(loading)

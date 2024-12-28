@@ -7,8 +7,6 @@
  */
 GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSetting
 {
-	randomPicked = false;
-
 	init()
 	{
 		// NB: watchers aren't auto-triggered when modifying array elements.
@@ -23,17 +21,15 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 			attribs.settings.PlayerData = [];
 		while (attribs.settings.PlayerData.length < this.values.length)
 			attribs.settings.PlayerData.push({});
-		if (this.isSavedGame && !this.randomPicked)
-			return;
 
 		for (let i in this.values)
 			if (this.values[i])
 				attribs.settings.PlayerData[i].Name = this.values[i];
 	}
 
-	fromInitAttributes(attribs)
+	fromInitAttributes(attribs, fromPersistentSettings)
 	{
-		if (!this.getLegacySetting(attribs, "PlayerData"))
+		if (fromPersistentSettings || !this.getLegacySetting(attribs, "PlayerData"))
 			return;
 		const pData = this.getLegacySetting(attribs, "PlayerData");
 		for (let i = 0; i < this.values.length; ++i)
@@ -114,7 +110,6 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 		}
 		if (picked)
 		{
-			this.randomPicked = true;
 			this.trigger("values");
 		}
 		return picked;
