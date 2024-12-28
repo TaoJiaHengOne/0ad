@@ -151,6 +151,10 @@ bool FileExists(const ScriptRequest& rq, const std::wstring& filename)
 // Return time [seconds since 1970] of the last modification to the specified file.
 double GetFileMTime(const std::wstring& filename)
 {
+	LOGWARNING(
+		"GetFileMTime() is deprecated and will be removed with the next release. "
+		"Use CalculateMD5() instead to check if a file got modified."
+	);
 	CFileInfo fileInfo;
 	Status err = g_VFS->GetFileInfo(filename, &fileInfo);
 	JS_CHECK_FILE_ERR(err);
