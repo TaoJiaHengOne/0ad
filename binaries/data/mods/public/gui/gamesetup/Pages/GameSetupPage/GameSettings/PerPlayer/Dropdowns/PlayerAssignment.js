@@ -100,6 +100,7 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		let ai = g_GameSettings.playerAI.get(this.playerIndex);
 		if (ai)
 		{
+			this.rebuildList();
 			this.setSelectedValue(ai.bot);
 			return;
 		}
