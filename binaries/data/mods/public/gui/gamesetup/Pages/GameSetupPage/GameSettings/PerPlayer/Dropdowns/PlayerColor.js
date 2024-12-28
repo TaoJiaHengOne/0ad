@@ -20,7 +20,7 @@ PlayerSettingControls.PlayerColor = class PlayerColor extends GameSettingControl
 		if (g_GameSettings.playerCount.nbPlayers < this.playerIndex + 1)
 			return;
 
-		const hidden = !g_IsController || g_GameSettings.map.type == "scenario";
+		const hidden = !g_IsController || !this.enabled || g_GameSettings.map.type == "scenario";
 		this.dropdown.hidden = hidden;
 		this.playerColorHeading.hidden = hidden;
 
