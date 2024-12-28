@@ -256,7 +256,8 @@ function resizeDropdown(dropdown)
 	let size = dropdown.size;
 	size.bottom = dropdown.size.top +
 		(Engine.GetTextWidth(dropdown.font, dropdown.list[dropdown.selected]) >
-			dropdown.size.right - dropdown.size.left - 32 ? 42 : 27);
+			dropdown.size.right - dropdown.size.left - 28 &&
+		    dropdown.list[dropdown.selected].indexOf(" ") !== -1 ? 42 : 28);
 	dropdown.size = size;
 }
 

@@ -30,7 +30,7 @@
 
 			<object name="summaryText"
 				type="text"
-				size="50 16 100%-50 100%-16"
+				size="0 16 33% 100%-16"
 				font="sans-bold-18"
 				textcolor="255 255 255"
 				text_align="left"
@@ -39,7 +39,7 @@
 
 			<object name="timeElapsed"
 				type="text"
-				size="50 16 100%-50 100%-16"
+				size="67% 16 100% 100%-16"
 				font="sans-bold-18"
 				textcolor="255 255 255"
 				text_align="right"
@@ -48,7 +48,7 @@
 
 			<object name="mapName"
 				type="text"
-				size="50 16 100%-50 100%-16"
+				size="34% 16 66% 100%-16"
 				font="sans-bold-18"
 				textcolor="255 255 255"
 				text_align="center"
@@ -73,21 +73,21 @@
 					<object name="titleHeading[x]" type="text" style="ModernTopLabelText"/>
 				</repeat>
 				<repeat var="x" count="9">
-					<object name="Heading[x]" type="text" style="ModernTopLabelText"/>
+					<object name="Heading[x]" type="text" style="ModernLabelText"/>
 				</repeat>
 			</object>
 
 			<repeat count="4" var="i">
-				<object type="image" name="teamBoxt[i]" size="0 65 100% 100%-50" hidden="true">
+				<object type="image" name="teamBoxt[i]" size="0 70 100% 100%-50" hidden="true">
 					<object type="text" name="teamNameHeadingt[i]" size="15 5 100% 100%" style="ModernLeftTopLabelText"/>
 					<object size="0 30 100% 100%">
 						<repeat count="8" var="n">
 							<object type="image" name="playerBoxt[i][n]" size="10 0 10 30" hidden="true">
 								<object name="playerOutcomet[i][n]" type="image" size="4 5 36 37"/>
-								<object name="playerNamet[i][n]" type="text" size="46 2 214 100%" style="ModernLeftLabelText"/>
-								<object name="civIcont[i][n]" type="image" size="214 5 246 37" />
+								<object name="playerNamet[i][n]" type="text" size="40 2 210 100%" style="ModernLeftLabelText"/>
+								<object name="civIcont[i][n]" type="image" size="210 5 242 37" />
 								<repeat var="x" count="9">
-									<object name="valueDataTeam[i][n][x]" type="text" style="ModernTopLabelText"/>
+									<object name="valueDataTeam[i][n][x]" type="text" style="ModernLabelText"/>
 								</repeat>
 							</object>
 						</repeat>
@@ -99,20 +99,20 @@
 				</object>
 			</repeat>
 
-			<object type="image" name="noTeamsBox" size="0 65 100% 100%-50" hidden="true">
+			<object type="image" name="noTeamsBox" size="0 70 100% 100%-50" hidden="true">
 				<repeat count="8">
 					<object type="image" name="playerBox[n]" size="10 0 10 30" hidden="true">
 						<object name="playerOutcome[n]" type="image" size="4 5 36 37"/>
-						<object name="playerName[n]" type="text" size="46 2 214 100%" style="ModernLeftLabelText"/>
-						<object name="civIcon[n]" type="image" size="214 5 246 37"/>
+						<object name="playerName[n]" type="text" size="40 2 210 100%" style="ModernLeftLabelText"/>
+						<object name="civIcon[n]" type="image" size="210 5 242 37"/>
 						<repeat var="x" count="9">
-							<object name="valueData[n][x]" type="text" style="ModernTopLabelText"/>
+							<object name="valueData[n][x]" type="text" style="ModernLabelText"/>
 						</repeat>
 					</object>
 				</repeat>
 			</object>
 		</object>
-		
+
 		<object name="chartsPanel" type="image" sprite="ModernTabHorizontalFrame" size="20 120 100%-20 100%-54">
 			<repeat count="2" var="k">
 				<object name="chart[k]Part" size="15 0 50%-10 100%-35">
@@ -122,7 +122,7 @@
 					<object name="chart[k]CategorySelection"
 						type="dropdown"
 						style="ModernDropDown"
-						size="5 28 145 52">
+						size="5 28 145 56">
 						<translatableAttribute id="tooltip" context="summary chart">Category</translatableAttribute>
 					</object>
 
@@ -132,7 +132,7 @@
 					<object name="chart[k]ValueSelection"
 						type="dropdown"
 						style="ModernDropDown"
-						size="155 28 295 52">
+						size="155 28 295 56">
 						<translatableAttribute id="tooltip" context="summary chart">Value</translatableAttribute>
 					</object>
 
@@ -143,12 +143,12 @@
 						type="dropdown"
 						style="ModernDropDown"
 						hidden="true"
-						size="305 28 445 52">
+						size="305 28 445 56">
 						<translatableAttribute id="tooltip" context="summary chart">Type</translatableAttribute>
 					</object>
 
-					<object type="image" sprite="color: 255 255 255 20" size="0 75 100% 100%"/>
-					<object name="chart[k]" type="chart" style="ModernChart" format_x="DURATION_SHORT" format_y="INTEGER" size="5 80 100%-5 100%-25"/>
+					<object type="image" sprite="color: 255 255 255 20" size="0 80 100% 100%"/>
+					<object name="chart[k]" type="chart" style="ModernChart" format_x="DURATION_SHORT" format_y="INTEGER" size="5 85 100%-5 100%-25"/>
 					<object name="chart[k]XAxisLabel" type="text" style="ModernLabelText" size="5 100%-25 100%-5 100%-5"/>
 				</object>
 			</repeat>
