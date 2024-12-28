@@ -148,20 +148,6 @@ bool FileExists(const ScriptRequest& rq, const std::wstring& filename)
 	return PathRestrictionMet<restriction>(rq, filename) && g_VFS->GetFileInfo(filename, 0) == INFO::OK;
 }
 
-// Return time [seconds since 1970] of the last modification to the specified file.
-double GetFileMTime(const std::wstring& filename)
-{
-	LOGWARNING(
-		"GetFileMTime() is deprecated and will be removed with the next release. "
-		"Use CalculateMD5() instead to check if a file got modified."
-	);
-	CFileInfo fileInfo;
-	Status err = g_VFS->GetFileInfo(filename, &fileInfo);
-	JS_CHECK_FILE_ERR(err);
-
-	return (double)fileInfo.MTime();
-}
-
 // Return current size of file.
 unsigned int GetFileSize(const std::wstring& filename)
 {
@@ -287,7 +273,6 @@ void RegisterScriptFunctions_ReadWriteAnywhere(const ScriptRequest& rq,
 {
 	ScriptFunction::Register<&BuildDirEntList<PathRestriction::GUI>>(rq, "ListDirectoryFiles", flags);
 	ScriptFunction::Register<&FileExists<PathRestriction::GUI>>(rq, "FileExists", flags);
-	ScriptFunction::Register<&GetFileMTime>(rq, "GetFileMTime", flags);
 	ScriptFunction::Register<&GetFileSize>(rq, "GetFileSize", flags);
 	ScriptFunction::Register<&ReadFile<PathRestriction::GUI>>(rq, "ReadFile", flags);
 	ScriptFunction::Register<&ReadFileLines<PathRestriction::GUI>>(rq, "ReadFileLines", flags);
