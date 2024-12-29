@@ -19,7 +19,7 @@
  *                                 (default 0 minutes)
  * -autostart-victory=SCRIPTNAME   sets the victory conditions with SCRIPTNAME
  *                                 located in simulation/data/settings/victory_conditions/
- *                                 (default conquest). When the first given SCRIPTNAME is
+ *                                 (default conquest). When the only given SCRIPTNAME is
  *                                 "endless", no victory conditions will apply.
  * -autostart-wonderduration=NUM   sets the victory duration NUM for wonder victory condition
  *                                 (default 10 minutes)
@@ -71,10 +71,10 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 	settings.mapSize.setSize(+cmdLineArgs['autostart-size'] || 192);
 	settings.biome.setBiome(cmdLineArgs['autostart-biome'] || "random");
 
-	settings.playerCount.setNb(cmdLineArgs['autostart-players'] || 2);
+	settings.playerCount.setNb(+cmdLineArgs['autostart-players'] || 2);
 
 	const getPlayer = (key, i) => {
-		if (!cmdLineArgs['autostart-' + key])
+		if (!(('autostart-' + key) in cmdLineArgs))
 			return;
 		var value = cmdLineArgs['autostart-' + key];
 		if (!Array.isArray(value))
@@ -89,25 +89,25 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 		if (civ)
 			settings.playerCiv.setValue(i - 1, civ);
 
-		const team = getPlayer("team", i)
+		const team = +getPlayer("team", i)
 		if (team)
-			settings.playerTeam.setValue(i - 1, team);
+			settings.playerTeam.setValue(i - 1, team - 1);
 
 		const ai = getPlayer("ai", i)
 		if (ai)
 			settings.playerAI.set(i - 1, {
 				"bot": ai,
-				"difficulty": getPlayer("aidiff") || 3,
-				"behavior": getPlayer("aibehavior") || "balanced",
+				"difficulty": +(getPlayer("aidiff", i) ?? 3),
+				"behavior": getPlayer("aibehavior", i) ?? "balanced",
 			});
 	}
 
 	// Seeds default to random so we only need to set specific values.
 	if (cmdLineArgs?.['autostart-seed'] != -1)
-		settings.seeds.seed = cmdLineArgs?.['autostart-seed'] || 0;
+		settings.seeds.seed = +cmdLineArgs?.['autostart-seed'] || 0;
 
 	if (cmdLineArgs?.['autostart-aiseed'] != -1)
-		settings.seeds.AIseed = cmdLineArgs?.['autostart-aiseed'] || 0;
+		settings.seeds.AIseed = +cmdLineArgs?.['autostart-aiseed'] || 0;
 
 	if (cmdLineArgs['autostart-ceasefire'])
 		settings.seeds.ceaserfire.setValue(+cmdLineArgs['autostart-ceasefire']);
@@ -117,15 +117,16 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 
 	const victoryConditions = cmdLineArgs["autostart-victory"];
 	if (Array.isArray(victoryConditions))
-		for (const cond of victoryConditions)
-			settings.victoryConditions.setEnabled(cond, true);
-	else if (victoryConditions && victoryConditions !== "endless")
-		settings.victoryConditions.setEnabled(victoryConditions, true);
+		settings.victoryConditions.fromList(victoryConditions);
+	else if (victoryConditions === "endless")
+		settings.victoryConditions.setEnabled("conquest", false);
+	else if (victoryConditions)
+		// Enable only the specific condition chosen
+		settings.victoryConditions.fromList([victoryConditions]);
 
-
-	settings.wonder.setDuration(cmdLineArgs['autostart-wonderduration'] || 10);
-	settings.relic.setDuration(cmdLineArgs['autostart-relicduration'] || 10);
-	settings.relic.setCount(cmdLineArgs['autostart-reliccount'] || 2);
+	settings.wonder.setDuration(+(cmdLineArgs['autostart-wonderduration'] ?? 10));
+	settings.relic.setDuration(+(cmdLineArgs['autostart-relicduration'] ?? 10));
+	settings.relic.setCount(+(cmdLineArgs['autostart-reliccount'] ?? 2));
 
 	return settings;
 }

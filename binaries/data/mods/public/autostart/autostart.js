@@ -15,7 +15,7 @@ class AutoStart
 
 		parseCmdLineArgs(this.settings, cmdLineArgs);
 
-		this.settings.launchGame(this.playerAssignments, !cmdLineArgs['autostart-disable-replay']);
+		this.settings.launchGame(this.playerAssignments, !('autostart-disable-replay' in cmdLineArgs));
 		this.onLaunch();
 	}
 

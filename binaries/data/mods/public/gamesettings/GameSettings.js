@@ -20,7 +20,7 @@ class GameSettings
 		});
 
 		Object.defineProperty(this, "savegameID", {
-			"value": savegameID,
+			"value": !!savegameID,
 		});
 
 		// Load all possible civ data - don't presume that some will be available.
