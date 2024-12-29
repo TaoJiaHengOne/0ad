@@ -825,7 +825,9 @@ void CCmpPathfinder::StartProcessingMoves(bool useMax)
 	m_ShortPathRequests.PrepareForComputation(useMax ? m_MaxSameTurnMoves : 0);
 	m_LongPathRequests.PrepareForComputation(useMax ? m_MaxSameTurnMoves : 0);
 
-	for (size_t i = 0; i < m_Futures.size(); ++i)
+	// There's some overhead to waking threads, so don't do it unless we need to.
+	const size_t m = std::min(m_Futures.size(), m_ShortPathRequests.m_Requests.size() + m_LongPathRequests.m_Requests.size());
+	for (size_t i = 0; i < m; ++i)
 	{
 		ENSURE(!m_Futures[i].Valid());
 		// Pass the i+1th vertex pathfinder to keep the first for the main thread,
