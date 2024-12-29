@@ -36,7 +36,7 @@ pipeline {
 	}
 
 	environment {
-		MIN_OSX_VERSION = "10.12"
+		MIN_OSX_VERSION = "10.15"
 	}
 
 	stages {

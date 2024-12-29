@@ -62,7 +62,7 @@ MOLTENVK_VERSION="1.2.2"
 # --------------------------------------------------------------
 
 export CC="${CC:="clang"}" CXX="${CXX:="clang++"}"
-export MIN_OSX_VERSION="${MIN_OSX_VERSION:="10.12"}"
+export MIN_OSX_VERSION="${MIN_OSX_VERSION:="10.15"}"
 export ARCH="${ARCH:=""}"
 
 # The various libs offer inconsistent configure options, some allow

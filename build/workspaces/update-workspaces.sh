@@ -31,7 +31,7 @@ done
 
 if [ "$OS" = "Darwin" ]; then
 	# Set minimal SDK version
-	: "${MIN_OSX_VERSION:=10.12}"
+	: "${MIN_OSX_VERSION:=10.15}"
 	: "${WX_CONFIG:=$(realpath ../../libraries/macos/wxwidgets/bin/wx-config)}"
 	export MIN_OSX_VERSION WX_CONFIG
 fi
