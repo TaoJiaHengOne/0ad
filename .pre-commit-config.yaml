@@ -27,7 +27,7 @@ repos:
         exclude: ^source/tools/webservices/
       - id: ruff-format
         args:
-          - --check
+          - --diff
         exclude: ^source/tools/webservices/
   - repo: local
     hooks:
