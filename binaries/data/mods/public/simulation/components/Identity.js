@@ -109,11 +109,20 @@ Identity.prototype.Deserialize = function (data)
 {
 	this.Init();
 	this.phenotype = data.phenotype;
+	this.controllable = data.controllable;
+	if (data.name)
+		this.name = data.name;
 };
 
  Identity.prototype.Serialize = function()
 {
-	return { "phenotype": this.phenotype };
+	const result = {
+		"phenotype": this.phenotype,
+		"controllable": this.controllable,
+	};
+	if (this.name)
+		result.name = this.name;
+	return result;
 };
 
 Identity.prototype.GetCiv = function()
