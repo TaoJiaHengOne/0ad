@@ -4,7 +4,7 @@
 <object size="0 0 50%-142 100%" name="resourceCounts">
 	<repeat count="5">
 		<object name="resource[n]" size="0 0 73 100%" type="button" style="resourceCounter" tooltip_style="sessionToolTipBold">
-			<object size="0 -2 40 38" type="image" name="resource[n]_icon" ghost="true"/>
+			<object size="2 0 38 36" type="image" name="resource[n]_icon" ghost="true"/>
 			<object size="33 4 180 22" type="text" style="resourceText"  name="resource[n]_count"/>
 			<object size="33 1 200 34" type="text" style="gathererCounts" name="resource[n]_stats"/>
 		</object>

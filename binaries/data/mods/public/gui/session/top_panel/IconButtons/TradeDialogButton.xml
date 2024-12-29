@@ -6,5 +6,5 @@
 	tooltip_style="sessionToolTip"
 	hotkey="session.gui.barter.toggle"
 >
-	<object name="tradeButtonImage" type="image" sprite="stretched:session/icons/economics.png" ghost="true"/>
+	<object size="0 -1 100% 100%-1" name="tradeButtonImage" type="image" sprite="stretched:session/icons/economics.png" ghost="true"/>
 </object>

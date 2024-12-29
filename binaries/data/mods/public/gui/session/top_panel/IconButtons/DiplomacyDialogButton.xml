@@ -7,5 +7,5 @@
 	hotkey="session.gui.diplomacy.toggle"
 >
 	<!-- TODO make the button less ugly -->
-	<object name="diplomacyButtonImage" type="image" sprite="stretched:session/icons/diplomacy.png" ghost="true"/>
+	<object size="0 -1 100% 100%-1" name="diplomacyButtonImage" type="image" sprite="stretched:session/icons/diplomacy.png" ghost="true"/>
 </object>

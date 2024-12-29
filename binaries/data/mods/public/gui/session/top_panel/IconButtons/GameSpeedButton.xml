@@ -7,5 +7,5 @@
 	tooltip_style="sessionToolTip"
 >
 	<translatableAttribute id="tooltip">Game Speed</translatableAttribute>
-	<object size="5 5 100%-5 100%-5" type="image" sprite="stretched:session/icons/resources/time_small.png" ghost="true"/>
+	<object size="5 4 100%-5 100%-6" type="image" sprite="stretched:session/icons/resources/time_small.png" ghost="true"/>
 </object>

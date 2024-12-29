@@ -5,13 +5,13 @@
 		type="checkbox"
 		checked="false"
 		style="ModernTickBox"
-		size="0 4 20 100%"
+		size="0 3 20 100%-4"
 		tooltip_style="sessionToolTip"
 	>
 		<translatableAttribute id="tooltip" context="observer mode">Follow Player</translatableAttribute>
 	</object>
 
-	<object name="followPlayerLabel" type="text" size="20 2 100% 100%" text_align="left" textcolor="white">
+	<object name="followPlayerLabel" type="text" size="20 2 100% 100%-2" text_align="left" textcolor="white">
 		<translatableAttribute id="caption" context="observer mode">Follow Player</translatableAttribute>
 	</object>
 

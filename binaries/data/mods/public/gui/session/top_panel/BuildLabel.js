@@ -23,4 +23,4 @@ class BuildLabel
 
 BuildLabel.prototype.SizePlayer = "50%+44 0 100%-283 100%";
 
-BuildLabel.prototype.SizeObserver = "155 0 85%-279 100%";
+BuildLabel.prototype.SizeObserver = "202 0 85%-279 100%";
