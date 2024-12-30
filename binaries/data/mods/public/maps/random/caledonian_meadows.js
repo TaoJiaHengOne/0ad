@@ -294,7 +294,7 @@ function* GenerateMap()
 		// 10 Hilltop
 		[false, 8 / 8]
 	].map(([underWater, ratio]) => {
-		const base = underWater ? heightRange.min : heightSeaGround;
+		const base = underWater ? heightRange.min : heightSeaGroundAdjusted;
 		const factor = underWater ? heightSeaGroundAdjusted - heightRange.min :
 			heightRange.max - heightSeaGroundAdjusted;
 		return base + ratio * factor;
