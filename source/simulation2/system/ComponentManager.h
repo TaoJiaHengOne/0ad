@@ -114,6 +114,16 @@ public:
 	void SubscribeGloballyToMessageType(MessageTypeId mtid);
 
 	/**
+	 * Check if the current component type is subscribed to messages of the given type.
+	 */
+	bool IsLocallySubscribed(MessageTypeId mtid);
+
+	/**
+	 * Check if the current component type is globally subscribed to messages of the given type.
+	 */
+	bool IsGloballySubscribed(MessageTypeId mtid);
+
+	/**
 	 * Subscribe the given component instance to all messages of the given message type.
 	 * The component's HandleMessage will be called on any BroadcastMessage or PostMessage of
 	 * this message type, regardless of the entity.

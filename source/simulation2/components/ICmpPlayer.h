@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -38,6 +38,9 @@ public:
 
 	virtual bool HasStartingCamera() = 0;
 	virtual std::string GetState() = 0;
+
+	// See the cpp file for why this is implemented in C++.
+	virtual bool IsActive() = 0;
 
 	DECLARE_INTERFACE_TYPE(Player)
 };

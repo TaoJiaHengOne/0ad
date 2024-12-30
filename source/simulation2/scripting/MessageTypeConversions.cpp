@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -539,6 +539,38 @@ CMessage* CMessagePlayerColorChanged::FromJSVal(const ScriptRequest& rq, JS::Han
 	FROMJSVAL_SETUP();
 	GET_MSG_PROPERTY(player_id_t, player);
 	return new CMessagePlayerColorChanged(player);
+}
+
+////////////////////////////////
+
+JS::Value CMessagePlayerWon::ToJSVal(const ScriptRequest& rq) const
+{
+	TOJSVAL_SETUP();
+	SET_MSG_PROPERTY(playerId);
+	return JS::ObjectValue(*obj);
+}
+
+CMessage* CMessagePlayerWon::FromJSVal(const ScriptRequest& rq, JS::HandleValue val)
+{
+	FROMJSVAL_SETUP();
+	GET_MSG_PROPERTY(player_id_t, playerId);
+	return new CMessagePlayerWon(playerId);
+}
+
+////////////////////////////////
+
+JS::Value CMessagePlayerDefeated::ToJSVal(const ScriptRequest& rq) const
+{
+	TOJSVAL_SETUP();
+	SET_MSG_PROPERTY(playerId);
+	return JS::ObjectValue(*obj);
+}
+
+CMessage* CMessagePlayerDefeated::FromJSVal(const ScriptRequest& rq, JS::HandleValue val)
+{
+	FROMJSVAL_SETUP();
+	GET_MSG_PROPERTY(player_id_t, playerId);
+	return new CMessagePlayerDefeated(playerId);
 }
 
 ////////////////////////////////////////////////////////////////

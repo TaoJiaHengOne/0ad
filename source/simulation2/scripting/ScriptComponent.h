@@ -41,6 +41,7 @@ public:
 
 	void Init(const CParamNode& paramNode, entity_id_t ent);
 	void Deinit();
+	bool HasMessageHandler(const CMessage& msg, const bool global);
 	void HandleMessage(const CMessage& msg, bool global);
 
 	void Serialize(ISerializer& serialize);
@@ -88,8 +89,7 @@ private:
 	}
 
 
-#define DEFAULT_SCRIPT_WRAPPER(cname) \
-	static void ClassInit(CComponentManager& UNUSED(componentManager)) { } \
+#define DEFAULT_SCRIPT_WRAPPER_BASIC(cname) \
 	static IComponent* Allocate(const ScriptInterface& scriptInterface, JS::HandleValue instance) \
 	{ \
 		return new CCmp##cname(scriptInterface, instance); \
@@ -111,6 +111,21 @@ private:
 	{ \
 		m_Script.Deinit(); \
 	} \
+	JS::Value GetJSInstance() const override \
+	{ \
+		return m_Script.GetInstance(); \
+	} \
+	int GetComponentTypeId() const override \
+	{ \
+		return CID_##cname; \
+	} \
+	private: \
+		CComponentTypeScript m_Script; \
+	public:
+
+
+#define DEFAULT_SCRIPT_WRAPPER(cname) \
+	static void ClassInit(CComponentManager& UNUSED(componentManager)) { } \
 	void HandleMessage(const CMessage& msg, bool global) override \
 	{ \
 		m_Script.HandleMessage(msg, global); \
@@ -123,16 +138,6 @@ private:
 	{ \
 		m_Script.Deserialize(paramNode, deserialize, GetEntityId()); \
 	} \
-	JS::Value GetJSInstance() const override \
-	{ \
-		return m_Script.GetInstance(); \
-	} \
-	int GetComponentTypeId() const override \
-	{ \
-		return CID_##cname; \
-	} \
-	private: \
-		CComponentTypeScript m_Script; \
-	public:
+	DEFAULT_SCRIPT_WRAPPER_BASIC(cname)
 
 #endif // INCLUDED_SCRIPTCOMPONENT

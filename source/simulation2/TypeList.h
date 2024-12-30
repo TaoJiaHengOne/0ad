@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -61,6 +61,8 @@ MESSAGE(MinimapPing)
 MESSAGE(CinemaPathEnded)
 MESSAGE(CinemaQueueEnded)
 MESSAGE(PlayerColorChanged)
+MESSAGE(PlayerWon)
+MESSAGE(PlayerDefeated)
 
 // TemplateManager must come before all other (non-test) components,
 // so that it is the first to be (de)serialized

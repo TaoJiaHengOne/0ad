@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -509,6 +509,38 @@ public:
 	}
 
 	player_id_t player;
+};
+
+/**
+ * Sent by the Player component when a specific player has won.
+ */
+class CMessagePlayerWon final : public CMessage
+{
+public:
+	DEFAULT_MESSAGE_IMPL(PlayerWon)
+
+	CMessagePlayerWon(player_id_t playerId) :
+		playerId{playerId}
+	{
+	}
+
+	player_id_t playerId;
+};
+
+/**
+ * Sent by the Player component when an specific player has been defeated.
+ */
+class CMessagePlayerDefeated final : public CMessage
+{
+public:
+	DEFAULT_MESSAGE_IMPL(PlayerDefeated)
+
+	CMessagePlayerDefeated(player_id_t playerId) :
+		playerId{playerId}
+	{
+	}
+
+	player_id_t playerId;
 };
 
 /**

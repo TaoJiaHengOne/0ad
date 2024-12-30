@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -486,6 +486,7 @@ bool CGame::IsGameFinished() const
 	return false;
 }
 
+// This function is implemented so that mods can't change it's result. See ICmpPlayer.cpp
 bool CGame::PlayerFinished(player_id_t playerID) const
 {
 	CmpPtr<ICmpPlayerManager> cmpPlayerManager(*m_Simulation2, SYSTEM_ENTITY);
@@ -493,5 +494,5 @@ bool CGame::PlayerFinished(player_id_t playerID) const
 		return false;
 
 	CmpPtr<ICmpPlayer> cmpPlayer(*m_Simulation2, cmpPlayerManager->GetPlayerByID(playerID));
-	return cmpPlayer && cmpPlayer->GetState() != "active";
+	return cmpPlayer && !cmpPlayer->IsActive();
 }

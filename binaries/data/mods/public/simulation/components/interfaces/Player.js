@@ -11,18 +11,6 @@ Engine.RegisterMessageType("DisabledTechnologiesChanged");
 Engine.RegisterMessageType("DisabledTemplatesChanged");
 
 /**
- * Message of the form { "playerID": number }
- * sent from Player component when a player is defeated.
- */
-Engine.RegisterMessageType("PlayerDefeated");
-
-/**
- * Message of the form { "playerID": number }
- * sent from Player component when a player has won.
- */
-Engine.RegisterMessageType("PlayerWon");
-
-/**
  * Message of the form { "to": number, "from": number, "amounts": object }
  * sent from Player component whenever a tribute is sent.
  */

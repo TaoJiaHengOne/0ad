@@ -20,6 +20,7 @@
 #include "ComponentManager.h"
 
 #include "lib/utf8.h"
+#include "ps/algorithm.h"
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
 #include "ps/Profile.h"
@@ -303,10 +304,17 @@ void CComponentManager::Script_RegisterComponentType_Common(int iid, const std::
 			return;
 		}
 
+		// If we have already subscribed in classInit, do not subscribe again
 		if (isGlobal)
-			SubscribeGloballyToMessageType(mit->second);
+		{
+			if (!IsGloballySubscribed(mit->second))
+				SubscribeGloballyToMessageType(mit->second);
+		}
 		else
-			SubscribeToMessageType(mit->second);
+		{
+			if (!IsLocallySubscribed(mit->second))
+				SubscribeToMessageType(mit->second);
+		}
 	}
 
 	m_CurrentComponent = CID__Invalid;
@@ -569,6 +577,18 @@ void CComponentManager::SubscribeGloballyToMessageType(MessageTypeId mtid)
 	std::vector<ComponentTypeId>& types = m_GlobalMessageSubscriptions[mtid];
 	types.push_back(m_CurrentComponent);
 	std::sort(types.begin(), types.end()); // TODO: just sort once at the end of LoadComponents
+}
+
+bool CComponentManager::IsLocallySubscribed(MessageTypeId mtid)
+{
+	ENSURE(m_CurrentComponent != CID__Invalid);
+	return PS::contains(m_LocalMessageSubscriptions[mtid], m_CurrentComponent);
+}
+
+bool CComponentManager::IsGloballySubscribed(MessageTypeId mtid)
+{
+	ENSURE(m_CurrentComponent != CID__Invalid);
+	return PS::contains(m_GlobalMessageSubscriptions[mtid], m_CurrentComponent);
 }
 
 void CComponentManager::FlattenDynamicSubscriptions()

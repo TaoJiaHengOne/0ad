@@ -512,6 +512,9 @@ Player.prototype.SetState = function(newState, message)
 			});
 	}
 
+	Engine.PostMessage(this.entity, won ? MT_PlayerWon : MT_PlayerDefeated,
+		{ "playerId": this.playerID });
+
 	if (message)
 		Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).PushNotification({
 			"type": won ? "won" : "defeat",
@@ -519,8 +522,6 @@ Player.prototype.SetState = function(newState, message)
 			"allies": [this.playerID],
 			"message": message
 		});
-
-	Engine.PostMessage(this.entity, won ? MT_PlayerWon : MT_PlayerDefeated, { "playerId": this.playerID });
 };
 
 Player.prototype.GetFormations = function()

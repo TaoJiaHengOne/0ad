@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 
 #include "graphics/Color.h"
 #include "maths/FixedVector3D.h"
+#include "simulation2/system/Component.h"
 #include "simulation2/system/InterfaceScripted.h"
 #include "simulation2/scripting/ScriptComponent.h"
 
@@ -30,7 +31,41 @@ END_INTERFACE_WRAPPER(Player)
 class CCmpPlayerScripted : public ICmpPlayer
 {
 public:
-	DEFAULT_SCRIPT_WRAPPER(PlayerScripted)
+	DEFAULT_SCRIPT_WRAPPER_BASIC(PlayerScripted)
+
+	static void ClassInit(CComponentManager& componentManager)
+	{
+		componentManager.SubscribeToMessageType(MT_PlayerWon);
+		componentManager.SubscribeToMessageType(MT_PlayerDefeated);
+	}
+
+	void Serialize(ISerializer& serialize) final
+	{
+		serialize.Bool("isActive", m_IsActive);
+		m_Script.Serialize(serialize);
+	}
+
+	void Deserialize(const CParamNode& paramNode, IDeserializer& deserialize) final
+	{
+		deserialize.Bool("isActive", m_IsActive);
+		m_Script.Deserialize(paramNode, deserialize, GetEntityId());
+	}
+
+	void HandleMessage(const CMessage& msg, bool global) final
+	{
+		const int msgType{msg.GetType()};
+
+		// Handle messages that were subscribed to in ClassInit.
+		if (msgType == MT_PlayerWon || msgType == MT_PlayerDefeated)
+		{
+			m_IsActive = false;
+			if (!m_Script.HasMessageHandler(msg, global))
+				return;
+		}
+
+		// Handle messages that were subscribed to within the JS implementation of the interface.
+		m_Script.HandleMessage(msg, global);
+	}
 
 	CColor GetDisplayedColor() override
 	{
@@ -56,6 +91,18 @@ public:
 	{
 		return m_Script.Call<std::string>("GetState");
 	}
+
+	bool IsActive() final
+	{
+		return m_IsActive;
+	}
+
+private:
+	// Serialize this player state variable in C++ so that mods can't manipulate this value in order to
+	// reveal the map locally.
+	// Once it's set to `false` it's never set to true again. To prevent mods from temporarily changing
+	// it.
+	bool m_IsActive{true};
 };
 
 REGISTER_COMPONENT_SCRIPT_WRAPPER(PlayerScripted)
