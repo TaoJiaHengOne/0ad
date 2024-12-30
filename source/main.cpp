@@ -333,7 +333,7 @@ static int ProgressiveLoad()
 			break;
 		}
 	}
-	catch (PSERROR_Game_World_MapLoadFailed& e)
+	catch (std::exception& e)
 	{
 		// Map loading failed
 
