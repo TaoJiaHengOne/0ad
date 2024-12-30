@@ -109,35 +109,31 @@ class PlayerAssignmentsController
 				return;
 		}
 
-		// Find a player slot that no other player is assigned to.
-		const possibleSlots = [...Array(g_GameSettings.playerCount.nbPlayers).keys()].map(i => i + 1);
+		const slot = this.findAssignmentSlot(newGUID, newAssignments);
 
-		let slot;
-		const newName = newAssignments[newGUID].name;
-		// First check if we know them and try to give them their old assignment back.
-		if (this.lastAssigned[newName] > 0 && this.lastAssigned[newName] <= g_GameSettings.playerCount.nbPlayers)
-		{
-			let free = true;
-			for (const guid in newAssignments)
-				if (newAssignments[guid].player === this.lastAssigned[newName])
-				{
-					free = false;
-					break;
-				}
-			if (free)
-				slot = this.lastAssigned[newName];
-		}
-		if (!slot)
-			slot = possibleSlots.find(i => {
-				for (const guid in newAssignments)
-					if (newAssignments[guid].player == i)
-						return false;
-				return true;
-			});
 		if (slot === undefined)
 			return;
 
 		this.assignClient(newGUID, slot);
+	}
+
+	findAssignmentSlot(newGUID, newAssignments)
+	{
+		const newAssignmentsArray = Object.values(newAssignments);
+		const isSlotAvailable = slot => newAssignmentsArray.every(elem => elem.player !== slot);
+
+		const newName = newAssignments[newGUID].name;
+		// First check if we know them and try to give them their old assignment back.
+		if (this.lastAssigned[newName] > 0 &&
+			this.lastAssigned[newName] <= g_GameSettings.playerCount.nbPlayers &&
+			isSlotAvailable(this.lastAssigned[newName]))
+		{
+			return this.lastAssigned[newName];
+		}
+
+		// If we can't restore the slot, assign the client to the first free slot.
+		return Array.from(Array(g_GameSettings.playerCount.nbPlayers).keys(), i => i + 1).find(
+			isSlotAvailable);
 	}
 
 	/**
