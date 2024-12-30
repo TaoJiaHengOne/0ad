@@ -95,10 +95,8 @@ class PlayerAssignmentsController
 	 */
 	onClientJoin(isSavedGame, newGUID, newAssignments)
 	{
-		if (!g_IsController || newAssignments[newGUID].player !== -1 || isSavedGame)
-		{
+		if (!g_IsController || newAssignments[newGUID].player !== -1)
 			return;
-		}
 
 		// Assign the client (or only buddies if prefered) to a free slot
 		if (newGUID != Engine.GetPlayerGUID())
@@ -109,7 +107,7 @@ class PlayerAssignmentsController
 				return;
 		}
 
-		const slot = this.findAssignmentSlot(newGUID, newAssignments);
+		const slot = this.findAssignmentSlot(isSavedGame, newGUID, newAssignments);
 
 		if (slot === undefined)
 			return;
@@ -117,10 +115,12 @@ class PlayerAssignmentsController
 		this.assignClient(newGUID, slot);
 	}
 
-	findAssignmentSlot(newGUID, newAssignments)
+	findAssignmentSlot(isSavedGame, newGUID, newAssignments)
 	{
 		const newAssignmentsArray = Object.values(newAssignments);
-		const isSlotAvailable = slot => newAssignmentsArray.every(elem => elem.player !== slot);
+		const isSlotAvailable = slot =>
+			newAssignmentsArray.every(elem => elem.player !== slot) &&
+			(!isSavedGame || !g_GameSettings.playerAI.get(slot - 1));
 
 		const newName = newAssignments[newGUID].name;
 		// First check if we know them and try to give them their old assignment back.
@@ -129,6 +129,14 @@ class PlayerAssignmentsController
 			isSlotAvailable(this.lastAssigned[newName]))
 		{
 			return this.lastAssigned[newName];
+		}
+
+		// If we can't restore the previous slot, try to give them the slot stored in the savegame.
+		if (isSavedGame)
+		{
+			const saveSlot = g_GameSettings.playerName.values.indexOf(newName) + 1;
+			if (saveSlot > 0 && isSlotAvailable(saveSlot))
+				return saveSlot;
 		}
 
 		// If we can't restore the slot, assign the client to the first free slot.
