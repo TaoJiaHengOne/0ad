@@ -1,5 +1,5 @@
 const UNIT_TEMPLATE = "units/athen/infantry_marine_archer_b";
-const SHIP_TEMPLATE = "units/athen/ship_trireme";
+const SHIP_TEMPLATE = "units/athen/ship_arrow";
 const RAM_TEMPLATE = "units/brit/siege_ram";
 
 const point_plaza_nw = 14; // Center plaza #1 (NW)

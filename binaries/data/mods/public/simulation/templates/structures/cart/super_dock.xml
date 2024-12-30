@@ -97,6 +97,7 @@
       units/{civ}/ship_scout
       units/{civ}/ship_arrow
       units/{civ}/ship_ram
+      units/{civ}/ship_fire
       units/{civ}/ship_siege
     </Entities>
   </Trainer>
