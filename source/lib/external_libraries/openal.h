@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2024 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,13 +27,8 @@
 #ifndef INCLUDED_OPENAL
 #define INCLUDED_OPENAL
 
-#if OS_MACOSX
-# include <OpenAL/al.h>
-# include <OpenAL/alc.h>
-#else
-# include <AL/al.h>
-# include <AL/alc.h>
-#endif
+#include <AL/al.h>
+#include <AL/alc.h>
 
 // ALC strings (e.g. device and extension names) are typed differently
 // between OpenAL specifications

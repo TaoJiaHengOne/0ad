@@ -1111,7 +1111,7 @@ echo "Building OpenAL Soft"
 	mkdir -p openal-soft
 	cd openal-soft
 
-	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$OPENAL_SOFT_VERSION+1" ]; then
+	if [ $force_rebuild = "true" ] || [ ! -e .already-built ] || [ "$(cat .already-built)" != "$OPENAL_SOFT_VERSION" ]; then
 		INSTALL_DIR="$(pwd)"
 
 		rm -f .already-built
