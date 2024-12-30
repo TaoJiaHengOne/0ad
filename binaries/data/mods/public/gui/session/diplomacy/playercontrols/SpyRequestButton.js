@@ -22,7 +22,6 @@ DiplomacyDialogPlayerControl.prototype.SpyRequestButton = class
 	{
 		Engine.PostNetworkCommand({
 			"type": "spy-request",
-			"source": g_ViewedPlayer,
 			"player": this.playerID
 		});
 		this.spyRequests.add(g_ViewedPlayer);

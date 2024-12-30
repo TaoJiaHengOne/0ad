@@ -835,7 +835,7 @@ var g_Commands = {
 			"entity": ent
 		});
 		if (ent)
-			Engine.QueryInterface(ent, IID_VisionSharing).AddSpy(cmd.source);
+			Engine.QueryInterface(ent, IID_VisionSharing).AddSpy(player);
 		else
 		{
 			let template = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetTemplate("special/spy");
