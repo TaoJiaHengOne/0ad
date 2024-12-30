@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -38,9 +38,11 @@ void IComponent::RegisterComponentType(CComponentManager& mgr, EInterfaceId iid,
 	mgr.RegisterComponentType(iid, cid, alloc, dealloc, name, schema);
 }
 
-void IComponent::RegisterComponentTypeScriptWrapper(CComponentManager& mgr, EInterfaceId iid, EComponentTypeId cid, AllocFunc alloc, DeallocFunc dealloc, const char* name, const std::string& schema)
+void IComponent::RegisterComponentTypeScriptWrapper(CComponentManager& mgr, EInterfaceId iid,
+	EComponentTypeId cid, AllocFunc alloc, DeallocFunc dealloc, const char* name,
+	const std::string& schema, ClassInitFunc classInit)
 {
-	mgr.RegisterComponentTypeScriptWrapper(iid, cid, alloc, dealloc, name, schema);
+	mgr.RegisterComponentTypeScriptWrapper(iid, cid, alloc, dealloc, name, schema, classInit);
 }
 
 void IComponent::HandleMessage(const CMessage& UNUSED(msg), bool UNUSED(global))

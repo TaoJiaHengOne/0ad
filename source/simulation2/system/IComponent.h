@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -35,13 +35,16 @@ public:
 	// Component allocation types
 	using AllocFunc = IComponent* (*)(const ScriptInterface& scriptInterface, JS::HandleValue ctor);
 	using DeallocFunc = void (*)(IComponent*);
+	using ClassInitFunc = void (*)(CComponentManager& componentManager);
 
 	virtual ~IComponent();
 
 	static std::string GetSchema();
 
 	static void RegisterComponentType(CComponentManager& mgr, EInterfaceId iid, EComponentTypeId cid, AllocFunc alloc, DeallocFunc dealloc, const char* name, const std::string& schema);
-	static void RegisterComponentTypeScriptWrapper(CComponentManager& mgr, EInterfaceId iid, EComponentTypeId cid, AllocFunc alloc, DeallocFunc dealloc, const char* name, const std::string& schema);
+	static void RegisterComponentTypeScriptWrapper(CComponentManager& mgr, EInterfaceId iid,
+		EComponentTypeId cid, AllocFunc alloc, DeallocFunc dealloc, const char* name,
+		const std::string& schema, ClassInitFunc classInit);
 
 	virtual void Init(const CParamNode& paramNode) = 0;
 	virtual void Deinit() = 0;

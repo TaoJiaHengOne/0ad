@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -49,6 +49,7 @@ public:
 private:
 	using AllocFunc = IComponent::AllocFunc;
 	using DeallocFunc = IComponent::DeallocFunc;
+	using ClassInitFunc = IComponent::ClassInitFunc;
 
 	// ComponentTypes come in three types:
 	//   Native: normal C++ component
@@ -71,6 +72,7 @@ private:
 		std::string name;
 		std::string schema; // RelaxNG fragment
 		std::unique_ptr<JS::PersistentRootedValue> ctor; // only valid if type == CT_Script
+		ClassInitFunc classInit;
 	};
 
 public:
@@ -90,7 +92,8 @@ public:
 	void RegisterMessageType(MessageTypeId mtid, const char* name);
 
 	void RegisterComponentType(InterfaceId, ComponentTypeId, AllocFunc, DeallocFunc, const char*, const std::string& schema);
-	void RegisterComponentTypeScriptWrapper(InterfaceId, ComponentTypeId, AllocFunc, DeallocFunc, const char*, const std::string& schema);
+	void RegisterComponentTypeScriptWrapper(InterfaceId, ComponentTypeId, AllocFunc, DeallocFunc,
+		const char*, const std::string& schema, ClassInitFunc classInit);
 
 	void MarkScriptedComponentForSystemEntity(CComponentManager::ComponentTypeId cid);
 

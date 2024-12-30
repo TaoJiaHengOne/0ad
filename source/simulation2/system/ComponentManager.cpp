@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -267,6 +267,9 @@ void CComponentManager::Script_RegisterComponentType_Common(int iid, const std::
 
 	m_CurrentComponent = cid; // needed by Subscribe
 
+	// Only now that we have constructed the CT_Script for this CT_ScriptWrapper, we can subscribe the CT_Script
+	ctWrapper.classInit(*this);
+
 	// Find all the ctor prototype's On* methods, and subscribe to the appropriate messages:
 	std::vector<std::string> methods;
 
@@ -528,10 +531,12 @@ void CComponentManager::RegisterComponentType(InterfaceId iid, ComponentTypeId c
 	m_ComponentTypeIdsByName[name] = cid;
 }
 
-void CComponentManager::RegisterComponentTypeScriptWrapper(InterfaceId iid, ComponentTypeId cid, AllocFunc alloc,
-		DeallocFunc dealloc, const char* name, const std::string& schema)
+void CComponentManager::RegisterComponentTypeScriptWrapper(InterfaceId iid, ComponentTypeId cid,
+	AllocFunc alloc, DeallocFunc dealloc, const char* name, const std::string& schema,
+	ClassInitFunc classInit)
 {
-	ComponentType c{ CT_ScriptWrapper, iid, alloc, dealloc, name, schema, std::unique_ptr<JS::PersistentRootedValue>() };
+	ComponentType c{ CT_ScriptWrapper, iid, alloc, dealloc, name, schema,
+		std::unique_ptr<JS::PersistentRootedValue>(), classInit };
 	m_ComponentTypesById.insert(std::make_pair(cid, std::move(c)));
 	m_ComponentTypeIdsByName[name] = cid;
 	// TODO: merge with RegisterComponentType
