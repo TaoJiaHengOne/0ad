@@ -243,10 +243,16 @@ function* GenerateMap()
 		for (let y = 0; y < mapSize; ++y)
 		{
 			const position = new Vector2D(x, y);
-			if (!g_Map.validHeight(position) || g_Map.getHeight(position) < heightRange.min)
+			if (!g_Map.validHeight(position))
 				continue;
+			const positionHeight = g_Map.getHeight(position);
+			if (positionHeight < heightRange.min ||
+				positionHeight > terrainTypes.at(-1).upperHeightLimit)
+			{
+				continue;
+			}
 
-			const elem = terrainTypes.find(e => g_Map.getHeight(position) <= e.upperHeightLimit);
+			const elem = terrainTypes.find(e => positionHeight <= e.upperHeightLimit);
 			createTerrain(elem.terrain).place(position);
 			const template = elem.actors.find(([propability]) => randBool(propDensity / propability));
 			if (template)
