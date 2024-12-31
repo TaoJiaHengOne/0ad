@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -32,7 +32,7 @@
  * Check if app is running in a valid bundle
  *
  * @return true if valid bundle reference was found matching identifier
- *  property "com.wildfiregames.0ad"
+ *  property "com.wildfiregames.play0ad"
  */
 bool osx_IsAppBundleValid();
 
