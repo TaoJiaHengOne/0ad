@@ -319,7 +319,7 @@ async function handleAuthenticated(message, loadSavedGame)
 	}
 	g_IsConnecting = false;
 
-	const savegameID = loadSavedGame ? await Engine.PushGuiPage("page_loadgame.xml") : null;
+	const savegameID = loadSavedGame ? await Engine.PushGuiPage("page_loadgame.xml") : undefined;
 
 	if (loadSavedGame && !savegameID)
 	{
@@ -329,7 +329,7 @@ async function handleAuthenticated(message, loadSavedGame)
 	}
 
 	Engine.SwitchGuiPage("page_gamesetup.xml", {
-		"savedGame": savegameID ?? message.savedGame,
+		"savedGame": savegameID, // Undefined or the savegame ID
 		"serverName": g_ServerName,
 		"hasPassword": g_ServerHasPassword
 	});

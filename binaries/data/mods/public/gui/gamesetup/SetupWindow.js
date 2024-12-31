@@ -30,7 +30,7 @@ class SetupWindow
 
 		const mapCache = new MapCache();
 		g_GameSettings = new GameSettings();
-		g_GameSettings.init(mapCache, g_IsController ? savedGame : null);
+		g_GameSettings.init(mapCache, g_IsController ? savedGame : undefined);
 
 
 		let netMessages = new NetMessages();

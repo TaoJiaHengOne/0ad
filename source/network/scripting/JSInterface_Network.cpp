@@ -283,7 +283,7 @@ void StartNetworkGame(const ScriptInterface& scriptInterface, JS::HandleValue sa
 	JS::RootedValue attribs(rq.cx, attribs1);
 	std::string attributesAsString{Script::StringifyJSON(rq, &attribs)};
 
-	if (savegame.isFalse())
+	if (savegame.isUndefined())
 	{
 		g_NetClient->SendStartGameMessage(attributesAsString);
 		return;
