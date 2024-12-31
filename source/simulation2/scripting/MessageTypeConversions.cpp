@@ -525,7 +525,7 @@ CMessage* CMessageCinemaQueueEnded::FromJSVal(const ScriptRequest& rq, JS::Handl
 	return new CMessageCinemaQueueEnded();
 }
 
-////////////////////////////////////////////////////////////////
+////////////////////////////////
 
 JS::Value CMessagePlayerColorChanged::ToJSVal(const ScriptRequest& rq) const
 {
@@ -573,7 +573,7 @@ CMessage* CMessagePlayerDefeated::FromJSVal(const ScriptRequest& rq, JS::HandleV
 	return new CMessagePlayerDefeated(playerId);
 }
 
-////////////////////////////////////////////////////////////////
+////////////////////////////////
 
 CMessage* CMessageFromJSVal(int mtid, const ScriptRequest& rq, JS::HandleValue val)
 {
