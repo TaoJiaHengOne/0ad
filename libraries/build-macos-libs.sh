@@ -1117,7 +1117,7 @@ echo "Building OpenAL Soft"
 		rm -f .already-built
 		download_lib $LIB_URL $LIB_ARCHIVE || die
 
-		rm -rf $LIB_DIRECTORY include lib
+		rm -rf $LIB_DIRECTORY include lib share libopenal-soft
 		tar -xf $LIB_ARCHIVE || die
 
 		# shellcheck disable=SC2086
