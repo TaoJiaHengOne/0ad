@@ -49,7 +49,7 @@ MINIUPNPC_VERSION="miniupnpc-2.2.8"
 SODIUM_VERSION="libsodium-1.0.20"
 FMT_VERSION="7.1.3"
 MOLTENVK_VERSION="1.2.2"
-OPENAL_SOFT_VERSION="1.24.0"
+OPENAL_SOFT_VERSION="1.24.2"
 # --------------------------------------------------------------
 # Bundled with the game:
 # * SpiderMonkey
