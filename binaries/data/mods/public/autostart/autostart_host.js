@@ -5,13 +5,13 @@ class AutoStartHost
 		this.launched = false;
 		this.playerAssignments = {};
 
-		this.maxPlayers = cmdLineArgs['autostart-host-players'] ?? 2;
+		this.maxPlayers = +(cmdLineArgs['autostart-host-players'] ?? 2);
 		this.cmdLineArgs = cmdLineArgs;
 
 		try
 		{
 			const playerName = cmdLineArgs['autostart-playername'] || "anonymous";
-			const port = +cmdLineArgs?.['autostart-port'] ?? 5073;
+			const port = +(cmdLineArgs['autostart-port'] ?? 5073);
 
 			// Stun and password not implemented for autostart.
 			Engine.StartNetworkHost(playerName, port, false, "", !('autostart-disable-replay' in cmdLineArgs));

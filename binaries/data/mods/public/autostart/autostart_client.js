@@ -8,7 +8,7 @@ class AutoStartClient
 		{
 			const playerName = cmdLineArgs['autostart-playername'] || "anonymous";
 			const ip = cmdLineArgs['autostart-client'] ?? "127.0.0.1";
-			const port = +cmdLineArgs?.['autostart-port'] ?? 5073;
+			const port = +(cmdLineArgs['autostart-port'] ?? 5073);
 			Engine.StartNetworkJoin(playerName, ip, port, !('autostart-disable-replay' in cmdLineArgs));
 		}
 		catch (e)

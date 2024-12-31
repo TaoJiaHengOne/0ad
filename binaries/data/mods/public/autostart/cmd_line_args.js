@@ -68,10 +68,10 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 		"skirmishes": "skirmish",
 	}[mapType]);
 	settings.map.selectMap("maps/" + cmdLineArgs['autostart']);
-	settings.mapSize.setSize(+cmdLineArgs['autostart-size'] || 192);
+	settings.mapSize.setSize(+(cmdLineArgs['autostart-size'] ?? 192));
 	settings.biome.setBiome(cmdLineArgs['autostart-biome'] || "random");
 
-	settings.playerCount.setNb(+cmdLineArgs['autostart-players'] || 2);
+	settings.playerCount.setNb(+(cmdLineArgs['autostart-players'] ?? 2));
 
 	const getPlayer = (key, i) => {
 		if (!(('autostart-' + key) in cmdLineArgs))
@@ -103,11 +103,11 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 	}
 
 	// Seeds default to random so we only need to set specific values.
-	if (cmdLineArgs?.['autostart-seed'] != -1)
-		settings.seeds.seed = +cmdLineArgs?.['autostart-seed'] || 0;
+	if (cmdLineArgs['autostart-seed'] != -1)
+		settings.seeds.seed = +(cmdLineArgs['autostart-seed'] ?? 0);
 
-	if (cmdLineArgs?.['autostart-aiseed'] != -1)
-		settings.seeds.AIseed = +cmdLineArgs?.['autostart-aiseed'] || 0;
+	if (cmdLineArgs['autostart-aiseed'] != -1)
+		settings.seeds.AIseed = +(cmdLineArgs['autostart-aiseed'] ?? 0);
 
 	if (cmdLineArgs['autostart-ceasefire'])
 		settings.seeds.ceaserfire.setValue(+cmdLineArgs['autostart-ceasefire']);
