@@ -515,13 +515,15 @@ Player.prototype.SetState = function(newState, message)
 	Engine.PostMessage(this.entity, won ? MT_PlayerWon : MT_PlayerDefeated,
 		{ "playerId": this.playerID });
 
-	if (message)
-		Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).PushNotification({
-			"type": won ? "won" : "defeat",
-			"players": [this.playerID],
-			"allies": [this.playerID],
-			"message": message
-		});
+	if (!message)
+		return;
+
+	Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).PushNotification({
+		"type": won ? "won" : "defeat",
+		"players": [this.playerID],
+		"allies": [this.playerID],
+		"message": message
+	});
 };
 
 Player.prototype.GetFormations = function()
