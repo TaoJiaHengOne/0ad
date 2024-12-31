@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 #include <exception>
 #include <functional>
 #include <mutex>
-#include <optional>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 template<typename Callback>
 class PackagedTask;
@@ -53,8 +53,9 @@ using CallbackResult = typename std::conditional_t<std::is_invocable_v<Callback,
 
 namespace FutureSharedStateDetail
 {
-template<typename T>
-using ResultHolder = std::conditional_t<std::is_void_v<T>, std::nullopt_t, std::optional<T>>;
+struct VoidSubstitution {};
+template<typename ResultType>
+using NonVoid = std::conditional_t<std::is_void_v<ResultType>, VoidSubstitution, ResultType>;
 
 /**
  * Responsible for syncronization between the task and the receiving thread.
@@ -104,21 +105,19 @@ public:
 	{
 		// The caller must ensure that this is only called if there is a result.
 		ENSURE(IsDone());
-		if constexpr (!std::is_void_v<ResultType>)
-			ENSURE(std::get<ResultHolder<ResultType>>(m_Outcome).has_value() ||
-				std::get<std::exception_ptr>(m_Outcome));
+		ENSURE(std::holds_alternative<NonVoid<ResultType>>(m_Outcome) ||
+			std::get<std::exception_ptr>(m_Outcome));
 
-		if (std::get<std::exception_ptr>(m_Outcome))
+		if (std::holds_alternative<std::exception_ptr>(m_Outcome))
 			std::rethrow_exception(std::exchange(std::get<std::exception_ptr>(m_Outcome), {}));
+
+		[[maybe_unused]] auto ret = std::move(std::get<NonVoid<ResultType>>(m_Outcome));
+		m_Outcome.template emplace<std::exception_ptr>();
 
 		if constexpr (std::is_void_v<ResultType>)
 			return;
 		else
-		{
-			ResultType ret = std::move(*std::get<ResultHolder<ResultType>>(m_Outcome));
-			std::get<ResultHolder<ResultType>>(m_Outcome).reset();
 			return ret;
-		}
 	}
 
 	// This is only set by the executing thread and read by the receiving thread. It is never reset.
@@ -128,9 +127,7 @@ public:
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 
-	// There can't be a result and an exception.
-	std::tuple<ResultHolder<ResultType>, std::exception_ptr> m_Outcome{std::nullopt,
-		std::exception_ptr{}};
+	std::variant<std::exception_ptr, NonVoid<ResultType>> m_Outcome;
 };
 
 /**
@@ -255,19 +252,21 @@ public:
 	{
 		if (!m_SharedState->receiver.m_StopRequest.load())
 		{
+			auto& outcome = m_SharedState->receiver.m_Outcome;
 			try
 			{
 				using ResultType = CallbackResult<Callback>;
 				if constexpr (std::is_void_v<ResultType>)
+				{
 					Invoke();
+					outcome.template emplace<FutureSharedStateDetail::VoidSubstitution>();
+				}
 				else
-					std::get<FutureSharedStateDetail::ResultHolder<ResultType>>(
-						m_SharedState->receiver.m_Outcome).emplace(Invoke());
+					outcome.template emplace<ResultType>(Invoke());
 			}
 			catch(...)
 			{
-				std::get<std::exception_ptr>(m_SharedState->receiver.m_Outcome) =
-					std::current_exception();
+				outcome.template emplace<std::exception_ptr>(std::current_exception());
 			}
 		}
 
