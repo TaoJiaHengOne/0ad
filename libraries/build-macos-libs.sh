@@ -428,7 +428,7 @@ echo "Building Boost..."
 	LIB_VERSION="${BOOST_VERSION}"
 	LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
 	LIB_DIRECTORY="$LIB_VERSION"
-	LIB_URL="https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/"
+	LIB_URL="https://archives.boost.io/release/1.81.0/source/"
 
 	mkdir -p boost
 	cd boost
