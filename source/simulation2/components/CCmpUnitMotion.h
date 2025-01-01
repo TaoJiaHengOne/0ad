@@ -758,12 +758,7 @@ private:
 	void Move(CCmpUnitMotionManager::MotionState& state, fixed dt);
 	void PostMove(CCmpUnitMotionManager::MotionState& state, fixed dt);
 
-	/**
-	 * Returns true if we are possibly at our destination.
-	 * Since the concept of being at destination is dependent on why the move was requested,
-	 * UnitMotion can only ever hint about this, hence the conditional tone.
-	 */
-	bool PossiblyAtDestination() const;
+	bool PossiblyAtDestination() const override;
 
 	/**
 	 * Process the move the unit will do this turn.

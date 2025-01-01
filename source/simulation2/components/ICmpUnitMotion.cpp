@@ -28,6 +28,7 @@ DEFINE_INTERFACE_METHOD("MoveToTargetRange", ICmpUnitMotion, MoveToTargetRange)
 DEFINE_INTERFACE_METHOD("MoveToFormationOffset", ICmpUnitMotion, MoveToFormationOffset)
 DEFINE_INTERFACE_METHOD("SetMemberOfFormation", ICmpUnitMotion, SetMemberOfFormation)
 DEFINE_INTERFACE_METHOD("IsTargetRangeReachable", ICmpUnitMotion, IsTargetRangeReachable)
+DEFINE_INTERFACE_METHOD("PossiblyAtDestination", ICmpUnitMotion, PossiblyAtDestination)
 DEFINE_INTERFACE_METHOD("FaceTowardsPoint", ICmpUnitMotion, FaceTowardsPoint)
 DEFINE_INTERFACE_METHOD("StopMoving", ICmpUnitMotion, StopMoving)
 DEFINE_INTERFACE_METHOD("GetCurrentSpeed", ICmpUnitMotion, GetCurrentSpeed)
@@ -75,6 +76,11 @@ public:
 	bool IsTargetRangeReachable(entity_id_t target, entity_pos_t minRange, entity_pos_t maxRange) override
 	{
 		return m_Script.Call<bool>("IsTargetRangeReachable", target, minRange, maxRange);
+	}
+
+	bool PossiblyAtDestination() const override
+	{
+		return m_Script.Call<bool>("PossiblyAtDestination");
 	}
 
 	void FaceTowardsPoint(entity_pos_t x, entity_pos_t z) override

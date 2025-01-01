@@ -77,6 +77,13 @@ public:
 	virtual bool IsTargetRangeReachable(entity_id_t target, entity_pos_t minRange, entity_pos_t maxRange) = 0;
 
 	/**
+	 * Returns true if we are possibly at our destination.
+	 * Since the concept of being at destination is dependent on why the move was requested,
+	 * UnitMotion can only ever hint about this, hence the conditional tone.
+	 */
+	virtual bool PossiblyAtDestination() const = 0;
+
+	/**
 	 * Turn to look towards the given point.
 	 */
 	virtual void FaceTowardsPoint(entity_pos_t x, entity_pos_t z) = 0;

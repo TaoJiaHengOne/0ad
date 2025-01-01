@@ -296,6 +296,11 @@ UnitMotionFlying.prototype.MoveToTargetRange = function(target, minRange, maxRan
 	return true;
 };
 
+UnitMotionFlying.prototype.PossiblyAtDestination = function()
+{
+	return this.reachedTarget;
+};
+
 UnitMotionFlying.prototype.SetMemberOfFormation = function()
 {
 	// Ignored.

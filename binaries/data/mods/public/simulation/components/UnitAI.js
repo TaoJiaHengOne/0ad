@@ -201,6 +201,10 @@ UnitAI.prototype.UnitFsmSpec = {
 		// as switching states)
 	},
 
+	"ReenterIdle": function(msg) {
+		// Ignore, intended for IDLE state only.
+	},
+
 	"ConstructionFinished": function(msg) {
 		// ignore uninteresting construction messages
 	},
@@ -1476,6 +1480,12 @@ UnitAI.prototype.UnitFsmSpec = {
 					this.SetAnimationVariant(this.order.data.variant);
 				else
 					this.SetDefaultAnimationVariant();
+
+				if (cmpUnitMotion.PossiblyAtDestination())
+				{
+					this.FinishOrder();
+					return true;
+				}
 				return false;
 			},
 
@@ -1592,6 +1602,23 @@ UnitAI.prototype.UnitFsmSpec = {
 
 				this.SetNextState("CHEERING");
 				return ACCEPT_ORDER;
+			},
+
+			"ReenterIdle": function() {
+				// Reset us to the idle state for the GUI.
+				if (this.IsFormationMember())
+				{
+					let cmpFormationAI = Engine.QueryInterface(this.formationController, IID_UnitAI);
+					if (!cmpFormationAI || !cmpFormationAI.IsIdle())
+						return;
+					Engine.QueryInterface(this.formationController, IID_Formation).SetIdleEntity(this.entity);
+				}
+
+				this.isIdle = true;
+				Engine.PostMessage(this.entity, MT_UnitIdleChanged, { "idle": this.isIdle });
+
+				// TODO: figure out if we can move more things from Timer here/call timer directly
+				// without triggering infinite loops.
 			},
 
 			"enter": function() {
@@ -3940,6 +3967,8 @@ UnitAI.prototype.FinishOrder = function()
  */
 UnitAI.prototype.PushOrder = function(type, data)
 {
+	let wasIdle = this.isIdle && !this.order;
+
 	var order = { "type": type, "data": data };
 	this.orderQueue.push(order);
 
@@ -3950,6 +3979,12 @@ UnitAI.prototype.PushOrder = function(type, data)
 			"type": "Order."+this.order.type,
 			"data": this.order.data
 		});
+		// Check if the order appears to have been rejected
+		if (wasIdle && !this.order) {
+			this.UnitFsm.ProcessMessage(this, {
+				"type": "ReenterIdle",
+			});
+		}
 	}
 
 	Engine.PostMessage(this.entity, MT_UnitAIOrderDataChanged, { "to": this.GetOrderData() });
@@ -3961,6 +3996,9 @@ UnitAI.prototype.PushOrder = function(type, data)
  */
 UnitAI.prototype.PushOrderFront = function(type, data, ignorePacking = false)
 {
+	if (!this.order)
+		return this.PushOrder(type, data);
+
 	var order = { "type": type, "data": data };
 	// If current order is packing/unpacking then add new order after it.
 	if (!ignorePacking && this.order && this.IsPacking())
