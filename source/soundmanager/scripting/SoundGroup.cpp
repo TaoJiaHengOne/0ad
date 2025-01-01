@@ -169,7 +169,7 @@ float CSoundGroup::RadiansOffCenter(const CVector3D& position, bool& onScreen, f
 		answer = radianCap * (screenPos.X * 2 / screenWidth - 1);
 	}
 
-	if (screenPos.X < -yBufferSize)
+	if (screenPos.Y < -yBufferSize)
 	{
 		onScreen = false;
 	}
