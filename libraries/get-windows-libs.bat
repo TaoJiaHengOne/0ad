@@ -1,5 +1,7 @@
 rem **Download sources and binaries of libraries**
 
+cd /D "%~dp0"
+
 rem **SVN revision to checkout for windows-libs**
 rem **Update this line when you commit an update to windows-libs**
 set "svnrev=28243"
