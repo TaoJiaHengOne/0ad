@@ -237,7 +237,17 @@ CURLMcode ModIo::SetupRequest(const std::string& url, bool fileDownload)
 
 void ModIo::TearDownRequest()
 {
-	ENSURE(curl_multi_remove_handle(m_CurlMulti, m_Curl) == CURLM_OK);
+	const curl_version_info_data* info = curl_version_info(CURLVERSION_NOW);
+	const CURLMcode code = curl_multi_remove_handle(m_CurlMulti, m_Curl);
+	if (info->version_num >= 0x080a00 && info->version_num < 0x080b02)
+	{
+		// Version 8.10.0 through 8.11.1 return CURLM_BAD_EASY_HANDLE
+		ENSURE(code == CURLM_OK || code == CURLM_BAD_EASY_HANDLE);
+	}
+	else
+	{
+		ENSURE(code == CURLM_OK);
+	}
 
 	if (m_CallbackData)
 	{
