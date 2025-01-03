@@ -10,7 +10,7 @@
 			<translatableAttribute id="caption">Campaigns</translatableAttribute>
 		</object>
 
-		<object name="leftPanel" size="30 50 100%-515 100%-80">
+		<object name="leftPanel" size="30 50 100%-515 100%-68">
 			<!-- List of campaigns -->
 			<object name="campaignSelection"
 				size="0 0 100% 100%"
@@ -28,7 +28,7 @@
 			</object>
 		</object>
 
-		<object name="rightPanel" size="100%-485 50 100%-30 100%-30">
+		<object name="rightPanel" size="100%-485 50 100%-30 100%-68">
 			<object type="image" sprite="ModernDarkBoxGold" size="0 0 100% 342">
 				<object name="campaignImage" type="image" sprite="" size="1 1 100%-1 100%-1">
 				</object>
@@ -36,14 +36,14 @@
 			<object type="text" name="campaignTitle" style="TitleText" size="0 360 100% 390">
 				<translatableAttribute id="caption">No Campaign selected</translatableAttribute>
 			</object>
-			<object type="image" sprite="ModernDarkBoxGold" name="campaignDescBox" size="0 400 100% 100%-50" hidden="false">
+			<object type="image" sprite="ModernDarkBoxGold" name="campaignDescBox" size="0 400 100% 100%" hidden="false">
 				<object type="text" name="campaignDesc" style="ModernLabelText" font="sans-16" size="10 10 100%-10 100%-10">
 				</object>
 			</object>
 		</object>
 	</object>
 
-	<object name="bottomPanel" size="25 100%-55 100%-5 100%-25" >
+	<object name="bottomPanel" size="25 100%-57 100%-5 100%-25" >
 
 		<!-- Main Menu Button -->
 		<object name="mainMenuButton" type="button" style="StoneButton" size="25 0 17%+25 100%">

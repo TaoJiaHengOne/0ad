@@ -4,11 +4,11 @@
 	<script directory="gui/reference/tips/"/>
 	<script directory="gui/reference/common/Buttons/"/>
     <object type="image" sprite="BackgroundTranslucent"/>
-	<object type="image" size="50%-502 50%-250 50%+502 50%+250" sprite="ModernDialog">
+	<object type="image" size="50%-502 50%-255 50%+502 50%+255" sprite="ModernDialog">
 		<object style="TitleText" type="text" size="50%-128 -18 50%+128 14">
 			<translatableAttribute id="caption">Tips and Tricks</translatableAttribute>
 		</object>
-		<object size="50%-452 50%-206 50%+452 50%+186">
+		<object size="50%-452 50%-215 50%+452 50%+191">
 			<include file="gui/reference/tips/sections/TipDisplay.xml"/>
 		</object>
 		<include file="gui/reference/common/Buttons/CloseButton.xml"/>

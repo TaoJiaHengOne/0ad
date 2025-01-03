@@ -22,7 +22,7 @@ var g_PanelData = [];
 /**
  * Vertical size of a tab button.
  */
-var g_TabButtonHeight = 35;
+var g_TabButtonHeight = 34;
 
 /**
  * Vertical space between two tab buttons.

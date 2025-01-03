@@ -27,7 +27,7 @@
 		</object>
 	</object>
 
-	<object name="centerPanel" size="0 0 100% 100%-60">
+	<object name="centerPanel" size="0 0 100% 100%-64">
 
 		<object name="centerLeftPanel" size="24 0 100% 100%">
 			<object size="0 346 100%-795-24 100%">
@@ -63,7 +63,7 @@
 
 	</object>
 
-	<object name="bottomPanel" size="0 0 100% 100%-24">
+	<object name="bottomPanel" size="0 0 100% 100%-22">
 
 		<object name="bottomLeftPanel">
 
@@ -71,13 +71,13 @@
 				<include file="gui/gamesetup/Pages/GameSetupPage/Panels/Tooltip.xml"/>
 			</object>
 
-			<object size="0 100%-28 100%-470 100%">
+			<object size="0 100%-32 100%-470 100%">
 				<include file="gui/gamesetup/Pages/GameSetupPage/Panels/GameSettingWarning.xml"/>
 			</object>
 
 		</object>
 
-		<object name="bottomRightPanel" size="100%-464 100%-28 100% 100%">
+		<object name="bottomRightPanel" size="100%-464 100%-32 100% 100%">
 
 			<object size="0 0 140 100%">
 				<include file="gui/gamesetup/Pages/GameSetupPage/Panels/Buttons/SavedGameLabel.xml"/>

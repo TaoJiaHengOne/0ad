@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object>
 	<script directory="gui/reference/tips/sections/"/>
-	<object type="image" name="imageControlPanel" sprite="ModernFade" size="80 398 440 430">
+	<object type="image" name="imageControlPanel" sprite="ModernFade" size="120 412 400 444">
 		<object type="image" sprite="TipImageFrame"/>
 		<object type="text" name="tipImageText" style="TipImageText"/>
 		<object type="button" name="previousImageButton" style="PreviousImageButton" size="43 9 57 23"/>
-		<object type="button" name="nextImageButton" style="NextImageButton" size="303 9 317 23"/>
+		<object type="button" name="nextImageButton" style="NextImageButton" size="223 9 237 23"/>
 	</object>
-	<object type="image" sprite="TipImageFrame" size="0 0 520 392" ghost="true">
+	<object type="image" sprite="TipImageFrame" size="0 4 520 396" ghost="true">
 		<object name="tipImage" size="4 4 516 516" type="image">
 			<object type="image" sprite="stretched:tipdisplay/tip-image-gradient.png"/>
 		</object>

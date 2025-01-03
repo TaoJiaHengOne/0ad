@@ -13,7 +13,7 @@
 		/>
 	</object>
 
-	<object type="image" sprite="ModernDarkBoxGold" size="0 35 100% 100%">
+	<object type="image" sprite="ModernDarkBoxGold" size="0 35 100% 100%-12">
 		<object
 			name="civHistoryText"
 			type="text"

@@ -39,16 +39,16 @@
 	</object>
 
 	<!-- Chat input elements -->
-	<object name="chatPage" size="0 100%-120 100% 100%">
+	<object name="chatPage" size="0 100%-128 100% 100%">
 
 		<!-- Message addressee -->
-		<object type="text" name="chatAddresseeCaption" size="16 100%-106 50 100%-82" style="ModernLeftLabelText">
+		<object type="text" name="chatAddresseeCaption" size="16 100%-114 50 100%-90" style="ModernLeftLabelText">
 			<translatableAttribute id="caption" context="chat input">To:</translatableAttribute>
 		</object>
 		<object
 			name="chatAddressee"
 			type="dropdown"
-			size="75 100%-108 100%-16 100%-84"
+			size="75 100%-116 100%-16 100%-90"
 			style="ModernDropDown"
 			tooltip_style="sessionToolTipBold"
 		>
@@ -56,19 +56,19 @@
 		</object>
 
 		<!-- Message text -->
-		<object type="text" name="chatInputCaption" size="16 100%-74 50 100%-50" style="ModernLeftLabelText">
+		<object type="text" name="chatInputCaption" size="16 100%-82 50 100%-58" style="ModernLeftLabelText">
 			<translatableAttribute id="caption" context="chat input">Text:</translatableAttribute>
 		</object>
 		<object
 			type="input"
 			name="chatInput"
-			size="75 100%-76 100%-16 100%-52"
+			size="75 100%-82 100%-16 100%-56"
 			style="ModernInput"
 			max_length="1024"
 		/>
 
 		<!-- Cancel Button -->
-		<object name="closeChat" size="16 100%-40 30%+16 100%-12" type="button" style="StoneButton">
+		<object name="closeChat" size="16 100%-48 30%+16 100%-12" type="button" style="StoneButton">
 			<translatableAttribute id="caption">Cancel</translatableAttribute>
 		</object>
 
@@ -78,16 +78,16 @@
 			name="extendedChat"
 			checked="false"
 			style="ModernTickBox"
-			size="50%-40 100%-38 50%-20 100%-12"
+			size="50%-40 100%-40 50%-20 100%-12"
 		/>
 
 		<!-- Extended Chat Label -->
-		<object type="text" size="50%-20 100%-38 50%+50 100%-12" text_align="left" textcolor="white">
+		<object type="text" size="50%-20 100%-48 50%+50 100%-12" text_align="left" text_valign="center" textcolor="white">
 			<translatableAttribute id="caption" context="chat">History</translatableAttribute>
 		</object>
 
 		<!-- Send Button -->
-		<object name="sendChat" size="70%-16 100%-40 100%-16 100%-12" type="button" style="StoneButton">
+		<object name="sendChat" size="70%-16 100%-48 100%-16 100%-12" type="button" style="StoneButton">
 			<translatableAttribute id="caption">Send</translatableAttribute>
 		</object>
 	</object>

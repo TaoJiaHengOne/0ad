@@ -73,7 +73,7 @@ class GameSettingTabs
 GameSettingTabs.prototype.ToggleTooltip =
 	translate("Click to toggle the %(name)s settings tab.");
 
-GameSettingTabs.prototype.TabButtonHeight = 30;
+GameSettingTabs.prototype.TabButtonHeight = 34;
 
 GameSettingTabs.prototype.TabButtonMargin = 4;
 

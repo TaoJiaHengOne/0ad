@@ -221,7 +221,7 @@
 
 
 		<!-- Bottom Panel: Buttons. -->
-		<object name="bottomPanel" size="25 100%-55 100%-5 100%-25" >
+		<object name="bottomPanel" size="25 100%-56 100%-5 100%-24" >
 
 			<!-- Main Menu Button -->
 			<object type="button" style="StoneButton" size="0 0 19% 100%">

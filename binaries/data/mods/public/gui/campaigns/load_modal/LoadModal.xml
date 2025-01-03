@@ -13,29 +13,29 @@
 			<translatableAttribute id="caption">Load Campaign</translatableAttribute>
 		</object>
 
-		<object name="runSelection" style="ModernList" type="list" size="24 22 100%-24 100%-130">
+		<object name="runSelection" style="ModernList" type="list" size="24 22 100%-24 100%-134">
 		</object>
 
-		<object size="24 22 100%-24 100%-130" name="noCampaignsText" type="text" text_align="center" style="ModernLeftLabelText">
+		<object size="24 22 100%-24 100%-134" name="noCampaignsText" type="text" text_align="center" style="ModernLeftLabelText">
 			<translatableAttribute id="caption">No ongoing campaigns.</translatableAttribute>
 		</object>
 
-		<object size="24 100%-124 100%-24 100%-100" name="campaignSaveName" type="text" style="ModernLeftLabelText">
+		<object size="24 100%-124 100%-24 100%-104" name="campaignSaveName" type="text" style="ModernLeftLabelText">
 			<translatableAttribute id="caption">Name of selected run:</translatableAttribute>
 		</object>
 
-		<object name="runDescription" size="24 100%-96 100%-24 100%-72" type="input" style="ModernInput">
+		<object name="runDescription" size="24 100%-96 100%-24 100%-76" type="input" style="ModernInput">
 		</object>
 
-		<object name="cancelButton" type="button" size="0%+25 100%-60 33%+10 100%-32" style="StoneButton" hotkey="cancel">
+		<object name="cancelButton" type="button" size="0%+25 100%-64 33%+10 100%-32" style="StoneButton" hotkey="cancel">
 			<translatableAttribute id="caption">Cancel</translatableAttribute>
 		</object>
 
-		<object name="deleteGameButton" type="button" size="33%+20 100%-60 66%-15 100%-32" style="StoneButton" enabled="false">
+		<object name="deleteGameButton" type="button" size="33%+20 100%-64 66%-15 100%-32" style="StoneButton" enabled="false">
 			<translatableAttribute id="caption">Delete</translatableAttribute>
 		</object>
 
-		<object name="startButton" type="button" style="StoneButton" size="66%-5 100%-60 100%-25 100%-32">
+		<object name="startButton" type="button" style="StoneButton" size="66%-5 100%-64 100%-25 100%-32">
 			<translatableAttribute id="caption">Load Campaign</translatableAttribute>
 		</object>
 

@@ -46,15 +46,15 @@
 
 			<object name="saveGameDesc" size="20 100%-96 100%-20 100%-72" type="input" style="ModernInput" hidden="true"/>
 
-			<object name="cancel" type="button" size="0%+20 100%-60 33%+10 100%-32" style="StoneButton" hotkey="cancel">
+			<object name="cancel" type="button" size="0%+20 100%-62 33%+10 100%-30" style="StoneButton" hotkey="cancel">
 				<translatableAttribute id="caption">Cancel</translatableAttribute>
 			</object>
 
-			<object name="deleteGameButton" type="button" size="33%+20 100%-60 66%-20 100%-32" style="StoneButton" enabled="false" hotkey="session.savedgames.delete">
+			<object name="deleteGameButton" type="button" size="33%+20 100%-62 66%-20 100%-30" style="StoneButton" enabled="false" hotkey="session.savedgames.delete">
 				<translatableAttribute id="caption">Delete</translatableAttribute>
 			</object>
 
-			<object name="confirmButton" type="button" style="StoneButton" size="66%-10 100%-60 100%-20 100%-32"/>
+			<object name="confirmButton" type="button" style="StoneButton" size="66%-10 100%-62 100%-20 100%-30"/>
 		</object>
 
 		<object name="filterPanel" size="625 25 100%-20 70">

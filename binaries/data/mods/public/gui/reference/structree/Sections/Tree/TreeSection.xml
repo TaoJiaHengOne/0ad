@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<object size="0 54+64 100%-16 100%-54" name="treeSection">
+<object size="0 54+64 100%-16 100%-66" name="treeSection">
 	<object name="phaseIdents">
 		<repeat count="4" var="n">
 			<object name="phase[n]_ident" hidden="true">

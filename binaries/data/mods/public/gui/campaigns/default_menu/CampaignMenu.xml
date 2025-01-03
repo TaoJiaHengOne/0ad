@@ -14,7 +14,7 @@
 			<translatableAttribute id="caption">Campaign Name</translatableAttribute>
 		</object>
 
-		<object name="leftPanel" size="30 50 100%-447 100%-60">
+		<object name="leftPanel" size="30 50 100%-447 100%-68">
 			<!-- List of available levels -->
 			<object name="levelSelection"
 				size="0 0 100% 100%"
@@ -33,7 +33,7 @@
 			</object>
 		</object>
 
-		<object name="rightPanel" size="100%-432 50 100%-30 100%-60">
+		<object name="rightPanel" size="100%-432 50 100%-30 100%-68">
 			<!-- Scenario Image -->
 			<object type="image" sprite="ModernDarkBoxGold" name="levelPreviewBox" size="0 0 100% 302">
 				<object type="image" sprite="" size="1 1 100%-1 301" name="mapPreview"/>
@@ -51,14 +51,14 @@
 
 		</object>
 
-		<object name="bottomPanel" size="30 100%-55 100%-5 100%-25" >
+		<object name="bottomPanel" size="30 100%-57 100%-5 100%-25" >
 
 			<!-- Exit & Back to Main Menu -->
 			<object name="backToMain" type="button" style="StoneButton" size="0 0 17% 100%">
 				<translatableAttribute id="caption">Back to Main Menu</translatableAttribute>
 			</object>
 
-			<object name="savedGamesButton" type="button" style="StoneButtonFancy" size="63%-25 0 80%-25 100%">
+			<object name="savedGamesButton" type="button" style="StoneButtonFancy" size="64%-25 0 81%-25 100%">
 				<translatableAttribute id="caption">Saved Games</translatableAttribute>
 			</object>
 

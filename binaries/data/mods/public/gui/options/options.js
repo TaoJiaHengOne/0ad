@@ -11,7 +11,7 @@ var g_ChangedKeys;
 /**
  * Vertical size of a tab button.
  */
-var g_TabButtonHeight = 30;
+var g_TabButtonHeight = 34;
 
 /**
  * Vertical space between two tab buttons.
