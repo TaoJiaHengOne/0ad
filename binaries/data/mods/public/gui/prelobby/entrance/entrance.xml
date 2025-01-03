@@ -8,7 +8,7 @@
 	<!-- Add a translucent black background to fade out the menu page -->
 	<object type="image" sprite="ModernFade"/>
 
-	<object name="dialog" type="image" style="ModernDialog" size="50%-215 50%-100 50%+215 50%+100">
+	<object name="dialog" type="image" style="ModernDialog" size="50%-200 50%-94 50%+200 50%+94">
 
 		<object style="ModernLabelText" type="text" size="50%-128 -18 50%+128 14">
 			<translatableAttribute id="caption">Multiplayer Lobby</translatableAttribute>
@@ -16,17 +16,17 @@
 
 		<object size="0 32 100% 100%">
 
-			<object type="button" size="50 12 100%-50 40" style="ModernButtonRed">
+			<object type="button" size="50%-140 12 50%+140 40" style="ModernButtonRed">
 				<translatableAttribute id="caption">Create a new account</translatableAttribute>
 				<action on="Press">registerButton();</action>
 			</object>
 
-			<object type="button" size="50 52 100%-50 80" style="ModernButtonRed">
+			<object type="button" size="50%-140 50 50%+140 78" style="ModernButtonRed">
 				<translatableAttribute id="caption">Login to an existing account</translatableAttribute>
 				<action on="Press">loginButton();</action>
 			</object>
 
-			<object name="cancel" type="button" size="18 100%-45 50%-5 100%-17" style="ModernButtonRed" hotkey="cancel">
+			<object name="cancel" type="button" size="18 100%-46 50%-5 100%-18" style="ModernButtonRed" hotkey="cancel">
 				<translatableAttribute id="caption">Cancel</translatableAttribute>
 				<action on="Press">cancelButton();</action>
 			</object>

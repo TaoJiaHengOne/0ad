@@ -1,4 +1,4 @@
-var g_TermsButtonHeight = 40;
+var g_TermsButtonHeight = 38;
 
 function initLobbyTerms()
 {

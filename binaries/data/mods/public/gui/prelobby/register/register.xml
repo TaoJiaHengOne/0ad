@@ -8,7 +8,7 @@
 	<script directory="gui/prelobby/register/"/>
 	<script file="gui/lobby/password.js"/>
 
-	<object type="image" style="ModernDialog" size="50%-230 50%-210 50%+230 50%+210">
+	<object type="image" style="ModernDialog" size="50%-230 50%-213 50%+230 50%+213">
 
 		<object style="ModernLabelText" type="text" size="50%-128 -18 50%+128 14">
 			<translatableAttribute id="caption">Registration</translatableAttribute>
@@ -26,11 +26,11 @@
 			<include file="gui/prelobby/common/credentials/rememberpassword.xml"/>
 		</object>
 
-		<object size="0 180 100% 290">
+		<object size="0 190 100% 304">
 			<include file="gui/prelobby/common/terms/termslobby.xml"/>
 		</object>
 
-		<object size="0 295 100% 510">
+		<object size="0 294 100% 100%">
 			<include file="gui/prelobby/common/feedback/feedback.xml"/>
 		</object>
 

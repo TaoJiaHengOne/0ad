@@ -8,7 +8,7 @@
 	<script directory="gui/prelobby/login/"/>
 	<script file="gui/lobby/password.js"/>
 
-	<object type="image" style="ModernDialog" size="50%-230 50%-190 50%+230 50%+190">
+	<object type="image" style="ModernDialog" size="50%-230 50%-188 50%+230 50%+188">
 
 		<object style="ModernLabelText" type="text" size="50%-128 -18 50%+128 14">
 			<translatableAttribute id="caption">Connect to the game lobby</translatableAttribute>
@@ -18,15 +18,15 @@
 			<include file="gui/prelobby/common/credentials/credentials.xml"/>
 		</object>
 
-		<object size="0 105 100% 120">
+		<object size="0 105 100% 125">
 			<include file="gui/prelobby/common/credentials/rememberpassword.xml"/>
 		</object>
 
-		<object size="0 140 100% 250">
+		<object size="0 140 100% 254">
 			<include file="gui/prelobby/common/terms/termslobby.xml"/>
 		</object>
 
-		<object size="0 255 100% 370">
+		<object size="0 244 100% 100%">
 			<include file="gui/prelobby/common/feedback/feedback.xml"/>
 		</object>
 
