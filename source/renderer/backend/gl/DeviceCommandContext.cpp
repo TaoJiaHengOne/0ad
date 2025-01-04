@@ -104,7 +104,11 @@ GLenum BufferTypeToGLTarget(const CBuffer::Type type)
 		target = GL_ELEMENT_ARRAY_BUFFER;
 		break;
 	case CBuffer::Type::UNIFORM:
+#if !CONFIG2_GLES
 		target = GL_UNIFORM_BUFFER;
+#else
+		debug_warn("Unsupported buffer type.");
+#endif
 		break;
 	case CBuffer::Type::UPLOAD:
 		debug_warn("Unsupported buffer type.");
@@ -1304,6 +1308,10 @@ void CDeviceCommandContext::InsertMemoryBarrier(
 	}
 	if (barriers)
 		glMemoryBarrier(barriers);
+#else
+	UNUSED2(dstStageMask);
+	UNUSED2(srcAccessMask);
+	UNUSED2(dstAccessMask);
 #endif
 }
 

@@ -1039,8 +1039,10 @@ public:
 		ENSURE(this != previousShaderProgramGLSL);
 
 		glUseProgram(m_Program);
+#if !CONFIG2_GLES
 		if (m_UniformBuffer)
 			glBindBufferBase(GL_UNIFORM_BUFFER, m_UniformBufferLocation, m_UniformBuffer->As<CBuffer>()->GetHandle());
+#endif
 
 		if (previousShaderProgramGLSL)
 		{
@@ -1485,7 +1487,7 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(CDevice* device, const CS
 		const PS::StaticVector<std::tuple<VfsPath, GLenum>, 2> shaderStages{computeFile.empty()
 			? PS::StaticVector<std::tuple<VfsPath, GLenum>, 2>{{vertexFile, GL_VERTEX_SHADER}, {fragmentFile, GL_FRAGMENT_SHADER}}
 			: PS::StaticVector<std::tuple<VfsPath, GLenum>, 2>{{computeFile, GL_COMPUTE_SHADER}}};
-#else 
+#else
 		const PS::StaticVector<std::tuple<VfsPath, GLenum>, 2> shaderStages{{{vertexFile, GL_VERTEX_SHADER}, {fragmentFile, GL_FRAGMENT_SHADER}}};
 #endif
 

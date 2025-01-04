@@ -46,9 +46,11 @@ GLenum GetTargetFromBufferType(const IBuffer::Type type)
 	case IBuffer::Type::INDEX:
 		target = GL_ELEMENT_ARRAY_BUFFER;
 		break;
+#if !CONFIG2_GLES
 	case IBuffer::Type::UNIFORM:
 		target = GL_UNIFORM_BUFFER;
 		break;
+#endif
 	default:
 		target = GL_ARRAY_BUFFER;
 		break;
