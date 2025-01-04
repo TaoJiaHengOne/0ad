@@ -190,7 +190,7 @@ var g_NotificationsTypes =
 	{
 		g_DiplomacyDialog.onSpyResponse(notification, player);
 
-		if (notification.entity && g_ViewedPlayer == player)
+		if (notification.entity && g_ViewedPlayer == player && (!g_IsObserver || g_FollowPlayer))
 		{
 			g_DiplomacyDialog.close();
 			setCameraFollow(notification.entity);
