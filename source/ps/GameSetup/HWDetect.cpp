@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -406,7 +406,7 @@ void RunHardwareDetection(bool writeSystemInfoBeforeDetection, Renderer::Backend
 	Script::SetProperty(rq, settings, "random_device_entropy", std::random_device{}.entropy());
 
 	// The version should be increased for every meaningful change.
-	const int reportVersion = 21;
+	const int reportVersion = 22;
 
 	// Send the same data to the reporting system
 	g_UserReporter.SubmitReport(

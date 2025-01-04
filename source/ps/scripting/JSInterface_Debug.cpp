@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -80,11 +80,19 @@ double GetBuildTimestamp()
 //   hash and cached in lib/build_version.cpp. it is useful to know when attempting
 //   to reproduce bugs (the main EXE and PDB should be temporarily reverted to
 //   that commit so that they match user-submitted crashdumps).
-std::wstring GetBuildVersion()
+// - this function is used by the JS GUI to display the version in a size-constrained
+//   zone. when longerHash is false, the last 5 characters of the git hash are cut off.
+std::wstring GetBuildVersion(bool longerHash = false)
 {
 	std::wstring buildVersion(build_version);
 	if (buildVersion == L"custom build")
 		return wstring_from_utf8(g_L10n.Translate("custom build"));
+
+	// The hash is 10-char, which is a bit long for the GUI. Reduce it to 5-char by
+	// default for the main menu display.
+	if (!longerHash && buildVersion.length() > 5)
+		return buildVersion.substr(0, buildVersion.length() - 5);
+
 	return buildVersion;
 }
 
