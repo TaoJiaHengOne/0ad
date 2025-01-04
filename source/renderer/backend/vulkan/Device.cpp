@@ -843,7 +843,10 @@ bool CDevice::IsTextureFormatSupported(const Format format) const
 	case Format::BC1_RGBA_UNORM: FALLTHROUGH;
 	case Format::BC2_UNORM: FALLTHROUGH;
 	case Format::BC3_UNORM:
-		return m_Capabilities.S3TC;
+		if (m_Capabilities.S3TC)
+			return true;
+		else
+			break;
 
 	default:
 		break;
