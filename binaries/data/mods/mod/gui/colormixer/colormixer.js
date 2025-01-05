@@ -26,10 +26,6 @@ class ColorMixer
 
 		const cancelHotkey = Engine.GetGUIObjectByName("cancelHotkey");
 
-		const lRDiff = this.width / 2;
-		const uDDiff = this.height / 2;
-		this.panel.size = "50%-" + lRDiff + " 50%-" + uDDiff + " 50%+" + lRDiff + " 50%+" + uDDiff;
-
 		const button = [];
 		const closePromise =
 			setButtonCaptionsAndVisibility(button, this.captions, cancelHotkey, "cmButton");
@@ -84,8 +80,6 @@ class ColorMixer
 	}
 }
 
-ColorMixer.prototype.width = 500;
-ColorMixer.prototype.height = 400;
 ColorMixer.prototype.labels = [translate("Red"), translate("Green"), translate("Blue")];
 ColorMixer.prototype.captions = [translate("Cancel"), translate("Save")];
 

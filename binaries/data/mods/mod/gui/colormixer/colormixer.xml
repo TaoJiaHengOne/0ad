@@ -11,15 +11,16 @@
 	<object name="main"
 			style="ModernDialog"
 			type="image"
+			size="50%-250 50%-185 50%+250 50%+185"
 	>
 		<object name="titleBar"
 				style="ModernLabelText"
 				type="text"
 				size="50%-128 -18 50%+128 14"
 		/>
-		<object name="infoLabel" size="10 50 100%-10 80" type="text" style="ModernLabelText"/>
-		<object name="colorDisplay" type="image" size="50%-40 90 50%+40 90+40"/>
-		<object size="10 150 100%-10 100%">
+		<object name="infoLabel" size="24 50 100%-24 80" type="text" style="ModernLabelText"/>
+		<object name="colorDisplay" type="image" size="50%-32 105 50%+32 145"/>
+		<object size="10 165 100%-10 100%-48">
 			<repeat count="3">
 				<object name="color[n]" size="0 0 100% 40">
 					<object name="colorLabel[n]" size="0 0 100% 20" type="text" style="ModernLabelText"/>
