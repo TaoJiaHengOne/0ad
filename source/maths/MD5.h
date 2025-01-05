@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -38,6 +38,12 @@ public:
 		const size_t CHUNK_SIZE = sizeof(m_Buf);
 
 		m_InputLen += len;
+
+		// GCC thinks `m_Buf + m_BufLen` can be outside the bound of `m_Buf`. That is because
+		// `m_BufLen + len < CHUNK_SIZE` can evaluate to `true` even if `m_BufLen` is bigger than
+		// `CHUNK_SIZE` due to wrapping. Tell GCC that it's not possible.
+		if (m_BufLen >= CHUNK_SIZE)
+			UNREACHABLE;
 
 		// If we have enough space in m_Buf and won't flush, simply append the input
 		if (m_BufLen + len < CHUNK_SIZE)
