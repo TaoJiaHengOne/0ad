@@ -3,6 +3,7 @@ GameSettings.prototype.Attributes.PlayerCount = class PlayerCount extends GameSe
 	init()
 	{
 		this.nbPlayers = 1;
+		this.maxPlayers = g_MaxPlayers;
 		this.settings.map.watch(() => this.onMapTypeChange(), ["type"]);
 		this.settings.map.watch(() => this.onMapChange(), ["map"]);
 	}
@@ -25,6 +26,8 @@ GameSettings.prototype.Attributes.PlayerCount = class PlayerCount extends GameSe
 	{
 		if (this.settings.map.type == "random" && old != "random")
 			this.nbPlayers = 2;
+		if (this.settings.map.type === "random")
+			this.maxPlayers = g_MaxPlayers;
 	}
 
 	onMapChange()
@@ -35,6 +38,7 @@ GameSettings.prototype.Attributes.PlayerCount = class PlayerCount extends GameSe
 			!this.settings.map.data.settings.PlayerData)
 			return;
 		this.nbPlayers = this.settings.map.data.settings.PlayerData.length;
+		this.maxPlayers = this.settings.map.data.settings.PlayerData.length;
 	}
 
 	reloadFromLegacy(data)
@@ -60,6 +64,6 @@ GameSettings.prototype.Attributes.PlayerCount = class PlayerCount extends GameSe
 
 	setNb(nb)
 	{
-		this.nbPlayers = Math.max(1, Math.min(g_MaxPlayers, nb));
+		this.nbPlayers = Math.max(1, Math.min(this.maxPlayers, nb));
 	}
 };
