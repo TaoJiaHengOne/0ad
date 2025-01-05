@@ -1,6 +1,6 @@
 // Slightly modified version of Mongoose, by Wildfire Games, for 0 A.D.
 // Diff against mongoose_original.c (from Hg rev 77615121d235) to see the changes.
-// 
+//
 // Motivation for changes:
 //  * For simplicity and consistency with the rest of the codebase, we compile
 //    as C++ instead of C, requiring a few compatibility fixes.
@@ -32,8 +32,9 @@
 #ifdef __GNUC__
 # pragma GCC diagnostic ignored "-Wunused-function"
 # ifndef __clang__
-#  pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #  pragma GCC diagnostic ignored "-Wcast-function-type"
+#  pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#  pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 # endif
 #endif
 
@@ -3908,7 +3909,7 @@ static void handle_proxy_request(struct mg_connection *conn) {
     }
     conn->peer->client.is_ssl = is_ssl;
   }
-  
+
   // Forward client's request to the target
   mg_printf(conn->peer, "%s %s HTTP/%s\r\n", ri->request_method, ri->uri + len,
             ri->http_version);
