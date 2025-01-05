@@ -84,13 +84,10 @@ void SetPlayerID(const ScriptRequest& rq, int id)
 
 void SetViewedPlayer(const ScriptRequest& rq, int id)
 {
-	if (!g_Game)
+	if (!g_Game || g_Game->GetViewedPlayerID() == id)
 		return;
 
 	int playerID = g_Game->GetPlayerID();
-	if (playerID == id)
-		return;
-
 	// Forbid active players to reveal the map by changing perspective, unless cheats are allowed.
 	if (playerID == -1 || g_Game->CheatsEnabled() || g_Game->PlayerFinished(playerID))
 		g_Game->SetViewedPlayerID(id);
