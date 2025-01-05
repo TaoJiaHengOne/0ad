@@ -46,3 +46,6 @@ patch -p1 <"${PATCHES}"/FixPython3.12.8.diff
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1876415
 # Fixed in ESR 128
 patch -p1 <"${PATCHES}"/FixProfiling.diff
+
+# Supress warning on newer GCC compilers.
+patch -p1 <"${PATCHES}"/SupressDanglingPointerWarning.patch

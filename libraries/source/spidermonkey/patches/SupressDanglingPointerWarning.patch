@@ -1,0 +1,31 @@
+From 0bfc032c102b8a251e4dc751d0b48992ebf72641 Mon Sep 17 00:00:00 2001
+From: phosit <phosit@autistici.org>
+Date: Sun, 5 Jan 2025 14:29:33 +0100
+Subject: [PATCH] Supress -Wdangling-pointer warning on GCC
+
+---
+ js/public/RootingAPI.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/js/public/RootingAPI.h b/js/public/RootingAPI.h
+index 42be14e67351..6b167cb8ea2e 100644
+--- a/js/public/RootingAPI.h
++++ b/js/public/RootingAPI.h
+@@ -1166,7 +1166,14 @@ class MOZ_RAII Rooted : public detail::RootedTraits<T>::StackBase,
+   inline void registerWithRootLists(RootedListHeads& roots) {
+     this->stack = &roots[JS::MapTypeToRootKind<T>::kind];
+     this->prev = *this->stack;
++#if defined(__GNUC__) && __GNUC__ >= 12
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wdangling-pointer"
++#endif
+     *this->stack = this;
++#if defined(__GNUC__) && __GNUC__ >= 12
++#pragma GCC diagnostic pop
++#endif
+   }
+
+   inline RootedListHeads& rootLists(RootingContext* cx) {
+--
+2.47.1
+
