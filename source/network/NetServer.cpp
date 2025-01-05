@@ -25,6 +25,7 @@
 #include "NetSession.h"
 #include "NetServerTurnManager.h"
 #include "NetStats.h"
+#include "NetProtocol.h"
 
 #include "lib/external_libraries/enet.h"
 #include "lib/types.h"
@@ -708,11 +709,8 @@ bool CNetServerWorker::HandleConnect(CNetServerSession* session)
 		return false;
 	}
 
-	CSrvHandshakeMessage handshake;
-	handshake.m_Magic = PS_PROTOCOL_MAGIC;
-	handshake.m_ProtocolVersion = PS_PROTOCOL_VERSION;
-	handshake.m_SoftwareVersion = PS_PROTOCOL_VERSION;
-	return session->SendMessage(&handshake);
+    const CSrvHandshakeMessage handshake(CreateHandshake<CSrvHandshakeMessage>());
+    return session->SendMessage(&handshake);
 }
 
 void CNetServerWorker::OnUserJoin(CNetServerSession* session)
@@ -917,6 +915,12 @@ bool CNetServerWorker::OnClientHandshake(CNetServerSession* session, CFsmEvent* 
 	if (message->m_ProtocolVersion != PS_PROTOCOL_VERSION)
 	{
 		session->Disconnect(NDR_INCORRECT_PROTOCOL_VERSION);
+		return false;
+	}
+
+	if (CheckHandshake(CreateHandshake<CSrvHandshakeMessage>(), *message))
+	{
+		session->Disconnect(NDR_INCORRECT_SOFTWARE_VERSION);
 		return false;
 	}
 

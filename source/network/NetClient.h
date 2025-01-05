@@ -22,6 +22,7 @@
 #include "network/FSM.h"
 #include "network/NetFileTransfer.h"
 #include "network/NetHost.h"
+#include "network/NetMessage.h"
 #include "scriptinterface/Object.h"
 
 #include "ps/CStr.h"
@@ -367,6 +368,9 @@ private:
 
 	/// Time when the server was last checked for timeouts and bad latency
 	std::time_t m_LastConnectionCheck;
+
+	/// Record of the server engine version and loaded mods
+	CSrvHandshakeMessage m_ServerHandshake;
 };
 
 /// Global network client for the standard game

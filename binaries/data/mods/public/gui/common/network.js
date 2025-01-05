@@ -79,9 +79,28 @@ function getDisconnectReason(id, wasConnected)
 	case 13: return translate("Password is invalid.");
 	case 14: return translate("Could not find an unused port for the enet STUN client.");
 	case 15: return translate("Could not find the STUN endpoint.");
+	case 16: return translate("Different game engine versions or different mods loaded.");
 	default:
 		warn("Unknown disconnect-reason ID received: " + id);
 		return sprintf(translate("\\[Invalid value %(id)s]"), { "id": id });
+	}
+}
+
+function getHandshakeDisconnectMessage(mismatchType, clientMismatchInfo, serverMismatchInfo)
+{
+	switch (mismatchType)
+	{
+		case "engine": return sprintf(translate("Different engine versions detected client version: %(clientMismatch)s server version: %(serverMismatch)s"), {
+			"clientMismatch": clientMismatchInfo,
+			"serverMismatch": serverMismatchInfo
+		});
+		case "mod": return sprintf(translate("Different mods enabled, or mods enabled in a different order. Client mod: '%(clientMismatch)s' Server mod: '%(serverMismatch)s'"), {
+			"clientMismatch": clientMismatchInfo,
+			"serverMismatch": serverMismatchInfo
+		});
+		default: return sprintf(translate("Unrecognised handshake mismatch type: %(mismatchType)s"), {
+			"mismatchType": mismatchType
+		});
 	}
 }
 
@@ -98,6 +117,16 @@ function reportDisconnect(reason, wasConnected)
 			translate("Lost connection to the server.") :
 			translate("Failed to connect to the server.")
 		) + "\n\n" + getDisconnectReason(reason, wasConnected),
+		translate("Disconnected")
+	);
+}
+
+function reportHandshakeDisconnect(mismatchType, clientMismatch, serverMismatch)
+{
+	messageBox(
+		400, 200,
+	        translate("Failed to connect to the server.")
+		+ "\n\n" + getHandshakeDisconnectMessage(mismatchType, clientMismatch, serverMismatch),
 		translate("Disconnected")
 	);
 }

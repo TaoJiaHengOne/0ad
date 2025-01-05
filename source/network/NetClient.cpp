@@ -22,6 +22,7 @@
 #include "NetClientTurnManager.h"
 #include "NetEnet.h"
 #include "NetMessage.h"
+#include "NetProtocol.h"
 #include "NetSession.h"
 
 #include "lib/byte_order.h"
@@ -439,10 +440,21 @@ void CNetClient::HandleConnect()
 
 void CNetClient::HandleDisconnect(u32 reason)
 {
-	PushGuiMessage(
-		"type", "netstatus",
-		"status", "disconnected",
-		"reason", reason);
+	if (reason == NDR_INCORRECT_SOFTWARE_VERSION) {
+		const auto& mismatch = CheckHandshake(m_ServerHandshake, CreateHandshake<CCliHandshakeMessage>());
+		ENSURE(mismatch.has_value());
+		PushGuiMessage(
+					"type", "netstatus",
+					"status", "disconnected",
+					"reason", reason,
+					"mismatch_type", mismatch->componentType,
+					"client_mismatch_component", mismatch->clientComponent,
+					"server_mismatch_component", mismatch->serverComponent);
+	} else
+		PushGuiMessage(
+					"type", "netstatus",
+					"status", "disconnected",
+					"reason", reason);
 
 	DestroyConnection();
 
@@ -665,13 +677,11 @@ bool CNetClient::OnConnect(CNetClient* client, CFsmEvent* event)
 bool CNetClient::OnHandshake(CNetClient* client, CFsmEvent* event)
 {
 	ENSURE(event->GetType() == (uint)NMT_SERVER_HANDSHAKE);
+	client->m_ServerHandshake = *static_cast<CSrvHandshakeMessage*>(event->GetParamRef());
 
-	CCliHandshakeMessage handshake;
-	handshake.m_MagicResponse = PS_PROTOCOL_MAGIC_RESPONSE;
-	handshake.m_ProtocolVersion = PS_PROTOCOL_VERSION;
-	handshake.m_SoftwareVersion = PS_PROTOCOL_VERSION;
+	CCliHandshakeMessage handshake(CreateHandshake<CCliHandshakeMessage>());
+
 	client->SendMessage(&handshake);
-
 	return true;
 }
 

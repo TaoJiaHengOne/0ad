@@ -220,7 +220,10 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				{
 				case "disconnected":
 					cancelSetup();
-					reportDisconnect(message.reason, false);
+					if (message.reason === 16)
+						reportHandshakeDisconnect(message.mismatch_type, message.client_mismatch, message.server_mismatch);
+					else
+						reportDisconnect(message.reason, false);
 					return;
 
 				default:
@@ -285,7 +288,10 @@ function pollAndHandleNetworkClient(loadSavedGame)
 
 				case "disconnected":
 					cancelSetup();
-					reportDisconnect(message.reason, false);
+					if (message.reason === 16)
+						reportHandshakeDisconnect(message.mismatch_type, message.client_mismatch_component, message.server_mismatch_component);
+					else
+						reportDisconnect(message.reason, false);
 					return;
 
 				default:

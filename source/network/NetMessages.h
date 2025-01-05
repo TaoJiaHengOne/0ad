@@ -28,7 +28,7 @@
 
 #define PS_PROTOCOL_MAGIC                         0x5073013f	// 'P', 's', 0x01, '?'
 #define PS_PROTOCOL_MAGIC_RESPONSE                0x50630121	// 'P', 'c', 0x01, '!'
-#define PS_PROTOCOL_VERSION                       0x01010018	// Arbitrary protocol
+#define PS_PROTOCOL_VERSION                       0x01010019	// Arbitrary protocol
 #define PS_DEFAULT_PORT                           0x5073		// 'P', 's'
 
 // Set when lobby authentication is required. Used in the SrvHandshakeResponseMessage.
@@ -107,13 +107,21 @@ START_NMTS()
 START_NMT_CLASS_(SrvHandshake, NMT_SERVER_HANDSHAKE)
 	NMT_FIELD_INT(m_Magic, u32, 4)
 	NMT_FIELD_INT(m_ProtocolVersion, u32, 4)
-	NMT_FIELD_INT(m_SoftwareVersion, u32, 4)
+	NMT_FIELD(CStr, m_EngineVersion)
+	NMT_START_ARRAY(m_EnabledMods)
+		NMT_FIELD(CStr, m_Name)
+		NMT_FIELD(CStr, m_Version)
+	NMT_END_ARRAY()
 END_NMT_CLASS()
 
 START_NMT_CLASS_(CliHandshake, NMT_CLIENT_HANDSHAKE)
 	NMT_FIELD_INT(m_MagicResponse, u32, 4)
 	NMT_FIELD_INT(m_ProtocolVersion, u32, 4)
-	NMT_FIELD_INT(m_SoftwareVersion, u32, 4)
+	NMT_FIELD(CStr, m_EngineVersion)
+	NMT_START_ARRAY(m_EnabledMods)
+		NMT_FIELD(CStr, m_Name)
+		NMT_FIELD(CStr, m_Version)
+	NMT_END_ARRAY()
 END_NMT_CLASS()
 
 START_NMT_CLASS_(SrvHandshakeResponse, NMT_SERVER_HANDSHAKE_RESPONSE)
