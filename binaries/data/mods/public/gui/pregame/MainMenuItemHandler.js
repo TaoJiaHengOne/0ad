@@ -99,7 +99,7 @@ class MainMenuItemHandler
 	{
 		this.setupMenuButtons(this.submenuButtons.children, this.menuItems[i].submenu);
 
-		let top = this.mainMenuButtons.size.top + this.mainMenuButtons.children[i].size.top;
+		let top = this.mainMenuButtons.children[i].getComputedSize().top;
 
 		this.submenu.size = new GUISize(
 			this.submenu.size.left, top - this.Margin,
