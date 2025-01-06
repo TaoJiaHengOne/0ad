@@ -209,7 +209,12 @@ function project_set_build_flags()
 			optimize "Speed"
 		end
 		if _OPTIONS["with-lto"] then
-			flags { "LinkTimeOptimization" }
+			if linktimeoptimization then
+				linktimeoptimization("On")
+			else
+				-- deprecated since v5.0.0-beta4
+				flags { "LinkTimeOptimization" }
+			end
 		end
 		defines { "NDEBUG", "CONFIG_FINAL=1" }
 
