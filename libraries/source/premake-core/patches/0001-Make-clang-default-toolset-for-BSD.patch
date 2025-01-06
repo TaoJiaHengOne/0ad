@@ -1,4 +1,4 @@
-From 0641fc981d664d1fd7202f145a9c846ee0089b20 Mon Sep 17 00:00:00 2001
+From 4f02eba3f7279de3693aa2405e1c0700fcade23a Mon Sep 17 00:00:00 2001
 From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
 Date: Mon, 25 Nov 2024 15:57:10 +0100
 Subject: [PATCH] Make clang default toolset for *BSD
@@ -11,10 +11,10 @@ Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/_premake_init.lua b/src/_premake_init.lua
-index a1043e25..ca901ffc 100644
+index 69f05fc9..c42c514f 100644
 --- a/src/_premake_init.lua
 +++ b/src/_premake_init.lua
-@@ -1597,7 +1597,7 @@
+@@ -1441,7 +1441,7 @@
  	filter { "kind:SharedLib", "system:not Windows" }
  		pic "On"
  
@@ -22,7 +22,7 @@ index a1043e25..ca901ffc 100644
 +	filter { "system:darwin or bsd" }
  		toolset "clang"
  
- 	filter { "platforms:Win32" }
+ 	filter { "system:emscripten" }
 -- 
 2.45.2
 
