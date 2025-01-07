@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 # This should match the version in config/milestone.txt
 FOLDER="mozjs-115.16.1"
 # If same-version changes are needed, increment this.
-LIB_VERSION="115.16.1+2"
+LIB_VERSION="115.16.1+3"
 LIB_NAME="mozjs115"
 
 echo "Building SpiderMonkey..."
@@ -72,11 +72,16 @@ tar xfJ "${FOLDER}.tar.xz"
 	export MOZBUILD_STATE_PATH="${MOZBUILD_STATE_PATH:=$(pwd)/mozbuild-state}"
 
 	if [ -n "$PROFILE" ]; then
-		CONF_OPTS="$CONF_OPTS --enable-profiling
-		                      --enable-perf
-		                      --enable-instruments
-		                      --enable-jitspew
-		                      --with-jitreport-granularity=3"
+		CONF_OPTS="$CONF_OPTS
+			--enable-profiling
+			--enable-perf
+			--enable-jitspew
+			--with-jitreport-granularity=3"
+
+		if [ "${OS}" = "Darwin" ]; then
+			CONF_OPTS="$CONF_OPTS
+				--enable-instruments"
+		fi
 	fi
 
 	if [ "${OS}" = "Windows_NT" ]; then
@@ -119,20 +124,22 @@ tar xfJ "${FOLDER}.tar.xz"
 	# Build
 	# Debug (broken on FreeBSD)
 	if [ "${OS}" != "FreeBSD" ]; then
+		# shellcheck disable=SC2086
 		MOZCONFIG="$(pwd)/../mozconfig" \
 		MOZCONFIG_OPTIONS="${CONF_OPTS} \
 			--enable-debug \
 			--disable-optimize \
 			--enable-gczeal" \
 		BUILD_DIR="build-debug" \
-			./mach build "${JOBS}"
+			./mach build ${JOBS}
 	fi
 	# Release
+	# shellcheck disable=SC2086
 	MOZCONFIG="$(pwd)/../mozconfig" \
 	MOZCONFIG_OPTIONS="${CONF_OPTS} \
 		--enable-optimize" \
 	BUILD_DIR="build-release" \
-		./mach build "${JOBS}"
+		./mach build ${JOBS}
 )
 
 # install
