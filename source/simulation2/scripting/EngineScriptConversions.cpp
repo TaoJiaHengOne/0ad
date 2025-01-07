@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -69,11 +69,6 @@ template<> void Script::ToJSVal<IComponent*>(const ScriptRequest& rq,  JS::Mutab
 template<> void Script::ToJSVal<CParamNode>(const ScriptRequest& rq,  JS::MutableHandleValue ret, CParamNode const& val)
 {
 	val.ToJSVal(rq, true, ret);
-
-	// Prevent modifications to the object, so that it's safe to share between
-	// components and to reconstruct on deserialization
-	if (ret.isObject())
-		Script::DeepFreezeObject(rq, ret);
 }
 
 template<> void Script::ToJSVal<const CParamNode*>(const ScriptRequest& rq,  JS::MutableHandleValue ret, const CParamNode* const& val)

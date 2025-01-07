@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include "ps/CStrIntern.h"
 #include "ps/Filesystem.h"
 #include "ps/XML/Xeromyces.h"
+#include "scriptinterface/Object.h"
 #include "scriptinterface/ScriptRequest.h"
 
 #include <boost/algorithm/string/classification.hpp>
@@ -382,7 +383,12 @@ void CParamNode::ToJSVal(const ScriptRequest& rq, bool cacheValue, JS::MutableHa
 	ConstructJSVal(rq, ret);
 
 	if (cacheValue)
+	{
+		if (ret.isObject())
+			Script::DeepFreezeObject(rq, ret);
+
 		m_ScriptVal.reset(new JS::PersistentRootedValue(rq.cx, ret));
+	}
 }
 
 void CParamNode::ConstructJSVal(const ScriptRequest& rq, JS::MutableHandleValue ret) const

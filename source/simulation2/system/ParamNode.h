@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -252,6 +252,8 @@ public:
 	 * If @p cacheValue is true, then the same JS::Value will be returned each time
 	 * this is called (regardless of whether you passed the same @p cx - be careful
 	 * to only use the cache in one context).
+	 * Cached object values are frozen, using DeepFreezeObject, so that it's safe to
+	 * share between components and to reconstruct on deserialization.
 	 * When caching, the lifetime of @p cx must be longer than the lifetime of this node.
 	 * The cache will be reset if *this* node is modified (e.g. by LoadXML),
 	 * but *not* if any child nodes are modified (so don't do that).
