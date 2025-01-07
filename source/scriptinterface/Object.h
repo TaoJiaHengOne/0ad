@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -164,9 +164,8 @@ inline bool DeepFreezeObject(const ScriptRequest& rq, JS::HandleValue objVal)
 	if (!js::GetPropertyKeys(rq.cx, obj, JSITER_HIDDEN, &props))
 		return false;
 
-	for (size_t i = 0; i < props.length(); ++i)
+	for (const JS::PropertyKey& id : props)
 	{
-		JS::RootedId id(rq.cx, props[i]);
 		JS::RootedValue val(rq.cx);
 		if (!JS_IdToValue(rq.cx, id, &val))
 			return false;
@@ -200,13 +199,12 @@ inline bool EnumeratePropertyNames(const ScriptRequest& rq, JS::HandleValue objV
 	JS::RootedObject obj(rq.cx, &objVal.toObject());
 	JS::RootedIdVector props(rq.cx);
 	// This recurses up the prototype chain on its own.
-	if (!js::GetPropertyKeys(rq.cx, obj, enumerableOnly? 0 : JSITER_HIDDEN, &props))
+	if (!js::GetPropertyKeys(rq.cx, obj, enumerableOnly ? 0 : JSITER_HIDDEN, &props))
 		return false;
 
 	out.reserve(out.size() + props.length());
-	for (size_t i = 0; i < props.length(); ++i)
+	for (const JS::PropertyKey& id : props)
 	{
-		JS::RootedId id(rq.cx, props[i]);
 		JS::RootedValue val(rq.cx);
 		if (!JS_IdToValue(rq.cx, id, &val))
 			return false;
