@@ -226,9 +226,13 @@ void CSceneRenderer::ReloadShaders(Renderer::Backend::IDevice* device)
 		ENSURE(1 <= cascadeCount && cascadeCount <= 4);
 		const CStrIntern cascadeCountStr[5] = {str_0, str_1, str_2, str_3, str_4};
 		m->globalContext.Add(str_SHADOWS_CASCADE_COUNT, cascadeCountStr[cascadeCount]);
-#if !CONFIG2_GLES
-		m->globalContext.Add(str_USE_SHADOW_SAMPLER, str_1);
+#if CONFIG2_GLES
+		const bool useShadowSampler{device->GetBackend() != Renderer::Backend::Backend::GL};
+#else
+		const bool useShadowSampler{true};
 #endif
+		if (useShadowSampler)
+			m->globalContext.Add(str_USE_SHADOW_SAMPLER, str_1);
 	}
 
 	m->globalContext.Add(str_RENDER_DEBUG_MODE,

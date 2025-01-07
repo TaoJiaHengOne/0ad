@@ -549,16 +549,22 @@ void ShadowMapInternals::CreateTexture()
 				Renderer::Backend::Sampler::AddressMode::CLAMP_TO_EDGE));
 	}
 
+#if CONFIG2_GLES
+	// GLES doesn't do depth comparisons, so treat it as a
+	// basic unfiltered depth texture
+	const Renderer::Backend::Sampler::Filter depthFilter{
+		Device->GetBackend() == Renderer::Backend::Backend::GL
+		? Renderer::Backend::Sampler::Filter::NEAREST
+		: Renderer::Backend::Sampler::Filter::LINEAR};
+#else
+	// Use LINEAR to trigger automatic PCF on some devices.
+	const Renderer::Backend::Sampler::Filter depthFilter{
+		Renderer::Backend::Sampler::Filter::LINEAR};
+#endif
+
 	Renderer::Backend::Sampler::Desc samplerDesc =
 		Renderer::Backend::Sampler::MakeDefaultSampler(
-#if CONFIG2_GLES
-			// GLES doesn't do depth comparisons, so treat it as a
-			// basic unfiltered depth texture
-			Renderer::Backend::Sampler::Filter::NEAREST,
-#else
-			// Use LINEAR to trigger automatic PCF on some devices.
-			Renderer::Backend::Sampler::Filter::LINEAR,
-#endif
+			depthFilter,
 			Renderer::Backend::Sampler::AddressMode::CLAMP_TO_EDGE);
 	// Enable automatic depth comparisons
 	samplerDesc.compareEnabled = true;
