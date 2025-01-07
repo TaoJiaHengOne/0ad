@@ -4,7 +4,7 @@ set -ev
 XZOPTS="-9 -e"
 GZIP7ZOPTS="-mx=9"
 
-BUNDLE_VERSION=${BUNDLE_VERSION:="0.27.0dev"}
+BUNDLE_VERSION=${BUNDLE_VERSION:="0.28.0dev"}
 PREFIX="0ad-${BUNDLE_VERSION}"
 
 # Collect the relevant files

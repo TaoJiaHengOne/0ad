@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -20,6 +20,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#define PYROGENESIS_VERSION "0.27.0"
-#define PYROGENESIS_VERSION_WORD 0,27,0,0
+#define PYROGENESIS_VERSION "0.28.0"
+#define PYROGENESIS_VERSION_WORD 0,28,0,0
 extern wchar_t build_version[];

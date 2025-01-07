@@ -31,7 +31,7 @@ pipeline {
 	}
 
 	parameters {
-		string(name: 'BUNDLE_VERSION', defaultValue: '0.27.0dev', description: 'Bundle Version')
+		string(name: 'BUNDLE_VERSION', defaultValue: '0.28.0dev', description: 'Bundle Version')
 		booleanParam(name: 'DO_GZIP', defaultValue: true, description: 'Create .gz unix tarballs as well as .xz')
 	}
 
