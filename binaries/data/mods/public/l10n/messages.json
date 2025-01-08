@@ -456,7 +456,6 @@
                 "extractor": "txt",
                 "filemasks": [
                     "gui/gamesetup/**.txt",
-                    "gui/splashscreen/splashscreen.txt",
                     "gui/reference/tips/texts/**.txt"
                 ],
                 "options": {

@@ -31,7 +31,7 @@ class SplashScreenHandler
 		this.showSplashScreen = false;
 
 		if (Engine.ConfigDB_GetValue("user", "gui.splashscreen.enable") === "true" ||
-		    Engine.ConfigDB_GetValue("user", "gui.splashscreen.version") !== Engine.CalculateMD5(Engine.ReadFile("gui/splashscreen/splashscreen.txt")))
+		    Engine.ConfigDB_GetValue("user", "gui.splashscreen.version") !== Engine.CalculateMD5(Engine.ReadFile("gui/splashscreen/splashscreen.xml")))
 			Engine.PushGuiPage("page_splashscreen.xml", {});
 	}
 }
