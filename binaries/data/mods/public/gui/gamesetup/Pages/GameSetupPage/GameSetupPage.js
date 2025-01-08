@@ -40,7 +40,8 @@ SetupWindowPages.GameSetupPage = class
 				"resetCivsButton": new ResetCivsButton(setupWindow, isSavedGame),
 				"resetTeamsButton": new ResetTeamsButton(setupWindow, isSavedGame),
 				"soundNotification": new SoundNotification(setupWindow),
-				"tipsPanel": new TipsPanel(gameSettingsPanel)
+				"tipsPanel": new TipsPanel(gameSettingsPanel),
+				"onscreenToolTip": new Tooltip()
 			};
 		}
 
