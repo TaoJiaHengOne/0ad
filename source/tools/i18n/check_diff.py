@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
-# ruff: noqa: E741
-
 import io
 import os
 import subprocess
@@ -48,40 +46,40 @@ def check_diff(diff: io.StringIO) -> list[str]:
     files = set()
 
     curfile = None
-    l = diff.readline()
-    while l:
-        if l.startswith("Index: binaries"):
-            if not l.strip().endswith(".pot") and not l.strip().endswith(".po"):
+    line = diff.readline()
+    while line:
+        if line.startswith("Index: binaries"):
+            if not line.strip().endswith(".pot") and not line.strip().endswith(".po"):
                 curfile = None
             else:
-                curfile = l[7:].strip()
+                curfile = line[7:].strip()
                 files.add(curfile)
             # skip patch header
             diff.readline()
             diff.readline()
             diff.readline()
             diff.readline()
-            l = diff.readline()
+            line = diff.readline()
             continue
-        if l[0] != "-" and l[0] != "+":
-            l = diff.readline()
+        if line[0] != "-" and line[0] != "+":
+            line = diff.readline()
             continue
-        if l[1:].strip() == "" or (l[1] == "#" and l[2] == ":"):
-            l = diff.readline()
+        if line[1:].strip() == "" or (line[1] == "#" and line[2] == ":"):
+            line = diff.readline()
             continue
         if (
-            "# Copyright (C)" in l
-            or "POT-Creation-Date:" in l
-            or "PO-Revision-Date" in l
-            or "Last-Translator" in l
+            "# Copyright (C)" in line
+            or "POT-Creation-Date:" in line
+            or "PO-Revision-Date" in line
+            or "Last-Translator" in line
         ):
-            l = diff.readline()
+            line = diff.readline()
             continue
         # We've hit a real line
         if curfile:
             keep.add(curfile)
             curfile = None
-        l = diff.readline()
+        line = diff.readline()
 
     return list(files.difference(keep))
 
