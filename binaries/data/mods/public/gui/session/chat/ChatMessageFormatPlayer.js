@@ -113,7 +113,7 @@ class ChatMessageFormatPlayer
 		msg.context = addresseeType.context;
 
 		// For observers only permit public- and observer-chat and PM to observers
-		if (isPlayerObserver(senderID))
+		if (msg.player === undefined && isPlayerObserver(senderID))
 		{
 			if (isPM && !g_IsObserver)
 			{
