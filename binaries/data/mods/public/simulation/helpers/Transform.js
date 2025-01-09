@@ -85,12 +85,13 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
 		cmpNewHealth.SetHitpoints(cmpNewHealth.GetMaxHitpoints() * healthLevel);
 	}
 
-	let cmpPromotion = Engine.QueryInterface(oldEnt, IID_Promotion);
-	let cmpNewPromotion = Engine.QueryInterface(newEnt, IID_Promotion);
-	if (cmpPromotion && cmpNewPromotion)
+	const cmpPromotion = Engine.QueryInterface(oldEnt, IID_Promotion);
+	if (cmpPromotion)
 	{
 		cmpPromotion.SetPromotedEntity(newEnt);
-		cmpNewPromotion.IncreaseXp(cmpPromotion.GetCurrentXp());
+		const cmpNewPromotion = Engine.QueryInterface(newEnt, IID_Promotion);
+		if (cmpNewPromotion)
+			cmpNewPromotion.IncreaseXp(cmpPromotion.GetCurrentXp());
 	}
 
 	let cmpResGatherer = Engine.QueryInterface(oldEnt, IID_ResourceGatherer);
