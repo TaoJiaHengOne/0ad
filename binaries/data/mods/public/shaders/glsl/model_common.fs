@@ -84,7 +84,7 @@ void main()
 
   #if USE_INSTANCING && USE_NORMAL_MAP
     normal = calculateNormal(normal, SAMPLE_2D(GET_DRAW_TEXTURE_2D(normTex), coord).rgb, tbn, effectSettings.x);
-    vec3 sundiffuse = max(dot(-sunDir, normal), 0.0) * sunColor;
+    vec3 sundiffuse = mix(max(dot(-sunDir, normal), 0.0) * sunColor, v_lighting.rgb, effectSettings.w);
   #else
     vec3 sundiffuse = v_lighting.rgb;
   #endif
