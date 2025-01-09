@@ -52,8 +52,8 @@ def warn_about_untouched_mods():
 
     if untouched_mods:
         print("Warning: No messages were extracted from the following mods:")
-        for mod in untouched_mods:
-            print(f"• {mod}: {untouched_mods[mod]}")
+        for mod_folder, error in untouched_mods.items():
+            print(f"• {mod_folder}: {error}")
         print(
             ""
             f"For this script to extract messages from a mod folder, this mod folder must contain "
@@ -83,7 +83,7 @@ def generate_pot(template_settings, root_path):
 
         options = rule.get("options", {})
         extractor_class = getattr(
-            import_module("i18n_helper.extractors"), f'{rule["extractor"].title()}Extractor'
+            import_module("i18n_helper.extractors"), f"{rule['extractor'].title()}Extractor"
         )
         extractor = extractor_class(input_root_path, rule["filemasks"], options)
         format_flag = None

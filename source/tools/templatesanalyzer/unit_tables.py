@@ -395,7 +395,7 @@ def write_coloured_diff(file, diff, is_changed):
 
     if diff == 0:
         rgb_str = "200,200,200"
-    elif is_advantageous and diff > 0 or (not is_advantageous) and diff < 0:
+    elif (is_advantageous and diff > 0) or (not is_advantageous and diff < 0):
         rgb_str = "180,0,0"
     else:
         rgb_str = "0,150,0"

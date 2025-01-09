@@ -195,7 +195,7 @@ class CheckRefs:
                     self.deps.append((fp, Path(f"art/actors/{template[len(actor_prefix) :]}")))
                 elif template.startswith(resource_prefix):
                     self.deps.append(
-                        (fp, Path(f"simulation/templates/{template[len(resource_prefix):]}.xml"))
+                        (fp, Path(f"simulation/templates/{template[len(resource_prefix) :]}.xml"))
                     )
                 else:
                     self.deps.append((fp, Path(f"simulation/templates/{template}.xml")))

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+import sys
 from os import chdir
 from pathlib import Path
 from re import split
 from subprocess import run
-from sys import exit
 
 from scriptlib import SimulTemplateEntity, find_files, warn
 
@@ -58,7 +58,7 @@ def main():
                     dot_f.write(f'"{f}" -> "{training_queue}" [color=blue];\n')
         dot_f.write("}\n")
     if run(["dot", "-V"], capture_output=True, check=False).returncode == 0:
-        exit(
+        sys.exit(
             run(
                 ["dot", "-Tpng", "creation.dot", "-o", "creation.png"], text=True, check=False
             ).returncode

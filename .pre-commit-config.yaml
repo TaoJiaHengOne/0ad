@@ -1,7 +1,7 @@
 ---
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -19,7 +19,7 @@ repos:
             ^binaries/data/mods/public/maps/.*\.xml
           )
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.1
+    rev: v0.9.0
     hooks:
       - id: ruff
         args:
@@ -41,7 +41,7 @@ repos:
         files: ^binaries/
         exclude: (^binaries/data/mods/(mod|public)/art/.*\.xml|\.dae$)
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.9.0-1
+    rev: v3.10.0-2
     hooks:
       - id: shfmt
         args:
@@ -53,7 +53,7 @@ repos:
     hooks:
       - id: shellcheck
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.41.0
+    rev: v0.43.0
     hooks:
       - id: markdownlint
         exclude: |

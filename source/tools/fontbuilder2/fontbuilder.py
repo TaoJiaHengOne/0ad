@@ -163,11 +163,11 @@ def generate_font(outname, ttf_names, loadopts, size, renderstyle, dsizes):
         # Output the .fnt file with all the glyph positions etc
         with open(f"{outname}.fnt", "w", encoding="utf-8") as fnt:
             fnt.write("101\n")
-            fnt.write("%d %d\n" % (w, h))
+            fnt.write(f"{w} {h}\n")
             fnt.write("%s\n" % ("rgba" if "colour" in renderstyle else "a"))
-            fnt.write("%d\n" % len(glyphs))
-            fnt.write("%d\n" % linespacing)
-            fnt.write("%d\n" % charheight)
+            fnt.write(f"{len(glyphs)}\n")
+            fnt.write(f"{linespacing}\n")
+            fnt.write(f"{charheight}\n")
             for g in glyphs:
                 x0 = g.x0
                 y0 = g.y0
@@ -181,8 +181,7 @@ def generate_font(outname, ttf_names, loadopts, size, renderstyle, dsizes):
                     y0 += charheight / 3
 
                 fnt.write(
-                    "%d %d %d %d %d %d %d %d\n"
-                    % (ord(g.char), g.pos.x, h - g.pos.y, g.w, g.h, -x0, y0, g.xadvance)
+                    f"{ord(g.char)} {g.pos.x} {h - g.pos.y} {g.w} {g.h} {-x0} {g.xadvance}\n"
                 )
 
         return

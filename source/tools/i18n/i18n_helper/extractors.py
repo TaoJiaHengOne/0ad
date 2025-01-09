@@ -123,11 +123,6 @@ class Extractor:
 class JavascriptExtractor(Extractor):
     """Extract messages from JavaScript source code."""
 
-    empty_msgid_warning = (
-        '%s: warning: Empty msgid.  It is reserved by GNU gettext: gettext("") '
-        "returns the header entry with meta information, not the empty string."
-    )
-
     def extract_javascript_from_file(self, file_object):
         funcname = message_lineno = None
         messages = []
@@ -282,11 +277,13 @@ class JavascriptExtractor(Extractor):
                     first_msg_index = spec[0] - 1
                 if not messages[first_msg_index]:
                     # An empty string msgid isn't valid, emit a warning
-                    where = "%s:%i" % (
-                        hasattr(file_object, "name") and file_object.name or "(unknown)",
-                        lineno,
+                    fname = (hasattr(file_object, "name") and file_object.name) or "(unknown)"
+                    print(
+                        f"{fname}:{lineno}: warning: Empty msgid.  It is reserved by GNU gettext: "
+                        'gettext("") returns the header entry with meta information, '
+                        "not the empty string.",
+                        file=sys.stderr,
                     )
-                    print(self.empty_msgid_warning % where, file=sys.stderr)
                     continue
 
                 messages = tuple(msgs)
