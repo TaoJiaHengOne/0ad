@@ -50,15 +50,12 @@ function init(attribs)
 	case "host":
 	{
 		let hasXmppClient = Engine.HasXmppClient();
-		Engine.GetGUIObjectByName("hostSTUNWrapper").hidden = !hasXmppClient;
 		Engine.GetGUIObjectByName("hostPasswordWrapper").hidden = !hasXmppClient;
 		if (hasXmppClient)
 		{
 			Engine.GetGUIObjectByName("hostPlayerName").caption = attribs.name;
 			Engine.GetGUIObjectByName("hostServerName").caption =
 				sprintf(translate("%(name)s's game"), { "name": attribs.name });
-
-			Engine.GetGUIObjectByName("useSTUN").checked = Engine.ConfigDB_GetValue("user", "lobby.stun.enabled") == "true";
 		}
 
 		switchSetupPage("pageHost");
@@ -387,12 +384,10 @@ function startHost(playername, servername, port, password, loadSavedGame)
 		return false;
 	}
 
-	let useSTUN = Engine.HasXmppClient() && Engine.GetGUIObjectByName("useSTUN").checked;
-
 	try
 	{
 		Engine.StartNetworkHost(playername + (g_UserRating ? " (" + g_UserRating + ")" : ""), port,
-			useSTUN, password, loadSavedGame, true);
+			password, loadSavedGame, true);
 	}
 	catch (e)
 	{

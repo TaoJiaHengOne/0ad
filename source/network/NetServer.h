@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -144,10 +144,7 @@ public:
 
 	void SendHolePunchingMessage(const CStr& ip, u16 port);
 
-	void SetConnectionData(const CStr& ip, u16 port);
-	bool SetConnectionDataViaSTUN();
-
-	bool GetUseSTUN() const;
+	bool SetConnectionData();
 
 	/**
 	 * Return the externally accessible IP.
@@ -186,7 +183,6 @@ public:
 private:
 	CNetServerWorker* m_Worker;
 	const bool m_LobbyAuth;
-	bool m_UseSTUN;
 	u16 m_PublicPort;
 	CStr m_PublicIp;
 	CStr m_Password;

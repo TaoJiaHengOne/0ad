@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -116,7 +116,7 @@ public:
 	 * Set connection data to the remote networked server.
 	 * @param address IP address or host name to connect to
 	 */
-	void SetupServerData(CStr address, u16 port, bool stun);
+	void SetupServerData(CStr address, u16 port);
 
 	/**
 	 * Set up a connection to the remote networked server.
@@ -136,7 +136,7 @@ public:
 	 * @param localNetwork - if true, assume we are trying to connect on the local network.
 	 * @return true on success, false on connection failure
 	 */
-	bool TryToConnect(const CStr& hostJID, bool localNetwork);
+	bool TryToConnectWithSTUN(const CStr& hostJID, bool localNetwork);
 
 	/**
 	 * Destroy the connection to the server.
@@ -325,7 +325,6 @@ private:
 	CStr m_HostJID;
 	CStr m_ServerAddress;
 	u16 m_ServerPort;
-	bool m_UseSTUN;
 
 	/**
 	 * Password to join the game.

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -182,13 +182,12 @@ void CNetClient::SetupConnectionViaLobby()
 	g_XmppClient->SendIqGetConnectionData(m_HostJID, m_Password, m_UserName.ToUTF8(), false);
 }
 
-void CNetClient::SetupServerData(CStr address, u16 port, bool stun)
+void CNetClient::SetupServerData(CStr address, u16 port)
 {
 	ENSURE(!m_Session);
 
 	m_ServerAddress = address;
 	m_ServerPort = port;
-	m_UseSTUN = stun;
 }
 
 void CNetClient::HandleGetServerDataFailed(const CStr& error)
@@ -203,8 +202,10 @@ void CNetClient::HandleGetServerDataFailed(const CStr& error)
 	);
 }
 
-bool CNetClient::TryToConnect(const CStr& hostJID, bool localNetwork)
+bool CNetClient::TryToConnectWithSTUN(const CStr& hostJID, bool localNetwork)
 {
+	ENSURE(g_XmppClient);
+
 	if (m_Session)
 		return false;
 
@@ -231,7 +232,7 @@ bool CNetClient::TryToConnect(const CStr& hostJID, bool localNetwork)
 
 	CStr ip;
 	u16 port = 0;
-	if (g_XmppClient && m_UseSTUN)
+	if (!localNetwork)
 	{
 		if (!StunClient::FindPublicIP(*enetClient, ip, port))
 		{
@@ -252,7 +253,7 @@ bool CNetClient::TryToConnect(const CStr& hostJID, bool localNetwork)
 			return true;
 		}
 	}
-	else if (g_XmppClient && localNetwork)
+	else
 	{
 		// We may need to punch a hole through the local firewall, so fetch our local IP.
 		// NB: we'll ignore failures here, and hope that the firewall will be open to connection

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -855,31 +855,14 @@ bool XmppClient::handleIq(const gloox::IQ& iq)
 				return true;
 			}
 
-			g_NetClient->SetupServerData(cd->m_Ip, stoi(cd->m_Port), !cd->m_UseSTUN.empty());
-			g_NetClient->TryToConnect(iq.from().full(), !cd->m_IsLocalIP.empty());
+			g_NetClient->SetupServerData(cd->m_Ip, stoi(cd->m_Port));
+			g_NetClient->TryToConnectWithSTUN(iq.from().full(), !cd->m_IsLocalIP.empty());
 		}
 		if (gq)
 		{
 			if (iq.from().full() != m_xpartamuppId)
 			{
 				LOGWARNING("XmppClient: Received game list response from unexpected sender: %s", iq.from().full());
-				return true;
-			}
-
-			if (gq->m_Command == "register" && g_NetServer && !g_NetServer->GetUseSTUN())
-			{
-				if (gq->m_GameList.empty())
-				{
-					LOGWARNING("XmppClient: Received empty game list in response to Game Register");
-					return true;
-				}
-				std::string publicIP = gq->m_GameList.front()->findAttribute("ip");
-				if (publicIP.empty())
-				{
-					LOGWARNING("XmppClient: Received game with no IP in response to Game Register");
-					return true;
-				}
-				g_NetServer->SetConnectionData(publicIP, g_NetServer->GetPublicPort());
 				return true;
 			}
 
@@ -1006,7 +989,6 @@ bool XmppClient::handleIq(const gloox::IQ& iq)
 			{
 				connectionData->m_Ip = g_NetServer->GetPublicIp();
 				connectionData->m_Port = std::to_string(g_NetServer->GetPublicPort());
-				connectionData->m_UseSTUN = g_NetServer->GetUseSTUN() ? "true" : "";
 				connectionData->m_IsLocalIP = "";
 			}
 			else
@@ -1016,7 +998,6 @@ bool XmppClient::handleIq(const gloox::IQ& iq)
 				{
 					connectionData->m_Ip = ip;
 					connectionData->m_Port = std::to_string(g_NetServer->GetLocalPort());
-					connectionData->m_UseSTUN = "";
 					connectionData->m_IsLocalIP = "true";
 				}
 				else

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -61,7 +61,6 @@ public:
 	std::string m_Ip;
 	std::string m_Port;
 	std::string m_IsLocalIP;
-	std::string m_UseSTUN;
 	std::string m_Password;
 	std::string m_ClientSalt;
 	std::string m_Error;

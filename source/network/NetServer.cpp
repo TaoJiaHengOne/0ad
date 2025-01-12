@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -1676,18 +1676,13 @@ void CNetServerWorker::SendHolePunchingMessage(const CStr& ipStr, u16 port)
 
 CNetServer::CNetServer(const bool continueSavedGame, const bool useLobbyAuth) :
 	m_Worker{new CNetServerWorker{continueSavedGame, useLobbyAuth}},
-	m_LobbyAuth(useLobbyAuth), m_UseSTUN(false), m_PublicIp(""), m_PublicPort(20595), m_Password()
+	m_LobbyAuth(useLobbyAuth), m_PublicIp(""), m_PublicPort(20595), m_Password()
 {
 }
 
 CNetServer::~CNetServer()
 {
 	delete m_Worker;
-}
-
-bool CNetServer::GetUseSTUN() const
-{
-	return m_UseSTUN;
 }
 
 bool CNetServer::UseLobbyAuth() const
@@ -1718,16 +1713,8 @@ u16 CNetServer::GetLocalPort() const
 	return m_Worker->m_Host->address.port;
 }
 
-void CNetServer::SetConnectionData(const CStr& ip, const u16 port)
+bool CNetServer::SetConnectionData()
 {
-	m_PublicIp = ip;
-	m_PublicPort = port;
-	m_UseSTUN = false;
-}
-
-bool CNetServer::SetConnectionDataViaSTUN()
-{
-	m_UseSTUN = true;
 	std::lock_guard<std::mutex> lock(m_Worker->m_WorkerMutex);
 	if (!m_Worker->m_Host)
 		return false;

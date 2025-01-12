@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -298,9 +298,6 @@ ConnectionData::ConnectionData(const gloox::Tag* tag)
 	const gloox::Tag* pip = tag->findTag("connectiondata/isLocalIP");
 	if (pip)
 		m_IsLocalIP = pip->cdata();
-	const gloox::Tag* s = tag->findTag("connectiondata/useSTUN");
-	if (s)
-		m_UseSTUN = s->cdata();
 	const gloox::Tag* pw = tag->findTag("connectiondata/password");
 	if (pw)
 		m_Password = pw->cdata();
@@ -335,8 +332,6 @@ gloox::Tag* ConnectionData::tag() const
 		t->addChild(new gloox::Tag("port", m_Port));
 	if (!m_IsLocalIP.empty())
 		t->addChild(new gloox::Tag("isLocalIP", m_IsLocalIP));
-	if (!m_UseSTUN.empty())
-		t->addChild(new gloox::Tag("useSTUN", m_UseSTUN));
 	if (!m_Password.empty())
 		t->addChild(new gloox::Tag("password", m_Password));
 	if (!m_ClientSalt.empty())

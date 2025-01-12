@@ -13,8 +13,8 @@ class AutoStartHost
 			const playerName = cmdLineArgs['autostart-playername'] || "anonymous";
 			const port = +(cmdLineArgs['autostart-port'] ?? 5073);
 
-			// Stun and password not implemented for autostart.
-			Engine.StartNetworkHost(playerName, port, false, "", !('autostart-disable-replay' in cmdLineArgs));
+			// Password not implemented for autostart.
+			Engine.StartNetworkHost(playerName, port, "", !('autostart-disable-replay' in cmdLineArgs));
 		}
 		catch (e)
 		{

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -73,7 +73,7 @@ public:
 		TS_ASSERT(server.SetupConnection(PS_DEFAULT_PORT));
 		for (CNetClient* client: clients)
 		{
-			client->SetupServerData("127.0.0.1", PS_DEFAULT_PORT, false);
+			client->SetupServerData("127.0.0.1", PS_DEFAULT_PORT);
 			TS_ASSERT(client->SetupConnection(nullptr));
 		}
 
@@ -307,7 +307,7 @@ public:
 		client2B.SetUserName(L"bob");
 		clients.push_back(&client2B);
 
-		client2B.SetupServerData("127.0.0.1", PS_DEFAULT_PORT, false);
+		client2B.SetupServerData("127.0.0.1", PS_DEFAULT_PORT);
 		TS_ASSERT(client2B.SetupConnection(nullptr));
 
 		for (size_t i = 0; ; ++i)

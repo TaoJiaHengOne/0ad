@@ -115,15 +115,6 @@
 					</action>
 				</object>
 			</object>
-
-			<object name="hostSTUNWrapper" size="80 152 100%-20 180">
-				<object name="useSTUN" size="0 4 32 100%" type="checkbox" style="ModernTickBox">
-					<action on="Press">Engine.ConfigDB_CreateAndSaveValue("user", "lobby.stun.enabled", String(this.checked));</action>
-				</object>
-				<object type="text" size="26 0 100% 100%" style="ModernLeftLabelText">
-					<translatableAttribute id="caption">Use STUN to work around firewalls</translatableAttribute>
-				</object>
-			</object>
 		</object>
 
 		<object name="hostFeedback" type="text" style="ModernLabelText" size="50 100%-80 100%-50 100%-45" textcolor="red"/>

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ bool HasNetClient()
 	return !!g_NetClient;
 }
 
-void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u16 serverPort, bool useSTUN,
+void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u16 serverPort,
 	const CStr& password, const bool continueSavedGame, bool storeReplay)
 {
 	ENSURE(!g_NetClient);
@@ -84,20 +84,12 @@ void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u1
 	}
 
 	// In lobby, we send our public ip and port on request to the players who want to connect.
-	// Thus we need to know our public IP. Use STUN if that's available,
-	// otherwise, the lobby's reponse to the game registration stanza will tell us our public IP.
-	if (hasLobby)
+	// Thus we need to know our public IP and use STUN to get it.
+	if (hasLobby && !g_NetServer->SetConnectionData())
 	{
-		if (!useSTUN)
-			// Don't store IP - the lobby bot will send it later.
-			// (if a client tries to connect before it's setup, they'll be disconnected)
-			g_NetServer->SetConnectionData("", serverPort);
-		else if (!g_NetServer->SetConnectionDataViaSTUN())
-		{
-			ScriptException::Raise(rq, "Failed to host via STUN.");
-			SAFE_DELETE(g_NetServer);
-			return;
-		}
+		ScriptException::Raise(rq, "Failed to resolve public IP-address.");
+		SAFE_DELETE(g_NetServer);
+		return;
 	}
 
 	// Generate a secret to identify the host client.
@@ -134,7 +126,7 @@ void StartNetworkHost(const ScriptRequest& rq, const CStrW& playerName, const u1
 		g_NetClient->SetGamePassword(hashedPass);
 	}
 
-	g_NetClient->SetupServerData("127.0.0.1", serverPort, false);
+	g_NetClient->SetupServerData("127.0.0.1", serverPort);
 	g_NetClient->SetControllerSecret(secret);
 
 	if (!g_NetClient->SetupConnection(nullptr))
@@ -154,7 +146,7 @@ void StartNetworkJoin(const ScriptRequest& rq, const CStrW& playerName, const CS
 	g_Game = new CGame(storeReplay);
 	g_NetClient = new CNetClient(g_Game);
 	g_NetClient->SetUserName(playerName);
-	g_NetClient->SetupServerData(serverAddress, serverPort, false);
+	g_NetClient->SetupServerData(serverAddress, serverPort);
 
 	if (!g_NetClient->SetupConnection(nullptr))
 	{
