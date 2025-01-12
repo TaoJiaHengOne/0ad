@@ -19,7 +19,6 @@ function init(initData)
 
 	// get countryList data (we get all countries and not only the ones we have dictionaries for)
 	var countryListData = [];
-	countryListData.push(translateWithContext("localeCountry", "None"));
 	var countryListTmp = Engine.GetAllLocales();
 	var currentLocaleCountry = Engine.GetLocaleCountry(initData.locale);
 	for (let i = 0; i < countryListTmp.length; ++i)
@@ -29,6 +28,7 @@ function init(initData)
 			countryListData.push(country);
 	}
 	countryListData.sort();
+	countryListData.unshift(translateWithContext("localeCountry", "None"));
 
 	// fill the languageList
 	languageList.list = languageListData;
