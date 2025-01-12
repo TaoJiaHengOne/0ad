@@ -53,7 +53,7 @@ var AccountSettingsPage = {
 		try
 		{
 			requestResult.textcolor = "white";
-			requestResult.caption = "Changing password…";
+			requestResult.caption = translate("Changing password…");
 			const encryptedPassword = AccountSettingsPage._readAndValidatePassword(SetPasswordError);
 			Engine.LobbyChangePassword(encryptedPassword);
 			await new Promise((resolve, reject) => {
