@@ -1,11 +1,12 @@
 /**
- * This class is concerned with chosing and displaying tips about how to play the game.
+ * This class is concerned with choosing and displaying tips about how to play the game.
  * This includes a text and one or more images.
  */
 class TipDisplay
 {
 	/**
 	 * @param {boolean} initData.tipScrolling - Whether or not to enable the player to scroll through the tips and the tip images.
+	 * @param {boolean} initData.isOnLoadingScreen - Whether or not the tip display is initialized by the game loading screen.
 	 * @param {Array|undefined} hotloadData.tipFilesData - Hotloaded value storing last time's tipFilesData.
 	 * @param {number|undefined} hotloadData.tipIndex - Hotloaded value pointing to a specific tip.
 	 * @param {number|undefined} hotloadData.tipImageIndex - Hotloaded value pointing to a specific tip image.
@@ -31,14 +32,15 @@ class TipDisplay
 		this.previousImageButton.tooltip = this.TooltipPreviousImage;
 		this.nextImageButton.tooltip = this.TooltipNextImage;
 
-		this.tipFilesData =
-			hotloadData?.tipFilesData ||
-			shuffleArray(
-				Engine.ReadJSONFile(this.TipFilesDataFile)
-			).map(tip => {
-				tip.imageFiles = shuffleArray(tip.imageFiles);
-				return tip;
-			});
+		if (initData.isOnLoadingScreen)
+			this.tipFilesData = this.getLoadingScreenTip();
+		else
+			this.tipFilesData =
+				hotloadData?.tipFilesData ||
+				shuffleArray(Engine.ReadJSONFile(this.TipFilesDataFile).map(category => category.files).flat().map(tip => {
+					tip.imageFiles = shuffleArray(tip.imageFiles);
+					return tip;
+				}));
 
 		this.currentTip = {};
 		this.tipIndex = -1;
@@ -57,6 +59,39 @@ class TipDisplay
 		this.onTipIndexChange(hotloadData?.tipIndex ? hotloadData.tipIndex + 1 : 1);
 		if (hotloadData?.tipImageIndex)
 			this.onTipImageIndexChange(hotloadData.tipImageIndex + 1);
+	}
+
+	/**
+	 * Returns a randomized tip from a category.
+	 * Choosing a category is randomized based on it occurrence probability.
+	 * @returns {Array} - An array with a single element containing a tip object.
+	 */
+	getLoadingScreenTip()
+	{
+		const tipFiles = Engine.ReadJSONFile(this.TipFilesDataFile);
+		const category = this.getRandomWeightedCategory(tipFiles, Engine.HasNetClient());
+		const randomTip = pickRandom(category.files);
+		randomTip.imageFiles = shuffleArray(randomTip.imageFiles);
+		return [randomTip];
+	}
+
+	/**
+	 * Returns a randomized category from an array of categories based on the probability weight.
+	 * @param {boolean} isMultiplayer - True if we want to include the multiplayer category.
+	 * @param {Array} tipFiles - An array containing all categories from the TipFilesDataFile.
+	 * @returns {Object} - A randomized category object.
+	 */
+	getRandomWeightedCategory(tipFiles, isMultiplayer)
+	{
+		const totalProbability = tipFiles.reduce((sum, category) => sum + (isMultiplayer ? category.loadingScreenOccurrence_MP : category.loadingScreenOccurrence_SP), 0);
+		const random = Math.random() * totalProbability;
+
+		let cumulative = 0;
+		for (const category of tipFiles) {
+			cumulative += (isMultiplayer ? category.loadingScreenOccurrence_MP : category.loadingScreenOccurrence_SP);
+			if (random <= cumulative)
+				return category;
+		}
 	}
 
 	getHotloadData()
@@ -153,7 +188,7 @@ TipDisplay.prototype.TooltipNextImage = translate("Switch to the next image.");
 TipDisplay.prototype.TipFilesDataFile = "gui/reference/tips/tipfiles.json";
 
 /**
- * Directory storing .txt files containing the gameplay tips.
+ * Directory storing .txt files containing the multi and single player tips.
  */
 TipDisplay.prototype.TextPath = "gui/reference/tips/texts/";
 

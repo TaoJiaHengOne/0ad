@@ -829,11 +829,14 @@ class CheckRefs:
             self.files.append(fp)
             self.roots.append(fp)
             with open(ffp, encoding="utf-8") as f:
-                tips = load(f)
-                for tip in tips:
-                    self.deps.append((fp, Path(f"gui/reference/tips/texts/{tip['textFile']}")))
-                    for image in tip.get("imageFiles", []):
-                        self.deps.append((fp, Path(f"art/textures/ui/tips/{image}")))
+                categories = load(f)
+                for category in categories:
+                    for tips_category in category["files"]:
+                        self.deps.append(
+                            (fp, Path(f"gui/reference/tips/texts/{tips_category['textFile']}"))
+                        )
+                        for image in tips_category.get("imageFiles", []):
+                            self.deps.append((fp, Path(f"art/textures/ui/tips/{image}")))
 
     def add_rms(self):
         self.logger.info("Loading random maps...")
