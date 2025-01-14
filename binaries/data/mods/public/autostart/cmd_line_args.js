@@ -110,7 +110,7 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 		settings.seeds.AIseed = +(cmdLineArgs['autostart-aiseed'] ?? 0);
 
 	if (cmdLineArgs['autostart-ceasefire'])
-		settings.seeds.ceaserfire.setValue(+cmdLineArgs['autostart-ceasefire']);
+		settings.ceasefire.setValue(+(cmdLineArgs['autostart-ceasefire'] ?? 0));
 
 	if ('autostart-nonvisual' in cmdLineArgs && cmdLineArgs['autostart-nonvisual'] !== "false")
 		settings.triggerScripts.customScripts.add("scripts/NonVisualTrigger.js");
