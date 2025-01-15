@@ -102,6 +102,8 @@ private:
 	// Functions used by the `ScriptContext`.
 	[[nodiscard]] static JSObject* ResolveHook(JSContext* cx, JS::HandleValue,
 		JS::HandleObject moduleRequest) noexcept;
+	[[nodiscard]] static bool DynamicImportHook(JSContext* cx, JS::HandleValue referencingPrivate,
+		JS::HandleObject moduleRequest, JS::HandleObject promise) noexcept;
 
 	RegistryType m_Registry;
 };

@@ -22,6 +22,7 @@
 #include "scriptinterface/FunctionWrapper.h"
 #include "scriptinterface/ModuleLoader.h"
 #include "scriptinterface/Object.h"
+#include "scriptinterface/Promises.h"
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 
@@ -368,5 +369,36 @@ public:
 		int value{0};
 		TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
 		TS_ASSERT_EQUALS(value, 6);
+	}
+
+	void test_DynamicImport()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "dynamic_import.js");
+
+		g_ScriptContext->RunJobs();
+
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		JS::RootedValue promise{rq.cx};
+		TS_ASSERT(ScriptFunction::Call(rq, moduleValue, "default", &promise));
+		TS_ASSERT(promise.isObject());
+		JS::RootedObject promiseObject{rq.cx, &promise.toObject()};
+		TS_ASSERT(JS::IsPromiseObject(promiseObject));
+
+		TS_ASSERT_EQUALS(JS::GetPromiseState(promiseObject), JS::PromiseState::Pending);
+		g_ScriptContext->RunJobs();
+		TS_ASSERT_EQUALS(JS::GetPromiseState(promiseObject), JS::PromiseState::Fulfilled);
+
+		JS::RootedValue piModule{rq.cx, JS::GetPromiseResult(promiseObject)};
+
+		double pi{0.0};
+		TS_ASSERT(Script::FromJSProperty(rq, piModule, "default", pi));
+
+		TS_ASSERT_LESS_THAN(pi, 3.1416);
+		TS_ASSERT_LESS_THAN(3.1415, pi);
 	}
 };

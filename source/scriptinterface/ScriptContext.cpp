@@ -154,14 +154,18 @@ ScriptContext::ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger)
 	JS::SetJobQueue(m_cx, m_JobQueue.get());
 	JS::SetPromiseRejectionTrackerCallback(m_cx, &Script::UnhandledRejectedPromise);
 
-	JS::SetModuleResolveHook(JS_GetRuntime(m_cx), &Script::ModuleLoader::ResolveHook);
+	JSRuntime* runtime{JS_GetRuntime(m_cx)};
+	JS::SetModuleResolveHook(runtime, &Script::ModuleLoader::ResolveHook);
+	JS::SetModuleDynamicImportHook(runtime, &Script::ModuleLoader::DynamicImportHook);
 }
 
 ScriptContext::~ScriptContext()
 {
 	ENSURE(ScriptEngine::IsInitialised() && "The ScriptEngine must be active (initialized and not yet shut down) when destroying a ScriptContext!");
 
-	JS::SetModuleResolveHook(JS_GetRuntime(m_cx), nullptr);
+	JSRuntime* runtime{JS_GetRuntime(m_cx)};
+	JS::SetModuleDynamicImportHook(runtime, nullptr);
+	JS::SetModuleResolveHook(runtime, nullptr);
 
 	// Switch back to normal performance mode to avoid assertion in debug mode.
 	js::gc::SetPerformanceHint(m_cx, js::gc::PerformanceHint::Normal);

@@ -65,6 +65,18 @@ namespace
 	return std::get<1>(*std::get<0>(insertResult)).m_ModuleObject;
 }
 
+[[nodiscard]] JSObject* Resolve(const ScriptRequest& rq,
+	ModuleLoader::RegistryType& registry, JS::HandleObject moduleRequest)
+{
+	std::string includeString;
+	const JS::RootedValue pathValue{rq.cx,
+		JS::StringValue(JS::GetModuleRequestSpecifier(rq.cx, moduleRequest))};
+	if (!Script::FromJSVal(rq, pathValue, includeString))
+		throw std::logic_error{"The module-name to import isn't a string."};
+
+	return CompileModule(rq, registry, includeString);
+}
+
 [[nodiscard]] JSObject* Evaluate(const ScriptRequest& rq, JS::HandleObject mod)
 {
 	if (!JS::ModuleLink(rq.cx, mod))
@@ -230,13 +242,7 @@ void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 	try
 	{
 		const ScriptRequest rq{cx};
-		std::string includeString;
-		const JS::RootedValue pathValue{rq.cx,
-			JS::StringValue(JS::GetModuleRequestSpecifier(rq.cx, moduleRequest))};
-		if (!Script::FromJSVal(rq, pathValue, includeString))
-			throw std::logic_error{"The module-name to import isn't a string."};
-
-		return CompileModule(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry, includeString);
+		return Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry, moduleRequest);
 	}
 	catch (const std::exception& e)
 	{
@@ -247,6 +253,31 @@ void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 	{
 		LOGERROR("Error compiling module.");
 		return nullptr;
+	}
+}
+
+[[nodiscard]] bool ModuleLoader::DynamicImportHook(JSContext* cx, JS::HandleValue referencingPrivate,
+	JS::HandleObject moduleRequest, JS::HandleObject promise) noexcept
+{
+	const ScriptRequest rq{cx};
+	try
+	{
+		JS::RootedObject mod{rq.cx, Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry,
+			moduleRequest)};
+		JS::RootedObject evaluationPromise{rq.cx, Evaluate(rq, mod)};
+		return JS::FinishDynamicModuleImport(rq.cx, evaluationPromise, referencingPrivate,
+			moduleRequest, promise);
+	}
+	catch (const std::exception& e)
+	{
+		LOGERROR("%s", e.what());
+		return JS::FinishDynamicModuleImport(rq.cx, nullptr, referencingPrivate, moduleRequest,
+			promise);
+	}
+	catch (...)
+	{
+		return JS::FinishDynamicModuleImport(rq.cx, nullptr, referencingPrivate, moduleRequest,
+			promise);
 	}
 }
 } // namespace Script
