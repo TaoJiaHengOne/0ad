@@ -19,7 +19,9 @@
 
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
+#include "scriptinterface/FunctionWrapper.h"
 #include "scriptinterface/ModuleLoader.h"
+#include "scriptinterface/Object.h"
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 
@@ -125,6 +127,7 @@ public:
 		TS_ASSERT(!future.IsDone());
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(future.IsDone());
+		std::ignore = future.Get();
 	}
 
 	void test_TopLevelAwaitInfinite()
@@ -136,6 +139,7 @@ public:
 
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(!future.IsDone());
+		TS_ASSERT_THROWS_ANYTHING(std::ignore = future.Get());
 	}
 
 	void test_MoveFulfilledFuture()
@@ -207,7 +211,162 @@ public:
 
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(future.IsDone());
-		TS_ASSERT_THROWS_EQUALS(future.Get(), const std::runtime_error& e, e.what(),
+		TS_ASSERT_THROWS_EQUALS(std::ignore = future.Get(), const std::runtime_error& e, e.what(),
 			"Error: Test reason\n@top_level_throw.js:1:7\n");
+	}
+
+	void test_Export()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "export.js");
+
+		g_ScriptContext->RunJobs();
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		{
+			int value{0};
+			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+			TS_ASSERT_EQUALS(value, 6);
+		}
+
+		TS_ASSERT(ScriptFunction::CallVoid(rq, moduleValue, "mutate", 12));
+
+		{
+			int value{0};
+			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+			TS_ASSERT_EQUALS(value, 12);
+		}
+	}
+
+	void test_ExportSame()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		{
+			auto future = script.GetModuleLoader().LoadModule(rq, "export.js");
+			g_ScriptContext->RunJobs();
+			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+			TS_ASSERT(ScriptFunction::CallVoid(rq, moduleValue, "mutate", 12));
+		}
+
+		{
+			auto future = script.GetModuleLoader().LoadModule(rq, "include/../export.js");
+			g_ScriptContext->RunJobs();
+			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+			int value{0};
+			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+			TS_ASSERT_EQUALS(value, 12);
+		}
+	}
+
+	void test_ExportIndirect()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		{
+			auto future = script.GetModuleLoader().LoadModule(rq, "export.js");
+			g_ScriptContext->RunJobs();
+			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+			TS_ASSERT(ScriptFunction::CallVoid(rq, moduleValue, "mutate", 12));
+		}
+
+		{
+			auto future = script.GetModuleLoader().LoadModule(rq, "indirect.js");
+			g_ScriptContext->RunJobs();
+			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+			int value{0};
+			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+			TS_ASSERT_EQUALS(value, 12);
+		}
+	}
+
+	void test_ExportDefaultImmutable()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "export_default/immutable.js");
+
+		g_ScriptContext->RunJobs();
+
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		int value{0};
+		TS_ASSERT(Script::GetProperty(rq, moduleValue, "default", value));
+		TS_ASSERT_EQUALS(value, 36);
+	}
+
+	void test_ExportDefaultInvalid()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		TestLogger logger;
+		TS_ASSERT_THROWS(std::ignore = script.GetModuleLoader().LoadModule(rq,
+			"export_default/invalid.js"), const std::invalid_argument&);
+		const std::string log{logger.GetOutput()};
+		TS_ASSERT_STR_CONTAINS(log, "export_default/invalid.js line 1");
+	}
+
+	void test_ExportDefaultDoesNotWorkAround()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "export_default/does_not_work_around.js");
+
+		g_ScriptContext->RunJobs();
+
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		int value{0};
+		TS_ASSERT(Script::GetProperty(rq, moduleValue, "default", value));
+		TS_ASSERT_DIFFERS(value, 36);
+		TS_ASSERT_EQUALS(value, 6);
+	}
+
+	void test_ExportDefaultWorksAround()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "export_default/works_around.js");
+
+		g_ScriptContext->RunJobs();
+
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		int value{0};
+		TS_ASSERT(Script::GetProperty(rq, moduleValue, "default", value));
+		TS_ASSERT_EQUALS(value, 36);
+	}
+
+	void test_ReplaceEvaluatingFuture()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
+		future = script.GetModuleLoader().LoadModule(rq, "export.js");
+
+		g_ScriptContext->RunJobs();
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		int value{0};
+		TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+		TS_ASSERT_EQUALS(value, 6);
 	}
 };

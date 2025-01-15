@@ -108,7 +108,14 @@ bool Call(JSContext* cx, const unsigned argc, JS::Value* vp)
 		return true;
 	}
 
-	status = ModuleLoader::Future::Fulfilled{};
+	const auto evaluatingStatus{std::get_if<ModuleLoader::Future::Evaluating>(&status)};
+	if (!evaluatingStatus)
+	{
+		status = ModuleLoader::Future::Rejected{std::make_exception_ptr(std::runtime_error{
+			"Future is not Pending."})};
+		return true;
+	}
+	status = ModuleLoader::Future::Fulfilled{evaluatingStatus->moduleNamespace};
 	return true;
 }
 
@@ -144,15 +151,24 @@ ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsP
 }
 
 ModuleLoader::Future::Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath):
-	m_Status{Evaluating{{rq.cx, JS_NewObject(rq.cx, &callbackClass<false>)},
+	m_Status{Evaluating{{rq.cx, nullptr}, {rq.cx, JS_NewObject(rq.cx, &callbackClass<false>)},
 		{rq.cx, JS_NewObject(rq.cx, &callbackClass<true>)}}}
 {
+	// It's possible to access exported values before the complete module is evaluated (whenever
+	// something is `export`-ed before a top-level `await`).
+	// Those "partial" module namespaces are not exposed for the following reasons:
+	// - The use case for them is too limited.
+	// - JS developers are used to getting either a complete namespace or nothing.
+	// - Accessing values which are not yet exported results in an error. These errors might implicitly be
+	//	dropped.
+
 	JS::RootedObject mod{rq.cx, CompileModule(rq, loader.m_Registry, modulePath)};
 	JS::RootedObject promise{rq.cx, Evaluate(rq, mod)};
+	Evaluating& evaluatingStatus{std::get<Evaluating>(m_Status)};
+	evaluatingStatus.moduleNamespace = JS::GetModuleNamespace(rq.cx, mod);
 
 	SetReservedSlot(JS::PrivateValue(static_cast<void*>(&m_Status)));
 
-	Evaluating& evaluatingStatus{std::get<Evaluating>(m_Status)};
 	if (!JS::AddPromiseReactions(rq.cx, promise, evaluatingStatus.fulfill, evaluatingStatus.reject))
 		throw std::runtime_error{"Failed adding promise reaction."};
 }
@@ -182,10 +198,10 @@ ModuleLoader::Future::~Future()
 	return std::holds_alternative<Fulfilled>(m_Status) || std::holds_alternative<Rejected>(m_Status);
 }
 
-void ModuleLoader::Future::Get()
+[[nodiscard]] JSObject* ModuleLoader::Future::Get()
 {
 	if (std::holds_alternative<Fulfilled>(m_Status))
-		return;
+		return std::get<Fulfilled>(std::exchange(m_Status, Invalid{})).moduleNamespace;
 	std::exception_ptr error{std::move(std::get<Rejected>(m_Status).error)};
 	m_Status = Invalid{};
 	std::rethrow_exception(std::move(error));

@@ -15,6 +15,7 @@ const configIgnores = {
 
 		// This files deliberately contain errors
 		"binaries/data/mods/_test.scriptinterface/module/import_inside_function.js",
+		"binaries/data/mods/_test.scriptinterface/module/export_default/invalid.js",
 	],
 };
 

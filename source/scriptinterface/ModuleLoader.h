@@ -49,10 +49,14 @@ public:
 	public:
 		struct Evaluating
 		{
+			JS::PersistentRootedObject moduleNamespace;
 			JS::PersistentRootedObject fulfill;
 			JS::PersistentRootedObject reject;
 		};
-		struct Fulfilled {};
+		struct Fulfilled
+		{
+			JS::PersistentRootedObject moduleNamespace;
+		};
 		struct Rejected
 		{
 			std::exception_ptr error;
@@ -72,8 +76,10 @@ public:
 
 		/**
 		 * Throws if the evaluation of the module failed.
+		 * @return The module namespace. All exported values are a property
+		 *	of this object. @c default is a property with name "default".
 		 */
-		void Get();
+		[[nodiscard]] JSObject* Get();
 
 	private:
 		// It's save to not require a `JS::HandleValue` here.
