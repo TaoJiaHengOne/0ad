@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -47,18 +47,17 @@ ERROR_TYPE(Scripting_DefineType, CreationFailed);
 // but as large as necessary for all wrapped functions)
 #define SCRIPT_INTERFACE_MAX_ARGS 8
 
+namespace boost { namespace random { class rand48; } }
+class Path;
+class ScriptContext;
 class ScriptInterface;
 struct ScriptInterface_impl;
+namespace Script { class ModuleLoader; }
+using VfsPath = Path;
 
-class ScriptContext;
 // Using a global object for the context is a workaround until Simulation, AI, etc,
 // use their own threads and also their own contexts.
 extern thread_local std::shared_ptr<ScriptContext> g_ScriptContext;
-
-namespace boost { namespace random { class rand48; } }
-
-class Path;
-using VfsPath = Path;
 
 /**
  * Abstraction around a SpiderMonkey JS::Realm.
@@ -136,6 +135,8 @@ public:
 	{
 		return ObjectFromCBData<T>(rq);
 	}
+
+	Script::ModuleLoader& GetModuleLoader() const;
 
 	/**
 	 * GetGeneralJSContext returns the context without starting a GC request and without

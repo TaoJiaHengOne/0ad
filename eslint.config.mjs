@@ -12,6 +12,9 @@ const configIgnores = {
 		"source/tools/profiler2/jquery*",
 		"source/tools/replayprofile/jquery*",
 		"source/tools/templatesanalyzer/tablefilter/",
+
+		// This files deliberately contain errors
+		"binaries/data/mods/_test.scriptinterface/module/import_inside_function.js",
 	],
 };
 

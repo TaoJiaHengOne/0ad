@@ -22,12 +22,14 @@
 #include "lib/alignment.h"
 #include "ps/GameSetup/Config.h"
 #include "ps/Profile.h"
+#include "scriptinterface/ModuleLoader.h"
 #include "scriptinterface/Promises.h"
 #include "scriptinterface/ScriptExtraHeaders.h"
 #include "scriptinterface/ScriptEngine.h"
 #include "scriptinterface/ScriptInterface.h"
 
 #include "js/friend/PerformanceHint.h"
+#include "js/Modules.h"
 
 void GCSliceCallbackHook(JSContext* UNUSED(cx), JS::GCProgress progress, const JS::GCDescription& UNUSED(desc))
 {
@@ -151,11 +153,15 @@ ScriptContext::ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger)
 
 	JS::SetJobQueue(m_cx, m_JobQueue.get());
 	JS::SetPromiseRejectionTrackerCallback(m_cx, &Script::UnhandledRejectedPromise);
+
+	JS::SetModuleResolveHook(JS_GetRuntime(m_cx), &Script::ModuleLoader::ResolveHook);
 }
 
 ScriptContext::~ScriptContext()
 {
 	ENSURE(ScriptEngine::IsInitialised() && "The ScriptEngine must be active (initialized and not yet shut down) when destroying a ScriptContext!");
+
+	JS::SetModuleResolveHook(JS_GetRuntime(m_cx), nullptr);
 
 	// Switch back to normal performance mode to avoid assertion in debug mode.
 	js::gc::SetPerformanceHint(m_cx, js::gc::PerformanceHint::Normal);

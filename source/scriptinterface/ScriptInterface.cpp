@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include "ps/Filesystem.h"
 #include "ps/Profile.h"
 #include "scriptinterface/FunctionWrapper.h"
+#include "scriptinterface/ModuleLoader.h"
 #include "scriptinterface/Object.h"
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptExtraHeaders.h"
@@ -67,6 +68,7 @@ struct ScriptInterface_impl
 	public:
 		boost::rand48* m_rng;
 		JS::PersistentRootedObject m_nativeScope; // native function scope object
+	Script::ModuleLoader m_ModuleLoader;
 };
 
 /**
@@ -465,6 +467,11 @@ JSContext* ScriptInterface::GetGeneralJSContext() const
 ScriptContext& ScriptInterface::GetContext() const
 {
 	return m->m_context;
+}
+
+Script::ModuleLoader& ScriptInterface::GetModuleLoader() const
+{
+	return m->m_ModuleLoader;
 }
 
 void ScriptInterface::CallConstructor(JS::HandleValue ctor, JS::HandleValueArray argv, JS::MutableHandleValue out) const
