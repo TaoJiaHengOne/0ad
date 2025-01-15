@@ -195,4 +195,19 @@ public:
 		TS_ASSERT(future.IsDone());
 		TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
 	}
+
+	void test_TopLevelThrow()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		// To silence the error.
+		const TestLogger _;
+		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_throw.js");
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(future.IsDone());
+		TS_ASSERT_THROWS_EQUALS(future.Get(), const std::runtime_error& e, e.what(),
+			"Error: Test reason\n@top_level_throw.js:1:7\n");
+	}
 };

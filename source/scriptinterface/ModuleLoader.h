@@ -21,6 +21,7 @@
 #include "lib/file/vfs/vfs_path.h"
 #include "scriptinterface/ScriptTypes.h"
 
+#include <exception>
 #include <unordered_map>
 #include <variant>
 
@@ -49,10 +50,15 @@ public:
 		struct Evaluating
 		{
 			JS::PersistentRootedObject fulfill;
+			JS::PersistentRootedObject reject;
 		};
 		struct Fulfilled {};
+		struct Rejected
+		{
+			std::exception_ptr error;
+		};
 		struct Invalid {};
-		using Status = std::variant<Evaluating, Fulfilled, Invalid>;
+		using Status = std::variant<Evaluating, Fulfilled, Rejected, Invalid>;
 
 		explicit Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath);
 		Future() = default;
@@ -63,6 +69,11 @@ public:
 		~Future();
 
 		[[nodiscard]] bool IsDone() const noexcept;
+
+		/**
+		 * Throws if the evaluation of the module failed.
+		 */
+		void Get();
 
 	private:
 		// It's save to not require a `JS::HandleValue` here.
