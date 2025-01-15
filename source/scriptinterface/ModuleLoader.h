@@ -100,6 +100,8 @@ public:
 
 private:
 	// Functions used by the `ScriptContext`.
+	[[nodiscard]] static bool MetadataHook(JSContext* cx, JS::HandleValue privateValue,
+		JS::HandleObject metaObject) noexcept;
 	[[nodiscard]] static JSObject* ResolveHook(JSContext* cx, JS::HandleValue,
 		JS::HandleObject moduleRequest) noexcept;
 	[[nodiscard]] static bool DynamicImportHook(JSContext* cx, JS::HandleValue referencingPrivate,

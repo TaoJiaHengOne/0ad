@@ -401,4 +401,24 @@ public:
 		TS_ASSERT_LESS_THAN(pi, 3.1416);
 		TS_ASSERT_LESS_THAN(3.1415, pi);
 	}
+
+	void test_Meta()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "meta.js");
+
+		g_ScriptContext->RunJobs();
+
+		JS::RootedObject ns{rq.cx, future.Get()};
+		const JS::RootedValue modNamespace{rq.cx, JS::ObjectValue(*ns)};
+
+		JS::RootedValue meta{rq.cx};
+		TS_ASSERT(ScriptFunction::Call(rq, modNamespace, "getMeta", &meta));
+
+		std::string path;
+		TS_ASSERT(Script::GetProperty(rq, meta, "path", path));
+		TS_ASSERT_STR_EQUALS(path, "meta.js");
+	}
 };

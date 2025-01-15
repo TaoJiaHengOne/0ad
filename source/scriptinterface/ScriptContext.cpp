@@ -155,6 +155,7 @@ ScriptContext::ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger)
 	JS::SetPromiseRejectionTrackerCallback(m_cx, &Script::UnhandledRejectedPromise);
 
 	JSRuntime* runtime{JS_GetRuntime(m_cx)};
+	JS::SetModuleMetadataHook(runtime, &Script::ModuleLoader::MetadataHook);
 	JS::SetModuleResolveHook(runtime, &Script::ModuleLoader::ResolveHook);
 	JS::SetModuleDynamicImportHook(runtime, &Script::ModuleLoader::DynamicImportHook);
 }
@@ -166,6 +167,7 @@ ScriptContext::~ScriptContext()
 	JSRuntime* runtime{JS_GetRuntime(m_cx)};
 	JS::SetModuleDynamicImportHook(runtime, nullptr);
 	JS::SetModuleResolveHook(runtime, nullptr);
+	JS::SetModuleMetadataHook(runtime, nullptr);
 
 	// Switch back to normal performance mode to avoid assertion in debug mode.
 	js::gc::SetPerformanceHint(m_cx, js::gc::PerformanceHint::Normal);

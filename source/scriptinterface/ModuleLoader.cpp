@@ -160,6 +160,10 @@ ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsP
 		throw std::invalid_argument{fmt::format("Unable to compile module: \"{}\".",
 			filePathStr)};
 	}
+
+	JS::RootedValue modInfo{rq.cx};
+	Script::CreateObject(rq, &modInfo, "path", filePathStr);
+	JS::SetModulePrivate(m_ModuleObject, modInfo);
 }
 
 ModuleLoader::Future::Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath):
@@ -234,6 +238,26 @@ void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 	const VfsPath& modulePath)
 {
 	return Future{rq, *this, modulePath};
+}
+
+/**
+ * This is only executed once per module. Following accesses of `import.meta`
+ * evaluate to the same object.
+ */
+[[nodiscard]] bool ModuleLoader::MetadataHook(JSContext* cx, JS::HandleValue privateValue,
+	JS::HandleObject metaObject) noexcept
+{
+	const ScriptRequest rq{cx};
+
+	JS::RootedValue path{cx};
+	if (!Script::GetProperty(rq, privateValue, "path", &path))
+		return false;
+
+	JS::RootedValue metaValue{cx, JS::ObjectValue(*metaObject)};
+	if (!Script::SetProperty(rq, metaValue, "path", path))
+		return false;
+
+	return true;
 }
 
 [[nodiscard]] JSObject* ModuleLoader::ResolveHook(JSContext* cx, JS::HandleValue,
