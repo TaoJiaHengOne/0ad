@@ -20,6 +20,7 @@
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
 #include "scriptinterface/ModuleLoader.h"
+#include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 
 class TestScriptModule : public CxxTest::TestSuite
@@ -43,7 +44,7 @@ public:
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
-		script.GetModuleLoader().LoadModule(rq, "include/entry.js");
+		std::ignore = script.GetModuleLoader().LoadModule(rq, "include/entry.js");
 
 		// This test does not rely on export to the engine. So use the logger to check if it succeeded.
 		TS_ASSERT_STR_CONTAINS(logger.GetOutput(),"Test succeeded");
@@ -54,12 +55,12 @@ public:
 		{
 			ScriptInterface script{"Test", "Test", g_ScriptContext};
 			const ScriptRequest rq{script};
-			script.GetModuleLoader().LoadModule(rq, "empty.js");
+			std::ignore = script.GetModuleLoader().LoadModule(rq, "empty.js");
 		}
 		{
 			ScriptInterface script{"Test", "Test", g_ScriptContext};
 			const ScriptRequest rq{script};
-			script.GetModuleLoader().LoadModule(rq, "empty.js");
+			std::ignore = script.GetModuleLoader().LoadModule(rq, "empty.js");
 		}
 	}
 
@@ -70,9 +71,9 @@ public:
 		{
 			ScriptInterface scriptInner{"Test", "Test", g_ScriptContext};
 			const ScriptRequest rqInner{scriptInner};
-			scriptInner.GetModuleLoader().LoadModule(rqInner, "empty.js");
+			std::ignore = scriptInner.GetModuleLoader().LoadModule(rqInner, "empty.js");
 		}
-		scriptOuter.GetModuleLoader().LoadModule(rqOuter, "empty.js");
+		std::ignore = scriptOuter.GetModuleLoader().LoadModule(rqOuter, "empty.js");
 	}
 
 	void test_ImportInFunction()
@@ -81,8 +82,8 @@ public:
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
-		TS_ASSERT_THROWS(script.GetModuleLoader().LoadModule(rq, "import_inside_function.js"),
-			const std::invalid_argument&);
+		TS_ASSERT_THROWS(std::ignore = script.GetModuleLoader().LoadModule(rq,
+			"import_inside_function.js"), const std::invalid_argument&);
 		const std::string log{logger.GetOutput()};
 		TS_ASSERT_STR_CONTAINS(log, "import_inside_function.js line 3");
 		TS_ASSERT_STR_CONTAINS(log, "import declarations may only appear at top level of a module");
@@ -94,7 +95,7 @@ public:
 		const ScriptRequest rq{script};
 
 		const TestLogger _;
-		TS_ASSERT_THROWS(script.GetModuleLoader().LoadModule(rq, "nonexistent.js"),
+		TS_ASSERT_THROWS(std::ignore = script.GetModuleLoader().LoadModule(rq, "nonexistent.js"),
 			const std::runtime_error&);
 	}
 
@@ -105,13 +106,93 @@ public:
 
 		{
 			TestLogger logger;
-			script.GetModuleLoader().LoadModule(rq, "blabbermouth.js");
+			std::ignore = script.GetModuleLoader().LoadModule(rq, "blabbermouth.js");
 			TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
 		}
 		{
 			TestLogger logger;
-			script.GetModuleLoader().LoadModule(rq, "include/../blabbermouth.js");
+			std::ignore = script.GetModuleLoader().LoadModule(rq, "include/../blabbermouth.js");
 			TS_ASSERT_STR_NOT_CONTAINS(logger.GetOutput(), "blah blah blah");
 		}
+	}
+
+	void test_TopLevelAwaitFinite()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
+
+		TS_ASSERT(!future.IsDone());
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(future.IsDone());
+	}
+
+	void test_TopLevelAwaitInfinite()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_await_infinite.js");
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(!future.IsDone());
+	}
+
+	void test_MoveFulfilledFuture()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		Script::ModuleLoader::Future future0{
+			script.GetModuleLoader().LoadModule(rq, "empty.js")};
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(future0.IsDone());
+
+		Script::ModuleLoader::Future future1{std::move(future0)};
+		Script::ModuleLoader::Future future2;
+		future2 = std::move(future1);
+
+		TS_ASSERT(!future0.IsDone());
+		TS_ASSERT(!future1.IsDone());
+		TS_ASSERT(future2.IsDone());
+	}
+
+	void test_MoveEvaluatingFuture()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		Script::ModuleLoader::Future future0{
+			script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js")};
+		Script::ModuleLoader::Future future1{std::move(future0)};
+		Script::ModuleLoader::Future future2;
+		future2 = std::move(future1);
+
+		TS_ASSERT(!future0.IsDone());
+		TS_ASSERT(!future1.IsDone());
+		TS_ASSERT(!future2.IsDone());
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(!future0.IsDone());
+		TS_ASSERT(!future1.IsDone());
+		TS_ASSERT(future2.IsDone());
+	}
+
+	void test_EvaluateReplacedFuture()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		TestLogger logger;
+		auto future{script.GetModuleLoader().LoadModule(rq, "delayed_blabbermouth.js")};
+		TS_ASSERT_STR_NOT_CONTAINS(logger.GetOutput(), "blah blah blah");
+		TS_ASSERT(!future.IsDone());
+
+		future = script.GetModuleLoader().LoadModule(rq, "empty.js");
+		TS_ASSERT(!future.IsDone());
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(future.IsDone());
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
 	}
 };

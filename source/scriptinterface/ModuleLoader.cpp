@@ -22,6 +22,7 @@
 #include "ps/CStr.h"
 #include "ps/Filesystem.h"
 #include "scriptinterface/Object.h"
+#include "scriptinterface/Promises.h"
 #include "scriptinterface/ScriptConversions.h"
 #include "scriptinterface/ScriptInterface.h"
 
@@ -63,7 +64,7 @@ namespace
 	return std::get<1>(*std::get<0>(insertResult)).m_ModuleObject;
 }
 
-void Evaluate(const ScriptRequest& rq, JS::HandleObject mod)
+[[nodiscard]] JSObject* Evaluate(const ScriptRequest& rq, JS::HandleObject mod)
 {
 	if (!JS::ModuleLink(rq.cx, mod))
 	{
@@ -72,12 +73,33 @@ void Evaluate(const ScriptRequest& rq, JS::HandleObject mod)
 	}
 
 	JS::RootedValue val{rq.cx};
-	if (!JS::ModuleEvaluate(rq.cx, mod, &val))
+	if (!JS::ModuleEvaluate(rq.cx, mod, &val) || !val.isObject())
 	{
 		ScriptException::CatchPending(rq);
 		throw std::invalid_argument{"Unable to evaluate module."};
 	}
+
+	return &val.toObject();
 }
+
+bool Call(JSContext* cx, const unsigned argc, JS::Value* vp)
+{
+	JS::CallArgs args{JS::CallArgsFromVp(argc, vp)};
+	const ScriptRequest rq{cx};
+
+	const auto statusPtr{JS::GetMaybePtrFromReservedSlot<ModuleLoader::Future::Status>(
+		&args.callee(), 0)};
+	if (!statusPtr)
+		return true;
+
+	(*statusPtr) = ModuleLoader::Future::Fulfilled{};
+	return true;
+}
+
+constexpr JSClassOps callbackClassOps{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+	/*call =*/Call, nullptr, nullptr};
+
+constexpr JSClass callbackClass{"Callback", JSCLASS_HAS_RESERVED_SLOTS(1), &callbackClassOps};
 } // anonymous namespace
 
 ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsPath& filePath):
@@ -103,10 +125,56 @@ ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsP
 	}
 }
 
-void ModuleLoader::LoadModule(const ScriptRequest& rq, const VfsPath& modulePath)
+ModuleLoader::Future::Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath):
+	m_Status{Evaluating{{rq.cx, JS_NewObject(rq.cx, &callbackClass)}}}
 {
-	JS::RootedObject mod{rq.cx, CompileModule(rq, m_Registry, modulePath)};
-	Evaluate(rq, mod);
+	JS::RootedObject mod{rq.cx, CompileModule(rq, loader.m_Registry, modulePath)};
+	JS::RootedObject promise{rq.cx, Evaluate(rq, mod)};
+
+	SetReservedSlot(JS::PrivateValue(static_cast<void*>(&m_Status)));
+
+	if (!JS::AddPromiseReactions(rq.cx, promise, std::get<Evaluating>(m_Status).fulfill, nullptr))
+		throw std::runtime_error{"Failed adding promise reaction."};
+}
+
+ModuleLoader::Future::Future(Future&& other) noexcept:
+	m_Status{std::exchange(other.m_Status, Invalid{})}
+{
+	SetReservedSlot(JS::PrivateValue(static_cast<void*>(&m_Status)));
+}
+
+ModuleLoader::Future& ModuleLoader::Future::operator=(Future&& other) noexcept
+{
+	SetReservedSlot(JS::UndefinedValue());
+	m_Status = std::exchange(other.m_Status, Invalid{});
+	SetReservedSlot(JS::PrivateValue(static_cast<void*>(&m_Status)));
+
+	return *this;
+}
+
+ModuleLoader::Future::~Future()
+{
+	SetReservedSlot(JS::UndefinedValue());
+}
+
+[[nodiscard]] bool ModuleLoader::Future::IsDone() const noexcept
+{
+	return std::holds_alternative<Fulfilled>(m_Status);
+}
+
+void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
+{
+	Evaluating* evaluatingStatus{std::get_if<Evaluating>(&m_Status)};
+	if (!evaluatingStatus)
+		return;
+	if (evaluatingStatus->fulfill)
+		JS::SetReservedSlot(evaluatingStatus->fulfill, 0, privateValue);
+}
+
+[[nodiscard]] ModuleLoader::Future ModuleLoader::LoadModule(const ScriptRequest& rq,
+	const VfsPath& modulePath)
+{
+	return Future{rq, *this, modulePath};
 }
 
 [[nodiscard]] JSObject* ModuleLoader::ResolveHook(JSContext* cx, JS::HandleValue,

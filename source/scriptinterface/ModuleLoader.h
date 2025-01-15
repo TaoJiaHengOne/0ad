@@ -22,6 +22,7 @@
 #include "scriptinterface/ScriptTypes.h"
 
 #include <unordered_map>
+#include <variant>
 
 class ScriptContext;
 class ScriptRequest;
@@ -42,13 +43,43 @@ public:
 
 	using RegistryType = std::unordered_map<VfsPath, CompiledModule>;
 
+	class Future
+	{
+	public:
+		struct Evaluating
+		{
+			JS::PersistentRootedObject fulfill;
+		};
+		struct Fulfilled {};
+		struct Invalid {};
+		using Status = std::variant<Evaluating, Fulfilled, Invalid>;
+
+		explicit Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath);
+		Future() = default;
+		Future(const Future&) = delete;
+		Future& operator=(const Future&) = delete;
+		Future(Future&& other) noexcept;
+		Future& operator=(Future&& other) noexcept;
+		~Future();
+
+		[[nodiscard]] bool IsDone() const noexcept;
+
+	private:
+		// It's save to not require a `JS::HandleValue` here.
+		void SetReservedSlot(JS::Value privateValue) noexcept;
+
+		Status m_Status{Invalid{}};
+	};
+
 	/**
 	 * Load the specified module and all module it imports recursively.
 	 *
 	 * @param rq @c globalThis is taken from this @c ScriptRequest.
 	 * @param modulePath The path to the file which should be loaded as a module.
+	 * @return A future that is fulfilled when the evaluation of the module
+	 *	completes.
 	 */
-	void LoadModule(const ScriptRequest& rq, const VfsPath& modulePath);
+	[[nodiscard]] Future LoadModule(const ScriptRequest& rq, const VfsPath& modulePath);
 
 private:
 	// Functions used by the `ScriptContext`.
