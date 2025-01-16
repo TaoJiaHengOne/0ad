@@ -10,7 +10,6 @@ https://secure.phabricator.com/book/phabricator/article/arcanist_lint/
 - `json` detects JSON syntax errors.
 - `licence-year` detects Copyright header years and compares against modification time.
 - `eslint`, if installed, will run on javascript files.
-- `cppcheck`, if installed, will run on C++ files.
 
 ## Installation
 
@@ -34,9 +33,3 @@ npm install -g eslint@latest eslint-plugin-brace-rules`
 ```
 
 See also https://eslint.org/docs/user-guide/getting-started
-
-#### cppcheck
-
-Cppcheck is available on various package managers, including HomeBrew on macOS.
-An installer is available on windows.
-See http://cppcheck.sourceforge.net for details.
