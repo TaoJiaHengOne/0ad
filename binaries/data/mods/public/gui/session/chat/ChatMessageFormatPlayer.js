@@ -93,9 +93,10 @@ class ChatMessageFormatPlayer
 		{
 			addresseeGUID = this.matchUsername(msg.text);
 			let addressee = g_PlayerAssignments[addresseeGUID];
-			if (msg.player === undefined && !addressee)
+			if (!addressee)
 			{
-				warn("Couldn't find chat message receiver: " + msg.text);
+				if (msg.player === undefined)
+					warn("Couldn't find chat message receiver: " + msg.text);
 				return false;
 			}
 
