@@ -6,9 +6,19 @@ cd "$(dirname "$0")"
 PV=4.4
 LIB_VERSION=${PV}+wfg1
 
+fetch()
+{
+	curl -fLo "cxxtest-${PV}.tar.gz" \
+		"https://github.com/CxxTest/cxxtest/releases/download/${PV}/cxxtest-${PV}.tar.gz"
+}
+
 echo "Building CxxTest..."
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+		--fetch-only)
+			fetch
+			exit
+			;;
 		--force-rebuild) rm -f .already-built ;;
 		*)
 			echo "Unknown option: $1"
@@ -25,8 +35,7 @@ fi
 
 # fetch
 if [ ! -e "cxxtest-${PV}.tar.gz" ]; then
-	curl -fLo "cxxtest-${PV}.tar.gz" \
-		"https://github.com/CxxTest/cxxtest/releases/download/${PV}/cxxtest-${PV}.tar.gz"
+	fetch
 fi
 
 # unpack

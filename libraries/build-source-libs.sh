@@ -29,6 +29,7 @@ usage:
 
 options:
 	--help                  - print this help
+	--fetch-only            - only fetch sources
 	--force-rebuild         - rebuild all
 	--without-nvtt          - don't build nvtt
 	--with-system-cxxtest   - don't build cxxtest
@@ -55,6 +56,7 @@ while [ "$#" -gt 0 ]; do
 			print_help
 			exit
 			;;
+		--fetch-only) build_sh_options="$build_sh_options --fetch-only" ;;
 		--force-rebuild) build_sh_options="$build_sh_options --force-rebuild" ;;
 		--without-nvtt) without_nvtt=true ;;
 		--with-system-cxxtest) with_system_cxxtest=true ;;

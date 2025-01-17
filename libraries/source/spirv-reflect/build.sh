@@ -6,9 +6,19 @@ cd "$(dirname "$0")"
 PV=1.3.290.0
 LIB_VERSION=${PV}
 
+fetch()
+{
+	curl -fLo "vulkan-sdk-${PV}.tar.gz" \
+		"https://github.com/KhronosGroup/SPIRV-Reflect/archive/refs/tags/vulkan-sdk-${PV}.tar.gz"
+}
+
 echo "Building SPIRV-Reflect..."
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+		--fetch-only)
+			fetch
+			exit
+			;;
 		--force-rebuild) rm -f .already-built ;;
 		*)
 			echo "Unknown option: $1"
@@ -25,8 +35,7 @@ fi
 
 # fetch
 if [ ! -e "vulkan-sdk-${PV}.tar.gz" ]; then
-	curl -fLo "vulkan-sdk-${PV}.tar.gz" \
-		"https://github.com/KhronosGroup/SPIRV-Reflect/archive/refs/tags/vulkan-sdk-${PV}.tar.gz"
+	fetch
 fi
 
 # unpack

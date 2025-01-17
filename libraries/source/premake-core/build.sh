@@ -10,9 +10,19 @@ cd "$(dirname "$0")"
 PV=5.0.0-beta3
 LIB_VERSION=${PV}+wfg1
 
+fetch()
+{
+	curl -fLo "premake-core-${PV}.tar.gz" \
+		"https://github.com/premake/premake-core/archive/refs/tags/v${PV}.tar.gz"
+}
+
 echo "Building Premake..."
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+		--fetch-only)
+			fetch
+			exit
+			;;
 		--force-rebuild) rm -f .already-built ;;
 		*)
 			echo "Unknown option: $1"
@@ -29,8 +39,7 @@ fi
 
 # fetch
 if [ ! -e "premake-core-${PV}.tar.gz" ]; then
-	curl -fLo "premake-core-${PV}.tar.gz" \
-		"https://github.com/premake/premake-core/archive/refs/tags/v${PV}.tar.gz"
+	fetch
 fi
 
 # unpack

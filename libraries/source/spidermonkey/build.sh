@@ -9,9 +9,19 @@ FOLDER="mozjs-115.16.1"
 LIB_VERSION="115.16.1+3"
 LIB_NAME="mozjs115"
 
+fetch()
+{
+	curl -fLo "${FOLDER}.tar.xz" \
+		"https://releases.wildfiregames.com/libs/${FOLDER}.tar.xz"
+}
+
 echo "Building SpiderMonkey..."
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+		--fetch-only)
+			fetch
+			exit
+			;;
 		--force-rebuild) rm -f .already-built ;;
 		*)
 			echo "Unknown option: $1"
@@ -32,8 +42,7 @@ OS="${OS:=$(uname -s)}"
 # This tarball is built from https://ftp.mozilla.org/pub/firefox/releases/115.16.1esr/source/
 # by running js/src/make-source-package.py
 if [ ! -e "${FOLDER}.tar.xz" ]; then
-	curl -fLo "${FOLDER}.tar.xz" \
-		"https://releases.wildfiregames.com/libs/${FOLDER}.tar.xz"
+	fetch
 fi
 
 # unpack
