@@ -110,7 +110,7 @@ CGUIText::CGUIText(const CGUI& pGUI, const CGUIString& string, const CStrW& font
 		float spaceCorrection = feedback.m_EndsWithSpace ? spaceWidth : 0.f;
 
 		// If width is 0, then there's no word-wrapping, disable NewLine.
-		if ((width != 0 && from != i && (lineWidth - spaceCorrection + 2 * bufferZone > width || feedback.m_NewLine)) || i == static_cast<int>(string.m_Words.size()) - 2)
+		if ((width != 0 && ((from != i && lineWidth - spaceCorrection + 2 * bufferZone > width) || feedback.m_NewLine)) || i == static_cast<int>(string.m_Words.size()) - 2)
 		{
 			if (ProcessLine(pGUI, string, font, pObject, images, align, prelimLineHeight, width, bufferZone, firstLine, y, i, from))
 				return;
