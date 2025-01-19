@@ -332,7 +332,8 @@ function updateGeneralPanelCounter(allCounters)
 				{
 					let yStart = 25 + g_Teams[t].length * (g_PlayerBoxYSize + g_PlayerBoxGap) + 3;
 					counterTotalObject = Engine.GetGUIObjectByName("valueDataTeam[" + t + "][" + w + "]");
-					counterTotalObject.size = (left + 20) + " " + yStart + " " + (left + counters[w].width) + " 100%";
+					let yStartTotal = 14 + g_Teams[t].length * (g_PlayerBoxYSize + g_PlayerBoxGap) + 10;
+					counterTotalObject.size = (left + 20) + " " + yStartTotal + " " + (left + counters[w].width) + " " + (yStartTotal + 52);
 					counterTotalObject.hidden = false;
 				}
 
@@ -370,8 +371,8 @@ function updateGeneralPanelTeams()
 		Engine.GetGUIObjectByName("teamNameHeadingt[" + i + "]").caption = "Team " + (+i + 1);
 
 		let teamHeading = Engine.GetGUIObjectByName("teamHeadingt[" + i + "]");
-		let yStartTotal = 30 + g_Teams[i].length * (g_PlayerBoxYSize + g_PlayerBoxGap) + 10;
-		teamHeading.size = "50 " + yStartTotal + " 100% " + (yStartTotal + 20);
+		let yStartTotal = 14 + g_Teams[i].length * (g_PlayerBoxYSize + g_PlayerBoxGap) + 10;
+		teamHeading.size = "50 " + yStartTotal + " 100% " + (yStartTotal + 52);
 		teamHeading.caption = translate("Team total");
 	}
 

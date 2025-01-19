@@ -92,9 +92,9 @@
 							</object>
 						</repeat>
 					</object>
-					<object name="teamHeadingt[i]" type="text" style="ModernLeftTopLabelText"/>
+					<object name="teamHeadingt[i]" type="text" style="ModernLeftLabelText"/>
 					<repeat var="x" count="9">
-						<object name="valueDataTeam[i][x]" type="text" style="ModernTopLabelText"/>
+						<object name="valueDataTeam[i][x]" type="text" style="ModernLabelText"/>
 					</repeat>
 				</object>
 			</repeat>
