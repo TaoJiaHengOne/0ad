@@ -517,7 +517,7 @@ void ScriptInterface::DefineCustomObjectType(JSClass *clasp, JSNative constructo
 
 JSObject* ScriptInterface::CreateCustomObject(const std::string& typeName) const
 {
-	std::map<std::string, CustomType>::const_iterator it = m_CustomObjectTypes.find(typeName);
+	std::unordered_map<std::string, CustomType>::const_iterator it = m_CustomObjectTypes.find(typeName);
 
 	if (it == m_CustomObjectTypes.end())
 		throw PSERROR_Scripting_TypeDoesNotExist();

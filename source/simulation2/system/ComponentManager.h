@@ -239,6 +239,16 @@ public:
 	 */
 	void FlushDestroyedComponents();
 
+	/**
+	 * Called during GC tracing of our components.
+	 */
+	static void Trace(JSTracer* trc, void* data);
+	/**
+	 * Call this from components when they need to save their JS instance.
+	 * Not done by the component manager because C++ components do it lazily.
+	 */
+	void RegisterTrace(entity_id_t ent, const JS::Heap<JS::Value>& instance);
+
 	IComponent* QueryInterface(entity_id_t ent, InterfaceId iid) const;
 
 	using InterfacePair = std::pair<entity_id_t, IComponent*>;
@@ -335,6 +345,7 @@ private:
 	std::map<IComponent*, std::set<MessageTypeId> > m_DynamicMessageSubscriptionsNonsyncByComponent;
 
 	std::unordered_map<entity_id_t, SEntityComponentCache*> m_ComponentCaches;
+	std::unordered_map<entity_id_t, std::vector<JS::Heap<JS::Value>*>> m_TraceCache;
 
 	// TODO: maintaining both ComponentsBy* is nasty; can we get rid of one,
 	// while keeping QueryInterface and PostMessage sufficiently efficient?

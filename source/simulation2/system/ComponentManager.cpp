@@ -68,6 +68,8 @@ CComponentManager::CComponentManager(CSimContext& context, ScriptContext& cx, bo
 	m_ScriptInterface.SetCallbackData(static_cast<void*> (this));
 	m_ScriptInterface.ReplaceNondeterministicRNG(m_RNG);
 
+	JS_AddExtraGCRootsTracer(m_ScriptInterface.GetGeneralJSContext(), Trace, (void*)this);
+
 	// For component script tests, the test system sets up its own scripted implementation of
 	// these functions, so we skip registering them here in those cases
 	if (!skipScriptFunctions)
@@ -119,6 +121,7 @@ CComponentManager::CComponentManager(CSimContext& context, ScriptContext& cx, bo
 
 CComponentManager::~CComponentManager()
 {
+	JS_RemoveExtraGCRootsTracer(m_ScriptInterface.GetGeneralJSContext(), Trace, (void*)this);
 	ResetState();
 }
 
@@ -494,6 +497,9 @@ void CComponentManager::ResetState()
 	m_DynamicMessageSubscriptionsNonsync.clear();
 	m_DynamicMessageSubscriptionsNonsyncByComponent.clear();
 
+	// Remove all items we were tracing.
+	m_TraceCache.clear();
+
 	// Delete all IComponents in reverse order of creation.
 	std::map<ComponentTypeId, std::map<entity_id_t, IComponent*> >::reverse_iterator iit = m_ComponentsByTypeId.rbegin();
 	for (; iit != m_ComponentsByTypeId.rend(); ++iit)
@@ -815,6 +821,19 @@ void CComponentManager::AddMockComponent(CEntityHandle ent, InterfaceId iid, ICo
 	cache->interfaces[iid] = &component;
 }
 
+void CComponentManager::Trace(JSTracer* trc, void* data)
+{
+	CComponentManager& cmpMgr = *(static_cast<CComponentManager*>(data));
+	for (auto& traceByEnt : cmpMgr.m_TraceCache)
+		for (JS::Heap<JS::Value>* ptr : traceByEnt.second)
+			JS::TraceEdge(trc, ptr, "ComponentManager::Trace");
+}
+
+void CComponentManager::RegisterTrace(entity_id_t ent, const JS::Heap<JS::Value>& instance)
+{
+	m_TraceCache.try_emplace(ent).first->second.push_back(const_cast<JS::Heap<JS::Value>*>(std::addressof(instance)));
+}
+
 CEntityHandle CComponentManager::AllocateEntityHandle(entity_id_t ent)
 {
 	ENSURE(!EntityExists(ent));
@@ -954,6 +973,10 @@ void CComponentManager::FlushDestroyedComponents()
 
 			free(handle.GetComponentCache());
 			m_ComponentCaches.erase(ent);
+
+			auto hit = m_TraceCache.find(ent);
+			if (hit != m_TraceCache.end())
+				m_TraceCache.erase(hit);
 
 			// Remove from m_ComponentsByInterface
 			std::vector<std::unordered_map<entity_id_t, IComponent*> >::iterator ifcit = m_ComponentsByInterface.begin();

@@ -35,7 +35,7 @@
 #define FAIL(msg) STMT(LOGERROR(msg); return false)
 #define FAIL_VOID(msg) STMT(ScriptException::Raise(rq, msg); return)
 
-template<> void Script::ToJSVal<IComponent*>(const ScriptRequest& rq,  JS::MutableHandleValue ret, IComponent* const& val)
+template<> void Script::ToJSVal<IComponent*>(const ScriptRequest& UNUSED(rq),  JS::MutableHandleValue ret, IComponent* const& val)
 {
 	if (val == NULL)
 	{
@@ -43,18 +43,8 @@ template<> void Script::ToJSVal<IComponent*>(const ScriptRequest& rq,  JS::Mutab
 		return;
 	}
 
-	// If this is a scripted component, just return the JS object directly
-	JS::RootedValue instance(rq.cx, val->GetJSInstance());
-	if (!instance.isNull())
-	{
-		ret.set(instance);
-		return;
-	}
-
-	// Otherwise we need to construct a wrapper object
-	// (TODO: cache wrapper objects?)
-	JS::RootedObject obj(rq.cx);
-	if (!val->NewJSObject(rq.GetScriptInterface(), &obj))
+	JS::HandleValue instance(val->GetJSInstance());
+	if (instance.isNull())
 	{
 		// Report as an error, since scripts really shouldn't try to use unscriptable interfaces
 		LOGERROR("IComponent does not have a scriptable interface");
@@ -62,8 +52,7 @@ template<> void Script::ToJSVal<IComponent*>(const ScriptRequest& rq,  JS::Mutab
 		return;
 	}
 
-	JS::SetReservedSlot(obj, ScriptInterface::JSObjectReservedSlots::PRIVATE, JS::PrivateValue(val));
-	ret.setObject(*obj);
+	ret.set(instance);
 }
 
 template<> void Script::ToJSVal<CParamNode>(const ScriptRequest& rq,  JS::MutableHandleValue ret, CParamNode const& val)

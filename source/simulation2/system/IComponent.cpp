@@ -48,13 +48,3 @@ void IComponent::RegisterComponentTypeScriptWrapper(CComponentManager& mgr, EInt
 void IComponent::HandleMessage(const CMessage& UNUSED(msg), bool UNUSED(global))
 {
 }
-
-bool IComponent::NewJSObject(const ScriptInterface& UNUSED(scriptInterface), JS::MutableHandleObject UNUSED(out)) const
-{
-	return false;
-}
-
-JS::Value IComponent::GetJSInstance() const
-{
-	return JS::NullValue();
-}

@@ -66,14 +66,18 @@ public:
 	virtual void Deserialize(const CParamNode& paramNode, IDeserializer& deserialize) = 0;
 
 	/**
-	 * Returns false by default, indicating that a scripted wrapper of this IComponent is not supported.
-	 * Derrived classes should return true if they implement such a wrapper.
+	 * @Returns JS::NullHandleValue if a scripted wrapper of this IComponent is not supported, the wrapper otherwise.
 	 */
-	virtual bool NewJSObject(const ScriptInterface& scriptInterface, JS::MutableHandleObject out) const;
-	virtual JS::Value GetJSInstance() const;
+	virtual JS::HandleValue GetJSInstance() const = 0;
 	virtual int GetComponentTypeId() const = 0;
 
 private:
+	/**
+	 * @Returns whether a scripted wrapper of this IComponent is not supported.
+	 * Derrived classes should return true if they implement such a wrapper.
+	 */
+	virtual bool NewJSObject(const ScriptInterface& scriptInterface, JS::MutableHandleObject out) const = 0;
+
 	CEntityHandle m_EntityHandle;
 	const CSimContext* m_SimContext;
 };

@@ -19,8 +19,10 @@
 #define INCLUDED_INTERFACE_SCRIPTED
 
 #include "scriptinterface/FunctionWrapper.h"
+#include "scriptinterface/Object.h"
 #include "scriptinterface/ScriptConversions.h"
 #include "scriptinterface/ScriptInterface.h"
+#include "simulation2/system/ComponentManager.h"
 
 #define BEGIN_INTERFACE_WRAPPER(iname) \
 	JSClass class_ICmp##iname = { \
@@ -37,7 +39,23 @@
 	bool ICmp##iname::NewJSObject(const ScriptInterface& scriptInterface, JS::MutableHandleObject out) const\
 	{ \
 		out.set(scriptInterface.CreateCustomObject("ICmp" #iname)); \
+		IComponent* comp = const_cast<IComponent*>(static_cast<const IComponent*>(this)); \
+		JS::SetReservedSlot(out, ScriptInterface::JSObjectReservedSlots::PRIVATE, JS::PrivateValue(comp)); \
 		return true; \
+	} \
+	JS::HandleValue ICmp##iname::GetJSInstance() const \
+	{ \
+		if (m_CachedInstance) \
+			return JS::HandleValue::fromMarkedLocation(m_CachedInstance.address()); \
+		\
+		const ScriptInterface& si = GetSimContext().GetScriptInterface(); \
+		ScriptRequest rq(si); \
+		JS::RootedObject obj(rq.cx); \
+		NewJSObject(GetSimContext().GetScriptInterface(), &obj); \
+		m_CachedInstance.setObject(*obj); \
+		\
+		GetSimContext().GetComponentManager().RegisterTrace(GetEntityId(), m_CachedInstance); \
+		return JS::HandleValue::fromMarkedLocation(m_CachedInstance.address()); \
 	} \
 	void RegisterComponentInterface_##iname(ScriptInterface& scriptInterface) { \
 		ICmp##iname::InterfaceInit(scriptInterface); \

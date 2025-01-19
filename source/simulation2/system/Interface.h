@@ -21,8 +21,12 @@
 #include "simulation2/system/IComponent.h"
 
 #define DECLARE_INTERFACE_TYPE(iname) \
-	virtual bool NewJSObject(const ScriptInterface& scriptInterface, JS::MutableHandleObject out) const; \
+	virtual JS::HandleValue GetJSInstance() const; \
 	static void InterfaceInit(ScriptInterface& scriptInterface); \
-	static EInterfaceId GetInterfaceId() { return IID_##iname; }
+	static EInterfaceId GetInterfaceId() { return IID_##iname; } \
+private: \
+	virtual bool NewJSObject(const ScriptInterface& scriptInterface, JS::MutableHandleObject out) const; \
+	mutable JS::Heap<JS::Value> m_CachedInstance; \
+public:
 
 #endif // INCLUDED_INTERFACE

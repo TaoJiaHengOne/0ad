@@ -48,7 +48,7 @@ public:
 	void Deserialize(const CParamNode& paramNode, IDeserializer& deserialize) final
 	{
 		deserialize.Bool("isActive", m_IsActive);
-		m_Script.Deserialize(paramNode, deserialize, GetEntityId());
+		m_Script.Deserialize(GetSimContext().GetComponentManager(), paramNode, deserialize, GetEntityId());
 	}
 
 	void HandleMessage(const CMessage& msg, bool global) final
