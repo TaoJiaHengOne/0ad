@@ -17,7 +17,7 @@ tar cf "$PREFIX"-unix-build.tar \
 	--exclude='*.bat' --exclude='*.dll' --exclude='*.exe' --exclude='*.lib' --exclude='*.pdb' \
 	--exclude='libraries/win32' \
 	-s "|.|$PREFIX/~|" \
-	source build libraries binaries/system/readme.txt binaries/data/l10n binaries/data/tests binaries/data/mods/_test.* ./*.txt
+	-- source build libraries binaries/system/readme.txt binaries/data/l10n binaries/data/tests binaries/data/mods/_test.* *.md *.txt
 
 tar cf "$PREFIX"-unix-data.tar \
 	--exclude='binaries/data/config/dev.cfg' \
