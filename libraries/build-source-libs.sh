@@ -92,7 +92,7 @@ echo "Building third-party dependencies..."
 
 if [ "$with_system_cxxtest" = "false" ]; then
 	# shellcheck disable=SC2086
-	./source/cxxtest-4.4/build.sh $build_sh_options || die "cxxtest build failed"fi
+	./source/cxxtest-4.4/build.sh $build_sh_options || die "cxxtest build failed"
 fi
 # shellcheck disable=SC2086
 ./source/fcollada/build.sh $build_sh_options || die "FCollada build failed"
