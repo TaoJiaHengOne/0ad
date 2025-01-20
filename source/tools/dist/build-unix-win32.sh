@@ -7,6 +7,11 @@ GZIP7ZOPTS="-mx=9"
 BUNDLE_VERSION=${BUNDLE_VERSION:="0.28.0dev"}
 PREFIX="0ad-${BUNDLE_VERSION}"
 
+# Prefetch third party tarballs
+for pkg in ./libraries/source/*; do
+	"${pkg}"/build.sh --fetch-only
+done
+
 # Collect the relevant files
 tar cf "$PREFIX"-unix-build.tar \
 	--exclude='*.bat' --exclude='*.dll' --exclude='*.exe' --exclude='*.lib' --exclude='*.pdb' \
