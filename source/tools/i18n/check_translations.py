@@ -232,12 +232,19 @@ def get_po_files() -> Generator[Path, None, None]:
         yield from chain(l10n_dir.glob("*.po"), l10n_dir.glob("*.pot"))
 
 
-def lint_files(paths: list[Path]) -> Generator[tuple[Path, LintMessage], None, None]:
+def lint_files(
+    paths: list[Path], rules: list[str] | None
+) -> Generator[tuple[Path, LintMessage], None, None]:
     """Lint files and return results."""
     varformat = get_available_formats().keys()
-    lint_rules = get_lint_rules()
-    del lint_rules["W302"]
-    template_lint_rules = get_template_lint_rules()
+
+    if rules:
+        lint_rules = rules
+        template_lint_rules = rules
+    else:
+        lint_rules = get_lint_rules()
+        del lint_rules["W302"]
+        template_lint_rules = get_template_lint_rules()
 
     linter = Linter(varformat, lint_rules)
     template_linter = TemplateLinter(varformat, template_lint_rules)
@@ -281,7 +288,7 @@ def print_results(
 
 
 def run(
-    locale: str, files: list[Path]
+    locale: str, files: list[Path], rules: list[str] | None
 ) -> tuple[Generator[tuple[Path, LintMessage], None, None], int]:
     """Collect files to lint and run linting."""
     if files:
@@ -308,19 +315,23 @@ def run(
     if len(files_to_check) == 0:
         raise ClickException("Found no files to check.")
 
-    return lint_files(files_to_check), len(files_to_check)
+    return lint_files(files_to_check, rules), len(files_to_check)
 
 
 @click.command()
 @click.option("--locale", help="Only check translations for the given locale")
+@click.option("--rules", help="Comma-separated list of lint rules to use. Defaults to all rules.")
 @click.argument("files", nargs=-1, type=click.Path(exists=True, resolve_path=True, path_type=Path))
-def cli(locale, files):
+def cli(locale, rules, files):
     """Lint PO- and POT-files.
 
     Provide one or multiple FILES to check. If omitted all files in
     the project will be checked.
     """
-    lint_results, num_checked_files = run(locale, files)
+    if rules:
+        rules = [rule.strip() for rule in rules.split(",") if rule.strip()]
+
+    lint_results, num_checked_files = run(locale, files, rules)
     print_results(lint_results, num_checked_files)
 
 
