@@ -288,7 +288,7 @@ def print_results(
 
 
 def run(
-    locale: str, files: list[Path], rules: list[str] | None
+    locales: str, files: list[Path], rules: list[str] | None
 ) -> tuple[Generator[tuple[Path, LintMessage], None, None], int]:
     """Collect files to lint and run linting."""
     if files:
@@ -303,11 +303,11 @@ def run(
     else:
         po_files = list(get_po_files())
 
-    if locale:
+    if locales:
         files_to_check = []
         for f in po_files:
             lang_code = f.stem.split(".")[0]
-            if lang_code == locale:
+            if lang_code in locales:
                 files_to_check.append(f)
     else:
         files_to_check = po_files
@@ -319,10 +319,12 @@ def run(
 
 
 @click.command()
-@click.option("--locale", help="Only check translations for the given locale")
+@click.option(
+    "--locales", help="Comma-separated list of locales to check. Defaults to all locales"
+)
 @click.option("--rules", help="Comma-separated list of lint rules to use. Defaults to all rules.")
 @click.argument("files", nargs=-1, type=click.Path(exists=True, resolve_path=True, path_type=Path))
-def cli(locale, rules, files):
+def cli(locales, rules, files):
     """Lint PO- and POT-files.
 
     Provide one or multiple FILES to check. If omitted all files in
@@ -330,8 +332,10 @@ def cli(locale, rules, files):
     """
     if rules:
         rules = [rule.strip() for rule in rules.split(",") if rule.strip()]
+    if locales:
+        locales = [locale.strip() for locale in locales.split(",") if locale.strip()]
 
-    lint_results, num_checked_files = run(locale, files, rules)
+    lint_results, num_checked_files = run(locales, files, rules)
     print_results(lint_results, num_checked_files)
 
 
