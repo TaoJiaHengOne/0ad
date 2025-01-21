@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2024 Wildfire Games.
+# Copyright (C) 2025 Wildfire Games.
 # This file is part of 0 A.D.
 #
 # 0 A.D. is free software: you can redistribute it and/or modify
@@ -17,6 +17,8 @@
 # along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
 
 """Lint PO- and POT-files."""
+
+# ruff: noqa: RUF001
 
 import logging
 import re
@@ -143,6 +145,69 @@ class InvalidTagRule(LintRule):
                         0,
                         self.num,
                         f"invalid tags: {', '.join(sorted(not_in_msgid))}",
+                        linted_entry.poentry,
+                    )
+                )
+
+        return msgs
+
+
+class WrongWhitespaceIn0AD(LintRule):
+    num = "E904"
+    name = "wrong-whitespace-in-translatable-string"
+    desc = "msgid contains 0 A.D. without non-breaking space"
+
+    def __init__(self):
+        super().__init__()
+        self.zeroad_regex = re.compile(r"0[^ ]?A[\s \.]{1,2}D[\s \.]{1,2}", flags=re.IGNORECASE)
+
+    def lint(self, _: VariableTokenizer, linted_entry: LintedEntry) -> list[LintMessage]:
+        msgs = []
+
+        for trstr in linted_entry.strs:
+            wrong_whitespaces = []
+            for msgid in trstr.msgid_strings:
+                if self.zeroad_regex.search(msgid):
+                    wrong_whitespaces.append(msgid)
+
+            if wrong_whitespaces:
+                msgs.append(
+                    LintMessage(
+                        ERROR,
+                        linted_entry.poentry.linenum,
+                        0,
+                        self.num,
+                        f"string contains 0 A.D. without non-breaking space: "
+                        f"{trstr.msgstr_string}",
+                        linted_entry.poentry,
+                    )
+                )
+
+        return msgs
+
+
+class WrongWhitespaceIn0ADInTranslation(LintRule):
+    num = "E905"
+    name = "wrong-whitespace-in-translation"
+    desc = "msgstr contains 0 A.D. without non-breaking space"
+
+    def __init__(self):
+        super().__init__()
+        self.zeroad_regex = re.compile(r"0[^ ]?A[\s \.]{1,2}D[\s \.]{1,2}", flags=re.IGNORECASE)
+
+    def lint(self, _: VariableTokenizer, linted_entry: LintedEntry) -> list[LintMessage]:
+        msgs = []
+
+        for trstr in linted_entry.strs:
+            if self.zeroad_regex.search(trstr.msgstr_string):
+                msgs.append(
+                    LintMessage(
+                        ERROR,
+                        linted_entry.poentry.linenum,
+                        0,
+                        self.num,
+                        f"translation contains 0 A.D. without non-breaking space: "
+                        f"{trstr.msgstr_string}",
                         linted_entry.poentry,
                     )
                 )
