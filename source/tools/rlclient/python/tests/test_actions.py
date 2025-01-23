@@ -53,7 +53,13 @@ def test_gather():
 
     collect_wood = zero_ad.actions.gather([female_citizen], nearby_tree)
     state = game.step([collect_wood])
-    while len(state.unit(female_citizen.id()).data["resourceCarrying"]) == 0:
+    while (
+        game.evaluate(
+            f"Engine.QueryInterface({female_citizen.id()}, "
+            f"IID_ResourceGatherer).GetCarryingStatus().length"
+        )
+        == 0
+    ):
         state = game.step()
 
 

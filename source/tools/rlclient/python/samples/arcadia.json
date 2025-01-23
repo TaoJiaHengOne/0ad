@@ -8,7 +8,7 @@
         "VictoryConditions": [
             "conquest_units"
         ],
-        "Name": "Arcadia",
+        "mapName": "Arcadia",
         "mapType": "scenario",
         "AISeed": 0,
         "Seed": 0,

@@ -33,9 +33,9 @@ def test_return_string():
 def test_fastactions():
     state = game.reset(config)
     game.evaluate(fastactions)
-    female_citizens = state.units(owner=1, type="female_citizen")
+    female_citizens = state.units(owner=1, entity_type="female_citizen")
     house_tpl = "structures/spart/house"
-    len(state.units(owner=1, type=house_tpl))
+    len(state.units(owner=1, entity_type=house_tpl))
     x = 680
     z = 640
     build_house = zero_ad.actions.construct(female_citizens, house_tpl, x, z, autocontinue=True)
@@ -43,7 +43,7 @@ def test_fastactions():
     state = game.step([build_house])
 
     def new_house(_=None):
-        return state.units(owner=1, type=house_tpl)[0]
+        return state.units(owner=1, entity_type=house_tpl)[0]
 
     initial_health = new_house().health(ratio=True)
     while new_house().health(ratio=True) == initial_health:
