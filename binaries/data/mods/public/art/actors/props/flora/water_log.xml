@@ -2,6 +2,7 @@
 <actor version="1">
   <castshadow/>
   <float/>
+  <anchor>pitch-roll</anchor>
   <group>
     <variant>
       <mesh>gaia/log_a.dae</mesh>

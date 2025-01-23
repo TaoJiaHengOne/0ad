@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
+  <anchor>pitch-roll</anchor>
   <group>
     <variant frequency="3" name="grass_1">
       <mesh>gaia/temp_forest_grass_01.dae</mesh>

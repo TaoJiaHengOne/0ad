@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
   <castshadow/>
+  <anchor>pitch-roll</anchor>
   <group>
     <variant name="cattails-a">
       <mesh>gaia/cross_large_short.dae</mesh>

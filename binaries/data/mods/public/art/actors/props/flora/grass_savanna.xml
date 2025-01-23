@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
+  <anchor>pitch-roll</anchor>
   <group>
     <variant frequency="5" name="grass_savanna_a">
       <mesh>gaia/grass_la_tall_a.dae</mesh>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
   <float/>
+  <anchor>pitch-roll</anchor>
   <group>
     <variant name="underbrush mediterranean">
       <mesh>props/underbrush_plane_large.dae</mesh>
