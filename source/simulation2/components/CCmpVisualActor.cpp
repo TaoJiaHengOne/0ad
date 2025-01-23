@@ -464,7 +464,7 @@ public:
 		if (!m_Unit || !m_Unit->GetAnimation() || !m_Unit->GetID())
 			return;
 
-		m_Unit->GetAnimation()->SetAnimationState(m_AnimName, m_AnimOnce, m_AnimSpeed.ToFloat(), m_AnimDesync.ToFloat(), m_SoundGroup.c_str());	
+		m_Unit->GetAnimation()->SetAnimationState(m_AnimName, m_AnimOnce, m_AnimSpeed.ToFloat(), m_AnimDesync.ToFloat(), m_SoundGroup.c_str());
 	}
 
 	void SelectMovementAnimation(const std::string& name, fixed speed) override
@@ -638,10 +638,15 @@ void CCmpVisualActor::InitModel()
 			model.ToCModelDecal()->RemoveShadowsReceive();
 	}
 
+	CStr anchor =  m_Unit->GetObject().m_Base->m_Properties.m_AnchorType;
 	bool floating = m_Unit->GetObject().m_Base->m_Properties.m_FloatOnWater;
 	CmpPtr<ICmpPosition> cmpPosition(GetEntityHandle());
 	if (cmpPosition)
+	{
+		if (!anchor.empty())
+			cmpPosition->SetActorAnchor(anchor);
 		cmpPosition->SetActorFloating(floating);
+	}
 
 	if (!m_ModelTag.valid())
 	{

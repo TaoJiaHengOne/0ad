@@ -60,6 +60,7 @@ CObjectBase::CObjectBase(CObjectManager& objectManager, CActorDef& actorDef, u8 
 : m_ObjectManager(objectManager), m_ActorDef(actorDef)
 {
 	m_QualityLevel = qualityLevel;
+	m_Properties.m_AnchorType = "";
 	m_Properties.m_CastShadows = false;
 	m_Properties.m_FloatOnWater = false;
 
@@ -82,6 +83,7 @@ bool CObjectBase::Load(const CXeromyces& XeroFile, const XMBElement& root)
 	// Define all the elements used in the XML file
 #define EL(x) int el_##x = XeroFile.GetElementID(#x)
 #define AT(x) int at_##x = XeroFile.GetAttributeID(#x)
+	EL(anchor);
 	EL(castshadow);
 	EL(float);
 	EL(group);
@@ -143,6 +145,8 @@ bool CObjectBase::Load(const CXeromyces& XeroFile, const XMBElement& root)
 				return false;
 			}
 		}
+		else if (child_name == el_anchor)
+			m_Properties.m_AnchorType = child.GetText();
 		else if (child_name == el_castshadow)
 			m_Properties.m_CastShadows = true;
 		else if (child_name == el_float)

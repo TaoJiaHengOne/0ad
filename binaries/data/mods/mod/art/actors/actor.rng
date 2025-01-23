@@ -215,6 +215,16 @@
         </element>
       </optional>
       <optional>
+        <element name="anchor">
+          <choice>
+            <value>upright</value>
+            <value>pitch</value>
+            <value>roll</value>
+            <value>pitch-roll</value>
+          </choice>
+        </element>
+      </optional>
+      <optional>
         <element name="material">
           <ref name="qualitySettings"/>
           <text/>

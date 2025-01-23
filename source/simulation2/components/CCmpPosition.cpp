@@ -59,13 +59,16 @@ public:
 
 	// Template state:
 
-	enum
+	enum class AnchorType
 	{
+		UNDEFINED = -1, // Used for m_ActorAnchorType only since it's optional.
 		UPRIGHT = 0,
 		PITCH = 1,
 		PITCH_ROLL = 2,
 		ROLL = 3,
-	} m_AnchorType;
+	};
+
+	AnchorType m_AnchorType;
 
 	bool m_Floating;
 	entity_pos_t m_FloatDepth;
@@ -94,6 +97,7 @@ public:
 	std::set<entity_id_t> m_Turrets;
 
 	// Not serialized:
+	AnchorType m_ActorAnchorType;
 	float m_InterpolatedRotX, m_InterpolatedRotY, m_InterpolatedRotZ;
 	float m_LastInterpolatedRotX, m_LastInterpolatedRotZ;
 	bool m_ActorFloating;
@@ -135,15 +139,8 @@ public:
 
 	void Init(const CParamNode& paramNode) override
 	{
-		const std::string& anchor = paramNode.GetChild("Anchor").ToString();
-		if (anchor == "pitch")
-			m_AnchorType = PITCH;
-		else if (anchor == "pitch-roll")
-			m_AnchorType = PITCH_ROLL;
-		else if (anchor == "roll")
-			m_AnchorType = ROLL;
-		else
-			m_AnchorType = UPRIGHT;
+		m_AnchorType = ParseAnchorString(paramNode.GetChild("Anchor").ToString());
+		m_ActorAnchorType = AnchorType::UNDEFINED;
 
 		m_InWorld = false;
 
@@ -199,19 +196,19 @@ public:
 			const char* anchor = "???";
 			switch (m_AnchorType)
 			{
-			case PITCH:
+			case AnchorType::PITCH:
 				anchor = "pitch";
 				break;
 
-			case PITCH_ROLL:
+			case AnchorType::PITCH_ROLL:
 				anchor = "pitch-roll";
 				break;
 
-			case ROLL:
+			case AnchorType::ROLL:
 				anchor = "roll";
 				break;
 
-			case UPRIGHT: // upright is the default
+			case AnchorType::UPRIGHT: // upright is the default
 			default:
 				anchor = "upright";
 				break;
@@ -491,6 +488,11 @@ public:
 	{
 		m_ActorFloating = flag;
 		AdvertiseInterpolatedPositionChanges();
+	}
+
+	void SetActorAnchor(const CStr& anchor) override
+	{
+		m_ActorAnchorType = ParseAnchorString(anchor);
 	}
 
 	void SetConstructionProgress(fixed progress) override
@@ -854,6 +856,17 @@ public:
 
 private:
 
+	AnchorType ParseAnchorString(const CStr& anchor)
+	{
+		if (anchor == "pitch")
+			return AnchorType::PITCH;
+		if (anchor == "roll")
+			return AnchorType::ROLL;
+		if (anchor == "pitch-roll")
+			return AnchorType::PITCH_ROLL;
+		return AnchorType::UPRIGHT;
+	}
+
 	/*
 	 * Must be called whenever m_RotY or m_InterpolatedRotY change,
 	 * to determine whether we need to call Interpolate to make the unit rotate.
@@ -935,7 +948,8 @@ private:
 			return;
 		}
 
-		if (m_AnchorType == UPRIGHT || !m_RotZ.IsZero() || !m_RotX.IsZero())
+		AnchorType anchor = m_ActorAnchorType == AnchorType::UNDEFINED ? m_AnchorType : m_ActorAnchorType;
+		if (anchor == AnchorType::UPRIGHT || !m_RotZ.IsZero() || !m_RotX.IsZero())
 		{
 			// set the visual rotations to the ones fixed by the interface
 			m_InterpolatedRotX = m_RotX.ToFloat();
@@ -961,10 +975,10 @@ private:
 		normal.Z = projected.Y;
 
 		// project and calculate the angles
-		if (m_AnchorType == PITCH || m_AnchorType == PITCH_ROLL)
+		if (anchor == AnchorType::PITCH || anchor == AnchorType::PITCH_ROLL)
 			m_InterpolatedRotX = -atan2(normal.Z, normal.Y);
 
-		if (m_AnchorType == ROLL || m_AnchorType == PITCH_ROLL)
+		if (anchor == AnchorType::ROLL || anchor == AnchorType::PITCH_ROLL)
 			m_InterpolatedRotZ = atan2(normal.X, normal.Y);
 	}
 };
