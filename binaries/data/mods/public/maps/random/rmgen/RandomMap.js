@@ -497,8 +497,3 @@ RandomMap.prototype.MakeExportable = function()
 		"Environment": g_Environment
 	};
 };
-
-RandomMap.prototype.ExportMap = function()
-{
-	Engine.ExportMap(this.MakeExportable());
-};

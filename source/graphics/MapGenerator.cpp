@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -58,12 +58,10 @@ class CMapGenerationCallbacks
 public:
 	// Only the constructor and the destructor are called by C++.
 
-	CMapGenerationCallbacks(const StopToken stopToken, std::atomic<int>& progress,
-		ScriptInterface& scriptInterface, Script::StructuredClone& mapData, const u16 flags) :
+	CMapGenerationCallbacks(const StopToken stopToken, ScriptInterface& scriptInterface,
+		const u16 flags) :
 		m_StopToken{stopToken},
-		m_Progress{progress},
-		m_ScriptInterface{scriptInterface},
-		m_MapData{mapData}
+		m_ScriptInterface{scriptInterface}
 	{
 		m_ScriptInterface.SetCallbackData(static_cast<void*>(this));
 
@@ -95,10 +93,8 @@ public:
 		REGISTER_MAPGEN_FUNC(FindTemplates);
 		REGISTER_MAPGEN_FUNC(FindActorTemplates);
 
-		// Progression and profiling
-		REGISTER_MAPGEN_FUNC(SetProgress);
+		// Profiling
 		REGISTER_MAPGEN_FUNC(GetMicroseconds);
-		REGISTER_MAPGEN_FUNC(ExportMap);
 
 		// Engine constants
 
@@ -170,17 +166,6 @@ private:
 		}
 
 		return true;
-	}
-
-	/**
-	 * Finalize map generation and pass results from the script to the engine.
-	 * The `data` has to be according to this format:
-	 * https://gitea.wildfiregames.com/0ad/0ad/wiki/Random_Map_Generator_Internals#Dataformat
-	 */
-	void ExportMap(JS::HandleValue data)
-	{
-		// Copy results
-		m_MapData = Script::WriteStructuredClone(ScriptRequest(m_ScriptInterface), data);
 	}
 
 	/**
@@ -282,21 +267,6 @@ private:
 	}
 
 	/**
-	 * Sets the map generation progress, which is one of multiple stages
-	 * determining the loading screen progress.
-	 */
-	void SetProgress(int progress)
-	{
-		// When the task is started, `m_Progress` is only mutated by this thread.
-		const int currentProgress = m_Progress.load();
-		if (progress >= currentProgress)
-			m_Progress.store(progress);
-		else
-			LOGWARNING("The random map script tried to reduce the loading progress from %d to %d",
-				currentProgress, progress);
-	}
-
-	/**
 	 * Microseconds since the epoch.
 	 */
 	double GetMicroseconds() const
@@ -342,19 +312,9 @@ private:
 	}
 
 	/**
-	 * Current map generation progress.
-	 */
-	std::atomic<int>& m_Progress;
-
-	/**
 	 * Provides the script context.
 	 */
 	ScriptInterface& m_ScriptInterface;
-
-	/**
-	 * Result of the mapscript generation including terrain, entities and environment settings.
-	 */
-	Script::StructuredClone& m_MapData;
 
 	/**
 	 * Currently loaded script librarynames.
@@ -403,8 +363,7 @@ Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::a
 	boost::rand48 mapGenRNG{seed};
 	scriptInterface.ReplaceNondeterministicRNG(mapGenRNG);
 
-	Script::StructuredClone mapData;
-	CMapGenerationCallbacks callbackData{stopToken, progress, scriptInterface, mapData, flags};
+	CMapGenerationCallbacks callbackData{stopToken, scriptInterface, flags};
 
 	// Copy settings to global variable
 	JS::RootedValue global(rq.cx, rq.globalValue());
@@ -424,32 +383,21 @@ Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::a
 	}
 
 	LOGMESSAGE("Run RMS generator");
-	bool hasGenerator;
-	JS::RootedObject globalAsObject{rq.cx, &JS::HandleValue{global}.toObject()};
-	if (!JS_HasProperty(rq.cx, globalAsObject, GENERATOR_NAME, &hasGenerator))
-	{
-		LOGERROR("RunMapGenerationScript: failed to search `%s`.", GENERATOR_NAME);
-		return nullptr;
-	}
-
-	if (mapData != nullptr)
-	{
-		LOGWARNING("The map generation script called `Engine.ExportMap` that's deprecated. The "
-			"generator based interface should be used.");
-		if (hasGenerator)
-			LOGWARNING("The map generation script contains a `%s` but `Engine.ExportMap` was already "
-				"called. `%s` isn't called, preserving the old behavior.", GENERATOR_NAME,
-				GENERATOR_NAME);
-		return mapData;
-	}
-
 	JS::RootedValue map{rq.cx, ScriptFunction::RunGenerator(rq, global, GENERATOR_NAME, settingsVal,
 		[&](const JS::HandleValue value)
 		{
+			// When the task is started, `progress` is only mutated by this thread.
+			const int currentProgress{progress.load()};
 			int tempProgress;
 			if (!Script::FromJSVal(rq, value, tempProgress))
 				throw std::runtime_error{"Failed to convert the yielded value to an "
 					"integer."};
+			if (tempProgress < currentProgress)
+			{
+				LOGWARNING("The random map script tried to reduce the loading progress from "
+					"%d to %d.", currentProgress, tempProgress);
+				return;
+			}
 			progress.store(tempProgress);
 		})};
 
