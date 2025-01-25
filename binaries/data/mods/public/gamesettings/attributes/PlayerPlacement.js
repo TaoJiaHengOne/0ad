@@ -40,7 +40,7 @@ GameSettings.prototype.Attributes.PlayerPlacement = class PlayerPlacement extend
 	pickRandomItems()
 	{
 		// If the map is random, we need to wait until it is selected.
-		if (this.settings.map.map === "random" || this.value !== "random")
+		if (this.settings.map.map === "random" || this.value !== "random" || !this.available)
 			return false;
 
 		this.value = pickRandom(this.available);

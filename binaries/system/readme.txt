@@ -18,10 +18,13 @@ Autostart:
 -autostart-team=PLAYER:TEAM     sets the team for PLAYER (e.g. 2:2).
 -autostart-ceasefire=NUM        sets a ceasefire duration NUM (default 0 minutes)
 -autostart-nonvisual            disable any graphics and sounds
+-autostart-visibility=TYPE      sets the map visibility (explored, hidden, revealed, allied, allied-explored)
+-autostart-speed=SPEED          sets the sim rate speed (default 1, max 2 in normal mode, 20 in observer mode)
 -autostart-victory=SCRIPTNAME   sets the victory conditions with SCRIPTNAME located in simulation/data/settings/victory_conditions/ (default conquest). When the only given SCRIPTNAME is "endless", no victory conditions will apply.
 -autostart-wonderduration=NUM   sets the victory duration NUM for wonder victory condition (default 10 minutes)
 -autostart-relicduration=NUM    sets the victory duration NUM for relic victory condition (default 10 minutes)
 -autostart-reliccount=NUM       sets the number of relics for relic victory condition (default 2 relics)
+-autostart-revealed=BOOL        sets whether the map should be revealed
 -autostart-disable-replay       disable saving of replays
 Multiplayer:
 -autostart-playername=NAME      sets local player NAME (default 'anonymous')
@@ -31,6 +34,7 @@ Multiplayer:
  Random maps only:
 -autostart-size=TILES           sets random map size in TILES (default 192)
 -autostart-players=NUMBER       sets NUMBER of players on random map (default 2)
+-autostart-placement=PLACEMENT  sets the placement type for a random map
 
 Examples:
 1) "Bob" will host a 2 player game on the Arcadia map:

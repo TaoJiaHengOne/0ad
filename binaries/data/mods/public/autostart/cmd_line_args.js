@@ -27,6 +27,8 @@
  *                                 (default 10 minutes)
  * -autostart-reliccount=NUM       sets the number of relics for relic victory condition
  *                                 (default 2 relics)
+ * -autostart-visibility=TYPE      sets the map visibility (explored, hidden, revealed, allied, allied-explored)
+ * -autostart-speed=SPEED          sets the sim rate speed (default 1, max 2 in normal mode, 20 in observer mode)
  *
  * -autostart-nonvisual            (partly handled in C++) disable any graphics and sounds
  * -autostart-disable-replay       disable saving of replays (handled in autostart*.js files)
@@ -45,6 +47,7 @@
  * -autostart-size=TILES           sets random map size in TILES (default 192)
  * -autostart-players=NUMBER       sets NUMBER of players on random map
  *                                 (default 2)
+ * -autostart-placement=PLACEMENT  sets the placement type for a random map
  *
  * Examples:
  * 1) "Bob" will host a 2 player game on the Arcadia map:
@@ -70,6 +73,38 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 	settings.map.selectMap("maps/" + cmdLineArgs['autostart']);
 	settings.mapSize.setSize(+(cmdLineArgs['autostart-size'] ?? 192));
 	settings.biome.setBiome(cmdLineArgs['autostart-biome'] || "random");
+	settings.playerPlacement.setValue(cmdLineArgs['autostart-placement'] ?? "random");
+	if ('autostart-visibility' in cmdLineArgs)
+	{
+		switch (cmdLineArgs['autostart-visibility']) 
+		{
+			case 'revealed':
+				settings.mapExploration.setAllied(true);
+				settings.mapExploration.setExplored(true);
+				settings.mapExploration.setRevealed(true);
+				break;
+			case 'explored':
+				settings.mapExploration.setAllied(false);
+				settings.mapExploration.setExplored(true);
+				settings.mapExploration.setRevealed(false);
+				break;
+			case 'hidden':
+				settings.mapExploration.setAllied(false);
+				settings.mapExploration.setExplored(false);
+				settings.mapExploration.setRevealed(false);
+				break;
+			case 'allied':
+				settings.mapExploration.setAllied(true);
+				settings.mapExploration.setExplored(false);
+				settings.mapExploration.setRevealed(false);
+				break;
+			case 'allied-explored':
+				settings.mapExploration.setAllied(true);
+				settings.mapExploration.setExplored(true);
+				settings.mapExploration.setRevealed(false);
+				break;
+		}
+	}
 
 	settings.playerCount.setNb(+(cmdLineArgs['autostart-players'] ?? 2));
 
@@ -108,6 +143,9 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 
 	if (cmdLineArgs['autostart-aiseed'] != -1)
 		settings.seeds.AIseed = +(cmdLineArgs['autostart-aiseed'] ?? 0);
+
+	if (cmdLineArgs['autostart-speed'])
+		settings.gameSpeed.setSpeed(+(cmdLineArgs['autostart-speed'] ?? 1));
 
 	if (cmdLineArgs['autostart-ceasefire'])
 		settings.ceasefire.setValue(+(cmdLineArgs['autostart-ceasefire'] ?? 0));
