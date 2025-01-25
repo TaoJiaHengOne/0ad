@@ -29,12 +29,69 @@
 
 #include "js/Modules.h"
 #include <fmt/format.h>
+#include <numeric>
 #include <stdexcept>
 
 namespace Script
 {
 namespace
 {
+/**
+ * When provided with an appendix name (containing a "~" and ending with
+ * ".append.js") the name of the base file is returned. When it's not an
+ * appendix name an empty string is returned. E.g.
+ * "base_file~mod_name.append.js" -> "base_file.js"
+ * "base-name~0.append.js" -> "base-name.js"
+ * "base_file~mod_name.js" -> ""
+ * "base_file_mod_name.append.js" -> ""
+ */
+VfsPath GetBaseFilename(const VfsPath& filename)
+{
+	constexpr std::string_view appendixExtension{".append.js"};
+	const std::string nameString{filename.string8()};
+	if (nameString.size() < appendixExtension.size())
+		return {};
+
+	if (nameString.substr(nameString.size() - appendixExtension.size()) != appendixExtension)
+		return {};
+
+	const size_t pos{nameString.find('~')};
+	if (pos == std::string::npos)
+		return {};
+
+	return nameString.substr(0, pos) + ".js";
+}
+
+[[nodiscard]] std::vector<VfsPath> GetAppendices(const VfsPath& baseFilepath)
+{
+	const VfsPath directory{baseFilepath.Parent()};
+	CFileInfos fileInfos;
+	if (g_VFS->GetDirectoryEntries(baseFilepath, &fileInfos, nullptr) != INFO::OK)
+	{
+		throw std::runtime_error{fmt::format("Unable to load files in directory: \"{}\"",
+			directory.string8())};
+	}
+
+	std::vector<VfsPath> filenames;
+	std::transform(fileInfos.begin(), fileInfos.end(), std::back_inserter(filenames),
+		[](const CFileInfo fileInfo)
+		{
+			return fileInfo.Name();
+		});
+
+	const VfsPath baseFilename{baseFilepath.Filename()};
+	const auto endPoint = std::remove_if(filenames.begin(), filenames.end(), [&](const VfsPath& filename)
+	{
+		const VfsPath base{GetBaseFilename(filename)};
+		return base != baseFilename;
+	});
+	filenames.erase(endPoint, filenames.end());
+
+	for (VfsPath& filename : filenames)
+		filename = directory / filename;
+	return filenames;
+}
+
 [[nodiscard]] std::string GetCode(const VfsPath& filePath)
 {
 	if (!VfsFileExists(filePath))
@@ -142,7 +199,12 @@ constexpr JSClass callbackClass{"Callback", JSCLASS_HAS_RESERVED_SLOTS(1), &call
 ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsPath& filePath):
 	m_ModuleObject(rq.cx)
 {
-	const std::string code{GetCode(filePath)};
+	const std::vector<VfsPath> appendices{GetAppendices(filePath)};
+	const std::string code{std::accumulate(appendices.begin(), appendices.end(), GetCode(filePath),
+		[](std::string code, const VfsPath& fileToAppend)
+		{
+			return std::move(code) + GetCode(fileToAppend);
+		})};
 
 	JS::CompileOptions options{rq.cx};
 	const std::string filePathStr{filePath.string8()};

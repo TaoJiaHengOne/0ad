@@ -421,4 +421,21 @@ public:
 		TS_ASSERT(Script::GetProperty(rq, meta, "path", path));
 		TS_ASSERT_STR_EQUALS(path, "meta.js");
 	}
+
+	void test_Modified()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto future = script.GetModuleLoader().LoadModule(rq, "modified/base.js");
+
+		g_ScriptContext->RunJobs();
+
+		JS::RootedObject ns{rq.cx, future.Get()};
+		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+		std::string result;
+		TS_ASSERT(ScriptFunction::Call(rq, moduleValue, "fn", result));
+		TS_ASSERT_STR_EQUALS(result, "Base01");
+	}
 };
