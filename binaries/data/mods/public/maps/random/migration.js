@@ -141,7 +141,7 @@ function* GenerateMap(mapSettings) {
 			new TileClassPainter(clLand)
 		],
 		avoidClasses(clIsland, 22));
-	Engine.SetProgress(20);
+	yield 20;
 
 	g_Map.log("Creating shore jaggedness");
 	createAreas(
@@ -235,7 +235,7 @@ function* GenerateMap(mapSettings) {
 			new TerrainPainter(tTier4Terrain),
 			[avoidClasses(clForest, 0, clHill, 0, clDirt, 5, clIsland, 0), stayClasses(clLand, 7)],
 			scaleByMapSize(15, 45));
-	Engine.SetProgress(46);
+	yield 46;
 
 	g_Map.log("Creating stone mines");
 	let group = new SimpleGroup([new SimpleObject(oStoneSmall, 0, 2, 0, 4, 0, 2 * Math.PI, 1), new SimpleObject(oStoneLarge, 1, 1, 0, 4, 0, 2 * Math.PI, 4)], true, clRock);
@@ -397,7 +397,7 @@ function* GenerateMap(mapSettings) {
 		[avoidClasses(clHill, 2, clPlayer, 2, clDirt, 1, clForest, 0), stayClasses(clLand, 6)],
 		planetm * scaleByMapSize(13, 200)
 	);
-	Engine.SetProgress(94);
+	yield 94;
 
 	g_Map.log("Creating bushes");
 	group = new SimpleGroup(

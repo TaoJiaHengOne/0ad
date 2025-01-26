@@ -411,7 +411,7 @@ function* GenerateMap(mapSettings)
 					randomAngle());
 		}
 	}
-	Engine.SetProgress(10);
+	yield 10;
 
 	placePlayerBases({
 		"PlayerPlacement": playerPlacementRiver(startAngle, fractionToTiles(0.6)),
@@ -444,7 +444,7 @@ function* GenerateMap(mapSettings)
 			"template": aBush1
 		}
 	});
-	Engine.SetProgress(20);
+	yield 20;
 
 	paintRiver({
 		"parallel": true,
@@ -473,7 +473,7 @@ function* GenerateMap(mapSettings)
 				clLand[1].add(position);
 		}
 	});
-	Engine.SetProgress(30);
+	yield 30;
 
 	paintTileClassBasedOnHeight(-Infinity, 0.7, Elevation_ExcludeMin_ExcludeMax, clWater);
 
@@ -492,12 +492,12 @@ function* GenerateMap(mapSettings)
 	g_Map.log("Creating shores");
 	paintTerrainBasedOnHeight(-Infinity, heightShore, 0, tWater);
 	paintTerrainBasedOnHeight(heightShore, heightLand, 0, tShore);
-	Engine.SetProgress(35);
+	yield 35;
 
 	createBumps(
 		avoidClasses(clPlayer, 6, clWater, 2, clPath, 1, clGauls, 1), scaleByMapSize(30, 300),
 		1, 8, 4, 0, 3);
-	Engine.SetProgress(40);
+	yield 40;
 
 	if (randBool())
 		createHills(
@@ -512,7 +512,7 @@ function* GenerateMap(mapSettings)
 			clHill,
 			scaleByMapSize(3, 15));
 
-	Engine.SetProgress(45);
+	yield 45;
 
 	const [forestTrees, stragglerTrees] = getTreeCounts(500, 3000, 0.7);
 	createForests(
@@ -521,7 +521,7 @@ function* GenerateMap(mapSettings)
 		clForest,
 		forestTrees);
 
-	Engine.SetProgress(50);
+	yield 50;
 
 	g_Map.log("Creating grass patches");
 	createLayeredPatches(
@@ -539,7 +539,7 @@ function* GenerateMap(mapSettings)
 		scaleByMapSize(15, 45),
 		clDirt);
 
-	Engine.SetProgress(55);
+	yield 55;
 
 	g_Map.log("Creating islands");
 	const areaIslands = createAreas(
@@ -556,7 +556,7 @@ function* GenerateMap(mapSettings)
 		[avoidClasses(clIsland, 30), stayClasses(clWater, 10)],
 		scaleByMapSize(1, 4) * numPlayers);
 
-	Engine.SetProgress(60);
+	yield 60;
 
 	createBumps(stayClasses(clIsland, 2), scaleByMapSize(50, 400), 1, 8, 4, 0, 3);
 
@@ -580,7 +580,7 @@ function* GenerateMap(mapSettings)
 		scaleByMapSize(3, 10),
 		20,
 		areaIslands);
-	Engine.SetProgress(65);
+	yield 65;
 
 	g_Map.log("Creating island towers");
 	createObjectGroupsByAreas(
@@ -650,7 +650,7 @@ function* GenerateMap(mapSettings)
 		scaleByMapSize(2, 10),
 		20,
 		areasLand);
-	Engine.SetProgress(70);
+	yield 70;
 
 	g_Map.log("Creating decoratives");
 	for (let i = 0; i < 2; ++i)
@@ -692,7 +692,7 @@ function* GenerateMap(mapSettings)
 					clGauls, 5,
 					clPath, 1) :
 				[stayClasses(clIsland, 4), avoidClasses(clForest, 1, clRock, 4, clMetal, 4)]);
-	Engine.SetProgress(75);
+	yield 75;
 
 	g_Map.log("Creating fish");
 	createFood(
@@ -705,7 +705,7 @@ function* GenerateMap(mapSettings)
 		[avoidClasses(clIsland, 2, clFood, 10, clPath, 1), stayClasses(clWater, 5)],
 		clFood);
 
-	Engine.SetProgress(80);
+	yield 80;
 
 	g_Map.log("Creating huntable animals");
 	createFood(
@@ -756,7 +756,7 @@ function* GenerateMap(mapSettings)
 				clPath, 1),
 			clFood);
 
-	Engine.SetProgress(85);
+	yield 85;
 
 	g_Map.log("Creating fruits");
 	createFood(

@@ -136,7 +136,7 @@ function* GenerateMap(mapSettings) {
 							{ "template": oMetalLarge },
 							{ "template": oStoneLarge }
 					]
-			}, 
+			},
 			"Trees": {
 					"template": oTree1,
 					"count": 2
@@ -153,7 +153,7 @@ function* GenerateMap(mapSettings) {
 			let elevRand = randIntInclusive(4, 12);
 			createArea(
 					new ChainPlacer(
-							7, 
+							7,
 							15,
 							Math.floor(scaleByMapSize(15, 20)),
 							Infinity,
@@ -240,7 +240,7 @@ function* GenerateMap(mapSettings) {
 	 [avoidClasses(clForest, 0, clDirt, 5, clPlayer, 12), stayClasses(clLand, 5)],
 	 scaleByMapSize(15, 45),
 	 clDirt);
-	Engine.SetProgress(55);
+	yield 55;
 
 	g_Map.log("Creating plentiful mountain metal mines");
 	createBalancedMetalMines(
@@ -260,9 +260,9 @@ function* GenerateMap(mapSettings) {
 
 	g_Map.log("Creating sparse hills stone mines");
 	createBalancedStoneMines(
-			oStoneSmall, 
 			oStoneSmall,
-			clRock, 
+			oStoneSmall,
+			clRock,
 			[stayClasses(clLand, 8), avoidClasses(clForest, 1, clPlayer, 16, clMountain, 8, clRock, 10)]
 	);
 
