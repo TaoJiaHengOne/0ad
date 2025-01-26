@@ -36,7 +36,7 @@
 		<object name="rightPanel" size="100%-432 50 100%-30 100%-68">
 			<!-- Scenario Image -->
 			<object type="image" sprite="ModernDarkBoxGold" name="levelPreviewBox" size="0 0 100% 302">
-				<object type="image" sprite="" size="1 1 100%-1 301" name="mapPreview"/>
+				<object type="image" size="1 1 100%-1 301" name="mapPreview"/>
 			</object>
 
 			<!-- Name and description -->

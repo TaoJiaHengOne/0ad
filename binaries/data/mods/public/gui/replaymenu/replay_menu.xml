@@ -142,7 +142,7 @@
 				<object name="sgMapName" size="0 5 100% 20" type="text" style="ModernLabelText"/>
 
 				<!-- Map Preview Image -->
-				<object name="sgMapPreview" size="5 25 100%-5 190"  type="image" sprite=""/>
+				<object name="sgMapPreview" size="5 25 100%-5 190"  type="image"/>
 
 				<!-- Separator Line -->
 				<object size="5 193 100%-5 194" type="image" sprite="ModernWhiteLine" z="25"/>
