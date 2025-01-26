@@ -102,6 +102,10 @@
 			"text.move.right": {
 				"name": "Move cursor to right word",
 				"desc": "Move cursor to start of word to the right of cursor."
+			},
+			"mousegrabtoggle": {
+				"name": "Toggle mouse grab",
+				"desc": "Constrain to window boundaries or release the mouse."
 			}
 		}
 	}

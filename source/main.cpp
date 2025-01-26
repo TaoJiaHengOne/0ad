@@ -244,6 +244,12 @@ static InReaction MainInputHandler(const SDL_Event_* ev)
 			g_Profiler2.Toggle();
 			return IN_HANDLED;
 		}
+		else if (hotkey == "mousegrabtoggle")
+		{
+			SDL_Window* const window{g_VideoMode.GetWindow()};
+			const SDL_bool willGrabMouse{SDL_GetWindowGrab(window) ? SDL_FALSE : SDL_TRUE};
+			SDL_SetWindowGrab(window, willGrabMouse);
+		}
 		break;
 	}
 
