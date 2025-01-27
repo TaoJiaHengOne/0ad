@@ -67,6 +67,9 @@ class JoinButton
 				return;
 		}
 
+		if (this.joinButton.hidden)
+			return;
+
 		Engine.PushGuiPage("page_gamesetup_mp.xml", {
 			"multiplayerGameType": "join",
 			"name": g_Nickname,
