@@ -451,9 +451,16 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 	GLint maxStorageBufferSize{0};
 	if (ogl_HaveExtension("GL_ARB_shader_storage_buffer_object"))
 		glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &maxStorageBufferSize);
+	// Storage buffers might not work correctly on some Mesa drivers or might have
+	// decreased performance. We need to investigate it further but for now we
+	// disable storage buffers on Mesa.
+	const bool disableStorageForMesa{
+		device->m_Name.find("Mesa") != std::string::npos
+		|| device->m_DriverInformation.find("Mesa") != std::string::npos};
 	capabilities.storage =
 		capabilities.computeShaders && maxStorageBufferSize > 0
 		&& static_cast<size_t>(maxStorageBufferSize) >= 128 * MiB
+		&& !disableStorageForMesa
 		&& ogl_HaveExtension("GL_ARB_uniform_buffer_object")
 		&& ogl_HaveExtension("GL_ARB_shader_storage_buffer_object")
 		&& ogl_HaveExtension("GL_ARB_half_float_vertex")
