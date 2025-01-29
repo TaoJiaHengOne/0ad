@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -518,10 +518,8 @@ CUserReporter::~CUserReporter()
 
 std::string CUserReporter::LoadUserID()
 {
-	std::string userID;
-
 	// Read the user ID from user.cfg (if there is one)
-	CFG_GET_VAL("userreport.id", userID);
+	std::string userID{g_ConfigDB.Get("userreport.id", std::string{})};
 
 	// If we don't have a validly-formatted user ID, generate a new one
 	if (userID.length() != 16)
@@ -547,9 +545,7 @@ std::string CUserReporter::LoadUserID()
 
 bool CUserReporter::IsReportingEnabled()
 {
-	int version = -1;
-	CFG_GET_VAL("userreport.enabledversion", version);
-	return (version >= REPORTER_VERSION);
+	return g_ConfigDB.Get("userreport.enabledversion", -1) >= REPORTER_VERSION;
 }
 
 void CUserReporter::SetReportingEnabled(bool enabled)
@@ -574,12 +570,8 @@ void CUserReporter::Initialize()
 {
 	ENSURE(!m_Worker); // must only be called once
 
-	std::string userID = LoadUserID();
-	std::string url;
-	CFG_GET_VAL("userreport.url_upload", url);
-
-	m_Worker = new CUserReporterWorker(userID, url);
-
+	m_Worker = new CUserReporterWorker{LoadUserID(),
+		g_ConfigDB.Get("userreport.url_upload", std::string{})};
 	m_Worker->SetEnabled(IsReportingEnabled());
 }
 

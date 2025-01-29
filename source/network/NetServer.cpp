@@ -235,8 +235,7 @@ void CNetServerWorker::SetupUPnP(const u16 port)
 	};
 
 	// Cached root descriptor URL.
-	std::string rootDescURL;
-	CFG_GET_VAL("network.upnprootdescurl", rootDescURL);
+	const std::string rootDescURL{g_ConfigDB.Get("network.upnprootdescurl", std::string{})};
 	if (!rootDescURL.empty())
 		LOGMESSAGE("Net server: attempting to use cached root descriptor URL: %s", rootDescURL.c_str());
 
@@ -1000,12 +999,10 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 		return true;
 	}
 
-	// Either deduplicate or prohibit join if name is in use
-	bool duplicatePlayernames = false;
-	CFG_GET_VAL("network.duplicateplayernames", duplicatePlayernames);
 	// If lobby authentication is enabled, the clients playername has already been registered.
 	// There also can't be any duplicated names.
-	if (!server.m_LobbyAuth && duplicatePlayernames)
+	// Either deduplicate or prohibit join if name is in use
+	if (!server.m_LobbyAuth && g_ConfigDB.Get("network.duplicateplayernames", false))
 		username = server.DeduplicatePlayerName(username);
 	else
 	{
@@ -1027,9 +1024,6 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 		session->Disconnect(NDR_BANNED);
 		return true;
 	}
-
-	int maxObservers = 0;
-	CFG_GET_VAL("network.observerlimit", maxObservers);
 
 	bool isRejoining = false;
 	bool serverFull = false;
@@ -1066,8 +1060,8 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 		// Optionally allow everyone or only buddies to join after the game has started
 		if (!isRejoining)
 		{
-			CStr observerLateJoin;
-			CFG_GET_VAL("network.lateobservers", observerLateJoin);
+			const std::string observerLateJoin{
+				g_ConfigDB.Get("network.lateobservers", std::string{})};
 
 			if (observerLateJoin == "everyone")
 			{
@@ -1075,9 +1069,8 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 			}
 			else if (observerLateJoin == "buddies")
 			{
-				CStr buddies;
-				CFG_GET_VAL("lobby.buddies", buddies);
-				std::wstringstream buddiesStream(wstring_from_utf8(buddies));
+				std::wstringstream buddiesStream(wstring_from_utf8(
+					g_ConfigDB.Get("lobby.buddies", std::string{})));
 				CStrW buddy;
 				while (std::getline(buddiesStream, buddy, L','))
 				{
@@ -1099,7 +1092,8 @@ bool CNetServerWorker::OnAuthenticate(CNetServerSession* session, CFsmEvent* eve
 
 		// Ensure all players will be able to rejoin
 		serverFull = isObserver && (
-			(int) server.m_Sessions.size() - connectedPlayers > maxObservers ||
+			(int) server.m_Sessions.size() - connectedPlayers >
+				g_ConfigDB.Get("network.observerlimit", 0) ||
 			(int) server.m_Sessions.size() + disconnectedPlayers >= MAX_CLIENTS);
 	}
 

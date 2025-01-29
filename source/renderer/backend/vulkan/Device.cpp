@@ -200,12 +200,9 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	device->m_Window = window;
 
 #ifdef NDEBUG
-	bool enableDebugMessages = false;
-	CFG_GET_VAL("renderer.backend.debugmessages", enableDebugMessages);
-	bool enableDebugLabels = false;
-	CFG_GET_VAL("renderer.backend.debuglabels", enableDebugLabels);
-	bool enableDebugScopedLabels = false;
-	CFG_GET_VAL("renderer.backend.debugscopedlabels", enableDebugScopedLabels);
+	bool enableDebugMessages{g_ConfigDB.Get("renderer.backend.debugmessages", false)};
+	bool enableDebugLabels{g_ConfigDB.Get("renderer.backend.debuglabels", false)};
+	bool enableDebugScopedLabels{g_ConfigDB.Get("renderer.backend.debugscopedlabels", false)};
 #else
 	bool enableDebugMessages = true;
 	bool enableDebugLabels = true;
@@ -241,8 +238,7 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	};
 
 #ifdef NDEBUG
-	bool enableDebugContext = false;
-	CFG_GET_VAL("renderer.backend.debugcontext", enableDebugContext);
+	bool enableDebugContext{g_ConfigDB.Get("renderer.backend.debugcontext", false)};
 #else
 	bool enableDebugContext = true;
 #endif
@@ -389,8 +385,7 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 		return nullptr;
 	}
 
-	int deviceIndexOverride = -1;
-	CFG_GET_VAL("renderer.backend.vulkan.deviceindexoverride", deviceIndexOverride);
+	const int deviceIndexOverride{g_ConfigDB.Get("renderer.backend.vulkan.deviceindexoverride", -1)};
 	auto choosedDeviceIt = device->m_AvailablePhysicalDevices.end();
 	if (deviceIndexOverride >= 0)
 	{
@@ -613,9 +608,8 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	if (!device->m_SubmitScheduler)
 		return nullptr;
 
-	bool disableDescriptorIndexing = false;
-	CFG_GET_VAL("renderer.backend.vulkan.disabledescriptorindexing", disableDescriptorIndexing);
-	const bool useDescriptorIndexing = hasNeededDescriptorIndexingFeatures && !disableDescriptorIndexing;
+	const bool useDescriptorIndexing{hasNeededDescriptorIndexingFeatures &&
+		!g_ConfigDB.Get("renderer.backend.vulkan.disabledescriptorindexing", false)};
 	device->m_DescriptorManager =
 		std::make_unique<CDescriptorManager>(device.get(), useDescriptorIndexing);
 

@@ -253,10 +253,7 @@ private:
 CProfiler2GPU::CProfiler2GPU(CProfiler2& profiler) :
 	m_Profiler(profiler)
 {
-	bool enabledARB = false;
-	CFG_GET_VAL("profiler2.gpu.arb.enable", enabledARB);
-
-	if (enabledARB && CProfiler2GPUARB::IsSupported())
+	if (g_ConfigDB.Get("profiler2.gpu.arb.enable", false) && CProfiler2GPUARB::IsSupported())
 	{
 		m_ProfilerARB = std::make_unique<CProfiler2GPUARB>(m_Profiler);
 	}

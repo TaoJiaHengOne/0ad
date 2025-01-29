@@ -182,15 +182,10 @@ void CProfiler2::EnableHTTP()
 	if (m_MgContext)
 		return;
 
-	CStr listeningPort = "8000";
-	CStr listeningServer = "127.0.0.1";
-	CStr numThreads = "6";
-	if (CConfigDB::IsInitialised())
-	{
-		CFG_GET_VAL("profiler2.server.port", listeningPort);
-		CFG_GET_VAL("profiler2.server", listeningServer);
-		CFG_GET_VAL("profiler2.server.threads", numThreads);
-	}
+	using namespace std::literals;
+	const std::string listeningPort{CConfigDB::GetIfInitialised("profiler2.server.port", "8000"s)};
+	const std::string listeningServer{CConfigDB::GetIfInitialised("profiler2.server", "127.0.0.1"s)};
+	const std::string numThreads{CConfigDB::GetIfInitialised("profiler2.server.threads", "6"s)};
 
 	std::string listening_ports = fmt::format("{0}:{1}", listeningServer, listeningPort);
 	const char* options[] = {

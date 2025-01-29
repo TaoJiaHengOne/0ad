@@ -104,16 +104,10 @@ void CSoundGroup::SetDefaultValues()
 	m_Seed = 0;
 	m_IntensityThreshold = 3.f;
 
-	m_MinDist = 1.f;
-	m_MaxDist = 350.f;
+	m_MinDist = CConfigDB::GetIfInitialised("sound.mindistance", 1.f);
+	m_MaxDist = CConfigDB::GetIfInitialised("sound.maxdistance", 350.f);
 	// This is more than the default camera FOV: for now, our soundscape is not realistic anyways.
-	m_MaxStereoAngle = static_cast<float>(M_PI / 6);
-	if (CConfigDB::IsInitialised())
-	{
-		CFG_GET_VAL("sound.mindistance", m_MinDist);
-		CFG_GET_VAL("sound.maxdistance", m_MaxDist);
-		CFG_GET_VAL("sound.maxstereoangle", m_MaxStereoAngle);
-	}
+	m_MaxStereoAngle = CConfigDB::GetIfInitialised("sound.maxstereoangle", static_cast<float>(M_PI / 6));
 }
 
 CSoundGroup::CSoundGroup()

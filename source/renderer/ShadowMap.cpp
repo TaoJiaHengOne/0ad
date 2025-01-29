@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -122,14 +122,12 @@ struct ShadowMapInternals
 
 void ShadowMapInternals::UpdateCascadesParameters()
 {
-	CascadeCount = 1;
-	CFG_GET_VAL("shadowscascadecount", CascadeCount);
+	CascadeCount = g_ConfigDB.Get("shadowscascadecount", 1);
 
 	if (CascadeCount < 1 || CascadeCount > MAX_CASCADE_COUNT || Device->GetBackend() == Renderer::Backend::Backend::GL_ARB)
 		CascadeCount = 1;
 
-	ShadowsCoverMap = false;
-	CFG_GET_VAL("shadowscovermap", ShadowsCoverMap);
+	ShadowsCoverMap = g_ConfigDB.Get("shadowscovermap", false);
 }
 
 void CalculateBoundsForCascade(
@@ -282,8 +280,8 @@ void ShadowMap::SetupFrame(const CCamera& camera, const CVector3D& lightdir)
 
 	m->ShadowsCutoffDistance = DEFAULT_SHADOWS_CUTOFF_DISTANCE;
 	m->CascadeDistanceRatio = DEFAULT_CASCADE_DISTANCE_RATIO;
-	CFG_GET_VAL("shadowscutoffdistance", m->ShadowsCutoffDistance);
-	CFG_GET_VAL("shadowscascadedistanceratio", m->CascadeDistanceRatio);
+	m->ShadowsCutoffDistance = g_ConfigDB.Get("shadowscutoffdistance", m->ShadowsCutoffDistance);
+	m->CascadeDistanceRatio = g_ConfigDB.Get("shadowscascadedistanceratio", m->CascadeDistanceRatio);
 	m->CascadeDistanceRatio = Clamp(m->CascadeDistanceRatio, 1.1f, 16.0f);
 
 	m->Cascades[GetCascadeCount() - 1].Distance = m->ShadowsCutoffDistance;
@@ -480,7 +478,7 @@ void ShadowMapInternals::CreateTexture()
 	Texture.reset();
 	DummyTexture.reset();
 
-	CFG_GET_VAL("shadowquality", QualityLevel);
+	QualityLevel = g_ConfigDB.Get("shadowquality", QualityLevel);
 
 	// Get shadow map size as next power of two up from view width/height.
 	int shadowMapSize;

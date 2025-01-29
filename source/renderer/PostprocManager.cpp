@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -161,9 +161,7 @@ void CPostprocManager::Initialize()
 	UpdateAntiAliasingTechnique();
 	UpdateSharpeningTechnique();
 	UpdateSharpnessFactor();
-	CStr upscaleName;
-	CFG_GET_VAL("renderer.upscale.technique", upscaleName);
-	SetUpscaleTechnique(upscaleName);
+	SetUpscaleTechnique(g_ConfigDB.Get("renderer.upscale.technique", std::string{}));
 
 	// This might happen after the map is loaded and the effect chosen
 	SetPostEffect(m_PostProcEffect);
@@ -762,8 +760,7 @@ void CPostprocManager::UpdateAntiAliasingTechnique()
 	if (m_Device->GetBackend() == Renderer::Backend::Backend::GL_ARB || !m_IsInitialized)
 		return;
 
-	CStr newAAName;
-	CFG_GET_VAL("antialiasing", newAAName);
+	const std::string newAAName{g_ConfigDB.Get("antialiasing", std::string{})};
 	if (m_AAName == newAAName)
 		return;
 	m_AAName = newAAName;
@@ -812,8 +809,7 @@ void CPostprocManager::UpdateSharpeningTechnique()
 	if (m_Device->GetBackend() == Renderer::Backend::Backend::GL_ARB || !m_IsInitialized)
 		return;
 
-	CStr newSharpName;
-	CFG_GET_VAL("sharpening", newSharpName);
+	const std::string newSharpName{g_ConfigDB.Get("sharpening", std::string{})};
 	if (m_SharpName == newSharpName)
 		return;
 	m_SharpName = newSharpName;
@@ -827,7 +823,7 @@ void CPostprocManager::UpdateSharpeningTechnique()
 
 void CPostprocManager::UpdateSharpnessFactor()
 {
-	CFG_GET_VAL("sharpness", m_Sharpness);
+	m_Sharpness = g_ConfigDB.Get("sharpness", m_Sharpness);
 }
 
 void CPostprocManager::SetUpscaleTechnique(const CStr& upscaleName)
@@ -936,7 +932,7 @@ void CPostprocManager::RecalculateSize(const uint32_t width, const uint32_t heig
 		m_Scale = 1.0f;
 		return;
 	}
-	CFG_GET_VAL("renderer.scale", m_Scale);
+	m_Scale = g_ConfigDB.Get("renderer.scale", m_Scale);
 	if (m_Scale < 0.25f || m_Scale > 2.0f)
 	{
 		LOGWARNING("Invalid renderer scale: %0.2f", m_Scale);

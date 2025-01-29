@@ -88,12 +88,14 @@ CCameraController::CCameraController(CCamera& camera)
 	  m_RotateX(0, 0, 0.001f),
 	  m_RotateY(0, 0, 0.001f)
 {
-	m_ViewDragInvertedConfigHook = std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("view.drag.inverted", [this]() {
-		CFG_GET_VAL("view.drag.inverted", m_ViewDragInverted);
-	}));
-	m_ViewDragSpeedConfigHook = std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("view.drag.speed", [this]() {
-		CFG_GET_VAL("view.drag.speed", m_ViewDragSpeed);
-	}));
+	m_ViewDragInvertedConfigHook =
+		std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("view.drag.inverted", [this]() {
+			m_ViewDragInverted = g_ConfigDB.Get("view.drag.inverted", m_ViewDragInverted);
+		}));
+	m_ViewDragSpeedConfigHook =
+		std::make_unique<CConfigDBHook>(g_ConfigDB.RegisterHookAndCall("view.drag.speed", [this]() {
+			m_ViewDragSpeed = g_ConfigDB.Get("view.drag.speed", m_ViewDragSpeed);
+		}));
 
 	SViewPort vp;
 	vp.m_X = 0;
@@ -111,35 +113,33 @@ CCameraController::~CCameraController() = default;
 
 void CCameraController::LoadConfig()
 {
-	CFG_GET_VAL("view.scroll.speed", m_ViewScrollSpeed);
-	CFG_GET_VAL("view.scroll.speed.modifier", m_ViewScrollSpeedModifier);
-	CFG_GET_VAL("view.scroll.mouse.detectdistance", m_ViewScrollMouseDetectDistance);
-	CFG_GET_VAL("view.rotate.x.speed", m_ViewRotateXSpeed);
-	CFG_GET_VAL("view.rotate.x.min", m_ViewRotateXMin);
-	CFG_GET_VAL("view.rotate.x.max", m_ViewRotateXMax);
-	CFG_GET_VAL("view.rotate.x.default", m_ViewRotateXDefault);
-	CFG_GET_VAL("view.rotate.y.speed", m_ViewRotateYSpeed);
-	CFG_GET_VAL("view.rotate.y.speed.wheel", m_ViewRotateYSpeedWheel);
-	CFG_GET_VAL("view.rotate.y.default", m_ViewRotateYDefault);
-	CFG_GET_VAL("view.rotate.speed.modifier", m_ViewRotateSpeedModifier);
-	CFG_GET_VAL("view.drag.speed", m_ViewDragSpeed);
-	CFG_GET_VAL("view.drag.inverted", m_ViewDragInverted);
-	CFG_GET_VAL("view.zoom.speed", m_ViewZoomSpeed);
-	CFG_GET_VAL("view.zoom.speed.wheel", m_ViewZoomSpeedWheel);
-	CFG_GET_VAL("view.zoom.min", m_ViewZoomMin);
-	CFG_GET_VAL("view.zoom.max", m_ViewZoomMax);
-	CFG_GET_VAL("view.zoom.default", m_ViewZoomDefault);
-	CFG_GET_VAL("view.zoom.speed.modifier", m_ViewZoomSpeedModifier);
+	m_ViewScrollSpeed = g_ConfigDB.Get("view.scroll.speed", m_ViewScrollSpeed);
+	m_ViewScrollSpeedModifier = g_ConfigDB.Get("view.scroll.speed.modifier", m_ViewScrollSpeedModifier);
+	m_ViewScrollMouseDetectDistance = g_ConfigDB.Get("view.scroll.mouse.detectdistance",
+		m_ViewScrollMouseDetectDistance);
+	m_ViewRotateXSpeed = g_ConfigDB.Get("view.rotate.x.speed", m_ViewRotateXSpeed);
+	m_ViewRotateXMin = g_ConfigDB.Get("view.rotate.x.min", m_ViewRotateXMin);
+	m_ViewRotateXMax = g_ConfigDB.Get("view.rotate.x.max", m_ViewRotateXMax);
+	m_ViewRotateXDefault = g_ConfigDB.Get("view.rotate.x.default", m_ViewRotateXDefault);
+	m_ViewRotateYSpeed = g_ConfigDB.Get("view.rotate.y.speed", m_ViewRotateYSpeed);
+	m_ViewRotateYSpeedWheel = g_ConfigDB.Get("view.rotate.y.speed.wheel", m_ViewRotateYSpeedWheel);
+	m_ViewRotateYDefault = g_ConfigDB.Get("view.rotate.y.default", m_ViewRotateYDefault);
+	m_ViewRotateSpeedModifier = g_ConfigDB.Get("view.rotate.speed.modifier", m_ViewRotateSpeedModifier);
+	m_ViewDragSpeed = g_ConfigDB.Get("view.drag.speed", m_ViewDragSpeed);
+	m_ViewDragInverted = g_ConfigDB.Get("view.drag.inverted", m_ViewDragInverted);
+	m_ViewZoomSpeed = g_ConfigDB.Get("view.zoom.speed", m_ViewZoomSpeed);
+	m_ViewZoomSpeedWheel = g_ConfigDB.Get("view.zoom.speed.wheel", m_ViewZoomSpeedWheel);
+	m_ViewZoomMin = g_ConfigDB.Get("view.zoom.min", m_ViewZoomMin);
+	m_ViewZoomMax = g_ConfigDB.Get("view.zoom.max", m_ViewZoomMax);
+	m_ViewZoomDefault = g_ConfigDB.Get("view.zoom.default", m_ViewZoomDefault);
+	m_ViewZoomSpeedModifier = g_ConfigDB.Get("view.zoom.speed.modifier", m_ViewZoomSpeedModifier);
 
-	CFG_GET_VAL("view.height.smoothness", m_HeightSmoothness);
-	CFG_GET_VAL("view.height.min", m_HeightMin);
+	m_HeightSmoothness = g_ConfigDB.Get("view.height.smoothness", m_HeightSmoothness);
+	m_HeightMin = g_ConfigDB.Get("view.height.min", m_HeightMin);
 
 #define SETUP_SMOOTHNESS(CFG_PREFIX, SMOOTHED_VALUE) \
-	{ \
-		float smoothness = SMOOTHED_VALUE.GetSmoothness(); \
-		CFG_GET_VAL(CFG_PREFIX ".smoothness", smoothness); \
-		SMOOTHED_VALUE.SetSmoothness(smoothness); \
-	}
+	SMOOTHED_VALUE.SetSmoothness( \
+		g_ConfigDB.Get(CFG_PREFIX ".smoothness", SMOOTHED_VALUE.GetSmoothness()));
 
 	SETUP_SMOOTHNESS("view.pos", m_PosX);
 	SETUP_SMOOTHNESS("view.pos", m_PosY);
@@ -149,9 +149,9 @@ void CCameraController::LoadConfig()
 	SETUP_SMOOTHNESS("view.rotate.y", m_RotateY);
 #undef SETUP_SMOOTHNESS
 
-	CFG_GET_VAL("view.near", m_ViewNear);
-	CFG_GET_VAL("view.far", m_ViewFar);
-	CFG_GET_VAL("view.fov", m_ViewFOV);
+	m_ViewNear = g_ConfigDB.Get("view.near", m_ViewNear);
+	m_ViewFar = g_ConfigDB.Get("view.far", m_ViewFar);
+	m_ViewFOV = g_ConfigDB.Get("view.fov", m_ViewFOV);
 
 	// Convert to radians
 	m_RotateX.SetValue(DEGTORAD(m_ViewRotateXDefault));

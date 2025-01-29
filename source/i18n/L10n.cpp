@@ -141,9 +141,7 @@ L10n::L10n()
 {
 	// Determine whether or not to print tinygettext messages to the standard
 	// error output, which it tinygettext's default behavior, but not ours.
-	bool tinygettext_debug = false;
-	CFG_GET_VAL("tinygettext.debug", tinygettext_debug);
-	if (!tinygettext_debug)
+	if (!g_ConfigDB.Get("tinygettext.debug", false))
 	{
 		tinygettext::Log::log_info_callback = 0;
 		tinygettext::Log::log_warning_callback = 0;
@@ -282,8 +280,7 @@ void L10n::GetDictionaryLocale(const std::string& configLocaleString, icu::Local
 // Try to find the best dictionary locale based on user configuration and system locale, set the currentLocale and reload the dictionary.
 void L10n::ReevaluateCurrentLocaleAndReload()
 {
-	std::string locale;
-	CFG_GET_VAL("locale", locale);
+	const std::string locale{g_ConfigDB.Get("locale", std::string{})};
 
 	GetDictionaryLocale(locale, m_CurrentLocale);
 	m_CurrentLocaleIsOriginalGameLocale = (m_CurrentLocale == icu::Locale::getUS()) == 1;

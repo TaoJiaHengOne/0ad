@@ -32,14 +32,10 @@ CJoystick::CJoystick() :
 
 void CJoystick::Initialise()
 {
-	bool joystickEnable = false;
-	if (!CConfigDB::IsInitialised())
-		return;
-	CFG_GET_VAL("joystick.enable", joystickEnable);
-	if (!joystickEnable)
+	if (!CConfigDB::GetIfInitialised("joystick.enable", false))
 		return;
 
-	CFG_GET_VAL("joystick.deadzone", m_Deadzone);
+	m_Deadzone = g_ConfigDB.Get("joystick.deadzone", 0);
 
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
 	{

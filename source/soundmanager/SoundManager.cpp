@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -238,19 +238,17 @@ CSoundManager::CSoundManager(ALCdevice* device)
 	: m_Context(nullptr), m_Device(device), m_ALSourceBuffer(nullptr),
 	m_CurrentTune(nullptr), m_CurrentEnvirons(nullptr),
 	m_Worker(nullptr), m_DistressMutex(), m_PlayListItems(nullptr), m_SoundGroups(),
-	m_Gain(.5f), m_MusicGain(.5f), m_AmbientGain(.5f), m_ActionGain(.5f), m_UIGain(.5f),
+	m_Gain{g_ConfigDB.Get("sound.mastergain", 0.5f)},
+	m_MusicGain{g_ConfigDB.Get("sound.musicgain", 0.5f)},
+	m_AmbientGain{g_ConfigDB.Get("sound.ambientgain", 0.5f)},
+	m_ActionGain{g_ConfigDB.Get("sound.actiongain", 0.5f)},
+	m_UIGain{g_ConfigDB.Get("sound.uigain", 0.5f)},
 	m_Enabled(false), m_BufferSize(98304), m_BufferCount(50),
 	m_SoundEnabled(true), m_MusicEnabled(true), m_MusicPaused(false),
 	m_AmbientPaused(false), m_ActionPaused(false),
 	m_RunningPlaylist(false), m_PlayingPlaylist(false), m_LoopingPlaylist(false),
 	m_PlaylistGap(0), m_DistressErrCount(0), m_DistressTime(0)
 {
-	CFG_GET_VAL("sound.mastergain", m_Gain);
-	CFG_GET_VAL("sound.musicgain", m_MusicGain);
-	CFG_GET_VAL("sound.ambientgain", m_AmbientGain);
-	CFG_GET_VAL("sound.actiongain", m_ActionGain);
-	CFG_GET_VAL("sound.uigain", m_UIGain);
-
 	AlcInit();
 
 	if (m_Enabled)

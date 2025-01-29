@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -99,6 +99,8 @@ extern void RestartEngine();
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
+
+using namespace std::literals;
 
 ERROR_GROUP(System);
 ERROR_TYPE(System, SDLInitFailed);
@@ -308,9 +310,8 @@ static void InitSDL()
 #if OS_MACOSX
 	// Some Mac mice only have one button, so they can't right-click
 	// but SDL2 can emulate that with Ctrl+Click
-	bool macMouse = false;
-	CFG_GET_VAL("macmouse", macMouse);
-	SDL_SetHint(SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK, macMouse ? "1" : "0");
+	SDL_SetHint(SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK,
+		g_ConfigDB.Get("macmouse", false) ? "1" : "0");
 #endif
 }
 
@@ -551,9 +552,8 @@ bool Init(const CmdLineArgs& args, int flags)
 			mods = args.GetMultiple("mod");
 		else
 		{
-			CStr modsStr;
-			CFG_GET_VAL("mod.enabledmods", modsStr);
-			boost::split(mods, modsStr, boost::algorithm::is_space(), boost::token_compress_on);
+			boost::split(mods, g_ConfigDB.Get("mod.enabledmods", std::string{}),
+				boost::algorithm::is_space(), boost::token_compress_on);
 		}
 
 		if (!g_Mods.EnableMods(mods, flags & INIT_MODS_PUBLIC))
@@ -596,9 +596,7 @@ bool Init(const CmdLineArgs& args, int flags)
 
 	// Optionally start profiler HTTP output automatically
 	// (By default it's only enabled by a hotkey, for security/performance)
-	bool profilerHTTPEnable = false;
-	CFG_GET_VAL("profiler2.autoenable", profilerHTTPEnable);
-	if (profilerHTTPEnable)
+	if (g_ConfigDB.Get("profiler2.autoenable", false))
 		g_Profiler2.EnableHTTP();
 
 	// Initialise everything except Win32 sockets (because our networking
@@ -629,9 +627,7 @@ void InitGraphics(const CmdLineArgs& args, int flags, const std::vector<CStr>& i
 
 	// Optionally start profiler GPU timings automatically
 	// (By default it's only enabled by a hotkey, for performance/compatibility)
-	bool profilerGPUEnable = false;
-	CFG_GET_VAL("profiler2.autoenable", profilerGPUEnable);
-	if (profilerGPUEnable)
+	if (g_ConfigDB.Get("profiler2.autoenable", false))
 		g_Profiler2.EnableGPU();
 
 	if(g_DisableAudio)
@@ -639,9 +635,8 @@ void InitGraphics(const CmdLineArgs& args, int flags, const std::vector<CStr>& i
 
 	g_GUI = new CGUIManager{scriptContext, scriptInterface};
 
-	CStr8 renderPath = "default";
-	CFG_GET_VAL("renderpath", renderPath);
-	if (RenderPathEnum::FromString(renderPath) == FIXED)
+
+	if (RenderPathEnum::FromString(g_ConfigDB.Get("renderpath", "default"s)) == FIXED)
 	{
 		// It doesn't make sense to continue working here, because we're not
 		// able to display anything.

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -56,22 +56,17 @@ public:
 	CSimulation2Impl(CUnitManager* unitManager, ScriptContext& cx, CTerrain* terrain) :
 		m_SimContext{terrain, unitManager},
 		m_ComponentManager{m_SimContext, cx},
+		m_InitAttributes{cx.GetGeneralJSContext()},
 		m_MapSettings{cx.GetGeneralJSContext()},
-		m_InitAttributes{cx.GetGeneralJSContext()}
+		// Tests won't have config initialised
+		m_EnableOOSLog{CConfigDB::GetIfInitialised("ooslog", false)},
+		m_EnableSerializationTest{CConfigDB::GetIfInitialised("serializationtest", false)},
+		// Handle bogus values of the arg
+		m_RejoinTestTurn{std::max(CConfigDB::GetIfInitialised("rejointest", -1), -1)}
 	{
 		m_ComponentManager.LoadComponentTypes();
 
 		RegisterFileReloadFunc(ReloadChangedFileCB, this);
-
-		// Tests won't have config initialised
-		if (CConfigDB::IsInitialised())
-		{
-			CFG_GET_VAL("ooslog", m_EnableOOSLog);
-			CFG_GET_VAL("serializationtest", m_EnableSerializationTest);
-			CFG_GET_VAL("rejointest", m_RejoinTestTurn);
-			if (m_RejoinTestTurn < 0) // Handle bogus values of the arg
-				m_RejoinTestTurn = -1;
-		}
 
 		if (m_EnableOOSLog)
 		{

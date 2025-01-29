@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * Copyright (C) 2013-2016 SuperTuxKart-Team.
  * This file is part of 0 A.D.
  *
@@ -146,10 +146,8 @@ void SendStunRequest(ENetHost& transactionHost, ENetAddress addr)
  */
 bool CreateStunRequest(ENetHost& transactionHost)
 {
-	CStr server_name;
-	int port;
-	CFG_GET_VAL("lobby.stun.server", server_name);
-	CFG_GET_VAL("lobby.stun.port", port);
+	const std::string server_name{g_ConfigDB.Get("lobby.stun.server", std::string{})};
+	const int port{g_ConfigDB.Get("lobby.stun.port", 0)};
 
 	LOGMESSAGE("StunClient: Using STUN server %s:%d\n", server_name.c_str(), port);
 
@@ -183,10 +181,8 @@ bool ReceiveStunResponse(ENetHost& transactionHost, std::vector<u8>& buffer)
 	ENetAddress sender = m_StunServer;
 	int len = enet_socket_receive(transactionHost.socket, &sender, &enetBuffer, 1);
 
-	int delay = 10;
-	CFG_GET_VAL("lobby.stun.delay", delay);
-	int maxTries = 100;
-	CFG_GET_VAL("lobby.stun.max_tries", maxTries);
+	const int delay{g_ConfigDB.Get("lobby.stun.delay", 10)};
+	const int maxTries{g_ConfigDB.Get("lobby.stun.max_tries", 100)};
 
 	// Wait to receive the message because enet sockets are non-blocking
 	for (int count = 0; len <= 0 && (count < maxTries || maxTries == -1); ++count)
@@ -359,10 +355,8 @@ void SendHolePunchingMessages(ENetHost& enetClient, const std::string& serverAdd
 	addr.port = serverPort;
 	enet_address_set_host(&addr, serverAddress.c_str());
 
-	int delay = 200;
-	CFG_GET_VAL("lobby.fw_punch.delay", delay);
-	int numMsg = 3;
-	CFG_GET_VAL("lobby.fw_punch.num_msg", numMsg);
+	const int delay{g_ConfigDB.Get("lobby.fw_punch.delay", 200)};
+	const int numMsg{g_ConfigDB.Get("lobby.fw_punch.num_msg", 3)};
 
 	// Send an UDP message from enet host to ip:port
 	for (int i = 0; i < numMsg || numMsg == -1; ++i)

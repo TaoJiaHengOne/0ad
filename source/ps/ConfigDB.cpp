@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -97,7 +97,7 @@ typedef std::map<CStr, CConfigValueSet> TConfigMap;
 		if (it != m_Map[CFG_COMMAND].end())\
 		{\
 			if (!it->second.empty())\
-				Get(it->second[0], value);\
+				::Get(it->second[0], value);\
 			return;\
 		}\
 		for (int search_ns = ns; search_ns >= 0; --search_ns)\
@@ -106,7 +106,7 @@ typedef std::map<CStr, CConfigValueSet> TConfigMap;
 			if (it != m_Map[search_ns].end())\
 			{\
 				if (!it->second.empty())\
-					Get(it->second[0], value);\
+					::Get(it->second[0], value);\
 				return;\
 			}\
 		}\

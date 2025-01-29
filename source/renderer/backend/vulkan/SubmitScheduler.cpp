@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -73,9 +73,15 @@ std::unique_ptr<CSubmitScheduler> CSubmitScheduler::Create(
 	if (!submitScheduler->m_PresentCommandContext)
 		return nullptr;
 
-	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidlebeforeacquire", submitScheduler->m_DebugWaitIdleBeforeAcquire);
-	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidlebeforepresent", submitScheduler->m_DebugWaitIdleBeforePresent);
-	CFG_GET_VAL("renderer.backend.vulkan.debugwaitidleafterpresent", submitScheduler->m_DebugWaitIdleAfterPresent);
+	submitScheduler->m_DebugWaitIdleBeforeAcquire = g_ConfigDB.Get(
+		"renderer.backend.vulkan.debugwaitidlebeforeacquire",
+		submitScheduler->m_DebugWaitIdleBeforeAcquire);
+	submitScheduler->m_DebugWaitIdleBeforePresent = g_ConfigDB.Get(
+		"renderer.backend.vulkan.debugwaitidlebeforepresent",
+		submitScheduler->m_DebugWaitIdleBeforePresent);
+	submitScheduler->m_DebugWaitIdleAfterPresent = g_ConfigDB.Get(
+		"renderer.backend.vulkan.debugwaitidleafterpresent",
+		submitScheduler->m_DebugWaitIdleAfterPresent);
 
 	return submitScheduler;
 }
@@ -112,7 +118,7 @@ bool CSubmitScheduler::AcquireNextImage(CSwapChain& swapChain)
 	if (!swapChain.AcquireNextImage(frameObject.acquireImageSemaphore))
 		return false;
 	swapChain.SubmitCommandsAfterAcquireNextImage(*m_AcquireCommandContext);
-	
+
 	m_NextWaitSemaphore = frameObject.acquireImageSemaphore;
 	m_NextWaitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	m_AcquireCommandContext->Flush();

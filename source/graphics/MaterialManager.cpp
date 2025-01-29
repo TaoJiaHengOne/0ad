@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -31,12 +31,9 @@
 
 #include <sstream>
 
-CMaterialManager::CMaterialManager()
+CMaterialManager::CMaterialManager() :
+	qualityLevel{Clamp(g_ConfigDB.Get("materialmgr.quality", 5.0f), 0.0f, 10.0f)}
 {
-	qualityLevel = 5.0;
-	CFG_GET_VAL("materialmgr.quality", qualityLevel);
-	qualityLevel = Clamp(qualityLevel, 0.0f, 10.0f);
-
 	if (VfsDirectoryExists(L"art/materials/") &&
 		!g_Xeromyces.AddValidator(g_VFS, "material", "art/materials/material.rng"))
 	{

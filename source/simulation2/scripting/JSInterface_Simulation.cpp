@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -134,8 +134,7 @@ JS::Value GetEdgesOfStaticObstructionsOnScreenNearTo(const ScriptInterface& scri
 	Script::CreateArray(rq, &edgeList);
 	int edgeListIndex = 0;
 
-	float distanceThreshold = 10.0f;
-	CFG_GET_VAL("gui.session.snaptoedgesdistancethreshold", distanceThreshold);
+	const float distanceThreshold{g_ConfigDB.Get("gui.session.snaptoedgesdistancethreshold", 10.0f)};
 	CFixedVector2D entityPos(x, z);
 
 	std::vector<entity_id_t> entities = GetEntitiesWithStaticObstructionOnScreen();

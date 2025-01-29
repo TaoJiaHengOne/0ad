@@ -50,7 +50,7 @@ CInput::CInput(CGUI& pGUI)
 	m_HorizontalScroll(),
 	m_PrevTime(),
 	m_CursorVisState(true),
-	m_CursorBlinkRate(0.5),
+	m_CursorBlinkRate{g_ConfigDB.Get("gui.cursorblinkrate", 0.5)},
 	m_ComposingText(),
 	m_GeneratedPlaceholderTextValid(false),
 	m_iComposedLength(),
@@ -75,7 +75,7 @@ CInput::CInput(CGUI& pGUI)
 	m_PlaceholderText(this, "placeholder_text"),
 	m_PlaceholderColor(this, "placeholder_color")
 {
-	CFG_GET_VAL("gui.cursorblinkrate", m_CursorBlinkRate);
+	;
 
 	auto bar = std::make_unique<CGUIScrollBarVertical>(pGUI);
 	bar->SetRightAligned(true);

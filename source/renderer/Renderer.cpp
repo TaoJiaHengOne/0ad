@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -702,10 +702,9 @@ void CRenderer::RenderBigScreenShot(const bool needsPresent)
 	if (!g_Game)
 		return RenderScreenShot(needsPresent);
 
-	int tiles = 4, tileWidth = 256, tileHeight = 256;
-	CFG_GET_VAL("screenshot.tiles", tiles);
-	CFG_GET_VAL("screenshot.tilewidth", tileWidth);
-	CFG_GET_VAL("screenshot.tileheight", tileHeight);
+	const int tiles{g_ConfigDB.Get("screenshot.tiles", 4)};
+	const int tileWidth{g_ConfigDB.Get("screenshot.tilewidth", 256)};
+	const int tileHeight{g_ConfigDB.Get("screenshot.tileheight", 256)};
 	if (tiles <= 0 || tileWidth <= 0 || tileHeight <= 0 || tileWidth * tiles % 4 != 0 || tileHeight * tiles % 4 != 0)
 	{
 		LOGWARNING("Invalid big screenshot size: tiles=%d tileWidth=%d tileHeight=%d", tiles, tileWidth, tileHeight);

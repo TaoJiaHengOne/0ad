@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -74,8 +74,7 @@ void CNetServerTurnManager::NotifyFinishedClientCommands(CNetServerSession& sess
 
 void CNetServerTurnManager::CheckClientsReady()
 {
-	int max_observer_lag = -1;
-	CFG_GET_VAL("network.observermaxlag", max_observer_lag);
+	int max_observer_lag{g_ConfigDB.Get("network.observermaxlag", -1)};
 	// Clamp to 0-10000 turns, below/above that is no limit.
 	max_observer_lag = max_observer_lag < 0 ? -1 : max_observer_lag > 10000 ? -1 : max_observer_lag;
 

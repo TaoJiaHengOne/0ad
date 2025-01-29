@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -41,6 +41,7 @@
 #include "scriptinterface/ScriptInterface.h"
 #include "scriptinterface/JSON.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 #include <wctype.h>
@@ -85,8 +86,7 @@ CConsole::~CConsole() = default;
 void CConsole::Init()
 {
 	// Initialise console history file
-	m_MaxHistoryLines = 200;
-	CFG_GET_VAL("console.history.size", m_MaxHistoryLines);
+	m_MaxHistoryLines = g_ConfigDB.Get("console.history.size", 200);
 
 	m_HistoryFile = L"config/console.txt";
 	LoadHistory();
@@ -101,8 +101,7 @@ void CConsole::Init()
 	// Offset by an arbitrary amount, to make it fit more nicely
 	m_FontOffset = 7;
 
-	m_CursorBlinkRate = 0.5;
-	CFG_GET_VAL("gui.cursorblinkrate", m_CursorBlinkRate);
+	m_CursorBlinkRate = g_ConfigDB.Get("gui.cursorblinkrate", 0.5);
 }
 
 void CConsole::UpdateScreenSize(int w, int h)

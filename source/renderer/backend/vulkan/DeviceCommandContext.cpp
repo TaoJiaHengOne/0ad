@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -331,7 +331,7 @@ std::unique_ptr<IDeviceCommandContext> CDeviceCommandContext::Create(CDevice* de
 	deviceCommandContext->m_UniformUploadRing = std::make_unique<CUploadRing>(
 		device, IBuffer::Type::UNIFORM, UNIFORM_BUFFER_INITIAL_SIZE);
 
-	CFG_GET_VAL(
+	deviceCommandContext->m_DebugBarrierAfterFramebufferPass = g_ConfigDB.Get(
 		"renderer.backend.vulkan.debugbarrierafterframebufferpass",
 		deviceCommandContext->m_DebugBarrierAfterFramebufferPass);
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -39,11 +39,11 @@
 
 #include <algorithm>
 
-SkyManager::SkyManager()
-	: m_VertexArray(Renderer::Backend::IBuffer::Type::VERTEX,
-		Renderer::Backend::IBuffer::Usage::TRANSFER_DST)
+SkyManager::SkyManager() :
+	m_VertexArray{Renderer::Backend::IBuffer::Type::VERTEX,
+		Renderer::Backend::IBuffer::Usage::TRANSFER_DST},
+	m_SkyVisible{g_ConfigDB.Get("showsky", true)}
 {
-	CFG_GET_VAL("showsky", m_SkyVisible);
 }
 
 void SkyManager::LoadAndUploadSkyTexturesIfNeeded(

@@ -40,7 +40,7 @@ bool g_DisableAudio = false;
 // Fill in the globals from the config files.
 static void LoadGlobals()
 {
-	CFG_GET_VAL("pauseonfocusloss", g_PauseOnFocusLoss);
+	g_PauseOnFocusLoss = g_ConfigDB.Get("pauseonfocusloss", g_PauseOnFocusLoss);
 }
 
 static void ProcessCommandLineArgs(const CmdLineArgs& args)

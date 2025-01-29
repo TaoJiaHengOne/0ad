@@ -405,8 +405,7 @@ void AtlasViewGame::SetBandbox(bool visible, float x0, float y0, float x1, float
 		if (y0 > y1)
 			std::swap(y0, y1);
 
-		float scale;
-		CFG_GET_VAL("gui.scale", scale);
+		const float scale{g_ConfigDB.Get("gui.scale", 0.0f)};
 		m_Bandbox = CRect(x0 / scale, y0 / scale, x1 / scale, y1 / scale);
 	}
 	else

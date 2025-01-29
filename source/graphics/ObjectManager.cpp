@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -195,8 +195,7 @@ Status CObjectManager::ReloadChangedFile(const VfsPath& path)
 
 void CObjectManager::ActorQualityChanged()
 {
-	int quality;
-	CFG_GET_VAL("max_actor_quality", quality);
+	const int quality{g_ConfigDB.Get("max_actor_quality", 0)};
 	if (quality == m_QualityLevel)
 		return;
 
@@ -213,8 +212,7 @@ void CObjectManager::ActorQualityChanged()
 
 void CObjectManager::VariantDiversityChanged()
 {
-	CStr value;
-	CFG_GET_VAL("variant_diversity", value);
+	const std::string value{g_ConfigDB.Get("variant_diversity", std::string{})};
 	VariantDiversity variantDiversity = VariantDiversity::FULL;
 	if (value == "none")
 		variantDiversity = VariantDiversity::NONE;

@@ -76,8 +76,11 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 	  m_regOpt(regOpt),
 	  m_username(sUsername),
 	  m_password(sPassword),
+	  m_server{g_ConfigDB.Get("lobby.server", std::string{})},
 	  m_room(sRoom),
 	  m_nick(sNick),
+	  m_xpartamuppId{g_ConfigDB.Get("lobby.xpartamupp", std::string{}) + "@" + m_server + "/CC"},
+	  m_echelonId{g_ConfigDB.Get("lobby.echelon", std::string{}) + "@" + m_server + "/CC"},
 	  m_initialLoadComplete(false),
 	  m_isConnected(false),
 	  m_sessionManager(nullptr),
@@ -89,15 +92,6 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 	if (m_ScriptInterface)
 		JS_AddExtraGCRootsTracer(m_ScriptInterface->GetGeneralJSContext(), XmppClient::Trace, this);
 
-	// Read lobby configuration from default.cfg
-	std::string sXpartamupp;
-	std::string sEchelon;
-	CFG_GET_VAL("lobby.server", m_server);
-	CFG_GET_VAL("lobby.xpartamupp", sXpartamupp);
-	CFG_GET_VAL("lobby.echelon", sEchelon);
-
-	m_xpartamuppId = sXpartamupp + "@" + m_server + "/CC";
-	m_echelonId = sEchelon + "@" + m_server + "/CC";
 	// Generate a unique, unpredictable resource to allow multiple 0 A.D. instances to connect to the lobby.
 	gloox::JID clientJid(sUsername + "@" + m_server + "/0ad-" + ps_generate_guid());
 	gloox::JID roomJid(m_room + "@conference." + m_server + "/" + sNick);
@@ -111,9 +105,7 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
 
 	// Optionally join without a TLS certificate, so a local server can be tested  quickly.
 	// Security risks from malicious JS mods can be mitigated if this option and also the hostname and login are shielded from JS access.
-	bool tls = true;
-	CFG_GET_VAL("lobby.tls", tls);
-	m_client->setTls(tls ? gloox::TLSRequired : gloox::TLSDisabled);
+	m_client->setTls(g_ConfigDB.Get("lobby.tls", true) ? gloox::TLSRequired : gloox::TLSDisabled);
 
 	// Disable use of the SASL PLAIN mechanism, to prevent leaking credentials
 	// if the server doesn't list any supported SASL mechanism or the response
@@ -304,10 +296,7 @@ bool XmppClient::onTLSConnect(const gloox::CertInfo& info)
 	m_certStatus = static_cast<gloox::CertStatus>(info.status);
 
 	// Optionally accept invalid certificates, see require_tls option.
-	bool verify_certificate = true;
-	CFG_GET_VAL("lobby.verify_certificate", verify_certificate);
-
-	return info.status == gloox::CertOk || !verify_certificate;
+	return info.status == gloox::CertOk || !g_ConfigDB.Get("lobby.verify_certificate", true);
 }
 
 /**

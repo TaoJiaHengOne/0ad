@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -48,6 +48,8 @@
 #include <SDL_vulkan.h>
 #include <stdlib.h>
 #endif
+
+using namespace std::literals;
 
 namespace
 {
@@ -141,9 +143,7 @@ private:
 
 CVideoMode::CCursor::CCursor()
 {
-	std::string cursorBackend;
-	CFG_GET_VAL("cursorbackend", cursorBackend);
-	if (cursorBackend == "sdl")
+	if (g_ConfigDB.Get("cursorbackend", std::string{}) == "sdl")
 		m_CursorBackend = CursorBackend::SDL;
 	else
 		m_CursorBackend = CursorBackend::SYSTEM;
@@ -275,21 +275,18 @@ CVideoMode::~CVideoMode() = default;
 
 void CVideoMode::ReadConfig()
 {
-	bool windowed = !m_ConfigFullscreen;
-	CFG_GET_VAL("windowed", windowed);
-	m_ConfigFullscreen = !windowed;
+	m_ConfigFullscreen = !g_ConfigDB.Get("windowed", !m_ConfigFullscreen);
 
-	CFG_GET_VAL("gui.scale", m_Scale);
+	m_Scale = g_ConfigDB.Get("gui.scale", m_Scale);
 
-	CFG_GET_VAL("xres", m_ConfigW);
-	CFG_GET_VAL("yres", m_ConfigH);
-	CFG_GET_VAL("bpp", m_ConfigBPP);
-	CFG_GET_VAL("display", m_ConfigDisplay);
-	CFG_GET_VAL("hidpi", m_ConfigEnableHiDPI);
-	CFG_GET_VAL("vsync", m_ConfigVSync);
+	m_ConfigW = g_ConfigDB.Get("xres", m_ConfigW);
+	m_ConfigH = g_ConfigDB.Get("yres", m_ConfigH);
+	m_ConfigBPP = g_ConfigDB.Get("bpp", m_ConfigBPP);
+	m_ConfigDisplay = g_ConfigDB.Get("display", m_ConfigDisplay);
+	m_ConfigEnableHiDPI = g_ConfigDB.Get("hidpi", m_ConfigEnableHiDPI);
+	m_ConfigVSync = g_ConfigDB.Get("vsync", m_ConfigVSync);
 
-	CStr rendererBackend;
-	CFG_GET_VAL("rendererbackend", rendererBackend);
+	const std::string rendererBackend{g_ConfigDB.Get("rendererbackend", std::string{})};
 	if (rendererBackend == "glarb")
 		m_Backend = Renderer::Backend::Backend::GL_ARB;
 	else if (rendererBackend == "dummy")
@@ -310,17 +307,11 @@ bool CVideoMode::SetVideoMode(int w, int h, int bpp, bool fullscreen)
 	Uint32 flags = 0;
 	if (fullscreen)
 	{
-		bool borderlessFullscreen = true;
-		CFG_GET_VAL("borderless.fullscreen", borderlessFullscreen);
-		flags |= borderlessFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_FULLSCREEN;
+		flags |= g_ConfigDB.Get("borderless.fullscreen", true) ? SDL_WINDOW_FULLSCREEN_DESKTOP :
+			SDL_WINDOW_FULLSCREEN;
 	}
-	else
-	{
-		bool borderlessWindow = false;
-		CFG_GET_VAL("borderless.window", borderlessWindow);
-		if (borderlessWindow)
-			flags |= SDL_WINDOW_BORDERLESS;
-	}
+	else if (g_ConfigDB.Get("borderless.window", false))
+		flags |= SDL_WINDOW_BORDERLESS;
 
 	if (!m_Window)
 	{
@@ -334,21 +325,14 @@ bool CVideoMode::SetVideoMode(int w, int h, int bpp, bool fullscreen)
 			SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-			bool debugContext = false;
-			CFG_GET_VAL("renderer.backend.debugcontext", debugContext);
-			if (debugContext)
+			if (g_ConfigDB.Get("renderer.backend.debugcontext", false))
 				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-			bool forceGLVersion = false;
-			CFG_GET_VAL("forceglversion", forceGLVersion);
-			if (forceGLVersion)
+			if (g_ConfigDB.Get("forceglversion", false))
 			{
-				CStr forceGLProfile = "compatibility";
-				int forceGLMajorVersion = 3;
-				int forceGLMinorVersion = 0;
-				CFG_GET_VAL("forceglprofile", forceGLProfile);
-				CFG_GET_VAL("forceglmajorversion", forceGLMajorVersion);
-				CFG_GET_VAL("forceglminorversion", forceGLMinorVersion);
+				const std::string forceGLProfile{g_ConfigDB.Get("forceglprofile", "compatibility"s)};
+				const int forceGLMajorVersion{g_ConfigDB.Get("forceglmajorversion", 3)};
+				const int forceGLMinorVersion{g_ConfigDB.Get("forceglminorversion", 0)};
 
 				int profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
 				if (forceGLProfile == "es")
@@ -517,13 +501,11 @@ bool CVideoMode::SetVideoMode(int w, int h, int bpp, bool fullscreen)
 
 	// #545: we need to constrain the window in fullscreen mode to avoid mouse
 	// "falling out" of the window in case of multiple displays.
-	bool mouseGrabInFullscreen = true;
-	CFG_GET_VAL("window.mousegrabinfullscreen", mouseGrabInFullscreen);
-	bool mouseGrabInWindowMode = false;
-	CFG_GET_VAL("window.mousegrabinwindowmode", mouseGrabInWindowMode);
-
-	if (fullscreen ? mouseGrabInFullscreen : mouseGrabInWindowMode)
+	if (fullscreen ? g_ConfigDB.Get("window.mousegrabinfullscreen", true) :
+		g_ConfigDB.Get("window.mousegrabinwindowmode", false))
+	{
 		SDL_SetWindowGrab(m_Window, SDL_TRUE);
+	}
 	else
 		SDL_SetWindowGrab(m_Window, SDL_FALSE);
 

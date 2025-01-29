@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -194,21 +194,15 @@ CMiniMapTexture::CMiniMapTexture(Renderer::Backend::IDevice* device, CSimulation
 	: m_Simulation(simulation), m_IndexArray(Renderer::Backend::IBuffer::Usage::TRANSFER_DST),
 	m_VertexArray(Renderer::Backend::IBuffer::Type::VERTEX,
 		Renderer::Backend::IBuffer::Usage::DYNAMIC | Renderer::Backend::IBuffer::Usage::TRANSFER_DST),
-	m_InstanceVertexArray(Renderer::Backend::IBuffer::Type::VERTEX, Renderer::Backend::IBuffer::Usage::TRANSFER_DST)
+	m_InstanceVertexArray(Renderer::Backend::IBuffer::Type::VERTEX,
+		Renderer::Backend::IBuffer::Usage::TRANSFER_DST),
+	m_PingDuration{CConfigDB::GetIfInitialised("gui.session.minimap.pingduration", 25.0)},
+	m_HalfBlinkDuration{CConfigDB::GetIfInitialised("gui.session.minimap.blinkduration", 1.0) / 2.0}
 {
 	// Register Relax NG validator.
 	g_Xeromyces.AddValidator(g_VFS, "pathfinder", "simulation/data/pathfinder.rng");
 
 	m_ShallowPassageHeight = GetShallowPassageHeight();
-
-	double blinkDuration = 1.0;
-	// Tests won't have config initialised
-	if (CConfigDB::IsInitialised())
-	{
-		CFG_GET_VAL("gui.session.minimap.blinkduration", blinkDuration);
-		CFG_GET_VAL("gui.session.minimap.pingduration", m_PingDuration);
-	}
-	m_HalfBlinkDuration = blinkDuration / 2.0;
 
 	m_AttributePos.format = Renderer::Backend::Format::R32G32_SFLOAT;
 	m_VertexArray.AddAttribute(&m_AttributePos);
@@ -646,12 +640,9 @@ void CMiniMapTexture::UpdateAndUploadEntities(
 		m_NextBlinkTime = currentTime + m_HalfBlinkDuration;
 	}
 
-	bool iconsEnabled = false;
-	CFG_GET_VAL("gui.session.minimap.icons.enabled", iconsEnabled);
-	float iconsOpacity = 1.0f;
-	CFG_GET_VAL("gui.session.minimap.icons.opacity", iconsOpacity);
-	float iconsSizeScale = 1.0f;
-	CFG_GET_VAL("gui.session.minimap.icons.sizescale", iconsSizeScale);
+	const bool iconsEnabled{g_ConfigDB.Get("gui.session.minimap.icons.enabled", false)};
+	const float iconsOpacity{g_ConfigDB.Get("gui.session.minimap.icons.opacity", 1.0f)};
+	const float iconsSizeScale{g_ConfigDB.Get("gui.session.minimap.icons.sizescale", 1.0f)};
 
 	bool iconsCountOverflow = false;
 

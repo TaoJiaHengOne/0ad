@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@ std::unique_ptr<CSwapChain> CSwapChain::Create(
 	std::unique_ptr<CSwapChain> oldSwapChain)
 {
 	VkPhysicalDevice physicalDevice = device->GetChoosenPhysicalDevice().device;
-	
+
 	VkSurfaceCapabilitiesKHR surfaceCapabilities{};
 	ENSURE_VK_SUCCESS(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
 		physicalDevice, surface, &surfaceCapabilities));
@@ -95,9 +95,7 @@ std::unique_ptr<CSwapChain> CSwapChain::Create(
 	{
 		return std::find(presentModes.begin(), presentModes.end(), presentMode) != presentModes.end();
 	};
-	bool vsyncEnabled = true;
-	CFG_GET_VAL("vsync", vsyncEnabled);
-	if (vsyncEnabled)
+	if (g_ConfigDB.Get("vsync", true))
 	{
 		// TODO: use the adaptive one when possible.
 		// https://gitlab.freedesktop.org/mesa/mesa/-/issues/5516

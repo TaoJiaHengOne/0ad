@@ -285,8 +285,8 @@ inline static void LimitFPS()
 	if (g_VideoMode.IsVSyncEnabled())
 		return;
 
-	double fpsLimit = 0.0;
-	CFG_GET_VAL(g_Game && g_Game->IsGameStarted() ? "adaptivefps.session" : "adaptivefps.menu", fpsLimit);
+	const double fpsLimit{
+		g_ConfigDB.Get(g_Game && g_Game->IsGameStarted() ? "adaptivefps.session" : "adaptivefps.menu", 0.0)};
 
 	// Keep in sync with options.json
 	if (fpsLimit < 20.0 || fpsLimit >= 360.0)
@@ -497,11 +497,8 @@ static std::optional<RL::Interface> CreateRLInterface(const CmdLineArgs& args)
 	if (!args.Has("rl-interface"))
 		return std::nullopt;
 
-	std::string server_address;
-	CFG_GET_VAL("rlinterface.address", server_address);
-
-	if (!args.Get("rl-interface").empty())
-		server_address = args.Get("rl-interface");
+	const std::string server_address{args.Get("rl-interface").empty() ?
+		g_ConfigDB.Get("rlinterface.address", std::string{}) : args.Get("rl-interface")};
 
 	debug_printf("RL interface listening on %s\n", server_address.c_str());
 	return std::make_optional<RL::Interface>(server_address.c_str());

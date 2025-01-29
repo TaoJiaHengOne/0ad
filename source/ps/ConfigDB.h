@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -34,6 +34,8 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 /**
@@ -93,6 +95,21 @@ public:
 	void GetValue(EConfigNamespace ns, const CStr& name, double& value);
 	///@copydoc CConfigDB::GetValue
 	void GetValue(EConfigNamespace ns, const CStr& name, std::string& value);
+
+	template<typename T>
+	[[nodiscard]] T Get(std::string name, T value, const EConfigNamespace ns = CFG_USER)
+	{
+		GetValue(ns, std::move(name), value);
+		return value;
+	}
+
+	template<typename T>
+	[[nodiscard]] static T GetIfInitialised(std::string name, T defaultValue,
+		const EConfigNamespace ns = CFG_USER)
+	{
+		return IsInitialised() ? g_ConfigDB.Get(std::move(name), std::move(defaultValue), ns) :
+			defaultValue;
+	}
 
 	/**
 	 * Returns true if changed with respect to last write on file
@@ -234,11 +251,4 @@ private:
 	std::multimap<CStr, std::function<void()>>::iterator m_Ptr;
 	CConfigDB& m_ConfigDB;
 };
-
-
-// stores the value of the given key into <destination>. this quasi-template
-// convenience wrapper on top of GetValue simplifies user code
-#define CFG_GET_VAL(name, destination)\
-	g_ConfigDB.GetValue(CFG_USER, name, destination)
-
 #endif // INCLUDED_CONFIGDB

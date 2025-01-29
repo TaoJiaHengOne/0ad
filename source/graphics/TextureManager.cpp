@@ -541,10 +541,10 @@ public:
 		defaultSamplerDesc.addressModeV = texture->m_Properties.m_AddressModeV;
 		if (texture->m_Properties.m_AnisotropicFilterEnabled && m_Device->GetCapabilities().anisotropicFiltering)
 		{
-			int maxAnisotropy = 1;
-			CFG_GET_VAL("textures.maxanisotropy", maxAnisotropy);
+			const int maxAnisotropy{g_ConfigDB.Get("textures.maxanisotropy", 1)};
 			const int allowedValues[] = {2, 4, 8, 16};
-			if (std::find(std::begin(allowedValues), std::end(allowedValues), maxAnisotropy) != std::end(allowedValues))
+			if (std::find(std::begin(allowedValues), std::end(allowedValues), maxAnisotropy) !=
+				std::end(allowedValues))
 			{
 				defaultSamplerDesc.anisotropyEnabled = true;
 				defaultSamplerDesc.maxAnisotropy = maxAnisotropy;
@@ -553,8 +553,7 @@ public:
 
 		if (!texture->m_Properties.m_IgnoreQuality)
 		{
-			int quality = 2;
-			CFG_GET_VAL("textures.quality", quality);
+			const int quality{g_ConfigDB.Get("textures.quality", 2)};
 			if (quality == 1)
 			{
 				if (MIPLevelCount > 1 && std::min(width, height) > 8)

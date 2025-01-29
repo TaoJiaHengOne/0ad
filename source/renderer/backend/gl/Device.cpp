@@ -347,9 +347,7 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 	}
 
 	// Some drivers might invalidate an incorrect surface which leads to artifacts.
-	bool enableFramebufferInvalidating = false;
-	CFG_GET_VAL("renderer.backend.gl.enableframebufferinvalidating", enableFramebufferInvalidating);
-	if (enableFramebufferInvalidating)
+	if (g_ConfigDB.Get("renderer.backend.gl.enableframebufferinvalidating", false))
 	{
 #if CONFIG2_GLES
 		device->m_UseFramebufferInvalidating = ogl_HaveExtension("GL_EXT_discard_framebuffer");
@@ -410,12 +408,9 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 	if (hasDebug)
 	{
 #ifdef NDEBUG
-		bool enableDebugMessages = false;
-		CFG_GET_VAL("renderer.backend.debugmessages", enableDebugMessages);
-		capabilities.debugLabels = false;
-		CFG_GET_VAL("renderer.backend.debuglabels", capabilities.debugLabels);
-		capabilities.debugScopedLabels = false;
-		CFG_GET_VAL("renderer.backend.debugscopedlabels", capabilities.debugScopedLabels);
+		const bool enableDebugMessages{g_ConfigDB.Get("renderer.backend.debugmessages", false)};
+		capabilities.debugLabels = g_ConfigDB.Get("renderer.backend.debuglabels", false);
+		capabilities.debugScopedLabels = g_ConfigDB.Get("renderer.backend.debugscopedlabels", false);
 #else
 		const bool enableDebugMessages = true;
 		capabilities.debugLabels = true;
@@ -987,10 +982,8 @@ void CDevice::Present()
 		ogl_WarnIfError();
 	}
 
-	bool checkGLErrorAfterSwap = false;
-	CFG_GET_VAL("gl.checkerrorafterswap", checkGLErrorAfterSwap);
 #if defined(NDEBUG)
-	if (!checkGLErrorAfterSwap)
+	if (!g_ConfigDB.Get("gl.checkerrorafterswap", false))
 		return;
 #endif
 	PROFILE3("error check");
