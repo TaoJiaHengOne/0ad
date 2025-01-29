@@ -1016,21 +1016,21 @@ bool CDevice::IsTextureFormatSupported(const Format format) const
 	case Format::UNDEFINED:
 		break;
 
-	case Format::R8G8B8_UNORM: FALLTHROUGH;
-	case Format::R8G8B8A8_UNORM: FALLTHROUGH;
-	case Format::A8_UNORM: FALLTHROUGH;
+	case Format::R8G8B8_UNORM:
+	case Format::R8G8B8A8_UNORM:
+	case Format::A8_UNORM:
 	case Format::L8_UNORM:
 		supported = true;
 		break;
 
-	case Format::R32_SFLOAT: FALLTHROUGH;
-	case Format::R32G32_SFLOAT: FALLTHROUGH;
-	case Format::R32G32B32_SFLOAT: FALLTHROUGH;
+	case Format::R32_SFLOAT:
+	case Format::R32G32_SFLOAT:
+	case Format::R32G32B32_SFLOAT:
 	case Format::R32G32B32A32_SFLOAT:
 		break;
 
-	case Format::D16_UNORM: FALLTHROUGH;
-	case Format::D24_UNORM: FALLTHROUGH;
+	case Format::D16_UNORM:
+	case Format::D24_UNORM:
 	case Format::D32_SFLOAT:
 		supported = true;
 		break;
@@ -1043,9 +1043,9 @@ bool CDevice::IsTextureFormatSupported(const Format format) const
 	case Format::D32_SFLOAT_S8_UINT:
 		break;
 
-	case Format::BC1_RGB_UNORM: FALLTHROUGH;
-	case Format::BC1_RGBA_UNORM: FALLTHROUGH;
-	case Format::BC2_UNORM: FALLTHROUGH;
+	case Format::BC1_RGB_UNORM:
+	case Format::BC1_RGBA_UNORM:
+	case Format::BC2_UNORM:
 	case Format::BC3_UNORM:
 		supported = m_Capabilities.S3TC;
 		break;

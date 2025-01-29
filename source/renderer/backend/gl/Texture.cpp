@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 
 #include "Texture.h"
 
-#include "lib/code_annotation.h"
 #include "lib/config2.h"
 #include "renderer/backend/gl/Device.h"
 #include "renderer/backend/gl/DeviceCommandContext.h"
@@ -243,9 +242,9 @@ std::unique_ptr<CTexture> CTexture::Create(
 			pixelType = GL_UNSIGNED_INT_24_8_EXT;
 			break;
 #endif
-		case Format::BC1_RGB_UNORM: FALLTHROUGH;
-		case Format::BC1_RGBA_UNORM: FALLTHROUGH;
-		case Format::BC2_UNORM: FALLTHROUGH;
+		case Format::BC1_RGB_UNORM:
+		case Format::BC1_RGBA_UNORM:
+		case Format::BC2_UNORM:
 		case Format::BC3_UNORM:
 			compressedFormat = true;
 			break;

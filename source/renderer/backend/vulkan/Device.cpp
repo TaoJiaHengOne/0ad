@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -839,9 +839,9 @@ bool CDevice::IsTextureFormatSupported(const Format format) const
 	case Format::R8G8B8_UNORM:
 		return false;
 
-	case Format::BC1_RGB_UNORM: FALLTHROUGH;
-	case Format::BC1_RGBA_UNORM: FALLTHROUGH;
-	case Format::BC2_UNORM: FALLTHROUGH;
+	case Format::BC1_RGB_UNORM:
+	case Format::BC1_RGBA_UNORM:
+	case Format::BC2_UNORM:
 	case Format::BC3_UNORM:
 		if (m_Capabilities.S3TC)
 			return true;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -127,7 +127,7 @@ std::unique_ptr<icu::DateFormat> CreateDateTimeInstance(const L10n::DateTimeType
 		return std::unique_ptr<icu::DateFormat>{
 			icu::SimpleDateFormat::createTimeInstance(style, locale)};
 
-	case L10n::DateTime: FALLTHROUGH;
+	case L10n::DateTime:
 	default:
 		return std::unique_ptr<icu::DateFormat>{
 			icu::SimpleDateFormat::createDateTimeInstance(style, style, locale)};

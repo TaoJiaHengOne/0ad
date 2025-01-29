@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 
 #include "Mapping.h"
 
-#include "lib/code_annotation.h"
 #include "lib/config2.h"
 
 namespace Renderer
@@ -95,9 +94,9 @@ GLenum FromBlendFactor(const BlendFactor blendFactor)
 	CASE(SRC_ALPHA_SATURATE);
 #undef CASE
 	// Dual source blending presents only in GL_VERSION >= 3.3.
-	case BlendFactor::SRC1_COLOR: FALLTHROUGH;
-	case BlendFactor::ONE_MINUS_SRC1_COLOR: FALLTHROUGH;
-	case BlendFactor::SRC1_ALPHA: FALLTHROUGH;
+	case BlendFactor::SRC1_COLOR:
+	case BlendFactor::ONE_MINUS_SRC1_COLOR:
+	case BlendFactor::SRC1_ALPHA:
 	case BlendFactor::ONE_MINUS_SRC1_ALPHA:
 		debug_warn("Unsupported blend factor.");
 		break;
@@ -117,7 +116,7 @@ GLenum FromBlendOp(const BlendOp blendOp)
 	case BlendOp::MIN: mode = GL_MIN; break;
 	case BlendOp::MAX: mode = GL_MAX; break;
 #else
-	case BlendOp::MIN: FALLTHROUGH;
+	case BlendOp::MIN:
 	case BlendOp::MAX:
 		debug_warn("Unsupported blend op.");
 		break;

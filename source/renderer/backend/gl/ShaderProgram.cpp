@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -140,10 +140,10 @@ GLboolean NormalizedFromFormat(const Format format)
 {
 	switch (format)
 	{
-	case Format::R8G8_UNORM: FALLTHROUGH;
-	case Format::R8G8B8_UNORM: FALLTHROUGH;
-	case Format::R8G8B8A8_UNORM: FALLTHROUGH;
-	case Format::R16_UNORM: FALLTHROUGH;
+	case Format::R8G8_UNORM:
+	case Format::R8G8B8_UNORM:
+	case Format::R8G8B8A8_UNORM:
+	case Format::R16_UNORM:
 	case Format::R16G16_UNORM:
 		return GL_TRUE;
 	default:
@@ -1660,13 +1660,13 @@ void CShaderProgram::VertexAttribPointer(
 	case VertexAttributeStream::COLOR:
 		ColorPointer(format, stride, static_cast<const u8*>(data) + offset);
 		break;
-	case VertexAttributeStream::UV0: FALLTHROUGH;
-	case VertexAttributeStream::UV1: FALLTHROUGH;
-	case VertexAttributeStream::UV2: FALLTHROUGH;
-	case VertexAttributeStream::UV3: FALLTHROUGH;
-	case VertexAttributeStream::UV4: FALLTHROUGH;
-	case VertexAttributeStream::UV5: FALLTHROUGH;
-	case VertexAttributeStream::UV6: FALLTHROUGH;
+	case VertexAttributeStream::UV0:
+	case VertexAttributeStream::UV1:
+	case VertexAttributeStream::UV2:
+	case VertexAttributeStream::UV3:
+	case VertexAttributeStream::UV4:
+	case VertexAttributeStream::UV5:
+	case VertexAttributeStream::UV6:
 	case VertexAttributeStream::UV7:
 	{
 		const int indexOffset = static_cast<int>(stream) - static_cast<int>(VertexAttributeStream::UV0);
