@@ -17,6 +17,8 @@
 
 #include "lib/self_test.h"
 
+#include "lib/file/vfs/vfs.h"
+#include "lib/sysdep/dir_watch.h"
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
 #include "scriptinterface/FunctionWrapper.h"
@@ -26,11 +28,53 @@
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 
+#if OS_LINUX
+#include <cstdlib>
+#endif
+#if OS_WIN || OS_WIN64 || OS_MAC || OS_MACOSX
+#include <filesystem>
+#endif
+#include <fstream>
+
+Status wdir_watch_Init();
+Status wdir_watch_Shutdown();
+
+namespace
+{
+void ClearFromCache(const VfsPath& path)
+{
+#if OS_BSD
+	TS_SKIP("On BSD hotload isn't implemented.");
+#endif
+
+	OsPath file;
+	if (g_VFS->GetRealPath(path, file) != INFO::OK)
+		throw std::exception{};
+	PDirWatch dirWatch;
+	dir_watch_Add((file.Parent() / "").string8(), dirWatch);
+
+#if OS_WIN || OS_WIN64 || OS_MAC || OS_MACOSX
+	std::filesystem::last_write_time(file.string8(), std::filesystem::file_time_type::clock::now());
+#endif
+
+#if OS_LINUX
+	// On Linux only this aproach seems to trigger a file reload.
+	if (std::system(("touch " + file.string8()).c_str()) != 0)
+		throw std::runtime_error{"`touch` didn't work."};
+#endif
+
+	ReloadChangedFiles();
+}
+}
+
 class TestScriptModule : public CxxTest::TestSuite
 {
 public:
 	void setUp()
 	{
+		if constexpr (OS_WIN)
+			wdir_watch_Init();
+
 		g_VFS = CreateVfs();
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.scriptinterface" / "module" / "",
 			VFS_MOUNT_MUST_EXIST));
@@ -39,6 +83,9 @@ public:
 	void tearDown()
 	{
 		g_VFS.reset();
+
+		if constexpr (OS_WIN)
+			wdir_watch_Shutdown();
 	}
 
 	void test_StaticImport()
@@ -123,8 +170,9 @@ public:
 	{
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
-		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
+		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
 
+		auto& future = *result.begin();
 		TS_ASSERT(!future.IsDone());
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(future.IsDone());
@@ -136,8 +184,9 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_await_infinite.js");
+		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_await_infinite.js");
 
+		auto& future = *result.begin();
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(!future.IsDone());
 		TS_ASSERT_THROWS_ANYTHING(std::ignore = future.Get());
@@ -148,8 +197,8 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		Script::ModuleLoader::Future future0{
-			script.GetModuleLoader().LoadModule(rq, "empty.js")};
+		auto result{script.GetModuleLoader().LoadModule(rq, "empty.js")};
+		Script::ModuleLoader::Future& future0{*result.begin()};
 
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(future0.IsDone());
@@ -168,8 +217,9 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		Script::ModuleLoader::Future future0{
-			script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js")};
+		auto result{script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js")};
+		Script::ModuleLoader::Future& future0{*result.begin()};
+
 		Script::ModuleLoader::Future future1{std::move(future0)};
 		Script::ModuleLoader::Future future2;
 		future2 = std::move(future1);
@@ -189,11 +239,13 @@ public:
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
-		auto future{script.GetModuleLoader().LoadModule(rq, "delayed_blabbermouth.js")};
+		auto blabbermouthResult{script.GetModuleLoader().LoadModule(rq, "delayed_blabbermouth.js")};
 		TS_ASSERT_STR_NOT_CONTAINS(logger.GetOutput(), "blah blah blah");
+		auto future = std::move(*blabbermouthResult.begin());
 		TS_ASSERT(!future.IsDone());
 
-		future = script.GetModuleLoader().LoadModule(rq, "empty.js");
+		auto emptyResult{script.GetModuleLoader().LoadModule(rq, "empty.js")};
+		future = std::move(*emptyResult.begin());
 		TS_ASSERT(!future.IsDone());
 
 		g_ScriptContext->RunJobs();
@@ -208,8 +260,9 @@ public:
 
 		// To silence the error.
 		const TestLogger _;
-		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_throw.js");
+		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_throw.js");
 
+		auto& future = *result.begin();
 		g_ScriptContext->RunJobs();
 		TS_ASSERT(future.IsDone());
 		TS_ASSERT_THROWS_EQUALS(std::ignore = future.Get(), const std::runtime_error& e, e.what(),
@@ -221,9 +274,10 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "export.js");
-
+		auto result = script.GetModuleLoader().LoadModule(rq, "export.js");
 		g_ScriptContext->RunJobs();
+
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 
@@ -248,17 +302,17 @@ public:
 		const ScriptRequest rq{script};
 
 		{
-			auto future = script.GetModuleLoader().LoadModule(rq, "export.js");
+			auto result = script.GetModuleLoader().LoadModule(rq, "export.js");
 			g_ScriptContext->RunJobs();
-			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedObject ns{rq.cx, result.begin()->Get()};
 			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 			TS_ASSERT(ScriptFunction::CallVoid(rq, moduleValue, "mutate", 12));
 		}
 
 		{
-			auto future = script.GetModuleLoader().LoadModule(rq, "include/../export.js");
+			auto result = script.GetModuleLoader().LoadModule(rq, "include/../export.js");
 			g_ScriptContext->RunJobs();
-			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedObject ns{rq.cx, result.begin()->Get()};
 			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 			int value{0};
 			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
@@ -272,17 +326,17 @@ public:
 		const ScriptRequest rq{script};
 
 		{
-			auto future = script.GetModuleLoader().LoadModule(rq, "export.js");
+			auto result = script.GetModuleLoader().LoadModule(rq, "export.js");
 			g_ScriptContext->RunJobs();
-			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedObject ns{rq.cx, result.begin()->Get()};
 			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 			TS_ASSERT(ScriptFunction::CallVoid(rq, moduleValue, "mutate", 12));
 		}
 
 		{
-			auto future = script.GetModuleLoader().LoadModule(rq, "indirect.js");
+			auto result = script.GetModuleLoader().LoadModule(rq, "indirect.js");
 			g_ScriptContext->RunJobs();
-			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedObject ns{rq.cx, result.begin()->Get()};
 			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 			int value{0};
 			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
@@ -295,10 +349,10 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "export_default/immutable.js");
-
+		auto result = script.GetModuleLoader().LoadModule(rq, "export_default/immutable.js");
 		g_ScriptContext->RunJobs();
 
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 
@@ -324,10 +378,11 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "export_default/does_not_work_around.js");
+		auto result = script.GetModuleLoader().LoadModule(rq, "export_default/does_not_work_around.js");
 
 		g_ScriptContext->RunJobs();
 
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 
@@ -342,10 +397,10 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "export_default/works_around.js");
-
+		auto result = script.GetModuleLoader().LoadModule(rq, "export_default/works_around.js");
 		g_ScriptContext->RunJobs();
 
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 
@@ -359,8 +414,10 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
-		future = script.GetModuleLoader().LoadModule(rq, "export.js");
+		auto awaitResult = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
+		auto future = std::move(*awaitResult.begin());
+		auto exportResult = script.GetModuleLoader().LoadModule(rq, "export.js");
+		future = std::move(*exportResult.begin());
 
 		g_ScriptContext->RunJobs();
 		JS::RootedObject ns{rq.cx, future.Get()};
@@ -376,10 +433,10 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "dynamic_import.js");
-
+		auto result = script.GetModuleLoader().LoadModule(rq, "dynamic_import.js");
 		g_ScriptContext->RunJobs();
 
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 
@@ -407,10 +464,10 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "meta.js");
-
+		auto result = script.GetModuleLoader().LoadModule(rq, "meta.js");
 		g_ScriptContext->RunJobs();
 
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		const JS::RootedValue modNamespace{rq.cx, JS::ObjectValue(*ns)};
 
@@ -427,15 +484,186 @@ public:
 		ScriptInterface script{"Test", "Test", g_ScriptContext};
 		const ScriptRequest rq{script};
 
-		auto future = script.GetModuleLoader().LoadModule(rq, "modified/base.js");
-
+		auto result = script.GetModuleLoader().LoadModule(rq, "modified/base.js");
 		g_ScriptContext->RunJobs();
 
+		auto& future = *result.begin();
 		JS::RootedObject ns{rq.cx, future.Get()};
 		JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
 
-		std::string result;
-		TS_ASSERT(ScriptFunction::Call(rq, moduleValue, "fn", result));
-		TS_ASSERT_STR_EQUALS(result, "Base01");
+		std::string returnValue;
+		TS_ASSERT(ScriptFunction::Call(rq, moduleValue, "fn", returnValue));
+		TS_ASSERT_STR_EQUALS(returnValue, "Base01");
+	}
+
+	void test_Hotload()
+	{
+		constexpr int goal{2};
+
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		int counter{0};
+		for (auto& future : script.GetModuleLoader().LoadModule(rq, "empty.js"))
+		{
+			TS_ASSERT(!future.IsDone());
+
+			if (counter != 0)
+				ClearFromCache("empty.js");
+
+			g_ScriptContext->RunJobs();
+			TS_ASSERT(future.IsDone());
+
+			if (counter == goal)
+				break;
+
+			++counter;
+		}
+
+		TS_ASSERT_EQUALS(counter, goal);
+	}
+
+	void test_HotloadWithoutIncrement()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(result.begin()->IsDone());
+		ClearFromCache("top_level_await_finite.js");
+		TS_ASSERT(result.begin()->IsDone());
+	}
+
+	void test_HotloadIndipendence()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		// It's intended to be used as in the test above but it's easier to test when it's unrolled.
+		auto result = script.GetModuleLoader().LoadModule(rq, "export.js");
+		auto iter = result.begin();
+		{
+			auto& future = *iter;
+			g_ScriptContext->RunJobs();
+			JS::RootedObject ns{rq.cx, future.Get()};
+			const JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+			TS_ASSERT(ScriptFunction::CallVoid(rq, moduleValue, "mutate", 12));
+
+			int value{0};
+			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+			TS_ASSERT_EQUALS(value, 12);
+		}
+		++iter;
+		{
+			auto& future = *iter;
+			g_ScriptContext->RunJobs();
+			TS_ASSERT(!future.IsDone());
+			ClearFromCache("export.js");
+			g_ScriptContext->RunJobs();
+			TS_ASSERT(future.IsDone());
+
+			JS::RootedObject ns{rq.cx, future.Get()};
+			JS::RootedValue moduleValue{rq.cx, JS::ObjectValue(*ns)};
+
+			int value{0};
+			TS_ASSERT(Script::GetProperty(rq, moduleValue, "value", value));
+			TS_ASSERT_DIFFERS(value, 12);
+			TS_ASSERT_EQUALS(value, 6);
+		}
+	}
+
+	void test_HotloadModified()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto result = script.GetModuleLoader().LoadModule(rq, "empty.js");
+		auto iter = result.begin();
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(iter->IsDone());
+
+		++iter;
+		TS_ASSERT(!iter->IsDone());
+
+		ClearFromCache("empty~trigger.append.js");
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(iter->IsDone());
+	}
+
+	void test_HotloadIndirect()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		auto result = script.GetModuleLoader().LoadModule(rq, "indirect.js");
+		auto iter = result.begin();
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(iter->IsDone());
+
+		++iter;
+		ClearFromCache("export.js");
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT(iter->IsDone());
+	}
+
+	void test_HotloadUnobserved()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		{
+			const ScriptRequest rq{script};
+
+			TestLogger logger;
+			auto result = script.GetModuleLoader().LoadModule(rq, "blabbermouth.js");
+			g_ScriptContext->RunJobs();
+			TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
+		}
+
+		{
+			TestLogger logger;
+			ClearFromCache("blabbermouth.js");
+			g_ScriptContext->RunJobs();
+			TS_ASSERT_STR_NOT_CONTAINS(logger.GetOutput(), "blah blah blah");
+		}
+
+		{
+			const ScriptRequest rq{script};
+
+			TestLogger logger;
+			auto result = script.GetModuleLoader().LoadModule(rq, "blabbermouth.js");
+			g_ScriptContext->RunJobs();
+			TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
+		}
+	}
+
+	void test_HotloadAfterResultDestruction()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		{
+			const ScriptRequest rq{script};
+
+			TestLogger logger;
+			auto result = script.GetModuleLoader().LoadModule(rq, "blabbermouth.js");
+			g_ScriptContext->RunJobs();
+			TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
+
+			auto iter = result.begin();
+			TS_ASSERT(iter->IsDone());
+			++iter;
+		}
+
+		TestLogger logger;
+		ClearFromCache("blabbermouth.js");
+		g_ScriptContext->RunJobs();
+		TS_ASSERT_STR_NOT_CONTAINS(logger.GetOutput(), "blah blah blah");
+	}
+
+	void test_ResultDestructionAfterScriptRequestDestruction()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		auto _ = script.GetModuleLoader().LoadModule(ScriptRequest{script}, "empty.js");
 	}
 };

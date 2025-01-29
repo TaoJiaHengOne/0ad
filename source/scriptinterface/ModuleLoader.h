@@ -21,9 +21,12 @@
 #include "lib/file/vfs/vfs_path.h"
 #include "scriptinterface/ScriptTypes.h"
 
+#include <cstddef>
 #include <exception>
+#include <functional>
 #include <unordered_map>
 #include <variant>
+#include <vector>
 
 class ScriptContext;
 class ScriptRequest;
@@ -35,79 +38,161 @@ class ModuleLoader
 public:
 	friend ScriptContext;
 
-	class CompiledModule
-	{
-	public:
-		CompiledModule(const ScriptRequest& rq, const VfsPath& filePath);
-		JS::PersistentRootedObject m_ModuleObject;
-	};
+	class CompiledModule;
+	class Future;
+	class Result;
 
 	using RegistryType = std::unordered_map<VfsPath, CompiledModule>;
 
-	class Future
-	{
-	public:
-		struct Evaluating
-		{
-			JS::PersistentRootedObject moduleNamespace;
-			JS::PersistentRootedObject fulfill;
-			JS::PersistentRootedObject reject;
-		};
-		struct Fulfilled
-		{
-			JS::PersistentRootedObject moduleNamespace;
-		};
-		struct Rejected
-		{
-			std::exception_ptr error;
-		};
-		struct Invalid {};
-		using Status = std::variant<Evaluating, Fulfilled, Rejected, Invalid>;
-
-		explicit Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath);
-		Future() = default;
-		Future(const Future&) = delete;
-		Future& operator=(const Future&) = delete;
-		Future(Future&& other) noexcept;
-		Future& operator=(Future&& other) noexcept;
-		~Future();
-
-		[[nodiscard]] bool IsDone() const noexcept;
-
-		/**
-		 * Throws if the evaluation of the module failed.
-		 * @return The module namespace. All exported values are a property
-		 *	of this object. @c default is a property with name "default".
-		 */
-		[[nodiscard]] JSObject* Get();
-
-	private:
-		// It's save to not require a `JS::HandleValue` here.
-		void SetReservedSlot(JS::Value privateValue) noexcept;
-
-		Status m_Status{Invalid{}};
-	};
+	ModuleLoader();
+	ModuleLoader(const ModuleLoader&) = delete;
+	ModuleLoader& operator=(const ModuleLoader&) = delete;
+	ModuleLoader(ModuleLoader&&) = delete;
+	ModuleLoader& operator=(ModuleLoader&&) = delete;
+	~ModuleLoader();
 
 	/**
 	 * Load the specified module and all module it imports recursively.
 	 *
 	 * @param rq @c globalThis is taken from this @c ScriptRequest.
-	 * @param modulePath The path to the file which should be loaded as a module.
-	 * @return A future that is fulfilled when the evaluation of the module
-	 *	completes.
+	 * @param modulePath The path to the file which should be loaded as a
+	 *	module.
+	 * @return A range of futures. The compilation of the first future is
+	 *	already started. The evaluation of the subsequent futures start once
+	 *	the module file is edited.
 	 */
-	[[nodiscard]] Future LoadModule(const ScriptRequest& rq, const VfsPath& modulePath);
+	[[nodiscard]] Result LoadModule(const ScriptRequest& rq, const VfsPath& modulePath);
 
 private:
 	// Functions used by the `ScriptContext`.
 	[[nodiscard]] static bool MetadataHook(JSContext* cx, JS::HandleValue privateValue,
 		JS::HandleObject metaObject) noexcept;
-	[[nodiscard]] static JSObject* ResolveHook(JSContext* cx, JS::HandleValue,
+	[[nodiscard]] static JSObject* ResolveHook(JSContext* cx, JS::HandleValue referencingPrivate,
 		JS::HandleObject moduleRequest) noexcept;
 	[[nodiscard]] static bool DynamicImportHook(JSContext* cx, JS::HandleValue referencingPrivate,
 		JS::HandleObject moduleRequest, JS::HandleObject promise) noexcept;
 
 	RegistryType m_Registry;
+};
+
+class ModuleLoader::CompiledModule
+{
+public:
+	CompiledModule(const ScriptRequest& rq, const VfsPath& filePath);
+
+	std::tuple<const std::vector<VfsPath>&,
+		const std::vector<std::reference_wrapper<Result>>&> GetRequesters() const;
+
+	void AddRequester(VfsPath importer);
+	void AddRequester(Result& callback);
+	void RemoveRequester(Result* toErase);
+
+	JS::PersistentRootedObject m_ModuleObject;
+private:
+	std::vector<VfsPath> m_Importer;
+	std::vector<std::reference_wrapper<Result>> m_Callbacks;
+};
+
+/**
+ * The future is fulfilled once the evaluation of the module
+ * completes.
+ * Note: The evaluation might not be started yet.
+ */
+class ModuleLoader::Future
+{
+	friend Result;
+public:
+	struct Evaluating
+	{
+		JS::PersistentRootedObject moduleNamespace;
+		JS::PersistentRootedObject fulfill;
+		JS::PersistentRootedObject reject;
+	};
+	struct Fulfilled
+	{
+		JS::PersistentRootedObject moduleNamespace;
+	};
+	struct Rejected
+	{
+		std::exception_ptr error;
+	};
+	struct WaitingForFileChange {};
+	struct Invalid {};
+	using Status = std::variant<Evaluating, Fulfilled, Rejected, WaitingForFileChange, Invalid>;
+
+	explicit Future(const ScriptRequest& rq, RegistryType& reqistry, Result& result, VfsPath modulePath);
+	Future() = default;
+	Future(const Future&) = delete;
+	Future& operator=(const Future&) = delete;
+	Future(Future&& other) noexcept;
+	Future& operator=(Future&& other) noexcept;
+	~Future();
+
+	[[nodiscard]] bool IsDone() const noexcept;
+
+	/**
+	 * Throws if the evaluation of the module failed.
+	 * @return The module namespace. All exported values are a property
+	 *	of this object. @c default is a property with name "default".
+	 */
+	[[nodiscard]] JSObject* Get();
+
+private:
+	[[nodiscard]] bool IsWaiting() const noexcept;
+	void SetWaiting() noexcept;
+
+	// It's save to not require a `JS::HandleValue` here.
+	void SetReservedSlot(JS::Value privateValue) noexcept;
+
+	Status m_Status{Invalid{}};
+};
+
+class ModuleLoader::Result
+{
+	class iterator;
+public:
+	explicit Result(const ScriptRequest& rq, const VfsPath& modulePath);
+	Result(const Result&) = delete;
+	Result& operator=(const Result&) = delete;
+	Result(Result&&) = delete;
+	Result& operator=(Result&&) = delete;
+	~Result();
+
+	[[nodiscard]] iterator begin() noexcept;
+	[[nodiscard]] iterator end() const noexcept;
+
+	void Resume();
+
+private:
+	JSContext* m_Cx;
+	RegistryType& m_Registry;
+	VfsPath m_ModulePath;
+	Future m_Storage;
+};
+
+class ModuleLoader::Result::iterator
+{
+public:
+	using difference_type = std::ptrdiff_t;
+	using value_type = Future;
+	using pointer = value_type*;
+	using reference = value_type&;
+	using iterator_category = std::input_iterator_tag;
+
+	explicit iterator() = default;
+	explicit iterator(Result& backReference);
+
+	[[nodiscard]] reference operator*() const;
+	[[nodiscard]] pointer operator->() const;
+
+	iterator& operator++();
+	iterator& operator++(int);
+
+	[[nodiscard]] bool operator==(const iterator&);
+	[[nodiscard]] bool operator!=(const iterator&);
+
+private:
+	Result* backRef{nullptr};
 };
 } // namespace Script
 

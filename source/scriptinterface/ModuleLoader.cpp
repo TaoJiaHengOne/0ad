@@ -114,16 +114,19 @@ VfsPath GetBaseFilename(const VfsPath& filename)
 	return file.DecodeUTF8();
 }
 
+template<typename Requester>
 [[nodiscard]] JSObject* CompileModule(const ScriptRequest& rq, ModuleLoader::RegistryType& registry,
-	const VfsPath& filePath)
+	const VfsPath& filePath, Requester&& requester)
 {
 	const VfsPath normalizedPath{filePath.fileSystemPath().lexically_normal().generic_string()};
 	const auto insertResult = registry.try_emplace(normalizedPath, rq, normalizedPath);
-	return std::get<1>(*std::get<0>(insertResult)).m_ModuleObject;
+	ModuleLoader::CompiledModule& compiledModule{std::get<1>(*std::get<0>(insertResult))};
+	compiledModule.AddRequester(std::forward<Requester>(requester));
+	return compiledModule.m_ModuleObject;
 }
 
-[[nodiscard]] JSObject* Resolve(const ScriptRequest& rq,
-	ModuleLoader::RegistryType& registry, JS::HandleObject moduleRequest)
+[[nodiscard]] JSObject* Resolve(const ScriptRequest& rq, ModuleLoader::RegistryType& registry,
+	JS::HandleValue referencingModule, JS::HandleObject moduleRequest)
 {
 	std::string includeString;
 	const JS::RootedValue pathValue{rq.cx,
@@ -131,7 +134,11 @@ VfsPath GetBaseFilename(const VfsPath& filename)
 	if (!Script::FromJSVal(rq, pathValue, includeString))
 		throw std::logic_error{"The module-name to import isn't a string."};
 
-	return CompileModule(rq, registry, includeString);
+	std::string includingModule;
+	if (!Script::FromJSProperty(rq, referencingModule, "path", includingModule))
+		throw std::logic_error{"The importing module doesn't have a \"path\" property."};
+
+	return CompileModule(rq, registry, includeString, includingModule);
 }
 
 [[nodiscard]] JSObject* Evaluate(const ScriptRequest& rq, JS::HandleObject mod)
@@ -150,6 +157,39 @@ VfsPath GetBaseFilename(const VfsPath& filename)
 	}
 
 	return &val.toObject();
+}
+
+Status FileChangedHook(void* param, const VfsPath& changedFile)
+{
+	ModuleLoader::RegistryType& registry{*static_cast<ModuleLoader::RegistryType*>(param)};
+
+	const VfsPath proposedBasePath{GetBaseFilename(changedFile)};
+
+	std::vector<VfsPath> modulesToErase{proposedBasePath.empty() ? changedFile : proposedBasePath};
+	std::vector<std::reference_wrapper<ModuleLoader::Result>> queries;
+	while (!modulesToErase.empty())
+	{
+		const VfsPath path{modulesToErase.back()};
+		modulesToErase.pop_back();
+		const VfsPath pathWithExtension{path.ChangeExtension(".js")};
+		const auto it = registry.find(pathWithExtension);
+		if (it == registry.end())
+			continue;
+
+		ModuleLoader::CompiledModule compiledModule{std::move(std::get<1>(*it))};
+		registry.erase(it);
+
+		const auto [additionalModules, callbacks] = compiledModule.GetRequesters();
+		modulesToErase.insert(modulesToErase.end(),
+			additionalModules.begin(), additionalModules.end());
+
+		queries.insert(queries.end(), callbacks.begin(), callbacks.end());
+	}
+
+	for (ModuleLoader::Result& result : queries)
+		result.Resume();
+
+	return INFO::OK;
 }
 
 template<bool reject>
@@ -228,7 +268,34 @@ ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsP
 	JS::SetModulePrivate(m_ModuleObject, modInfo);
 }
 
-ModuleLoader::Future::Future(const ScriptRequest& rq, ModuleLoader& loader, const VfsPath& modulePath):
+[[nodiscard]] std::tuple<const std::vector<VfsPath>&,
+	const std::vector<std::reference_wrapper<ModuleLoader::Result>>&>
+	ModuleLoader::CompiledModule::GetRequesters() const
+{
+	return {m_Importer, m_Callbacks};
+}
+
+void ModuleLoader::CompiledModule::AddRequester(VfsPath importer)
+{
+	m_Importer.push_back(std::move(importer));
+}
+
+void ModuleLoader::CompiledModule::AddRequester(Result& callback)
+{
+	m_Callbacks.push_back(callback);
+}
+
+void ModuleLoader::CompiledModule::RemoveRequester(Result* toErase)
+{
+	m_Callbacks.erase(std::remove_if(m_Callbacks.begin(), m_Callbacks.end(),
+		[&](Result& elem)
+		{
+			return &elem == toErase;
+		}), m_Callbacks.end());
+}
+
+ModuleLoader::Future::Future(const ScriptRequest& rq, RegistryType& registry, Result& result,
+	VfsPath modulePath):
 	m_Status{Evaluating{{rq.cx, nullptr}, {rq.cx, JS_NewObject(rq.cx, &callbackClass<false>)},
 		{rq.cx, JS_NewObject(rq.cx, &callbackClass<true>)}}}
 {
@@ -240,7 +307,7 @@ ModuleLoader::Future::Future(const ScriptRequest& rq, ModuleLoader& loader, cons
 	// - Accessing values which are not yet exported results in an error. These errors might implicitly be
 	//	dropped.
 
-	JS::RootedObject mod{rq.cx, CompileModule(rq, loader.m_Registry, modulePath)};
+	JS::RootedObject mod{rq.cx, CompileModule(rq, registry, modulePath, result)};
 	JS::RootedObject promise{rq.cx, Evaluate(rq, mod)};
 	Evaluating& evaluatingStatus{std::get<Evaluating>(m_Status)};
 	evaluatingStatus.moduleNamespace = JS::GetModuleNamespace(rq.cx, mod);
@@ -285,6 +352,16 @@ ModuleLoader::Future::~Future()
 	std::rethrow_exception(std::move(error));
 }
 
+[[nodiscard]] bool ModuleLoader::Future::IsWaiting() const noexcept
+{
+	return std::holds_alternative<WaitingForFileChange>(m_Status);
+}
+
+void ModuleLoader::Future::SetWaiting() noexcept
+{
+	m_Status.emplace<WaitingForFileChange>();
+}
+
 void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 {
 	Evaluating* evaluatingStatus{std::get_if<Evaluating>(&m_Status)};
@@ -296,10 +373,90 @@ void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 		JS::SetReservedSlot(evaluatingStatus->reject, 0, privateValue);
 }
 
-[[nodiscard]] ModuleLoader::Future ModuleLoader::LoadModule(const ScriptRequest& rq,
+ModuleLoader::Result::iterator::iterator(Result& backReference):
+	backRef{&backReference}
+{}
+
+[[nodiscard]] ModuleLoader::Future& ModuleLoader::Result::iterator::operator*() const
+{
+	return backRef->m_Storage;
+}
+
+[[nodiscard]] ModuleLoader::Future* ModuleLoader::Result::iterator::operator->() const
+{
+	return &(**this);
+}
+
+ModuleLoader::Result::iterator& ModuleLoader::Result::iterator::operator++()
+{
+	backRef->m_Storage.SetWaiting();
+	return *this;
+}
+
+ModuleLoader::Result::iterator& ModuleLoader::Result::iterator::operator++(int)
+{
+	++(*this);
+	// All iterator of this `LoadModuleResult` refere to the same `LoadModuleResult`.
+	return *this;
+}
+
+[[nodiscard]] bool ModuleLoader::Result::iterator::operator==(const iterator&)
+{
+	return false;
+}
+
+[[nodiscard]] bool ModuleLoader::Result::iterator::operator!=(const iterator&)
+{
+	return true;
+}
+
+ModuleLoader::Result::Result(const ScriptRequest& rq, const VfsPath& modulePath):
+	m_Cx{rq.cx},
+	m_Registry{rq.GetScriptInterface().GetModuleLoader().m_Registry},
+	m_ModulePath{modulePath},
+	m_Storage{rq, m_Registry, *this, m_ModulePath}
+{
+}
+
+ModuleLoader::Result::~Result()
+{
+	const auto modIter = m_Registry.find(m_ModulePath);
+	if (modIter == m_Registry.end())
+		return;
+
+	std::get<1>(*modIter).RemoveRequester(this);
+}
+
+[[nodiscard]] ModuleLoader::Result::iterator ModuleLoader::Result::begin() noexcept
+{
+	return ModuleLoader::Result::iterator{*this};
+}
+
+[[nodiscard]] ModuleLoader::Result::iterator ModuleLoader::Result::end() const noexcept
+{
+	return ModuleLoader::Result::iterator{};
+}
+
+void ModuleLoader::Result::Resume()
+{
+	if (m_Storage.IsWaiting())
+		m_Storage = ModuleLoader::Future{m_Cx, m_Registry, *this, m_ModulePath};
+}
+
+ModuleLoader::ModuleLoader()
+{
+	RegisterFileReloadFunc(FileChangedHook, static_cast<void*>(&m_Registry));
+}
+
+ModuleLoader::~ModuleLoader()
+{
+	UnregisterFileReloadFunc(FileChangedHook, static_cast<void*>(&m_Registry));
+}
+
+[[nodiscard]] ModuleLoader::Result ModuleLoader::LoadModule(const ScriptRequest& rq,
 	const VfsPath& modulePath)
 {
-	return Future{rq, *this, modulePath};
+	return Result{rq, modulePath};
 }
 
 /**
@@ -322,13 +479,14 @@ void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 	return true;
 }
 
-[[nodiscard]] JSObject* ModuleLoader::ResolveHook(JSContext* cx, JS::HandleValue,
-	JS::HandleObject moduleRequest) noexcept
+[[nodiscard]] JSObject* ModuleLoader::ResolveHook(JSContext* cx, JS::HandleValue referencingPrivate,
+	JS::HandleObject request) noexcept
 {
 	try
 	{
 		const ScriptRequest rq{cx};
-		return Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry, moduleRequest);
+		return Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry, referencingPrivate,
+			request);
 	}
 	catch (const std::exception& e)
 	{
@@ -349,7 +507,7 @@ void ModuleLoader::Future::SetReservedSlot(JS::Value privateValue) noexcept
 	try
 	{
 		JS::RootedObject mod{rq.cx, Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry,
-			moduleRequest)};
+			referencingPrivate, moduleRequest)};
 		JS::RootedObject evaluationPromise{rq.cx, Evaluate(rq, mod)};
 		return JS::FinishDynamicModuleImport(rq.cx, evaluationPromise, referencingPrivate,
 			moduleRequest, promise);
