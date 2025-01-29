@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -385,7 +385,7 @@ void CTexturedLineRData::CreateLineCap(const SOverlayTexturedLine& line, const C
 			radius *= 1.5f; // make it a bit sharper (note that we don't use the radius for the butt-end corner points so it should be ok)
 			centerVertex.m_UV.X = 0.480f; // slight visual correction to make the texture match up better at the corner points
 		}
-		FALLTHROUGH;
+		[[fallthrough]];
 	case SOverlayTexturedLine::LINECAP_ROUND:
 		{
 			// Draw a rounded line cap in the 3D plane of the line specified by the two corner points and the normal vector of the

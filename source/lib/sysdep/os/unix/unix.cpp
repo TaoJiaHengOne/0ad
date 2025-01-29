@@ -1,4 +1,4 @@
-/* Copyright (c) 2021 Wildfire Games.
+/* Copyright (c) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -173,7 +173,7 @@ static ErrorReactionInternal try_gui_display_error(const wchar_t* text, bool man
 	{
 	case 103: // Debugger
 		udbg_launch_debugger();
-		FALLTHROUGH;
+		[[fallthrough]];
 
 	case 102: // Break
 		if(manual_break)
@@ -245,7 +245,7 @@ ErrorReactionInternal sys_display_error(const wchar_t* text, size_t flags)
 		case EOF:
 		case 'd': case 'D':
 			udbg_launch_debugger();
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		case 'b': case 'B':
 			if(manual_break)

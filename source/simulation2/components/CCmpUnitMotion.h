@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -411,7 +411,7 @@ public:
 			const CMessageValueModification& msgData = static_cast<const CMessageValueModification&> (msg);
 			if (msgData.component != L"UnitMotion")
 				break;
-			FALLTHROUGH;
+			[[fallthrough]];
 		}
 		case MT_OwnershipChanged:
 		{
