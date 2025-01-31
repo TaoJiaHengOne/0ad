@@ -5,7 +5,7 @@
     <Height>10.0</Height>
   </Footprint>
   <Identity>
-    <SpecificName>snwt</SpecificName>
+    <SpecificName>Snwt</SpecificName>
   </Identity>
   <Obstruction>
     <Static width="20.0" depth="17.0"/>
