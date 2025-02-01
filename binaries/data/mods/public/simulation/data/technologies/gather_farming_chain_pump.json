@@ -14,7 +14,7 @@
 	},
 	"requirementsTooltip": "Unlocked in City Phase.",
 	"icon": "flood_control.png",
-	"researchTime": 70,
+	"researchTime": 60,
 	"tooltip": "Workers +20% grain gather rate.",
 	"modifications": [
 		{ "value": "ResourceGatherer/Rates/food.grain", "multiply": 1.2 }

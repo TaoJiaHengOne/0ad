@@ -13,7 +13,7 @@
 	},
 	"requirementsTooltip": "Unlocked in Village Phase.",
 	"icon": "torsion_springs.png",
-	"researchTime": 50,
+	"researchTime": 40,
 	"tooltip": "Workers +20% grain gather rate.",
 	"modifications": [
 		{ "value": "ResourceGatherer/Rates/food.grain", "multiply": 1.2 }
