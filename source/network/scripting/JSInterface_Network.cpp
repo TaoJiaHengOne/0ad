@@ -224,10 +224,13 @@ void AssignNetworkPlayer(int playerID, const CStr& guid)
 	g_NetClient->SendAssignPlayerMessage(playerID, guid);
 }
 
-void KickPlayer(const CStrW& playerName, bool ban)
+void KickPlayer(const ScriptRequest& rq, const CStrW& playerName, bool ban)
 {
-	ENSURE(g_NetClient);
-
+	if (!g_NetClient)
+	{
+		ScriptException::Raise(rq, "g_NetClient is null.");
+		return;
+	}
 	g_NetClient->SendKickPlayerMessage(playerName, ban);
 }
 
