@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	const day = mapSettings.Daytime !== undefined ? mapSettings.Daytime == "day" : randBool(2/3);
 

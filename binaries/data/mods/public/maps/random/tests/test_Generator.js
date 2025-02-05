@@ -15,7 +15,7 @@ RandomMapLogger.prototype.printDirectly = function(string)
 	// print(string);
 };
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	TS_ASSERT_DIFFER(mapSettings.Seed, undefined);
 	// Phew... that assertion took a while. ;) Let's update the progress bar.

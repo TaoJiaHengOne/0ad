@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tPrimary = "temp_grass_long";
 	const tGrass = ["temp_grass", "temp_grass", "temp_grass_d"];

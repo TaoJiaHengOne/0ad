@@ -3,7 +3,7 @@ Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 Engine.LoadLibrary("heightmap");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tGrove = "temp_grass_plants";
 	const tPath = "road_rome_a";

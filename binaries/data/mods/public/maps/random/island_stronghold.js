@@ -3,7 +3,7 @@ Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmgen2");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	const g_InitialMineDistance = 14;
 	const g_InitialTrees = 50;

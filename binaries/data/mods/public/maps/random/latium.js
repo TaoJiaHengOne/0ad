@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tOceanDepths = "medit_sea_depths";
 	const tOceanRockDeep = "medit_sea_coral_deep";

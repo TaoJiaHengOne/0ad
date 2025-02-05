@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	const tMainDirt = ["desert_dirt_rocks_1", "desert_dirt_cracks"];
 	const tForestFloor1 = "forestfloor_dirty";

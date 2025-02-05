@@ -26,6 +26,8 @@
 #include <atomic>
 #include <string>
 
+constexpr std::wstring_view RANDOM_MAP_PREFIX{L"maps/random/"};
+
 /**
  * Generate the map. This does take a long time.
  *

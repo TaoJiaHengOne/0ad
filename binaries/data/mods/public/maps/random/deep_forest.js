@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const templateStone = "gaia/rock/temperate_small";
 	const templateStoneMine = "gaia/rock/temperate_large";

@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	const tPrimary = ["alpine_snow_01"];
 	const tSecondary = "alpine_snow_02";

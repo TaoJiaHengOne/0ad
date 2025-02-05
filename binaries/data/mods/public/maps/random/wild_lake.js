@@ -3,7 +3,7 @@ Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 Engine.LoadLibrary("heightmap");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	globalThis.g_Map = new RandomMap(0, "whiteness");
 

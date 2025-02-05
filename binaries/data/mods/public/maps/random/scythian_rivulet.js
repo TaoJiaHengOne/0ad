@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tMainTerrain = "alpine_snow_a";
 	const tTier1Terrain = "snow rough";

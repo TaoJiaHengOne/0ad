@@ -1359,11 +1359,17 @@ int CMapReader::StartMapGeneration(const CStrW& scriptFile)
 		{
 			PROFILE2("Map Generation");
 
-			const CStrW scriptPath{scriptFile.empty() ? L"" : L"maps/random/" + scriptFile};
+			const VfsPath scriptPath{scriptFile.empty() ? L"" :
+				static_cast<std::wstring>(RANDOM_MAP_PREFIX) + scriptFile};
 
 			const std::shared_ptr<ScriptContext> mapgenContext{ScriptContext::CreateContext(
 				MAP_GENERATION_CONTEXT_SIZE)};
-			ScriptInterface mapgenInterface{"Engine", "MapGenerator", mapgenContext};
+
+			ScriptInterface mapgenInterface{"Engine", "MapGenerator", mapgenContext,
+				[](const VfsPath& path){
+					// Only allow to load modules inside the maps folder.
+					return path.string().find(RANDOM_MAP_PREFIX) == 0;
+				}};
 
 			return RunMapGenerationScript(stopToken, progress, mapgenInterface, scriptPath, settings);
 		});

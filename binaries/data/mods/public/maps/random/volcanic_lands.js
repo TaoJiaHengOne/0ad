@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	const tGrass = ["cliff volcanic light", "ocean_rock_a", "ocean_rock_b"];
 	const tGrassA = "cliff volcanic light";

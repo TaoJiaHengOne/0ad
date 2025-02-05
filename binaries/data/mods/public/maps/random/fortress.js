@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tGrass = ["temperate_grass_04", "temperate_grass_03", "temperate_grass_04"];
 	const tForestFloor = "temperate_forestfloor_01";

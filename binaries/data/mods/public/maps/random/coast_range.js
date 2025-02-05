@@ -2,9 +2,8 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
-
 	setBiome(mapSettings.Biome);
 
 	const tMainTerrain = g_Terrains.mainTerrain;

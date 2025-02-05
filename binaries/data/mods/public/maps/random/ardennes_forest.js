@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	setBiome("generic/temperate");
 

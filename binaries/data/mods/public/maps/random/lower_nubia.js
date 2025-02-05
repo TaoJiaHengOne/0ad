@@ -32,7 +32,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	TILE_CENTERED_HEIGHT_MAP = true;
 

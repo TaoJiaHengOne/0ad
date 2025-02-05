@@ -33,6 +33,7 @@
 #include "ps/TemplateLoader.h"
 #include "scriptinterface/FunctionWrapper.h"
 #include "scriptinterface/JSON.h"
+#include "scriptinterface/ModuleLoader.h"
 #include "scriptinterface/Object.h"
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptConversions.h"
@@ -46,7 +47,7 @@
 
 namespace
 {
-constexpr const char* GENERATOR_NAME{"GenerateMap"};
+constexpr const char* GENERATOR_NAME{"generateMap"};
 
 bool MapGenerationInterruptCallback(JSContext* cx);
 
@@ -376,14 +377,34 @@ Script::StructuredClone RunMapGenerationScript(const StopToken stopToken, std::a
 
 	// Load RMS
 	LOGMESSAGE("Loading RMS '%s'", script.string8());
-	if (!scriptInterface.LoadGlobalScriptFile(script))
+	auto compileResult = scriptInterface.GetModuleLoader().LoadModule(rq, script);
+	scriptInterface.GetContext().RunJobs();
+	auto& future = *compileResult.begin();
+	if (!future.IsDone())
+		throw std::runtime_error{fmt::format("Loading module {:?} takes too long.", script.string8())};
+
+	JS::RootedObject nsAsObject{rq.cx, future.Get()};
+
 	{
-		LOGERROR("RunMapGenerationScript: Failed to load RMS '%s'", script.string8());
-		return nullptr;
+		bool hasGenerator;
+		if (!JS_HasProperty(rq.cx, nsAsObject, GENERATOR_NAME, &hasGenerator))
+		{
+			LOGERROR("RunMapGenerationScript: failed to search `%s` in the module-namespace.",
+				GENERATOR_NAME);
+			return nullptr;
+		}
+
+		if (!hasGenerator)
+		{
+			throw std::runtime_error{fmt::format(
+				"The map generation script {:?} didn't export a {:?}.", script.string8(),
+				GENERATOR_NAME)};
+		}
 	}
 
 	LOGMESSAGE("Run RMS generator");
-	JS::RootedValue map{rq.cx, ScriptFunction::RunGenerator(rq, global, GENERATOR_NAME, settingsVal,
+	JS::RootedValue ns{rq.cx, JS::ObjectValue(*nsAsObject)};
+	JS::RootedValue map{rq.cx, ScriptFunction::RunGenerator(rq, ns, GENERATOR_NAME, settingsVal,
 		[&](const JS::HandleValue value)
 		{
 			// When the task is started, `progress` is only mutated by this thread.

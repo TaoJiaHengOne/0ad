@@ -234,7 +234,7 @@ MountainRangeBuilder.prototype.CreateMountainRanges = function*(map)
 	}
 };
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	setBiome(mapSettings.Biome);
 

@@ -1,4 +1,4 @@
-function* GenerateMap()
+export function* generateMap()
 {
 	try
 	{

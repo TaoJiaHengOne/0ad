@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("heightmap");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tPrimary = ["temp_grass", "temp_grass_b", "temp_grass_c", "temp_grass_d",
 		"temp_grass_long_b", "temp_grass_clovers_2", "temp_grass_mossy", "temp_grass_plants"];

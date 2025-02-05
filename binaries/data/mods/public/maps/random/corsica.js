@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tGrass = ["medit_grass_field", "medit_grass_field_b", "temp_grass_c"];
 	const tLushGrass = ["medit_grass_field", "medit_grass_field_a"];

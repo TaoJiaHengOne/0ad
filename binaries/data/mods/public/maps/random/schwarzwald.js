@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("heightmap");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	setSkySet("fog");
 	setFogFactor(0.35);

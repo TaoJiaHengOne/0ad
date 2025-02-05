@@ -10,7 +10,7 @@ Engine.GetTemplate = (path) => {
 
 Engine.LoadLibrary("rmgen");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	g_MapSettings = { "Size": 512 };
 	globalThis.g_Map = new RandomMap(0, "blackness");

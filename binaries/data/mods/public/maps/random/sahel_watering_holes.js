@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap()
+export function* generateMap()
 {
 	const tGrass = "savanna_grass_a";
 	const tForestFloor = "savanna_forestfloor_a";

@@ -1,7 +1,7 @@
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	const tPrimary = ["medit_rocks_grass", "medit_rocks_grass", "medit_rocks_grass",
 		"medit_rocks_grass", "medit_rocks_grass_shrubs", "medit_rocks_shrubs"];

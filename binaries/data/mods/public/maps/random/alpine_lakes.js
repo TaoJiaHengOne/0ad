@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmbiome");
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 
-function* GenerateMap(mapSettings)
+export function* generateMap(mapSettings)
 {
 	setBiome(mapSettings.Biome);
 	const isLateSpringBiome = mapSettings.Biome === "alpine/late_spring";
