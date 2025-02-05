@@ -42,9 +42,10 @@ public:
 	class Future;
 	class Result;
 
+	using AllowModuleFunc = std::function<bool(const VfsPath&)>;
 	using RegistryType = std::unordered_map<VfsPath, CompiledModule>;
 
-	ModuleLoader();
+	ModuleLoader(AllowModuleFunc allowModule);
 	ModuleLoader(const ModuleLoader&) = delete;
 	ModuleLoader& operator=(const ModuleLoader&) = delete;
 	ModuleLoader(ModuleLoader&&) = delete;
@@ -72,13 +73,14 @@ private:
 	[[nodiscard]] static bool DynamicImportHook(JSContext* cx, JS::HandleValue referencingPrivate,
 		JS::HandleObject moduleRequest, JS::HandleObject promise) noexcept;
 
+	AllowModuleFunc m_AllowModule;
 	RegistryType m_Registry;
 };
 
 class ModuleLoader::CompiledModule
 {
 public:
-	CompiledModule(const ScriptRequest& rq, const VfsPath& filePath);
+	CompiledModule(const ScriptRequest& rq, const AllowModuleFunc& allowModule, const VfsPath& filePath);
 
 	std::tuple<const std::vector<VfsPath>&,
 		const std::vector<std::reference_wrapper<Result>>&> GetRequesters() const;
@@ -120,7 +122,7 @@ public:
 	struct Invalid {};
 	using Status = std::variant<Evaluating, Fulfilled, Rejected, WaitingForFileChange, Invalid>;
 
-	explicit Future(const ScriptRequest& rq, RegistryType& reqistry, Result& result, VfsPath modulePath);
+	explicit Future(const ScriptRequest& rq, ModuleLoader& reqistry, Result& result, VfsPath modulePath);
 	Future() = default;
 	Future(const Future&) = delete;
 	Future& operator=(const Future&) = delete;
@@ -165,7 +167,7 @@ public:
 
 private:
 	JSContext* m_Cx;
-	RegistryType& m_Registry;
+	ModuleLoader& m_Loader;
 	VfsPath m_ModulePath;
 	Future m_Storage;
 };

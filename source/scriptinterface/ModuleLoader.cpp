@@ -92,8 +92,14 @@ VfsPath GetBaseFilename(const VfsPath& filename)
 	return filenames;
 }
 
-[[nodiscard]] std::string GetCode(const VfsPath& filePath)
+[[nodiscard]] std::string GetCode(const ModuleLoader::AllowModuleFunc& allowModule,
+	const VfsPath& filePath)
 {
+	if (!allowModule || !allowModule(filePath))
+	{
+		throw std::runtime_error{fmt::format("Importing file \"{}\" is disallowed.",
+			filePath.string8())};
+	}
 	if (!VfsFileExists(filePath))
 		throw std::runtime_error{fmt::format("The file \"{}\" does not exist.", filePath.string8())};
 
@@ -115,18 +121,19 @@ VfsPath GetBaseFilename(const VfsPath& filename)
 }
 
 template<typename Requester>
-[[nodiscard]] JSObject* CompileModule(const ScriptRequest& rq, ModuleLoader::RegistryType& registry,
+[[nodiscard]] JSObject* CompileModule(const ScriptRequest& rq,
+	const ModuleLoader::AllowModuleFunc& allowModule, ModuleLoader::RegistryType& registry,
 	const VfsPath& filePath, Requester&& requester)
 {
 	const VfsPath normalizedPath{filePath.fileSystemPath().lexically_normal().generic_string()};
-	const auto insertResult = registry.try_emplace(normalizedPath, rq, normalizedPath);
+	const auto insertResult = registry.try_emplace(normalizedPath, rq, allowModule, normalizedPath);
 	ModuleLoader::CompiledModule& compiledModule{std::get<1>(*std::get<0>(insertResult))};
 	compiledModule.AddRequester(std::forward<Requester>(requester));
 	return compiledModule.m_ModuleObject;
 }
-
-[[nodiscard]] JSObject* Resolve(const ScriptRequest& rq, ModuleLoader::RegistryType& registry,
-	JS::HandleValue referencingModule, JS::HandleObject moduleRequest)
+[[nodiscard]] JSObject* Resolve(const ScriptRequest& rq, const ModuleLoader::AllowModuleFunc& allowModule,
+	ModuleLoader::RegistryType& registry, JS::HandleValue referencingModule,
+	JS::HandleObject moduleRequest)
 {
 	std::string includeString;
 	const JS::RootedValue pathValue{rq.cx,
@@ -138,7 +145,7 @@ template<typename Requester>
 	if (!Script::FromJSProperty(rq, referencingModule, "path", includingModule))
 		throw std::logic_error{"The importing module doesn't have a \"path\" property."};
 
-	return CompileModule(rq, registry, includeString, includingModule);
+	return CompileModule(rq, allowModule, registry, includeString, includingModule);
 }
 
 [[nodiscard]] JSObject* Evaluate(const ScriptRequest& rq, JS::HandleObject mod)
@@ -236,14 +243,16 @@ template<bool reject>
 constexpr JSClass callbackClass{"Callback", JSCLASS_HAS_RESERVED_SLOTS(1), &callbackClassOps<reject>};
 } // anonymous namespace
 
-ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const VfsPath& filePath):
+ModuleLoader::CompiledModule::CompiledModule(const ScriptRequest& rq, const AllowModuleFunc& allowModule,
+	const VfsPath& filePath):
 	m_ModuleObject(rq.cx)
 {
 	const std::vector<VfsPath> appendices{GetAppendices(filePath)};
-	const std::string code{std::accumulate(appendices.begin(), appendices.end(), GetCode(filePath),
-		[](std::string code, const VfsPath& fileToAppend)
+	const std::string code{std::accumulate(appendices.begin(), appendices.end(),
+		GetCode(allowModule, filePath),
+		[&](std::string code, const VfsPath& fileToAppend)
 		{
-			return std::move(code) + GetCode(fileToAppend);
+			return std::move(code) + GetCode(allowModule, fileToAppend);
 		})};
 
 	JS::CompileOptions options{rq.cx};
@@ -294,7 +303,7 @@ void ModuleLoader::CompiledModule::RemoveRequester(Result* toErase)
 		}), m_Callbacks.end());
 }
 
-ModuleLoader::Future::Future(const ScriptRequest& rq, RegistryType& registry, Result& result,
+ModuleLoader::Future::Future(const ScriptRequest& rq, ModuleLoader& loader, Result& result,
 	VfsPath modulePath):
 	m_Status{Evaluating{{rq.cx, nullptr}, {rq.cx, JS_NewObject(rq.cx, &callbackClass<false>)},
 		{rq.cx, JS_NewObject(rq.cx, &callbackClass<true>)}}}
@@ -307,7 +316,8 @@ ModuleLoader::Future::Future(const ScriptRequest& rq, RegistryType& registry, Re
 	// - Accessing values which are not yet exported results in an error. These errors might implicitly be
 	//	dropped.
 
-	JS::RootedObject mod{rq.cx, CompileModule(rq, registry, modulePath, result)};
+	JS::RootedObject mod{rq.cx, CompileModule(rq, loader.m_AllowModule, loader.m_Registry, modulePath,
+		result)};
 	JS::RootedObject promise{rq.cx, Evaluate(rq, mod)};
 	Evaluating& evaluatingStatus{std::get<Evaluating>(m_Status)};
 	evaluatingStatus.moduleNamespace = JS::GetModuleNamespace(rq.cx, mod);
@@ -412,16 +422,16 @@ ModuleLoader::Result::iterator& ModuleLoader::Result::iterator::operator++(int)
 
 ModuleLoader::Result::Result(const ScriptRequest& rq, const VfsPath& modulePath):
 	m_Cx{rq.cx},
-	m_Registry{rq.GetScriptInterface().GetModuleLoader().m_Registry},
+	m_Loader{rq.GetScriptInterface().GetModuleLoader()},
 	m_ModulePath{modulePath},
-	m_Storage{rq, m_Registry, *this, m_ModulePath}
+	m_Storage{rq, m_Loader, *this, m_ModulePath}
 {
 }
 
 ModuleLoader::Result::~Result()
 {
-	const auto modIter = m_Registry.find(m_ModulePath);
-	if (modIter == m_Registry.end())
+	const auto modIter = m_Loader.m_Registry.find(m_ModulePath);
+	if (modIter == m_Loader.m_Registry.end())
 		return;
 
 	std::get<1>(*modIter).RemoveRequester(this);
@@ -440,10 +450,11 @@ ModuleLoader::Result::~Result()
 void ModuleLoader::Result::Resume()
 {
 	if (m_Storage.IsWaiting())
-		m_Storage = ModuleLoader::Future{m_Cx, m_Registry, *this, m_ModulePath};
+		m_Storage = ModuleLoader::Future{m_Cx, m_Loader, *this, m_ModulePath};
 }
 
-ModuleLoader::ModuleLoader()
+ModuleLoader::ModuleLoader(ModuleLoader::AllowModuleFunc allowModule):
+	m_AllowModule{std::move(allowModule)}
 {
 	RegisterFileReloadFunc(FileChangedHook, static_cast<void*>(&m_Registry));
 }
@@ -485,8 +496,8 @@ ModuleLoader::~ModuleLoader()
 	try
 	{
 		const ScriptRequest rq{cx};
-		return Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry, referencingPrivate,
-			request);
+		ModuleLoader& loader{rq.GetScriptInterface().GetModuleLoader()};
+		return Resolve(rq, loader.m_AllowModule, loader.m_Registry, referencingPrivate, request);
 	}
 	catch (const std::exception& e)
 	{
@@ -506,7 +517,8 @@ ModuleLoader::~ModuleLoader()
 	const ScriptRequest rq{cx};
 	try
 	{
-		JS::RootedObject mod{rq.cx, Resolve(rq, rq.GetScriptInterface().GetModuleLoader().m_Registry,
+		ModuleLoader& loader{rq.GetScriptInterface().GetModuleLoader()};
+		JS::RootedObject mod{rq.cx, Resolve(rq, loader.m_AllowModule, loader.m_Registry,
 			referencingPrivate, moduleRequest)};
 		JS::RootedObject evaluationPromise{rq.cx, Evaluate(rq, mod)};
 		return JS::FinishDynamicModuleImport(rq.cx, evaluationPromise, referencingPrivate,

@@ -53,7 +53,8 @@
 
 struct ScriptInterface_impl
 {
-	ScriptInterface_impl(const char* nativeScopeName, ScriptContext& context, JS::Compartment* compartment);
+	ScriptInterface_impl(const char* nativeScopeName, ScriptContext& context,
+		JS::Compartment* compartment, std::function<bool(const VfsPath&)> allowModule);
 	~ScriptInterface_impl();
 
 	// Take care to keep this declaration before heap rooted members. Destructors of heap rooted
@@ -303,9 +304,10 @@ bool ScriptInterface::Math_random(JSContext* cx, uint argc, JS::Value* vp)
 }
 
 ScriptInterface_impl::ScriptInterface_impl(const char* nativeScopeName, ScriptContext& context,
-	JS::Compartment* compartment) :
+	JS::Compartment* compartment, std::function<bool(const VfsPath&)> allowModule) :
 	m_context(context), m_cx(context.GetGeneralJSContext()), m_glob(context.GetGeneralJSContext()),
-	m_nativeScope(context.GetGeneralJSContext())
+	m_nativeScope(context.GetGeneralJSContext()),
+	m_ModuleLoader{std::move(allowModule)}
 {
 	JS::RealmCreationOptions creationOpt;
 	// Keep JIT code during non-shrinking GCs. This brings a quite big performance improvement.
@@ -351,8 +353,10 @@ ScriptInterface_impl::~ScriptInterface_impl()
 	m_context.UnRegisterRealm(JS::GetObjectRealmOrNull(m_glob));
 }
 
-ScriptInterface::ScriptInterface(const char* nativeScopeName, const char* debugName, ScriptContext& context) :
-	m(std::make_unique<ScriptInterface_impl>(nativeScopeName, context, nullptr))
+ScriptInterface::ScriptInterface(const char* nativeScopeName, const char* debugName, ScriptContext& context,
+	std::function<bool(const VfsPath&)> allowModule) :
+	m{std::make_unique<ScriptInterface_impl>(nativeScopeName, context, nullptr,
+		std::move(allowModule))}
 {
 	// Profiler stats table isn't thread-safe, so only enable this on the main thread
 	if (Threading::IsMainThread())
@@ -366,11 +370,13 @@ ScriptInterface::ScriptInterface(const char* nativeScopeName, const char* debugN
 	JS::SetRealmPrivate(JS::GetObjectRealmOrNull(rq.glob), (void*)&m_CmptPrivate);
 }
 
-ScriptInterface::ScriptInterface(const char* nativeScopeName, const char* debugName, const ScriptInterface& neighbor)
+ScriptInterface::ScriptInterface(const char* nativeScopeName, const char* debugName,
+	const ScriptInterface& neighbor, std::function<bool(const VfsPath& path)> allowModule)
 {
 	ScriptRequest nrq(neighbor);
 	JS::Compartment* comp = JS::GetCompartmentForRealm(JS::GetCurrentRealmOrNull(nrq.cx));
-	m = std::make_unique<ScriptInterface_impl>(nativeScopeName, neighbor.GetContext(), comp);
+	m = std::make_unique<ScriptInterface_impl>(nativeScopeName, neighbor.GetContext(), comp,
+		std::move(allowModule));
 
 	// Profiler stats table isn't thread-safe, so only enable this on the main thread
 	if (Threading::IsMainThread())

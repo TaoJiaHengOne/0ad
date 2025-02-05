@@ -65,6 +65,16 @@ void ClearFromCache(const VfsPath& path)
 
 	ReloadChangedFiles();
 }
+
+bool AllowAllPredicate(const VfsPath&)
+{
+	return true;
+}
+
+bool DisallowedfilePredicate(const VfsPath& path)
+{
+	return path != "restriction/disallowedfile.js";
+}
 }
 
 class TestScriptModule : public CxxTest::TestSuite
@@ -90,7 +100,7 @@ public:
 
 	void test_StaticImport()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
@@ -103,12 +113,12 @@ public:
 	void test_Sequential()
 	{
 		{
-			ScriptInterface script{"Test", "Test", g_ScriptContext};
+			ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 			const ScriptRequest rq{script};
 			std::ignore = script.GetModuleLoader().LoadModule(rq, "empty.js");
 		}
 		{
-			ScriptInterface script{"Test", "Test", g_ScriptContext};
+			ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 			const ScriptRequest rq{script};
 			std::ignore = script.GetModuleLoader().LoadModule(rq, "empty.js");
 		}
@@ -116,10 +126,10 @@ public:
 
 	void test_Stacked()
 	{
-		ScriptInterface scriptOuter{"Test", "Test", g_ScriptContext};
+		ScriptInterface scriptOuter{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rqOuter{scriptOuter};
 		{
-			ScriptInterface scriptInner{"Test", "Test", g_ScriptContext};
+			ScriptInterface scriptInner{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 			const ScriptRequest rqInner{scriptInner};
 			std::ignore = scriptInner.GetModuleLoader().LoadModule(rqInner, "empty.js");
 		}
@@ -128,7 +138,7 @@ public:
 
 	void test_ImportInFunction()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
@@ -141,7 +151,7 @@ public:
 
 	void test_NonExistent()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		const TestLogger _;
@@ -151,7 +161,7 @@ public:
 
 	void test_EvaluateOnce()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		{
@@ -168,7 +178,7 @@ public:
 
 	void test_TopLevelAwaitFinite()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
 
@@ -181,7 +191,7 @@ public:
 
 	void test_TopLevelAwaitInfinite()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_await_infinite.js");
@@ -194,7 +204,7 @@ public:
 
 	void test_MoveFulfilledFuture()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result{script.GetModuleLoader().LoadModule(rq, "empty.js")};
@@ -214,7 +224,7 @@ public:
 
 	void test_MoveEvaluatingFuture()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result{script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js")};
@@ -235,7 +245,7 @@ public:
 
 	void test_EvaluateReplacedFuture()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
@@ -255,7 +265,7 @@ public:
 
 	void test_TopLevelThrow()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		// To silence the error.
@@ -271,7 +281,7 @@ public:
 
 	void test_Export()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "export.js");
@@ -298,7 +308,7 @@ public:
 
 	void test_ExportSame()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		{
@@ -322,7 +332,7 @@ public:
 
 	void test_ExportIndirect()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		{
@@ -346,7 +356,7 @@ public:
 
 	void test_ExportDefaultImmutable()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "export_default/immutable.js");
@@ -363,7 +373,7 @@ public:
 
 	void test_ExportDefaultInvalid()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		TestLogger logger;
@@ -375,7 +385,7 @@ public:
 
 	void test_ExportDefaultDoesNotWorkAround()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "export_default/does_not_work_around.js");
@@ -394,7 +404,7 @@ public:
 
 	void test_ExportDefaultWorksAround()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "export_default/works_around.js");
@@ -411,7 +421,7 @@ public:
 
 	void test_ReplaceEvaluatingFuture()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto awaitResult = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
@@ -430,7 +440,7 @@ public:
 
 	void test_DynamicImport()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "dynamic_import.js");
@@ -461,7 +471,7 @@ public:
 
 	void test_Meta()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "meta.js");
@@ -481,7 +491,7 @@ public:
 
 	void test_Modified()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "modified/base.js");
@@ -500,7 +510,7 @@ public:
 	{
 		constexpr int goal{2};
 
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		int counter{0};
@@ -525,7 +535,7 @@ public:
 
 	void test_HotloadWithoutIncrement()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "top_level_await_finite.js");
@@ -537,7 +547,7 @@ public:
 
 	void test_HotloadIndipendence()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		// It's intended to be used as in the test above but it's easier to test when it's unrolled.
@@ -576,7 +586,7 @@ public:
 
 	void test_HotloadModified()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "empty.js");
@@ -595,7 +605,7 @@ public:
 
 	void test_HotloadIndirect()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		const ScriptRequest rq{script};
 
 		auto result = script.GetModuleLoader().LoadModule(rq, "indirect.js");
@@ -612,7 +622,7 @@ public:
 
 	void test_HotloadUnobserved()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		{
 			const ScriptRequest rq{script};
 
@@ -641,7 +651,7 @@ public:
 
 	void test_HotloadAfterResultDestruction()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		{
 			const ScriptRequest rq{script};
 
@@ -663,7 +673,65 @@ public:
 
 	void test_ResultDestructionAfterScriptRequestDestruction()
 	{
-		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		ScriptInterface script{"Test", "Test", g_ScriptContext, AllowAllPredicate};
 		auto _ = script.GetModuleLoader().LoadModule(ScriptRequest{script}, "empty.js");
+	}
+
+	void test_RestrictionNoPredicate()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		TS_ASSERT_THROWS_EQUALS(std::ignore = script.GetModuleLoader().LoadModule(rq,
+			"empty.js"), const std::runtime_error& e, e.what(),
+			"Importing file \"empty.js\" is disallowed.");
+	}
+
+	void test_RestrictionDirect()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext, DisallowedfilePredicate};
+		const ScriptRequest rq{script};
+
+		TS_ASSERT_THROWS_EQUALS(std::ignore = script.GetModuleLoader().LoadModule(rq,
+			"restriction/disallowedfile.js"), const std::runtime_error& e, e.what(),
+			"Importing file \"restriction/disallowedfile.js\" is disallowed.");
+	}
+
+	void test_RestrictionIndirect()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext, DisallowedfilePredicate};
+		const ScriptRequest rq{script};
+		TestLogger logger;
+		TS_ASSERT_THROWS_EQUALS(std::ignore = script.GetModuleLoader().LoadModule(rq,
+			"restriction/import.js"), const std::invalid_argument& e, e.what(),
+			"Unable to link module.");
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(),
+			"Importing file \"restriction/disallowedfile.js\" is disallowed.");
+	}
+
+	void test_RestrictionFancy()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext, DisallowedfilePredicate};
+		const ScriptRequest rq{script};
+		TestLogger logger;
+		TS_ASSERT_THROWS_EQUALS(std::ignore = script.GetModuleLoader().LoadModule(rq,
+			"restriction/fancy_import.js"), const std::invalid_argument& e, e.what(),
+			"Unable to link module.");
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(),
+			"Importing file \"restriction/disallowedfile.js\" is disallowed.");
+	}
+
+	void test_RestrictionDynamic()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext, DisallowedfilePredicate};
+		const ScriptRequest rq{script};
+
+		TestLogger logger;
+		auto result = script.GetModuleLoader().LoadModule(rq, "restriction/dynamic_import.js");
+		TS_ASSERT_STR_CONTAINS(logger.GetOutput(),
+			"Importing file \"restriction/disallowedfile.js\" is disallowed.");
+
+		g_ScriptContext->RunJobs();
+		TS_ASSERT_THROWS_ANYTHING(std::ignore = result.begin()->Get());
 	}
 };

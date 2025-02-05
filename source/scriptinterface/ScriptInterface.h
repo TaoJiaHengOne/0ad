@@ -25,6 +25,7 @@
 #include "scriptinterface/ScriptTypes.h"
 
 #include <unordered_map>
+#include <functional>
 
 ERROR_GROUP(Scripting);
 ERROR_TYPE(Scripting, SetupFailed);
@@ -82,11 +83,13 @@ public:
 	 * @param debugName Name of this interface for CScriptStats purposes.
 	 * @param context ScriptContext to use when initializing this interface.
 	 */
-	ScriptInterface(const char* nativeScopeName, const char* debugName, ScriptContext& context);
+	ScriptInterface(const char* nativeScopeName, const char* debugName, ScriptContext& context,
+		std::function<bool(const VfsPath&)> allowModule = {});
 
 	template<typename Context>
-	ScriptInterface(const char* nativeScopeName, const char* debugName, Context&& context) :
-		ScriptInterface(nativeScopeName, debugName, *context)
+	ScriptInterface(const char* nativeScopeName, const char* debugName, Context&& context,
+		std::function<bool(const VfsPath&)> allowModule = {}) :
+		ScriptInterface{nativeScopeName, debugName, *context, std::move(allowModule)}
 	{
 		static_assert(std::is_lvalue_reference_v<Context>, "`ScriptInterface` doesn't take ownership "
 			"of the context.");
@@ -99,8 +102,11 @@ public:
 	 *   be placed into, as a scoping mechanism; typically "Engine"
 	 * @param debugName Name of this interface for CScriptStats purposes.
 	 * @param scriptInterface 'Neighbor' scriptInterface to share a compartment with.
+	 * @param allowModule A predicate deciding wheter to import the given
+	 *	module.
 	 */
-	ScriptInterface(const char* nativeScopeName, const char* debugName, const ScriptInterface& neighbor);
+	ScriptInterface(const char* nativeScopeName, const char* debugName, const ScriptInterface& neighbor,
+		std::function<bool(const VfsPath&)> allowModule = {});
 
 	~ScriptInterface();
 
