@@ -81,6 +81,6 @@ ChatMessageHandler.System = class
 {
 	parse(msg)
 	{
-		return msg.txt;
+		return { "text": msg.text };
 	}
 };
