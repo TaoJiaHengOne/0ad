@@ -141,10 +141,20 @@ function kickError()
 
 function kickPlayer(username, ban)
 {
-	if (g_IsController)
-		Engine.KickPlayer(username, ban);
-	else
+	if (!g_IsController)
+	{
 		kickError();
+		return;
+	}
+	if (!g_IsNetworked)
+	{
+		addChatMessage({
+			"type": "system",
+			"text": translate("Offline game! Can not kick or ban.")
+		});
+		return;
+	}
+	Engine.KickPlayer(username, ban);
 }
 
 function kickObservers(ban)
@@ -154,7 +164,14 @@ function kickObservers(ban)
 		kickError();
 		return;
 	}
-
+	if (!g_IsNetworked)
+	{
+		addChatMessage({
+			"type": "system",
+			"text": translate("Offline game! No spectators to kick or ban.")
+		});
+		return;
+	}
 	for (let guid in g_PlayerAssignments)
 		if (g_PlayerAssignments[guid].player == -1)
 			Engine.KickPlayer(g_PlayerAssignments[guid].name, ban);
