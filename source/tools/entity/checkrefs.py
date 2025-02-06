@@ -119,6 +119,12 @@ class CheckRefs:
             default=["public"],
             help="specify which mods to check. Default to public.",
         )
+        ap.add_argument(
+            "-d",
+            "--validate-meshes",
+            action="store_true",
+            help="check if meshes have vertices with no weight.",
+        )
         args = ap.parse_args()
         # force check_map_xml if check_unused is used to avoid false positives.
         args.check_map_xml |= args.check_unused
@@ -160,6 +166,12 @@ class CheckRefs:
             validator = Validator(self.vfs_root, self.mods)
             if not validator.run():
                 self.inError = True
+
+        if args.validate_meshes:
+            from validate_dae import DaeValidator
+
+            dv = DaeValidator(self.vfs_root, self.mods)
+            self.inError = not dv.run()
 
         return not self.inError
 

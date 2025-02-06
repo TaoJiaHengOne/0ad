@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Add remote fork origin for LFS
         run: |
           PR_REPO="${{ gitea.event.pull_request.head.repo.full_name || gitea.repository }}"
@@ -31,9 +33,10 @@ jobs:
       - name: Download necessary LFS assets
         shell: sh {0}
         run: |
-          git lfs pull -I binaries/data/mods/public/maps
+          git lfs pull -I binaries/data/mods/public/art/meshes,binaries/data/mods/public/maps
           ORIGIN_LFS_PULL_RESULT=$?
-          git lfs pull ${{ gitea.actor }} -I binaries/data/mods/public/maps
+          git lfs pull ${{ gitea.actor }} \
+            -I binaries/data/mods/public/art/meshes,binaries/data/mods/public/maps
           FORK_LFS_PULL_RESULT=$?
 
           PR_REPO="${{ gitea.event.pull_request.head.repo.full_name || gitea.repository }}"
@@ -47,9 +50,12 @@ jobs:
           fi
       - name: Install lxml
         run: pip3 install lxml
+      - name: Install collada
+        run: pip3 install "pycollada>=0.9"
       - name: Check for missing references
         run: |
           ./source/tools/entity/checkrefs.py \
             --check-map-xml \
             --validate-templates \
-            --validate-actors
+            --validate-actors \
+            --validate-meshes
