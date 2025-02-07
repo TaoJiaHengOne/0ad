@@ -69,8 +69,8 @@
 		"secondaryHuntableAnimal": "gaia/fauna_gazelle",
 		"stoneLarge": "gaia/rock/savanna_large",
 		"stoneSmall": "gaia/rock/savanna_small",
-		"metalLarge": "gaia/ore/india_01",
-		"metalSmall": "gaia/ore/desert_small"
+		"metalLarge": "gaia/ore/savanna_01",
+		"metalSmall": "gaia/ore/savanna_small_01"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/grass_soft_dry_large_tall.xml",

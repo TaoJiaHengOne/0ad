@@ -56,7 +56,7 @@
 		"stoneLarge": "gaia/rock/temperate_large_02",
 		"stoneSmall": "gaia/rock/temperate_small",
 		"metalLarge": "gaia/ore/temperate_01",
-		"metalSmall": "gaia/ore/temperate_small",
+		"metalSmall": "gaia/ore/temperate_small_01",
 		"tree3": "gaia/fruit/apple"
 	},
 	"Decoratives": {

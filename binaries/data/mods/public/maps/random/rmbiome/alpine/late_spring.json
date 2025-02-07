@@ -22,9 +22,9 @@
 		"mainHuntableAnimal": "gaia/fauna_deer",
 		"secondaryHuntableAnimal": "gaia/fauna_rabbit",
 		"fish": "gaia/fish/generic",
-		"stoneLarge": "gaia/rock/alpine_large",
-		"stoneSmall": "gaia/rock/alpine_small",
-		"metalLarge": "gaia/ore/alpine_large"
+		"stoneLarge": "gaia/rock/aegean_large",
+		"stoneSmall": "gaia/rock/aegean_small",
+		"metalLarge": "gaia/ore/aegean_anatolian_02"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/grass_soft_small_tall.xml",

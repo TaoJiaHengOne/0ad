@@ -73,10 +73,10 @@
 		"mainHuntableAnimal": "gaia/fauna_horse",
 		"fish": "gaia/fish/tuna",
 		"secondaryHuntableAnimal": "gaia/fauna_horse",
-		"stoneLarge": "gaia/rock/desert_large",
-		"stoneSmall": "gaia/rock/tropical_small",
-		"metalLarge": "gaia/ore/sahara_01",
-		"metalSmall": "gaia/ore/desert_small"
+		"stoneLarge": "gaia/rock/temperate_large",
+		"stoneSmall": "gaia/rock/temperate_small",
+		"metalLarge": "gaia/ore/temperate_02",
+		"metalSmall": "gaia/ore/temperate_small_01"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/grass_temp_field_brown.xml",

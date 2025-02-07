@@ -15,14 +15,14 @@
       <mesh>gaia/stonemine_round_a.dae</mesh>
       <props>
         <prop actor="props/geology/mine_round_snow_01.xml" attachpoint="root"/>
-        <prop actor="particle/sparkle_goldmine.xml" attachpoint="root"/>
+        <prop actor="particle/sparkle_metalmine.xml" attachpoint="root"/>
       </props>
     </variant>
     <variant frequency="1" name="Round Mesh B">
       <mesh>gaia/stonemine_round_b.dae</mesh>
       <props>
         <prop actor="props/geology/mine_round_snow_02.xml" attachpoint="root"/>
-        <prop actor="particle/sparkle_goldmine.xml" attachpoint="root"/>
+        <prop actor="particle/sparkle_metalmine.xml" attachpoint="root"/>
       </props>
     </variant>
   </group>

@@ -78,8 +78,8 @@
 		"secondaryHuntableAnimal": "gaia/fauna_walrus",
 		"stoneLarge": "gaia/rock/temperate_large_03",
 		"stoneSmall": "gaia/rock/temperate_small",
-		"metalLarge": "gaia/ore/temperate_02",
-		"metalSmall": "gaia/ore/temperate_small"
+		"metalLarge": "gaia/ore/polar_01",
+		"metalSmall": "gaia/ore/aegean_anatolian_small_01"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/bush_desert_dry_a.xml",

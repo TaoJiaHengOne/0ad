@@ -58,7 +58,7 @@
 		"stoneLarge": "gaia/rock/polar_02",
 		"stoneSmall": "gaia/rock/alpine_small",
 		"metalLarge": "gaia/ore/polar_01",
-		"metalSmall": "gaia/ore/temperate_small"
+		"metalSmall": "gaia/ore/aegean_anatolian_small_01"
 	},
 	"Decoratives": {
 		"grass": "gaia/tree/bush_temperate_winter",

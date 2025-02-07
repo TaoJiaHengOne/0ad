@@ -79,7 +79,7 @@
 		"stoneLarge": "gaia/rock/temperate_large",
 		"stoneSmall": "gaia/rock/temperate_small",
 		"metalLarge": "gaia/ore/temperate_01",
-		"metalSmall": "gaia/ore/temperate_small"
+		"metalSmall": "gaia/ore/temperate_small_01"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/grass_soft_dry_small.xml",

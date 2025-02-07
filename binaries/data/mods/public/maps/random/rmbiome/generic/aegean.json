@@ -63,10 +63,10 @@
 		"mainHuntableAnimal": "gaia/fauna_deer",
 		"fish": "gaia/fish/generic",
 		"secondaryHuntableAnimal": "gaia/fauna_sheep",
-		"stoneLarge": "gaia/rock/mediterranean_large",
-		"stoneSmall": "gaia/rock/mediterranean_small",
+		"stoneLarge": "gaia/rock/aegean_large",
+		"stoneSmall": "gaia/rock/aegean_small",
 		"metalLarge": "gaia/ore/aegean_anatolian_01",
-		"metalSmall": "gaia/ore/temperate_small"
+		"metalSmall": "gaia/ore/aegean_anatolian_small_01"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/bush_medit_sm.xml",

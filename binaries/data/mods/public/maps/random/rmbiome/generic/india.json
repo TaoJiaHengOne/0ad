@@ -71,10 +71,10 @@
 		"mainHuntableAnimal": "gaia/fauna_peacock",
 		"fish": "gaia/fish/generic",
 		"secondaryHuntableAnimal": "gaia/fauna_elephant_asian",
-		"stoneLarge": "gaia/rock/temperate_large_02",
-		"stoneSmall": "gaia/rock/tropical_small",
+		"stoneLarge": "gaia/rock/india_large",
+		"stoneSmall": "gaia/rock/india_small",
 		"metalLarge": "gaia/ore/india_01",
-		"metalSmall": "gaia/ore/alpine_small"
+		"metalSmall": "gaia/ore/india_small_01"
 	},
 	"Decoratives": {
 		"grass": "actor|props/flora/grass_tropic_field.xml",

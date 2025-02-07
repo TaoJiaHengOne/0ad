@@ -65,7 +65,7 @@
 		"stoneLarge": "gaia/rock/desert_large",
 		"stoneSmall": "gaia/rock/desert_small",
 		"metalLarge": "gaia/ore/sahara_01",
-		"metalSmall": "gaia/ore/desert_small",
+		"metalSmall": "gaia/ore/sahara_small_01",
 		"tree3": "gaia/tree/juniper_prickly"
 	},
 	"Decoratives": {

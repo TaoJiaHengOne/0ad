@@ -38,8 +38,8 @@
 		"secondaryHuntableAnimal": "gaia/fauna_sheep",
 		"thirdHuntableAnimal": "gaia/fauna_goat",
 		"stoneLarge": "gaia/rock/badlands_large",
-		"stoneSmall": "gaia/rock/desert_small",
-		"metalLarge": "gaia/ore/desert_large"
+		"stoneSmall": "gaia/rock/badlands_small",
+		"metalLarge": "gaia/ore/sahara_01"
 	},
 	"Decoratives": {
 		"bush1": "actor|props/flora/bush_desert_a.xml",

@@ -5,7 +5,7 @@
     <variant frequency="1" name="Metal Mine Round India">
       <props>
         <prop actor="props/structures/decals/gravel_sahara_3v3.xml" attachpoint="root"/>
-        <prop actor="particle/sparkle_goldmine.xml" attachpoint="root"/>
+        <prop actor="particle/sparkle_metalmine.xml" attachpoint="root"/>
       </props>
       <textures>
         <texture file="gaia/metal_round_col_sahara.png" name="baseTex"/>

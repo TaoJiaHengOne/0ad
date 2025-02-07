@@ -4,7 +4,7 @@
   <group>
     <variant frequency="1" name="Metal Mine Round Aegean Anatolian">
       <props>
-        <prop actor="particle/sparkle_goldmine.xml" attachpoint="root"/>
+        <prop actor="particle/sparkle_metalmine.xml" attachpoint="root"/>
       </props>
       <textures>
         <texture file="gaia/metal_round_col_aegean.png" name="baseTex"/>
