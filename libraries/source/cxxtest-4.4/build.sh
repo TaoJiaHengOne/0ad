@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+: "${TAR:=tar}"
+
 cd "$(dirname "$0")"
 
 PV=4.4
@@ -40,7 +42,7 @@ fi
 
 # unpack
 rm -Rf "cxxtest-${PV}"
-tar -xf "cxxtest-${PV}.tar.gz"
+"${TAR}" -xf "cxxtest-${PV}.tar.gz"
 
 # patch
 patch -d "cxxtest-${PV}" -p1 <patches/0001-Add-Debian-python3-patch.patch

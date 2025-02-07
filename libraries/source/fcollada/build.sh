@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+: "${TAR:=tar}"
+
 cd "$(dirname "$0")"
 
 PV=28209
@@ -10,7 +12,7 @@ fetch()
 {
 	rm -Rf fcollada-${PV}
 	svn export https://svn.wildfiregames.com/public/source-libs/trunk/fcollada@${PV} fcollada-${PV}
-	tar cJf fcollada-${PV}.tar.xz fcollada-${PV}
+	"${TAR}" cJf fcollada-${PV}.tar.xz fcollada-${PV}
 	rm -R fcollada-${PV}
 }
 
@@ -42,7 +44,7 @@ fi
 
 # unpack
 rm -Rf fcollada-${PV}
-tar xf fcollada-${PV}.tar.xz
+"${TAR}" xf fcollada-${PV}.tar.xz
 
 # build
 (

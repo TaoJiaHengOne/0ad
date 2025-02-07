@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+: "${TAR:=tar}"
+
 cd "$(dirname "$0")"
 
 PV=1.3.290.0
@@ -40,7 +42,7 @@ fi
 
 # unpack
 rm -Rf "SPIRV-Reflect-vulkan-sdk-${PV}"
-tar xf "vulkan-sdk-${PV}.tar.gz"
+"${TAR}" xf "vulkan-sdk-${PV}.tar.gz"
 
 # configure
 cmake -B build -S "SPIRV-Reflect-vulkan-sdk-${PV}" \

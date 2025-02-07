@@ -4,6 +4,7 @@ set -e
 : "${OS:=$(uname -s || true)}"
 : "${MAKE:=make}"
 : "${JOBS:=-j1}"
+: "${TAR:=tar}"
 
 cd "$(dirname "$0")"
 
@@ -44,7 +45,7 @@ fi
 
 # unpack
 rm -Rf "premake-core-${PV}"
-tar -xf "premake-core-${PV}.tar.gz"
+"${TAR}" -xf "premake-core-${PV}.tar.gz"
 
 # patch
 # ffcb7790f013bdceacc14ba5fda1c5cd107aac08

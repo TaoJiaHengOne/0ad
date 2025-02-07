@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+: "${TAR:=tar}"
+
 cd "$(dirname "$0")"
 
 # This should match the version in config/milestone.txt
@@ -47,7 +49,7 @@ fi
 
 # unpack
 rm -Rf "${FOLDER}"
-tar xfJ "${FOLDER}.tar.xz"
+"${TAR}" xfJ "${FOLDER}.tar.xz"
 
 # patch
 (

@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+: "${TAR:=tar}"
+
 cd "$(dirname "$0")"
 
 PV=28209
@@ -10,7 +12,7 @@ fetch()
 {
 	rm -Rf nvtt-${PV}
 	svn export https://svn.wildfiregames.com/public/source-libs/trunk/nvtt@${PV} nvtt-${PV}
-	tar cJf nvtt-${PV}.tar.xz nvtt-${PV}
+	"${TAR}" cJf nvtt-${PV}.tar.xz nvtt-${PV}
 	rm -R nvtt-${PV}
 }
 
@@ -42,7 +44,7 @@ fi
 
 # unpack
 rm -Rf nvtt-${PV}
-tar xf nvtt-${PV}.tar.xz
+"${TAR}" xf nvtt-${PV}.tar.xz
 
 # build
 (
