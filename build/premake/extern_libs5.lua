@@ -715,12 +715,6 @@ extern_lib_defs = {
 				add_default_links({
 					win_names  = { "libvorbisfile" },
 				})
-			elseif os.getversion().description == "OpenBSD" then
-				-- TODO: We need to force linking with these as currently
-				-- they need to be loaded explicitly on execution
-				add_default_links({
-					unix_names = { "ogg", "vorbis" },
-				})
 			else
 				pkgconfig.add_links("vorbisfile")
 			end
