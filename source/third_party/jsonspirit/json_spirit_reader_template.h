@@ -135,6 +135,8 @@ namespace json_spirit
     {
         typedef typename String_type::const_iterator Iter_type;
 
+        // Triggers gcc warning with optimizations enabled. This line prevents that.
+        if( end - begin < 1 ) return String_type();
         if( end - begin < 2 ) return String_type( begin, end );
 
         String_type result;
