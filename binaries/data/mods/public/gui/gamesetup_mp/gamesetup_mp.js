@@ -317,8 +317,8 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					if (message.reason === 16)
 						reportHandshakeDisconnect(message.mismatch_type, message.client_mismatch_component, message.server_mismatch_component);
 					else
-						reportDisconnect(message.reason, false);
-					return true;
+						reportDisconnect(message, false);
+					return;
 
 				default:
 					error("Unrecognised netstatus type: " + message.status);

@@ -62,6 +62,7 @@ typedef std::map<CStr, PlayerAssignment> PlayerAssignmentMap; // map from GUID -
 enum NetDisconnectReason
 {
 	NDR_UNKNOWN = 0,
+	NDR_CONNECTION_REQUEST_TIMED_OUT,
 	NDR_SERVER_SHUTDOWN,
 	NDR_INCORRECT_PROTOCOL_VERSION,
 	NDR_SERVER_LOADING,

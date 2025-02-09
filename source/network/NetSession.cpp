@@ -135,6 +135,7 @@ void CNetClientSession::Poll()
 		enet_address_get_host_ip(&event.peer->address, hostname, ARRAY_SIZE(hostname));
 		LOGMESSAGE("Net client: Connected to %s:%u", hostname, (unsigned int)event.peer->address.port);
 		m_Connected = true;
+		m_WasConnected = true;
 
 		m_IncomingMessages.push(event);
 	}
@@ -178,7 +179,10 @@ void CNetClientSession::ProcessPolledMessages()
 		else if (event.type == ENET_EVENT_TYPE_DISCONNECT)
 		{
 			// This deletes the session, so we must break;
-			m_Client.HandleDisconnect(event.data);
+			if (event.data == 0 && !m_WasConnected)
+				m_Client.HandleDisconnect(NDR_CONNECTION_REQUEST_TIMED_OUT);
+			else
+				m_Client.HandleDisconnect(event.data);
 			break;
 		}
 		else if (event.type == ENET_EVENT_TYPE_RECEIVE)

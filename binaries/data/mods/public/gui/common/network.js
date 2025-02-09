@@ -58,35 +58,43 @@ function getValidPort(port)
 /**
  * Must be kept in sync with source/network/NetHost.h
  */
-function getDisconnectReason(id, wasConnected)
+function getDisconnectReason(id)
 {
 	switch (id)
 	{
-	case 0: return wasConnected ? "" :
-		translate("This is often caused by UDP port 20595 not being forwarded on the host side, by a firewall, or anti-virus software.");
-	case 1: return translate("The host has ended the game.");
-	case 2: return translate("Incorrect network protocol version.");
-	case 3: return translate("Game is loading, please try again later.");
-	case 4: return translate("Game has already started, no observers allowed.");
-	case 5: return translate("You have been kicked.");
-	case 6: return translate("You have been banned.");
-	case 7: return translate("Player name in use. If you were disconnected, retry in few seconds.");
-	case 8: return translate("Server full.");
-	case 9: return translate("Secure lobby authentication failed. Join via lobby.");
-	case 10: return translate("Error: Server failed to allocate a unique client identifier.");
-	case 11: return translate("Error: Client commands were ready for an unexpected game turn.");
-	case 12: return translate("Error: Client simulated an unexpected game turn.");
-	case 13: return translate("Password is invalid.");
-	case 14: return translate("Could not find an unused port for the enet STUN client.");
-	case 15: return translate("Could not find the STUN endpoint.");
-	case 16: return translate("Different game engine versions or different mods loaded.");
+	case 0: return translate("An unknown error ocurred.");
+	case 1: return translate("The connection request has timed out.");
+	case 2: return translate("The host has ended the game.");
+	case 3: return translate("Incorrect network protocol version.");
+	case 4: return translate("Game is loading, please try again later.");
+	case 5: return translate("Game has already started, no observers allowed.");
+	case 6: return translate("You have been kicked.");
+	case 7: return translate("You have been banned.");
+	case 8: return translate("Player name in use. If you were disconnected, retry in few seconds.");
+	case 9: return translate("Server full.");
+	case 10: return translate("Secure lobby authentication failed. Join via lobby.");
+	case 11: return translate("Error: Server failed to allocate a unique client identifier.");
+	case 12: return translate("Error: Client commands were ready for an unexpected game turn.");
+	case 13: return translate("Error: Client simulated an unexpected game turn.");
+	case 14: return translate("Password is invalid.");
+	case 15: return translate("Could not find an unused port for the enet STUN client.");
+	case 16: return translate("Could not find the STUN endpoint.");
+	case 17: return translate("Different game engine versions or different mods loaded.");
+
 	default:
 		warn("Unknown disconnect-reason ID received: " + id);
 		return sprintf(translate("\\[Invalid value %(id)s]"), { "id": id });
 	}
 }
 
-function getHandshakeDisconnectMessage(mismatchType, clientMismatchInfo, serverMismatchInfo)
+function getRequestTimeOutMessage()
+{
+	return (Engine.HasXmppClient() ? "" : translate("Please ensure that you entered the correct server name or IP address, and port number.\n\n")) +
+		translate("If you haven't yet, try to connect again and to different hosts." +
+		"\nIf the issue persists or occurs regularly, visit the official FAQ for detailed guidance and troubleshooting steps.");
+}
+
+function getMismatchMessage(mismatchType, clientMismatchInfo, serverMismatchInfo)
 {
 	switch (mismatchType)
 	{
@@ -107,26 +115,46 @@ function getHandshakeDisconnectMessage(mismatchType, clientMismatchInfo, serverM
 /**
  * Show the disconnect reason in a message box.
  *
- * @param {number} reason
+ * @param {Object} message
+ * @param {boolean} wasConnected
  */
-function reportDisconnect(reason, wasConnected)
+function reportDisconnect(message, wasConnected)
 {
-	messageBox(
-		400, 200,
-		(wasConnected ?
-			translate("Lost connection to the server.") :
-			translate("Failed to connect to the server.")
-		) + "\n\n" + getDisconnectReason(reason, wasConnected),
-		translate("Disconnected")
-	);
+	if (message.reason === 0)
+		reportConnectionRequestTimeOut();
+	else if (message.reason == 16)
+		reportMismatchingSoftwareVersions(message.mismatch_type, message.client_mismatch, message.server_mismatch);
+	else
+		messageBox(
+			400, 200,
+			(wasConnected ?
+				translate("Lost connection to the server.") :
+				translate("Failed to connect to the server.")
+			) + "\n\n" + getDisconnectReason(message.reason),
+			translate("Disconnected")
+		);
 }
 
-function reportHandshakeDisconnect(mismatchType, clientMismatch, serverMismatch)
+async function reportConnectionRequestTimeOut()
+{
+	const buttonIndex = await messageBox(
+		600, 230,
+		translate("Failed to connect to the server.") + " " + getDisconnectReason(1) + "\n\n" + getRequestTimeOutMessage(),
+		translate("Connection Error"),
+		[translate("Close"), translate("Open FAQ")]
+	);
+	if (buttonIndex === 1)
+		openURL("https://gitea.wildfiregames.com/0ad/0ad/wiki/FAQ#what-shall-i-do-when-joining-multiplayer-matches-fails-with-an-error-message");
+
+	return;
+}
+
+function reportMismatchingSoftwareVersions(mismatchType, clientMismatch, serverMismatch)
 {
 	messageBox(
 		400, 200,
 	        translate("Failed to connect to the server.")
-		+ "\n\n" + getHandshakeDisconnectMessage(mismatchType, clientMismatch, serverMismatch),
+		+ "\n\n" + getMismatchMessage(mismatchType, clientMismatch, serverMismatch),
 		translate("Disconnected")
 	);
 }
