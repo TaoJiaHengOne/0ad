@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -39,10 +39,8 @@
 #include "lib/sysdep/os/win/error_dialog.h"
 #include "lib/sysdep/os/win/wutil.h"
 
-#if CONFIG_ENABLE_BOOST
-# include <boost/algorithm/string/classification.hpp>
-# include <boost/algorithm/string/split.hpp>
-#endif
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 #include <string_view>
 
@@ -523,8 +521,6 @@ Status sys_generate_random_bytes(u8* buffer, size_t size)
 }
 
 
-#if CONFIG_ENABLE_BOOST
-
 /*
  * Given a string of the form
  *   "example.com:80"
@@ -634,8 +630,6 @@ done:
 
 	return err;
 }
-
-#endif
 
 FILE* sys_OpenFile(const OsPath& pathname, const char* mode)
 {

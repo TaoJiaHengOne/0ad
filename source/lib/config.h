@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -50,11 +50,6 @@
 // enable additional debug checks (potentially rather slow).
 #ifndef CONFIG_ENABLE_CHECKS
 # define CONFIG_ENABLE_CHECKS 0
-#endif
-
-// allow the use of Boost? (affects PCH and several individual modules)
-#ifndef CONFIG_ENABLE_BOOST
-# define CONFIG_ENABLE_BOOST 1
 #endif
 
 #endif	// #ifndef INCLUDED_CONFIG

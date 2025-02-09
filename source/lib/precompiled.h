@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@
 # define MINIMAL_PCH 0
 #endif
 
-#include "lib/config.h"	            // CONFIG_ENABLE_BOOST, CONFIG_ENABLE_PCH
+#include "lib/config.h"	            // CONFIG_ENABLE_PCH
 #include "lib/sysdep/compiler.h"    // MSC_VERSION
 
 // must come before any STL headers are included
@@ -74,9 +74,7 @@ double __cdecl abs(double x);	// not declared by mathimf
 #include "lib/lib.h"
 #include "lib/secure_crt.h"
 
-#if CONFIG_ENABLE_BOOST
-# include "lib/pch/pch_boost.h"
-#endif
+#include "lib/pch/pch_boost.h"
 
 #include <array>
 #include <memory>
