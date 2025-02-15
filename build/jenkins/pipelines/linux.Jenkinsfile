@@ -17,6 +17,34 @@
 
 // This pipeline builds the game on Linux (with minimum supported versions of GCC and clang) and runs tests.
 
+def tc_getCC(tc) {
+	def map = ['gcc12': 'gcc-12', 'clang14': 'clang-14']
+	return map[tc]
+}
+def tc_getCXX(tc) {
+	def map = ['gcc12': 'g++-12', 'clang14': 'clang++-14']
+	return map[tc]
+}
+def tc_getLDFLAGS(tc) {
+	def map = ['gcc12': '', 'clang14': '-fuse-ld=lld-14']
+	return map[tc]
+}
+
+def getParserConfig(tc, buildType) {
+	def config
+	if (tc.startsWith("gcc")) {
+		config = [ 'tool': 'gcc', 'name': 'GCC', 'id': 'gcc-' + buildType]
+	} else {
+		config = [ 'tool': 'clang', 'name': 'Clang', 'id': 'clang-' + buildType ]
+	}
+	if (buildType.matches("debug")) {
+		config['name'] += ' Debug Build'
+	} else {
+		config['name'] += ' Release Build'
+	}
+	return config
+}
+
 pipeline {
 	// Stop previous build in pull requests, but not in branches
 	options { disableConcurrentBuilds(abortPrevious: env.CHANGE_ID != null) }
@@ -26,20 +54,8 @@ pipeline {
 	}
 
 	agent none
+
 	stages {
-		stage("Setup") {
-			agent {
-				node {
-					label 'LinuxAgent'
-					customWorkspace 'workspace/linux'
-				}
-			}
-			steps {
-				discoverGitReferenceBuild()
-				sh "cd build/jenkins/dockerfiles/ && docker build -t buster-base -f buster-base.Dockerfile ."
-				sh "cd build/jenkins/dockerfiles/ && docker build -t bullseye-base -f bullseye-base.Dockerfile ."
-			}
-		}
 		stage("Linux Build") {
 			failFast true
 
@@ -47,98 +63,124 @@ pipeline {
 				axes {
 					axis {
 						name 'JENKINS_COMPILER'
-						values 'gcc8', 'clang9'
+						values 'gcc12', 'clang14'
+					}
+					axis {
+						name 'BUILD_TYPE'
+						values 'debug', 'release'
 					}
 				}
 
-				agent {
-					dockerfile {
-						label 'LinuxAgent'
-						customWorkspace "workspace/${JENKINS_COMPILER}-pch"
-						dir 'build/jenkins/dockerfiles'
-						filename "${JENKINS_COMPILER}.Dockerfile"
-						// Prevent Jenkins from running commands with the UID of the host's jenkins user
-						// https://stackoverflow.com/a/42822143
-						args '-u root'
-					}
+				environment {
+					CC = tc_getCC(env.JENKINS_COMPILER)
+					CXX = tc_getCXX(env.JENKINS_COMPILER)
+					LDFLAGS = tc_getLDFLAGS(env.JENKINS_COMPILER)
 				}
 
 				stages {
-					stage("Pre-build") {
+					stage("Checkout") {
+						agent {
+							node {
+								label "LinuxAgent"
+								customWorkspace "workspace/${JENKINS_COMPILER}-pch-${BUILD_TYPE}"
+							}
+						}
+
 						steps {
-							sh "git lfs pull -I binaries/data/tests"
-							sh "git lfs pull -I \"binaries/data/mods/_test.*\""
+							sh "git lfs fetch -I binaries/data/tests"
+							sh "git lfs checkout binaries/data/tests"
+							sh "git lfs fetch -I \"binaries/data/mods/_test.*\""
+							sh "git lfs checkout binaries/data/mods/_test.*"
+						}
+					}
 
-							sh "libraries/build-source-libs.sh ${JOBS} 2> ${JENKINS_COMPILER}-prebuild-errors.log"
+					stage("Container") {
+						agent {
+							dockerfile {
+								label 'LinuxAgent'
+								customWorkspace "workspace/${JENKINS_COMPILER}-pch-${BUILD_TYPE}"
+								dir 'build/jenkins/dockerfiles'
+								filename 'debian-12.Dockerfile'
+								// Prevent Jenkins from running commands with the UID of the host's jenkins user
+								// https://stackoverflow.com/a/42822143
+								args '-u root'
+							}
+						}
 
-							sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
+						stages {
+							stage("Pre-build") {
+								steps {
+									sh "libraries/build-source-libs.sh ${JOBS} 2> ${JENKINS_COMPILER}-prebuild-errors.log"
 
-							script {
-								if (params.CLEANBUILD) {
-									sh "cd build/workspaces/gcc/ && make clean config=debug"
-									sh "cd build/workspaces/gcc/ && make clean config=release"
+									sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
+
+									script {
+										if (params.CLEANBUILD) {
+											sh "make -C build/workspaces/gcc/ clean config=${BUILD_TYPE}"
+										}
+									}
+								}
+								post {
+									failure {
+										echo (message: readFile (file: "${JENKINS_COMPILER}-prebuild-errors.log"))
+									}
+								}
+							}
+
+							stage("Build") {
+								steps {
+									sh '''
+										rm -f thepipe
+										mkfifo thepipe
+										tee build.log < thepipe &
+										make -C build/workspaces/gcc/ ${JOBS} config=${BUILD_TYPE} > thepipe 2>&1
+										status=$?
+										rm thepipe
+										exit ${status}
+									'''
+								}
+								post {
+									failure {
+										script { if (!params.CLEANBUILD) {
+											build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
+										}}
+									}
+									always {
+										script {
+											def config = getParserConfig(env.JENKINS_COMPILER, env.BUILD_TYPE)
+											recordIssues(
+												tool: analysisParser(
+													analysisModelId: config['tool'],
+													name: config['name'],
+													id : config['id'],
+													pattern: "build.log"
+												),
+												skipPublishingChecks: true,
+												enabledForFailure: true,
+												qualityGates: [[threshold: 1, type: 'TOTAL', criticality: 'FAILURE']]
+											)
+										}
+									}
+								}
+							}
+
+							stage("Test") {
+								steps {
+									timeout(time: 15) {
+										script {
+											def bin = env.BUILD_TYPE == "debug" ? "test_dbg" : "test"
+											sh "binaries/system/${bin} > cxxtest.xml"
+										}
+									}
+								}
+								post {
+									always {
+										junit(skipPublishingChecks: true, testResults: 'cxxtest.xml')
+									}
 								}
 							}
 						}
-						post {
-							failure {
-								echo (message: readFile (file: "${JENKINS_COMPILER}-prebuild-errors.log"))
-							}
-						}
 					}
-
-					stage("Debug Build") {
-						steps {
-							sh "cd build/workspaces/gcc/ && make ${JOBS} config=debug"
-						}
-						post {
-							failure {
-								script { if (!params.CLEANBUILD) {
-									build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
-								}}
-							}
-						}
-					}
-
-					stage("Debug Tests") {
-						steps {
-							timeout(time: 15) {
-								sh "cd binaries/system/ && ./test_dbg > cxxtest-debug.xml"
-							}
-						}
-						post {
-							always {
-								junit 'binaries/system/cxxtest-debug.xml'
-							}
-						}
-					}
-
-					stage("Release Build") {
-						steps {
-							sh "cd build/workspaces/gcc/ && make ${JOBS} config=release"
-						}
-					}
-
-					stage("Release Tests") {
-						steps {
-							timeout(time: 15) {
-								sh "cd binaries/system/ && ./test > cxxtest-release.xml"
-							}
-						}
-						post {
-							always {
-								junit 'binaries/system/cxxtest-release.xml'
-							}
-						}
-					}
-				}
-			}
-
-			post {
-				always {
-					node('LinuxAgent') { ws('workspace/linux') {
-						recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tools: [clang(), gcc()]
-					}}
 				}
 			}
 		}
