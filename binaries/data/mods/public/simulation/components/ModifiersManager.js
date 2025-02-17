@@ -110,10 +110,7 @@ ModifiersManager.prototype.FetchModifiedProperty = function(classesList, propert
 	return GetTechModifiedProperty(modifications.flat(), classesList, originalValue);
 };
 
-/**
- * @returns originalValue after modifiers
- */
-ModifiersManager.prototype.Cache = function(classesList, propertyName, originalValue, entity)
+ModifiersManager.prototype.Cache = function(classesList, propertyName, originalValue, newValue, entity)
 {
 	let cache = this.cachedValues.get(propertyName);
 	if (!cache)
@@ -123,9 +120,7 @@ ModifiersManager.prototype.Cache = function(classesList, propertyName, originalV
 	if (!cache2)
 		cache2 = cache.set(entity, new Map()).get(entity);
 
-	let value = this.FetchModifiedProperty(classesList, propertyName, originalValue, entity);
-	cache2.set(originalValue, value);
-	return value;
+	cache2.set(originalValue, newValue);
 };
 
 /**
@@ -174,7 +169,8 @@ ModifiersManager.prototype.ApplyModifiers = function(propertyName, originalValue
 		pc.add(entity);
 		newValue = this.FetchModifiedProperty(classesList, propertyName, newValue, ownerEntity);
 	}
-	newValue = this.Cache(classesList, propertyName, newValue, entity);
+	newValue = this.FetchModifiedProperty(classesList, propertyName, newValue, entity);
+	this.Cache(classesList, propertyName, originalValue, newValue, entity);
 
 	return newValue;
 };
