@@ -25,7 +25,7 @@ header nav p.loading:after { content:""; position:absolute; right:5px; top:50%; 
 header nav p.fail { background:#faa;cursor:not-allowed;}
 header nav p.active { cursor:pointer; background:#eee; box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.5);font-weight:bold;}
 #tooltip { background: #ffd; padding: 4px; font: 12px sans-serif; border: 1px #880 solid; }
-#tooltip.long { -moz-column-count: 2; }
+#tooltip.long { column-count: 2; }
 #choices { display: flex; flex-wrap:wrap;}
 #choices section { position:relative;}
 #choices section h2 { height:25px; }
@@ -58,7 +58,7 @@ header nav p.active { cursor:pointer; background:#eee; box-shadow: 0px 0px 2px 0
 </header>
 
 <p>Click on the following timelines to zoom.</p>
-</a><div id="timelines"></div>
+<div id="timelines"></div>
 
 <div id="choices">
 	<div style="width:100%">
@@ -70,8 +70,8 @@ header nav p.active { cursor:pointer; background:#eee; box-shadow: 0px 0px 2px 0
 		<input type="checkbox" id="fulln" name="fulln" value="fulln" onchange="update_analysis()"><label for="fulln">Show for all frames</label>
 		<div style="position:relative">
 			<aside></aside>
-			<canvas id="canvas_frequency" width="600" height="600"></canvas
-html5 >		</div>
+			<canvas id="canvas_frequency" width="600" height="600"></canvas>
+		</div>
 	</section>
 	<section id="history_graph">
 		<h2>Frame-by-Frame Graph</h2>
