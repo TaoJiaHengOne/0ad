@@ -163,7 +163,8 @@ void CDebugSerializer::PutScriptVal(const char* name, JS::MutableHandleValue val
 		std::string serialized_source = Script::ToString(rq, &serialize, true);
 		m_Stream << INDENT << name << ": " << serialized_source << "\n";
 	}
-	else
+	// null is used explicitly as "nothing to serialize" so skip it even in debug
+	else if (serialize.isUndefined())
 	{
 		std::string source = Script::ToString(rq, value, true);
 		m_Stream << INDENT << name << ": " << source << "\n";
