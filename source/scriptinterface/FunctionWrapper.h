@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -23,9 +23,11 @@
 #include "ScriptRequest.h"
 
 #include <fmt/format.h>
+#include <memory>
 #include <tuple>
 #include <type_traits>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 class ScriptInterface;
@@ -257,6 +259,13 @@ private:
 		return !ScriptException::CatchPending(rq) && success;
 	}
 
+	struct StatefullCallbackPrivateSlot
+	{
+		static constexpr size_t callback{0};
+		static constexpr size_t classInfo{1};
+		static constexpr uint32_t count{2};
+	};
+
 	///////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////
 public:
@@ -452,6 +461,92 @@ public:
 		const u16 flags = JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT)
 	{
 		JS_DefineFunction(cx, scope, name, &ToJSNative<callable, thisGetter>, args_info<decltype(callable)>::nb_args, flags);
+	}
+
+	template<typename Callable>
+	class StatefulCallback
+	{
+		class ClassInfo
+		{
+		public:
+			ClassInfo(std::string className) :
+				name{std::move(className)}
+			{}
+
+			JSClassOps classOps{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+				/*.finalize = */finalize, /*.call = */&ToJSNative<&Callable::operator(), getter>,
+				nullptr, nullptr};
+			std::string name;
+			JSClass jsClass{name.c_str(),
+				JSCLASS_HAS_RESERVED_SLOTS(StatefullCallbackPrivateSlot::count) |
+					JSCLASS_BACKGROUND_FINALIZE,
+				&classOps};
+		};
+	public:
+		explicit StatefulCallback(const ScriptRequest& rq, std::string name, Callable callable) :
+			StatefulCallback{rq, std::move(name),
+				JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT, std::move(callable)}
+		{}
+
+		explicit StatefulCallback(const ScriptRequest& rq, std::string name, const unsigned flags,
+			Callable callable) :
+			callback{std::move(callable)},
+			functionObject{rq.cx}
+		{
+			auto classInfo = std::make_unique<ClassInfo>(std::move(name));
+			functionObject.set(JS_NewObject(rq.cx, &classInfo->jsClass));
+			JS::RootedValue functionValue{rq.cx, JS::ObjectValue(*functionObject)};
+			if (!JS_DefineProperty(rq.cx, rq.nativeScope, classInfo->name.c_str(), functionValue,
+				flags))
+			{
+				throw std::runtime_error{fmt::format(
+					"Failed defining function {:?} on the native scope.", classInfo->name)};
+			}
+			JS::SetReservedSlot(functionObject, StatefullCallbackPrivateSlot::classInfo,
+				JS::PrivateValue(classInfo.release()));
+			JS::SetReservedSlot(functionObject, StatefullCallbackPrivateSlot::callback,
+				JS::PrivateValue(&callback));
+		}
+		StatefulCallback(const StatefulCallback&) = delete;
+		StatefulCallback& operator=(const StatefulCallback&) = delete;
+		StatefulCallback(StatefulCallback&&) = delete;
+		StatefulCallback& operator=(StatefulCallback&&) = delete;
+
+		~StatefulCallback()
+		{
+			JS::SetReservedSlot(functionObject, StatefullCallbackPrivateSlot::callback,
+				JS::UndefinedValue());
+		}
+
+	private:
+		static Callable* getter(const ScriptRequest&, JS::CallArgs& args)
+		{
+			return JS::GetMaybePtrFromReservedSlot<Callable>(&args.callee(),
+				StatefullCallbackPrivateSlot::callback);
+		}
+
+		static void finalize(JS::GCContext*, JSObject* obj)
+		{
+			delete JS::GetMaybePtrFromReservedSlot<ClassInfo>(obj,
+				StatefullCallbackPrivateSlot::classInfo);
+		}
+
+		Callable callback;
+		JS::RootedObject functionObject;
+	};
+
+	template<typename Callable>
+	static StatefulCallback<Callable> Register(const ScriptRequest& rq, std::string name,
+		const unsigned flags, Callable callable)
+	{
+		return StatefulCallback{rq, std::move(name), flags, std::move(callable)};
+	}
+
+	template<typename Callable>
+	static StatefulCallback<Callable> Register(const ScriptRequest& rq, std::string name,
+		Callable callable)
+	{
+		return StatefulCallback{rq, std::move(name), std::move(callable)};
 	}
 };
 

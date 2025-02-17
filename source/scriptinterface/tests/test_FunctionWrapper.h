@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -109,5 +109,25 @@ public:
 			TS_ASSERT(script.Eval(input.c_str(), ret));
 			TS_ASSERT_EQUALS(ret, 4);
 		}
+	}
+
+	void test_statefull()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+		JS::RootedValue nativeScope{rq.cx, JS::ObjectValue(*rq.nativeScope)};
+
+		constexpr const char* name{"callback"};
+		{
+			bool called{false};
+			auto _ = ScriptFunction::Register(rq, name, [&](){
+				called = true;
+			});
+			TS_ASSERT(!called);
+			TS_ASSERT(ScriptFunction::CallVoid(rq, nativeScope, name));
+			TS_ASSERT(called);
+		}
+
+		TS_ASSERT(!ScriptFunction::CallVoid(rq, nativeScope, name));
 	}
 };

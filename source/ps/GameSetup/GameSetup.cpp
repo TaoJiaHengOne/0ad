@@ -736,34 +736,6 @@ CStr8 LoadSettingsOfScenarioMap(const VfsPath &mapPath)
 	return mapElement.GetText();
 }
 
-// TODO: this essentially duplicates the CGUI logic to load directory or scripts.
-// NB: this won't make sure to not double-load scripts, unlike the GUI.
-void AutostartLoadScript(const ScriptInterface& scriptInterface, const VfsPath& path)
-{
-	if (path.IsDirectory())
-	{
-		VfsPaths pathnames;
-		vfs::GetPathnames(g_VFS, path, L"*.js", pathnames);
-		for (const VfsPath& file : pathnames)
-			scriptInterface.LoadGlobalScriptFile(file);
-	}
-	else
-		scriptInterface.LoadGlobalScriptFile(path);
-}
-
-// TODO: this essentially duplicates the CGUI function
-CParamNode GetTemplate(const std::string& templateName)
-{
-	// This is very cheap to create so let's just do it every time.
-	CTemplateLoader templateLoader;
-
-	const CParamNode& templateRoot = templateLoader.GetTemplateFileData(templateName).GetOnlyChild();
-	if (!templateRoot.IsOk())
-		LOGERROR("Invalid template found for '%s'", templateName.c_str());
-
-	return templateRoot;
-}
-
 /**
  * Autostart arguments are parsed in javascript for convenience and moddability.
  * This C++ part only handles the following arguments:
@@ -785,13 +757,50 @@ bool Autostart(const CmdLineArgs& args)
 	// We use the javascript gameSettings to handle options, but that requires running JS.
 	// Since we don't want to use the full Gui manager, we load an entrypoint script
 	// that can run the priviledged "LoadScript" function, and then call the appropriate function.
-	ScriptFunction::Register<&AutostartLoadScript>(rq, "LoadScript");
+
+	// TODO: this essentially duplicates the CGUI logic to load directory or scripts.
+	std::unordered_set<VfsPath> templateCache;
+	const auto autostartLoadScript = [&templateCache](const ScriptInterface& scriptInterface,
+		const VfsPath& path)
+	{
+		if (!std::get<1>(templateCache.insert(path)))
+			return;
+
+		if (path.IsDirectory())
+		{
+			VfsPaths pathnames;
+			vfs::GetPathnames(g_VFS, path, L"*.js", pathnames);
+			for (const VfsPath& file : pathnames)
+				scriptInterface.LoadGlobalScriptFile(file);
+		}
+		else
+			scriptInterface.LoadGlobalScriptFile(path);
+	};
+
+	const auto loadScriptCallback = ScriptFunction::Register(rq, "LoadScript", autostartLoadScript);
 	// Load the entire folder to allow mods to extend the entrypoint without copying the whole file.
-	AutostartLoadScript(scriptInterface, VfsPath(L"autostart/"));
+	autostartLoadScript(scriptInterface, VfsPath(L"autostart/"));
 
 	// Provide some required functions to the script.
+
+	struct GetTemplate
+	{
+		CTemplateLoader templateLoader;
+
+		CParamNode operator()(const std::string& templateName){
+			// TODO: this essentially duplicates the CGUI function
+			const CParamNode& templateRoot{
+				templateLoader.GetTemplateFileData(templateName).GetOnlyChild()};
+			if (!templateRoot.IsOk())
+				LOGERROR("Invalid template found for '%s'", templateName.c_str());
+
+			return templateRoot;
+		}
+	};
+
+	std::optional<ScriptFunction::StatefulCallback<GetTemplate>> getTemplateCallback;
 	if (args.Has("autostart-nonvisual"))
-		ScriptFunction::Register<&GetTemplate>(rq, "GetTemplate");
+		getTemplateCallback.emplace(rq, "GetTemplate", GetTemplate{});
 	else
 	{
 		JSI_GUIManager::RegisterScriptFunctions(rq);
