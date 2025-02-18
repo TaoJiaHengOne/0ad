@@ -4,7 +4,7 @@ cd /D "%~dp0"
 
 rem **SVN revision to checkout for windows-libs**
 rem **Update this line when you commit an update to windows-libs**
-set "svnrev=28243"
+set "svnrev=28256"
 
 svn co https://svn.wildfiregames.com/public/windows-libs/trunk@%svnrev% win32
 
