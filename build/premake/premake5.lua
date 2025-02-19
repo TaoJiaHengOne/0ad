@@ -1,3 +1,12 @@
+local semver = require("semver")
+
+if (semver("5.0.0-beta5") <= semver(_PREMAKE_VERSION)) then
+	print("Using premake " .. _PREMAKE_VERSION .. "...")
+else
+	print("Requires Premake 5.0.0-beta5 or later")
+	os.exit(1)
+end
+
 newoption { category = "Pyrogenesis", trigger = "android", description = "Use non-working Android cross-compiling mode" }
 newoption { category = "Pyrogenesis", trigger = "coverage", description = "Enable code coverage data collection (GCC only)" }
 newoption { category = "Pyrogenesis", trigger = "gles", description = "Use non-working OpenGL ES 2.0 mode" }
@@ -29,12 +38,6 @@ newoption { category = "Pyrogenesis", trigger = "sysroot", description = "Set co
 newoption { category = "Pyrogenesis", trigger = "bindir", description = "Directory for executables (typically '/usr/games'); default is to be relocatable" }
 newoption { category = "Pyrogenesis", trigger = "datadir", description = "Directory for data files (typically '/usr/share/games/0ad'); default is ../data/ relative to executable" }
 newoption { category = "Pyrogenesis", trigger = "libdir", description = "Directory for libraries (typically '/usr/lib/games/0ad'); default is ./ relative to executable" }
-
-if _ACTION == "gmake" then
-	print("Premake action 'gmake' is no longer supported by pyrogenesis, use 'gmake2'")
-	print("Example: 'premake5 --file=build/premake/premake5.lua gmake2'")
-	os.exit(1)
-end
 
 -- Root directory of project checkout relative to this .lua file
 rootdir = "../.."
@@ -227,12 +230,7 @@ function project_set_build_flags()
 			optimize "Speed"
 		end
 		if _OPTIONS["with-lto"] then
-			if linktimeoptimization then
-				linktimeoptimization("On")
-			else
-				-- deprecated since v5.0.0-beta4
-				flags { "LinkTimeOptimization" }
-			end
+			linktimeoptimization("On")
 		end
 		defines { "NDEBUG", "CONFIG_FINAL=1" }
 
@@ -433,7 +431,7 @@ function project_set_build_flags()
 				end
 
 				-- Adding the executable path and taking care of correct escaping
-				if _ACTION == "gmake2" then
+				if _ACTION == "gmake" then
 					linkoptions { "-Wl,-rpath,'$$ORIGIN'" }
 				elseif _ACTION == "codeblocks" then
 					linkoptions { "-Wl,-R\\\\$$$ORIGIN" }

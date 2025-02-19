@@ -48,10 +48,10 @@ export HOSTTYPE="$HOSTTYPE"
 echo "Premake args: ${premake_args}"
 if [ "$OS" != "Darwin" ]; then
 	# shellcheck disable=SC2086
-	${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" ${premake_args} gmake2 || die "Premake failed"
+	${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" ${premake_args} gmake || die "Premake failed"
 else
 	# shellcheck disable=SC2086
-	${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" --macosx-version-min="${MIN_OSX_VERSION}" ${premake_args} gmake2 || die "Premake failed"
+	${premake_command} --file="premake5.lua" --outpath="../workspaces/gcc/" --macosx-version-min="${MIN_OSX_VERSION}" ${premake_args} gmake || die "Premake failed"
 	# Also generate xcode workspaces if on OS X
 	# shellcheck disable=SC2086
 	${premake_command} --file="premake5.lua" --outpath="../workspaces/xcode4" --macosx-version-min="${MIN_OSX_VERSION}" ${premake_args} xcode4 || die "Premake failed"

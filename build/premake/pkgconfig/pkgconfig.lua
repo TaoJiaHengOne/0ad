@@ -47,33 +47,17 @@ end
 function m.add_includes(lib, alternative_cmd, alternative_flags)
 	local dirs, files, options = parse_pkg_config_includes(lib, alternative_cmd, alternative_flags)
 
-	-- As of premake5-beta2, `sysincludedirs` has been deprecated in favour of
-	-- `externalincludedirs`, and continuing to use it causes warnings to be emitted.
-	-- We use `externalincludedirs` when available to prevent the warnings, falling back
-	-- to `sysincludedirs` when not to prevent breakage of the `--with-system-premake5`
-	-- build argument.
-	if externalincludedirs then
-		externalincludedirs(dirs)
-	else
-		sysincludedirs(dirs)
-	end
-
+	externalincludedirs(dirs)
 	forceincludes(files)
 	buildoptions(options)
 end
 
 function m.add_includes_after(lib, alternative_cmd, alternative_flags)
-	-- Support for includedirsafter was added after the 5.0.0-beta2 release.
-	-- Fall back if unavailable to support `--with-system-premake5`
-	if includedirsafter then
-		local dirs, files, options = parse_pkg_config_includes(lib, alternative_cmd, alternative_flags)
+	local dirs, files, options = parse_pkg_config_includes(lib, alternative_cmd, alternative_flags)
 
-		includedirsafter(dirs)
-		forceincludes(files)
-		buildoptions(options)
-	else
-		m.add_includes(lib, alternative_cmd, alternative_flags)
-	end
+	includedirsafter(dirs)
+	forceincludes(files)
+	buildoptions(options)
 end
 
 function m.add_links(lib, alternative_cmd, alternative_flags)

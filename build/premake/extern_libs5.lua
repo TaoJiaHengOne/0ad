@@ -38,33 +38,15 @@ local function add_source_lib_paths(extern_lib)
 end
 
 local function add_default_include_paths(extern_lib)
-	-- As of premake5-beta2, `sysincludedirs` has been deprecated in favour of
-	-- `externalincludedirs`, and continuing to use it causes warnings to be emitted.
-	--
-	-- We use `externalincludedirs` when available to prevent the warnings, falling back
-	-- to `sysincludedirs` when not to prevent breakage of the `--with-system-premake5`
-	-- build argument.
-	if externalincludedirs then
-		externalincludedirs { libraries_dir .. extern_lib .. "/include" }
-	else
-		sysincludedirs { libraries_dir .. extern_lib .. "/include" }
-	end
+	externalincludedirs { libraries_dir .. extern_lib .. "/include" }
 end
 
 local function add_source_include_paths(extern_lib)
-	if externalincludedirs then
-		externalincludedirs { libraries_source_dir .. extern_lib .. "/include" }
-	else
-		sysincludedirs { libraries_source_dir .. extern_lib .. "/include" }
-	end
+	externalincludedirs { libraries_source_dir .. extern_lib .. "/include" }
 end
 
 local function add_third_party_include_paths(extern_lib)
-	if externalincludedirs then
-		externalincludedirs { third_party_source_dir .. extern_lib .. "/include" }
-	else
-		sysincludedirs { third_party_source_dir .. extern_lib .. "/include" }
-	end
+	externalincludedirs { third_party_source_dir .. extern_lib .. "/include" }
 end
 
 local function wx_config_path()
@@ -239,11 +221,7 @@ extern_lib_defs = {
 			end
 			-- TODO: This actually applies to most libraries we use on BSDs, make this a global setting.
 			if os.istarget("bsd") then
-				if externalincludedirs then
-					externalincludedirs { "/usr/local/include" }
-				else
-					sysincludedirs { "/usr/local/include" }
-				end
+				externalincludedirs { "/usr/local/include" }
 			end
 		end,
 		link_settings = function()
@@ -274,11 +252,7 @@ extern_lib_defs = {
 	cxxtest = {
 		compile_settings = function()
 			if not _OPTIONS["with-system-cxxtest"] then
-				if externalincludedirs then
-					externalincludedirs { libraries_source_dir .. "cxxtest-4.4" }
-				else
-					sysincludedirs { libraries_source_dir .. "cxxtest-4.4" }
-				end
+				externalincludedirs { libraries_source_dir .. "cxxtest-4.4" }
 				-- Upstream uses WIN32 instead of _WIN32 define
 				if os.istarget("windows") then
 					defines { "WIN32" }
@@ -658,18 +632,10 @@ extern_lib_defs = {
 				end
 			else
 				filter "Debug"
-					if externalincludedirs then
-						externalincludedirs { libraries_source_dir.."spidermonkey/include-debug" }
-					else
-						sysincludedirs { libraries_source_dir.."spidermonkey/include-debug" }
-					end
+					externalincludedirs { libraries_source_dir.."spidermonkey/include-debug" }
 					defines { "DEBUG" }
 				filter "Release"
-					if externalincludedirs then
-						externalincludedirs { libraries_source_dir.."spidermonkey/include-release" }
-					else
-						sysincludedirs { libraries_source_dir.."spidermonkey/include-release" }
-					end
+					externalincludedirs { libraries_source_dir.."spidermonkey/include-release" }
 				filter { }
 			end
 		end,

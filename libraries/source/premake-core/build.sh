@@ -8,8 +8,8 @@ set -e
 
 cd "$(dirname "$0")"
 
-PV=5.0.0-beta4
-LIB_VERSION=${PV}+wfg1
+PV=5.0.0-beta6
+LIB_VERSION=${PV}+wfg0
 
 fetch()
 {
