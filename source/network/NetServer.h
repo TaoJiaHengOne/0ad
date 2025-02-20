@@ -427,7 +427,7 @@ private:
 	/**
 	 * Try to find a UPnP root on the network and setup port forwarding.
 	 */
-	static void SetupUPnP();
+	static void SetupUPnP(const u16 port);
 	std::thread m_UPnPThread;
 #endif
 

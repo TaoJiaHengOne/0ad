@@ -194,20 +194,20 @@ bool CNetServerWorker::SetupConnection(const u16 port)
 
 #if CONFIG2_MINIUPNPC
 	// Launch the UPnP thread
-	m_UPnPThread = std::thread(Threading::HandleExceptions<SetupUPnP>::Wrapper);
+	m_UPnPThread = std::thread(Threading::HandleExceptions<SetupUPnP>::Wrapper, port);
 #endif
 
 	return true;
 }
 
 #if CONFIG2_MINIUPNPC
-void CNetServerWorker::SetupUPnP()
+void CNetServerWorker::SetupUPnP(const u16 port)
 {
 	debug_SetThreadName("UPnP");
 
 	// Values we want to set.
 	char psPort[6];
-	sprintf_s(psPort, ARRAY_SIZE(psPort), "%d", PS_DEFAULT_PORT);
+	sprintf_s(psPort, ARRAY_SIZE(psPort), "%d", port);
 	const char* leaseDuration = "0"; // Indefinite/permanent lease duration.
 	const char* description = "0AD Multiplayer";
 	const char* protocall = "UDP";
