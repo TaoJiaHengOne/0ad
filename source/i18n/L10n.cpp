@@ -170,11 +170,6 @@ const icu::Locale& L10n::GetCurrentLocale() const
 
 bool L10n::SaveLocale(const std::string& localeCode) const
 {
-	if (localeCode == "long" && InDevelopmentCopy())
-	{
-		g_ConfigDB.SetValueString(CFG_USER, "locale", "long");
-		return true;
-	}
 	return SaveLocale(icu::Locale(icu::Locale::createCanonical(localeCode.c_str())));
 }
 
@@ -290,19 +285,9 @@ void L10n::ReevaluateCurrentLocaleAndReload()
 	std::string locale;
 	CFG_GET_VAL("locale", locale);
 
-	if (locale == "long")
-	{
-		// Set ICU to en_US to have a valid language for displaying dates
-		m_CurrentLocale = icu::Locale::getUS();
-		m_CurrentLocaleIsOriginalGameLocale = false;
-		m_UseLongStrings = true;
-	}
-	else
-	{
-		GetDictionaryLocale(locale, m_CurrentLocale);
-		m_CurrentLocaleIsOriginalGameLocale = (m_CurrentLocale == icu::Locale::getUS()) == 1;
-		m_UseLongStrings = false;
-	}
+	GetDictionaryLocale(locale, m_CurrentLocale);
+	m_CurrentLocaleIsOriginalGameLocale = (m_CurrentLocale == icu::Locale::getUS()) == 1;
+
 	LoadDictionaryForCurrentLocale();
 }
 
@@ -317,11 +302,6 @@ std::vector<std::string> L10n::GetAllLocales() const
 	return ret;
 }
 
-
-bool L10n::UseLongStrings() const
-{
-	return m_UseLongStrings;
-};
 
 std::vector<std::string> L10n::GetSupportedLocaleBaseNames() const
 {
@@ -532,8 +512,6 @@ Status L10n::ReloadChangedFile(const VfsPath& path)
 		return INFO::OK;
 
 	std::wstring dictName = GetFallbackToAvailableDictLocale(m_CurrentLocale);
-	if (m_UseLongStrings)
-		dictName = L"long";
 	if (dictName.empty())
 		return INFO::OK;
 
@@ -564,19 +542,11 @@ void L10n::LoadDictionaryForCurrentLocale()
 	m_Dictionary = std::make_unique<tinygettext::Dictionary>();
 	VfsPaths filenames;
 
-	if (m_UseLongStrings)
+	std::wstring dictName = GetFallbackToAvailableDictLocale(m_CurrentLocale);
+	if (vfs::GetPathnames(g_VFS, L"l10n/", dictName.append(L".*.po").c_str(), filenames) < 0)
 	{
-		if (vfs::GetPathnames(g_VFS, L"l10n/", L"long.*.po", filenames) < 0)
-			return;
-	}
-	else
-	{
-		std::wstring dictName = GetFallbackToAvailableDictLocale(m_CurrentLocale);
-		if (vfs::GetPathnames(g_VFS, L"l10n/", dictName.append(L".*.po").c_str(), filenames) < 0)
-		{
-			LOGERROR("No files for the dictionary found, but at this point the input should already be validated!");
-			return;
-		}
+		LOGERROR("No files for the dictionary found, but at this point the input should already be validated!");
+		return;
 	}
 
 	for (const VfsPath& path : filenames)

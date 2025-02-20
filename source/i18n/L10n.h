@@ -211,15 +211,6 @@ public:
 	std::string GetLocaleScript(const std::string& locale) const;
 
 	/**
-	 * Returns @c true if the current locale is the special "Long Strings"
-	 * locale. It returns @c false otherwise.
-	 *
-	 * @return Whether the current locale is the special "Long Strings"
-	 *         (@c true) or not (@c false).
-	 */
-	bool UseLongStrings() const;
-
-	/**
 	 * Returns an array of paths to files in the virtual filesystem that provide
 	 * translations for the specified locale code.
 	 *
@@ -522,14 +513,6 @@ private:
 	 * Many localization steps can be skipped when this variable is @c true.
 	 */
 	bool m_CurrentLocaleIsOriginalGameLocale{false};
-
-	/**
-	 * Whether the game is using the special game locale with the longest
-	 * strings of each translation (@c true) or not (@c false).
-	 *
-	 * @sa https://gitea.wildfiregames.com/0ad/0ad/wiki/Implementation_of_Internationalization_and_Localization#LongStringsLocale
-	 */
-	bool m_UseLongStrings{false};
 
 	/**
 	 * Loads the translation files for the

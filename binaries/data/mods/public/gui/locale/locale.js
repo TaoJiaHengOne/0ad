@@ -6,21 +6,13 @@ function init()
 
 	var currentLocale = Engine.GetCurrentLocale();
 	var currentLocaleDictName = Engine.GetFallbackToAvailableDictLocale(currentLocale);
-	var useLongStrings = Engine.UseLongStrings();
-	var index = -1;
-	if (useLongStrings)
-		index = languageList.list_data.indexOf("long");
-	if (index == -1)
-		index = languageList.list_data.indexOf(currentLocaleDictName);
+	var index = languageList.list_data.indexOf(currentLocaleDictName);
 
 	if (index != -1)
 		languageList.selected = index;
 
 	var localeText = Engine.GetGUIObjectByName("localeText");
-	if (useLongStrings)
-		localeText.caption = "long";
-	else
-		localeText.caption = currentLocale;
+	localeText.caption = currentLocale;
 }
 
 function cancelSetup()

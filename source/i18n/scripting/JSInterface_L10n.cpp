@@ -84,7 +84,6 @@ void RegisterScriptFunctions(const ScriptRequest& rq)
 	REGISTER_L10N_FUNC(static_cast<std::string(L10n::*)(const std::string&) const>(&L10n::GetDictionaryLocale), "GetDictionaryLocale");
 	REGISTER_L10N(GetDictionariesForLocale)
 
-	REGISTER_L10N(UseLongStrings)
 	REGISTER_L10N(GetLocaleLanguage)
 	REGISTER_L10N(GetLocaleBaseName)
 	REGISTER_L10N(GetLocaleCountry)
