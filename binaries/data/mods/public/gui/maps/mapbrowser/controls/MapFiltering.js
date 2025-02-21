@@ -30,6 +30,7 @@ MapBrowserPageControls.prototype.MapFiltering = class
 
 	onClosePage()
 	{
+		this.searchBox.control.caption = "";
 		this.searchBox.blur();
 	}
 
