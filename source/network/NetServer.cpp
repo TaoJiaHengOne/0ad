@@ -248,11 +248,11 @@ void CNetServerWorker::SetupUPnP(const u16 port)
 		LOGMESSAGE("Net server: using cached IGD = %s", urls.controlURL);
 		ret = 1;
 	}
-	// No cached URL, or it did not respond. Try getting a valid UPnP device for 10 seconds.
+	// No cached URL, or it did not respond. Try discovering the UPnP IGD for 2 seconds.
 #if defined(MINIUPNPC_API_VERSION) && MINIUPNPC_API_VERSION >= 14
-	else if ((devlist = upnpDiscover(10000, 0, 0, 0, 0, 2, 0)) != NULL)
+	else if ((devlist = upnpDiscover(2000, 0, 0, 0, 0, 2, 0)) != NULL)
 #else
-	else if ((devlist = upnpDiscover(10000, 0, 0, 0, 0, 0)) != NULL)
+	else if ((devlist = upnpDiscover(2000, 0, 0, 0, 0, 0)) != NULL)
 #endif
 	{
 #if defined(MINIUPNPC_API_VERSION) && MINIUPNPC_API_VERSION >= 18
