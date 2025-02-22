@@ -8,6 +8,7 @@ Trigger.prototype.Schema =
  */
 Trigger.prototype.eventNames =
 [
+	"OnAttackDetected",
 	"OnCinemaPathEnded",
 	"OnCinemaQueueEnded",
 	"OnConstructionStarted",

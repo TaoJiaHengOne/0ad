@@ -80,6 +80,7 @@ AttackDetection.prototype.AttackAlert = function(target, attacker, type, attacke
 	if (!cmpPosition || !cmpPosition.IsInWorld())
 		return;
 	var event = {
+		"attacker": attacker,
 		"target": target,
 		"position": cmpPosition.GetPosition(),
 		"time": Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).GetTime(),
@@ -127,6 +128,11 @@ AttackDetection.prototype.AttackAlert = function(target, attacker, type, attacke
 		"attacker": atkOwner,
 		"position": event.position,
 		"targetIsDomesticAnimal": targetIsDomesticAnimal
+	});
+	Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger).CallEvent("OnAttackDetected", {
+		"targetOwner": playerID,
+		"attackerOwner": atkOwner,
+		...event
 	});
 
 	let soundGroup = "attacked";

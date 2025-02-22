@@ -53,6 +53,12 @@ Trigger.prototype.PlayerCommandAction = function(data)
 	warn(uneval(data));
 };
 
+Trigger.prototype.AttackDetectedAction = function(data)
+{
+	warn("The OnAttackDetected event happened with the following data:");
+	warn(uneval(data));
+};
+
 Trigger.prototype.IntervalAction = function(data)
 {
 	warn("The OnInterval event happened with the following data:");
@@ -118,6 +124,7 @@ Trigger.prototype.RangeAction = function(data)
 	cmpTrigger.RegisterTrigger("OnResearchQueued", "ResearchQueuedAction", data);
 	cmpTrigger.RegisterTrigger("OnOwnershipChanged", "OwnershipChangedAction", data);
 	cmpTrigger.RegisterTrigger("OnPlayerCommand", "PlayerCommandAction", data);
+	cmpTrigger.RegisterTrigger("OnAttackDetected", "AttackDetectedAction", data);
 
 	cmpTrigger.numberOfTimerTrigger = 0;
 	cmpTrigger.maxNumberOfTimerTrigger = 3; // execute it 3 times maximum
