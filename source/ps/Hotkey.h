@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -49,7 +49,8 @@ const uint SDL_HOTKEYUP = SDL_USEREVENT_ + 2;
 const uint SDL_HOTKEYPRESS_SILENT = SDL_USEREVENT_ + 3;
 const uint SDL_HOTKEYUP_SILENT = SDL_USEREVENT_ + 4;
 
-constexpr SDL_Scancode_ UNUSED_HOTKEY_CODE = 0; // == SDL_SCANCODE_UNKNOWN
+// Value not mapping to any valid SDL_SCANCODE_*
+constexpr SDL_Scancode_ UNUSED_HOTKEY_CODE{-1};
 
 struct SKey
 {
