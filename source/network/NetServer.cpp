@@ -243,7 +243,7 @@ void CNetServerWorker::SetupUPnP(const u16 port)
 	int ret = 0;
 
 	// Try a cached URL first
-	if (!rootDescURL.empty() && UPNP_GetIGDFromUrl(rootDescURL.c_str(), &urls, &data, internalIPAddress, sizeof(internalIPAddress)))
+	if (!rootDescURL.empty() && UPNP_GetIGDFromUrl(rootDescURL.c_str(), &urls, &data, internalIPAddress, sizeof(internalIPAddress)) && strlen(data.first.controlurl) != 0)
 	{
 		LOGMESSAGE("Net server: using cached IGD = %s", urls.controlURL);
 		ret = 1;
@@ -340,9 +340,9 @@ void CNetServerWorker::SetupUPnP(const u16 port)
 				   externalIPAddress, psPort, protocall, intClient, intPort, duration);
 
 	// Cache root descriptor URL to try to avoid discovery next time.
-	g_ConfigDB.SetValueString(CFG_USER, "network.upnprootdescurl", urls.controlURL);
-	g_ConfigDB.WriteValueToFile(CFG_USER, "network.upnprootdescurl", urls.controlURL);
-	LOGMESSAGE("Net server: cached UPnP root descriptor URL as %s", urls.controlURL);
+	g_ConfigDB.SetValueString(CFG_USER, "network.upnprootdescurl", urls.rootdescURL);
+	g_ConfigDB.WriteValueToFile(CFG_USER, "network.upnprootdescurl", urls.rootdescURL);
+	LOGMESSAGE("Net server: cached UPnP root descriptor URL as %s", urls.rootdescURL);
 
 	freeUPnP();
 }
