@@ -7,7 +7,7 @@ class RLAPI:
         self.url = url
 
     def post(self, route, data):
-        response = request.urlopen(url=f"{self.url}/{route}", data=bytes(data, "utf8"))
+        response = request.urlopen(url=f"{self.url}/{route}", data=bytes(data, "utf8"))  # noqa: S310
         return response.read()
 
     def step(self, commands):

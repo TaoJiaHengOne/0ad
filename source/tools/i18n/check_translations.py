@@ -49,7 +49,7 @@ class URLSpamRule(LintRule):
     def __init__(self):
         super().__init__()
         self.url_regex = re.compile(
-            r"https?://(?:[a-z0-9-_$@./&+]|(?:%[0-9a-fA-F][" r"0-9a-fA-F]))+", re.IGNORECASE
+            r"https?://(?:[a-z0-9-_$@./&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", re.IGNORECASE
         )
 
     def lint(self, _: VariableTokenizer, linted_entry: LintedEntry) -> list[LintMessage]:
