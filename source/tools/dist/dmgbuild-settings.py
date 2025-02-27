@@ -1,27 +1,31 @@
+"""0 A.D. settings file for dmgbuild.
+
+Use like this:
+
+  dmgbuild -s settings.py -D app=/path/to/My.app \
+    -D background=/path/to/background.png "My Application" MyApp.dmg
+"""
+
+# ruff: noqa: A001,F821,INP001
+
 import os.path
 
-#
-# 0 A.D. settings file for dmgbuild
-#
 
-# Use like this:
-#   dmgbuild -s settings.py -D app=/path/to/My.app -D background=/path/to/background.png "My Application" MyApp.dmg
-
-application = defines.get('app')
+application = defines.get("app")
 
 # .. Basics ....................................................................
 
 # Volume format (see hdiutil create -help)
-format = defines.get('format', 'UDBZ')
+format = defines.get("format", "UDBZ")
 
 # Volume size
-size = defines.get('size', '4G')
+size = defines.get("size", "4G")
 
 # Files to include
-files = [ application ]
+files = [application]
 
 # Symlinks to create
-symlinks = { 'Applications': '/Applications' }
+symlinks = {"Applications": "/Applications"}
 
 # Volume icon
 #
@@ -29,18 +33,15 @@ symlinks = { 'Applications': '/Applications' }
 # image, *or* you can define badge_icon, in which case the icon file you specify
 # will be used to badge the system's Removable Disk icon
 #
-badge_icon = defines.get('icon')
+badge_icon = defines.get("icon")
 
 # Where to put the icons
-icon_locations = {
-    os.path.basename(application): (125, 170),
-    'Applications': (475, 170)
-}
+icon_locations = {os.path.basename(application): (125, 170), "Applications": (475, 170)}
 
 # .. Window configuration ......................................................
 
 # Background
-background = defines.get('background')
+background = defines.get("background")
 
 show_status_bar = False
 show_tab_view = False
@@ -54,20 +55,20 @@ window_rect = ((0, 0), (600, 393))
 
 # Select the default view; must be one of
 #
-#    'icon-view'
-#    'list-view'
-#    'column-view'
-#    'coverflow'
+#    "icon-view"
+#    "list-view"
+#    "column-view"
+#    "coverflow"
 #
-default_view = 'icon-view'
+default_view = "icon-view"
 
 # General view configuration
 show_icon_preview = False
 
 # Set these to True to force inclusion of icon/list view settings (otherwise
 # we only include settings for the default view)
-include_icon_view_settings = 'auto'
-include_list_view_settings = 'auto'
+include_icon_view_settings = "auto"
+include_list_view_settings = "auto"
 
 # .. Icon view configuration ...................................................
 
@@ -75,7 +76,7 @@ arrange_by = None
 grid_offset = (0, 0)
 grid_spacing = 100
 scroll_position = (0, 0)
-label_pos = 'bottom' # or 'right'
+label_pos = "bottom"  # or "right"
 text_size = 12
 icon_size = 90
 
@@ -97,33 +98,33 @@ icon_size = 90
 list_icon_size = 16
 list_text_size = 12
 list_scroll_position = (0, 0)
-list_sort_by = 'name'
+list_sort_by = "name"
 list_use_relative_dates = True
-list_calculate_all_sizes = False,
-list_columns = ('name', 'date-modified', 'size', 'kind', 'date-added')
+list_calculate_all_sizes = False
+list_columns = ("name", "date-modified", "size", "kind", "date-added")
 list_column_widths = {
-    'name': 300,
-    'date-modified': 181,
-    'date-created': 181,
-    'date-added': 181,
-    'date-last-opened': 181,
-    'size': 97,
-    'kind': 115,
-    'label': 100,
-    'version': 75,
-    'comments': 300,
+    "name": 300,
+    "date-modified": 181,
+    "date-created": 181,
+    "date-added": 181,
+    "date-last-opened": 181,
+    "size": 97,
+    "kind": 115,
+    "label": 100,
+    "version": 75,
+    "comments": 300,
 }
 list_column_sort_directions = {
-    'name': 'ascending',
-    'date-modified': 'descending',
-    'date-created': 'descending',
-    'date-added': 'descending',
-    'date-last-opened': 'descending',
-    'size': 'descending',
-    'kind': 'ascending',
-    'label': 'ascending',
-    'version': 'ascending',
-    'comments': 'ascending',
+    "name": "ascending",
+    "date-modified": "descending",
+    "date-created": "descending",
+    "date-added": "descending",
+    "date-last-opened": "descending",
+    "size": "descending",
+    "kind": "ascending",
+    "label": "ascending",
+    "version": "ascending",
+    "comments": "ascending",
 }
 
 # .. License configuration .....................................................

@@ -1,38 +1,41 @@
 #!/usr/bin/python3
-"""
-Builds the OSX bundle from existing elements.
+"""Build the OSX bundle from existing elements.
+
 App bundles are intended to be self-contained and portable.
 An SDK is required, usually included with Xcode. The SDK ensures
 that only those system libraries are used which are available on
 the chosen target and compatible systems.
 
-This is Python because plistlib is extremely strict about what it accepts
+This is Python because plistlib is extremely strict about what it accepts,
 and it's used by dmgbuild, and saving the Plist doesn't really work otherwise.
 """
+
 import argparse
-import datetime
 import glob
 import os
 import plistlib
 import shutil
 import subprocess
+import sys
+from datetime import datetime
 
 import dmgbuild
 
+
 parser = argparse.ArgumentParser()
-parser.add_argument('bundle_version', help='Bundle version')
-parser.add_argument('--architecture', help='aarch64 (arm64) or x86_64 (amd64)',
-    default='aarch64')
-parser.add_argument('--min_osx', help='Minimum supported OSX version',
-    default='10.12')
-parser.add_argument('--bundle_identifier', help='Bundle identifier',
-    default='com.wildfiregames.play0ad')
-parser.add_argument('-s', '--signkey', help='Signature key sha sum')
-parser.add_argument('--notarytool_user', help='Apple ID user for notarization')
-parser.add_argument('--notarytool_team', help='Team ID for notarization')
-parser.add_argument('--notarytool_password', help='App password for notarization')
-parser.add_argument('--dev', help='Turn on dev mode, which isn\'t fit for release but faster',
-    action="store_true")
+parser.add_argument("bundle_version", help="Bundle version")
+parser.add_argument("--architecture", help="aarch64 (arm64) or x86_64 (amd64)", default="aarch64")
+parser.add_argument("--min_osx", help="Minimum supported OSX version", default="10.12")
+parser.add_argument(
+    "--bundle_identifier", help="Bundle identifier", default="com.wildfiregames.play0ad"
+)
+parser.add_argument("-s", "--signkey", help="Signature key sha sum")
+parser.add_argument("--notarytool_user", help="Apple ID user for notarization")
+parser.add_argument("--notarytool_team", help="Team ID for notarization")
+parser.add_argument("--notarytool_password", help="App password for notarization")
+parser.add_argument(
+    "--dev", help="Turn on dev mode, which isn't fit for release but faster", action="store_true"
+)
 args = parser.parse_args()
 
 ARCH = args.architecture
@@ -77,9 +80,18 @@ shutil.copy("binaries/system/libMoltenVK.dylib", BUNDLE_FRAMEWORKS)
 
 if not args.dev:
     print("Signing libs")
-    subprocess.run(["codesign", "-s", SIGNKEY, "-f", "--timestamp", BUNDLE_FRAMEWORKS + "/libAtlasUI.dylib"], check=True)
-    subprocess.run(["codesign", "-s", SIGNKEY, "-f", "--timestamp", BUNDLE_FRAMEWORKS + "/libCollada.dylib"], check=True)
-    subprocess.run(["codesign", "-s", SIGNKEY, "-f", "--timestamp", BUNDLE_FRAMEWORKS + "/libMoltenVK.dylib"], check=True)
+    subprocess.run(
+        ["codesign", "-s", SIGNKEY, "-f", "--timestamp", BUNDLE_FRAMEWORKS + "/libAtlasUI.dylib"],
+        check=True,
+    )
+    subprocess.run(
+        ["codesign", "-s", SIGNKEY, "-f", "--timestamp", BUNDLE_FRAMEWORKS + "/libCollada.dylib"],
+        check=True,
+    )
+    subprocess.run(
+        ["codesign", "-s", SIGNKEY, "-f", "--timestamp", BUNDLE_FRAMEWORKS + "/libMoltenVK.dylib"],
+        check=True,
+    )
 
 if not args.dev:
     print("Copying archived game data from archives/")
@@ -112,50 +124,72 @@ shutil.copy("libraries/LICENSE.txt", BUNDLE_RESOURCES + "/LIB_LICENSE.txt")
 
 print("Creating Info.plist")
 
-with open(BUNDLE_CONTENTS + "/Info.plist", 'wb') as f:
-    plistlib.dump({
-        'CFBundleName': '0 A.D.',
-        'CFBundleIdentifier': BUNDLE_IDENTIFIER,
-        'CFBundleVersion': BUNDLE_VERSION,
-        'CFBundlePackageType': 'APPL',
-        'CFBundleSignature': 'none',
-        'CFBundleExecutable': 'pyrogenesis',
-        'CFBundleShortVersionString': BUNDLE_VERSION,
-        'CFBundleDevelopmentRegion': 'English',
-        'CFBundleInfoDictionaryVersion': '6.0',
-        'CFBundleIconFile': '0ad',
-        'LSHasLocalizedDisplayName': True,
-        'LSMinimumSystemVersion': BUNDLE_MIN_OSX_VERSION,
-        'NSHumanReadableCopyright': f'Copyright © {datetime.datetime.now().year} Wildfire Games',
-        'UTExportedTypeDeclarations': [{
-            'UTTypeIdentifier': BUNDLE_IDENTIFIER,
-            'UTTypeTagSpecification': {
-                'public.filename-extension': ["pyromod"],
-            },
-            'UTTypeConformsTo': ['public.zip-archive'],
-            'UTTypeDescription': '0 A.D. Zipped Mod',
-            'UTTypeIconFile': '0ad'
-        }],
-        'CFBundleDocumentTypes': [{
-            'CFBundleTypeExtensions': ['pyromod'],
-            'CFBundleTypeRole': 'Editor',
-            'CFBundleTypeIconFile': '0ad',
-            'LSHandlerRank': 'Owner'
-        },
+with open(BUNDLE_CONTENTS + "/Info.plist", "wb") as f:
+    plistlib.dump(
         {
-            'CFBundleTypeExtensions': ['zip'],
-            'CFBundleTypeRole': 'Viewer',
-            'CFBundleTypeIconFile': '0ad',
-            'LSHandlerRank': 'Alternate'
-        }],
-    }, f)
+            "CFBundleName": "0 A.D.",
+            "CFBundleIdentifier": BUNDLE_IDENTIFIER,
+            "CFBundleVersion": BUNDLE_VERSION,
+            "CFBundlePackageType": "APPL",
+            "CFBundleSignature": "none",
+            "CFBundleExecutable": "pyrogenesis",
+            "CFBundleShortVersionString": BUNDLE_VERSION,
+            "CFBundleDevelopmentRegion": "English",
+            "CFBundleInfoDictionaryVersion": "6.0",
+            "CFBundleIconFile": "0ad",
+            "LSHasLocalizedDisplayName": True,
+            "LSMinimumSystemVersion": BUNDLE_MIN_OSX_VERSION,
+            "NSHumanReadableCopyright": f"Copyright © {datetime.now(tz=datetime.UTC).year} "
+            f"Wildfire Games",
+            "UTExportedTypeDeclarations": [
+                {
+                    "UTTypeIdentifier": BUNDLE_IDENTIFIER,
+                    "UTTypeTagSpecification": {
+                        "public.filename-extension": ["pyromod"],
+                    },
+                    "UTTypeConformsTo": ["public.zip-archive"],
+                    "UTTypeDescription": "0 A.D. Zipped Mod",
+                    "UTTypeIconFile": "0ad",
+                }
+            ],
+            "CFBundleDocumentTypes": [
+                {
+                    "CFBundleTypeExtensions": ["pyromod"],
+                    "CFBundleTypeRole": "Editor",
+                    "CFBundleTypeIconFile": "0ad",
+                    "LSHandlerRank": "Owner",
+                },
+                {
+                    "CFBundleTypeExtensions": ["zip"],
+                    "CFBundleTypeRole": "Viewer",
+                    "CFBundleTypeIconFile": "0ad",
+                    "LSHandlerRank": "Alternate",
+                },
+            ],
+        },
+        f,
+    )
 
 if args.dev:
     print(f"Dev mode bundle complete, located at {BUNDLE_OUTPUT}")
-    exit(0)
+    sys.exit(0)
 
 print("Signing bundle")
-subprocess.run(["codesign", "-s", SIGNKEY, "-f", "--timestamp", "-o", "runtime", "--entitlements", "source/tools/dist/0ad.entitlements", BUNDLE_OUTPUT], check=True)
+subprocess.run(
+    [
+        "codesign",
+        "-s",
+        SIGNKEY,
+        "-f",
+        "--timestamp",
+        "-o",
+        "runtime",
+        "--entitlements",
+        "source/tools/dist/0ad.entitlements",
+        BUNDLE_OUTPUT,
+    ],
+    check=True,
+)
 
 print("Creating .dmg")
 
@@ -167,14 +201,42 @@ dmgbuild.build_dmg(
     defines={
         "app": BUNDLE_OUTPUT,
         "background": "build/resources/dmgbackground.png",
-        "icon": "build/resources/0ad.icns"
-    })
+        "icon": "build/resources/0ad.icns",
+    },
+)
 
 print("Signing .dmg")
-subprocess.run(["codesign", "-s", SIGNKEY, "-f", "--timestamp", "-i", BUNDLE_IDENTIFIER, BUNDLE_DMG_NAME + ".dmg"], check=True)
+subprocess.run(
+    [
+        "codesign",
+        "-s",
+        SIGNKEY,
+        "-f",
+        "--timestamp",
+        "-i",
+        BUNDLE_IDENTIFIER,
+        BUNDLE_DMG_NAME + ".dmg",
+    ],
+    check=True,
+)
 
 print("Notarizing .dmg")
-subprocess.run(["xcrun", "notarytool", "submit", BUNDLE_DMG_NAME + ".dmg", "--apple-id", NOTARYTOOL_USER, "--team-id", NOTARYTOOL_TEAM, "--password", NOTARYTOOL_PASSWORD, "--wait"], check=True)
+subprocess.run(
+    [
+        "xcrun",
+        "notarytool",
+        "submit",
+        BUNDLE_DMG_NAME + ".dmg",
+        "--apple-id",
+        NOTARYTOOL_USER,
+        "--team-id",
+        NOTARYTOOL_TEAM,
+        "--password",
+        NOTARYTOOL_PASSWORD,
+        "--wait",
+    ],
+    check=True,
+)
 
 print("Stapling notarization ticket")
 subprocess.run(["xcrun", "stapler", "staple", BUNDLE_DMG_NAME + ".dmg"], check=True)
