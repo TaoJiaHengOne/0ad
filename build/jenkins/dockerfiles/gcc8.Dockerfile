@@ -4,8 +4,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG DEBCONF_NOWARNINGS="yes"
 RUN apt-get install -qqy gcc-8 g++-8 --no-install-recommends
 
-USER builder
-
 ENV LIBCC=gcc-8
 ENV LIBCXX=g++-8
 ENV CC=gcc-8

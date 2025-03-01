@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -21,9 +21,12 @@ pipeline {
 	agent {
 		dockerfile {
 			label 'LinuxAgent'
-			customWorkspace "workspace/technical-docs"
+			customWorkspace 'workspace/technical-docs'
 			dir 'build/jenkins/dockerfiles'
-			filename "docs-tools.Dockerfile"
+			filename 'docs-tools.Dockerfile'
+			// Prevent Jenkins from running commands with the UID of the host's jenkins user
+			// https://stackoverflow.com/a/42822143
+			args '-u root'
 		}
 	}
 

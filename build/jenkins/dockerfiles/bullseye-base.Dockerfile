@@ -1,7 +1,5 @@
 FROM debian:bullseye-slim
 
-RUN useradd -ms /bin/bash --uid 1006 builder
-
 # 0 A.D. dependencies.
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DEBCONF_NOWARNINGS="yes"
@@ -45,9 +43,7 @@ RUN apt-get -qqy update && apt-get install -qqy --no-install-recommends git-lfs
 RUN git lfs install --system --skip-smudge
 
 # Install rust and Cargo via rustup
-USER builder
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.66.0 -y
-ENV PATH="${PATH}:/home/builder/.cargo/bin"
-USER root
+ENV PATH="${PATH}:/root/.cargo/bin"
 
 ENV SHELL=/bin/bash
