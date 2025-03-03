@@ -11,6 +11,8 @@ from struct import calcsize, unpack
 from xml.etree import ElementTree as ET
 
 from scriptlib import SimulTemplateEntity, find_files
+from validate_grammar import RelaxNGValidator
+from validator import Validator
 
 
 class SingleLevelFilter(Filter):
@@ -151,16 +153,10 @@ class CheckRefs:
         if args.check_unused:
             self.check_unused()
         if args.validate_templates:
-            sys.path.append(str(Path(__file__).parent.parent / "xmlvalidator"))
-            from validate_grammar import RelaxNGValidator
-
             validate = RelaxNGValidator(self.vfs_root, self.mods)
             if not validate.run():
                 self.inError = True
         if args.validate_actors:
-            sys.path.append(str(Path(__file__).parent.parent / "xmlvalidator"))
-            from validator import Validator
-
             validator = Validator(self.vfs_root, self.mods)
             if not validator.run():
                 self.inError = True
