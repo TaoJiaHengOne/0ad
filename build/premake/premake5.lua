@@ -328,6 +328,13 @@ function project_set_build_flags()
 					}
 				filter {}
 
+				-- issues with gcc 12 to 14, workaround for CI which sets CC=gcc-12
+				if cc == "gcc-12" then
+					buildoptions {
+						"-Wno-dangling-pointer",
+					}
+				end
+
 				if not _OPTIONS["without-pch"] then
 					buildoptions {
 						-- do something (?) so that ccache can handle compilation with PCH enabled
