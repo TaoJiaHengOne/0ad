@@ -132,7 +132,7 @@ template<typename T> inline bool FromJSVal_vector(const ScriptRequest& rq, JS::H
 		JS::RootedValue el(rq.cx);
 		if (!JS_GetElement(rq.cx, obj, i, &el))
 			FAIL("Failed to read array element");
-		T el2;
+		T el2{};
 		if (!Script::FromJSVal<T>(rq, el, el2))
 			return false;
 		out.push_back(el2);
