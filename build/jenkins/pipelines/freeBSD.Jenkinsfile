@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ pipeline {
 				sh "git lfs pull -I binaries/data/tests"
 				sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
-				sh "libraries/build-source-libs.sh 2> freebsd-prebuild-errors.log"
+				sh "libraries/build-source-libs.sh ${JOBS} 2> freebsd-prebuild-errors.log"
 				sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> freebsd-prebuild-errors.log"
 
 				script {
@@ -64,7 +64,7 @@ pipeline {
 
 		stage ("Release Build") {
 			steps {
-				sh "cd build/workspaces/gcc/ && gmake config=release"
+				sh "cd build/workspaces/gcc/ && gmake ${JOBS} config=release"
 			}
 			post {
 				failure {

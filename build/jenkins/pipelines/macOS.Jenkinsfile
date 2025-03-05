@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ pipeline {
 				sh "git lfs pull -I binaries/data/tests"
 				sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
-				sh "libraries/build-macos-libs.sh 2> macos-prebuild-errors.log"
+				sh "libraries/build-macos-libs.sh ${JOBS} 2> macos-prebuild-errors.log"
 				sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> macos-prebuild-errors.log"
 
 				script {
@@ -59,7 +59,7 @@ pipeline {
 
 		stage("Debug Build") {
 			steps {
-				sh "cd build/workspaces/gcc/ && make config=debug"
+				sh "cd build/workspaces/gcc/ && make ${JOBS} config=debug"
 			}
 			post {
 				failure {
@@ -85,7 +85,7 @@ pipeline {
 
 		stage("Release Build") {
 			steps {
-				sh "cd build/workspaces/gcc/ && make config=release"
+				sh "cd build/workspaces/gcc/ && make ${JOBS} config=release"
 			}
 		}
 

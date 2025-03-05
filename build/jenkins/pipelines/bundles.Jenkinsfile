@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -53,9 +53,9 @@ pipeline {
 
 		stage("Compile Native macOS Executable") {
 			steps {
-				sh "cd libraries/ && MIN_OSX_VERSION=${env.MIN_OSX_VERSION} ./build-macos-libs.sh --force-rebuild"
+				sh "cd libraries/ && MIN_OSX_VERSION=${env.MIN_OSX_VERSION} ./build-macos-libs.sh ${JOBS} --force-rebuild"
 				sh "cd build/workspaces/ && ./update-workspaces.sh --macosx-version-min=${env.MIN_OSX_VERSION}"
-				sh "cd build/workspaces/gcc/ && make"
+				sh "cd build/workspaces/gcc/ && make ${JOBS}"
 				sh "svn cleanup --remove-unversioned build"
 				sh "svn cleanup --remove-unversioned libraries"
 			}
@@ -94,10 +94,10 @@ pipeline {
 				HOSTTYPE = "x86_64"
 			}
 			steps {
-				sh "cd libraries/ && MIN_OSX_VERSION=${env.MIN_OSX_VERSION} ./build-macos-libs.sh --force-rebuild"
+				sh "cd libraries/ && MIN_OSX_VERSION=${env.MIN_OSX_VERSION} ./build-macos-libs.sh ${JOBS} --force-rebuild"
 				sh "cd build/workspaces/ && ./update-workspaces.sh --macosx-version-min=${env.MIN_OSX_VERSION}"
 				sh "cd build/workspaces/gcc/ && make clean"
-				sh "cd build/workspaces/gcc/ && make"
+				sh "cd build/workspaces/gcc/ && make ${JOBS}"
 				sh "svn cleanup --remove-unversioned build"
 				sh "svn cleanup --remove-unversioned libraries"
 			}

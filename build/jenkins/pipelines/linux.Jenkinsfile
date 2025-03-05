@@ -69,7 +69,7 @@ pipeline {
 							sh "git lfs pull -I binaries/data/tests"
 							sh "git lfs pull -I \"binaries/data/mods/_test.*\""
 
-							sh "libraries/build-source-libs.sh 2> ${JENKINS_COMPILER}-prebuild-errors.log"
+							sh "libraries/build-source-libs.sh ${JOBS} 2> ${JENKINS_COMPILER}-prebuild-errors.log"
 
 							sh "build/workspaces/update-workspaces.sh --jenkins-tests 2>> ${JENKINS_COMPILER}-prebuild-errors.log"
 
@@ -89,7 +89,7 @@ pipeline {
 
 					stage("Debug Build") {
 						steps {
-							sh "cd build/workspaces/gcc/ && make config=debug"
+							sh "cd build/workspaces/gcc/ && make ${JOBS} config=debug"
 						}
 						post {
 							failure {
@@ -115,7 +115,7 @@ pipeline {
 
 					stage("Release Build") {
 						steps {
-							sh "cd build/workspaces/gcc/ && make config=release"
+							sh "cd build/workspaces/gcc/ && make ${JOBS} config=release"
 						}
 					}
 
