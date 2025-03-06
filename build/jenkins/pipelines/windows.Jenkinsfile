@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 // This pipeline builds the game on Windows (with the MSVC 15.0 compiler) and runs tests.
 
 def visualStudioPath = "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\""
-def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test /m:2 /nologo -clp:NoSummary"
+def buildOptions = "/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test %JOBS% /nologo -clp:NoSummary"
 
 pipeline {
 	// Stop previous build in pull requests, but not in branches
