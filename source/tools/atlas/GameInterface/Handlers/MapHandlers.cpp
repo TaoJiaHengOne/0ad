@@ -127,7 +127,7 @@ QUERYHANDLER(GenerateMap)
 
 		msg->status = 0;
 	}
-	catch (PSERROR_Game_World_MapLoadFailed&)
+	catch (std::exception&)
 	{
 		// Cancel loading
 		LDR_Cancel();
