@@ -35,11 +35,14 @@
 #include "scriptinterface/ScriptInterface.h"
 #include "scriptinterface/StructuredClone.h"
 
+#include "js/Equality.h"
+
 namespace
 {
 
 const CStr EVENT_NAME_GAME_LOAD_PROGRESS = "GameLoadProgress";
 const CStr EVENT_NAME_WINDOW_RESIZED = "WindowResized";
+constexpr const char* START_ATLAS{"startAtlas"};
 
 } // anonymous namespace
 
@@ -165,6 +168,12 @@ void CGUIManager::SGUIPage::LoadPage(ScriptContext& scriptContext)
 	sendingPromise = std::make_shared<JS::PersistentRootedObject>(rq.cx,
 		JS::NewPromiseObject(rq.cx, nullptr));
 
+	{
+		JS::RootedString jsName{rq.cx, JS_NewStringCopyZ(rq.cx, START_ATLAS)};
+		JS::RootedValue symbol{rq.cx, JS::SymbolValue(JS::NewSymbol(rq.cx, jsName))};
+		JS::RootedValue nativeScope{rq.cx, JS::ObjectValue(*rq.nativeScope)};
+		Script::SetProperty(rq, nativeScope, START_ATLAS, symbol, true);
+	}
 	gui->AddObjectTypes();
 
 	VfsPath path = VfsPath("gui") / m_Name;
@@ -257,7 +266,7 @@ JS::Value CGUIManager::SGUIPage::ReplacePromise(ScriptInterface& scriptInterface
 	return JS::ObjectValue(**receivingPromise);
 }
 
-std::optional<CGUIManager::SGUIPage::CloseResult> CGUIManager::SGUIPage::MaybeClose()
+std::optional<CGUIManager::SGUIPage::CloseResult> CGUIManager::SGUIPage::MaybeClose(const bool topmostPage)
 {
 	if (JS::GetPromiseState(*sendingPromise) == JS::PromiseState::Pending)
 		return std::nullopt;
@@ -267,8 +276,20 @@ std::optional<CGUIManager::SGUIPage::CloseResult> CGUIManager::SGUIPage::MaybeCl
 
 	const ScriptRequest rq{gui->GetScriptInterface()};
 	JS::RootedValue arg{rq.cx, JS::GetPromiseResult(*sendingPromise)};
-	return CGUIManager::SGUIPage::CloseResult{Script::WriteStructuredClone(rq, arg),
-		JS::GetPromiseState(*sendingPromise) == JS::PromiseState::Rejected};
+	const bool rejected{JS::GetPromiseState(*sendingPromise) == JS::PromiseState::Rejected};
+	if (topmostPage)
+	{
+		JS::RootedValue nativeScope{rq.cx, JS::ObjectValue(*rq.nativeScope)};
+		JS::RootedValue symbol{rq.cx};
+		Script::GetProperty(rq, nativeScope, START_ATLAS, &symbol);
+		bool equals;
+		if (!JS::StrictlyEqual(rq.cx, arg, symbol, &equals))
+			throw std::runtime_error{"Error while comparing return value to a symbol."};
+
+		if (equals)
+			return CGUIManager::SGUIPage::CloseResult{nullptr, rejected};
+	}
+	return CGUIManager::SGUIPage::CloseResult{Script::WriteStructuredClone(rq, arg), rejected};
 }
 
 void CGUIManager::SGUIPage::Refocus(const CloseResult& result)
@@ -375,7 +396,7 @@ void CGUIManager::SendEventToAll(const CStr& eventName, JS::HandleValueArray par
 		p.gui->SendEventToAll(eventName, paramData);
 }
 
-void CGUIManager::TickObjects()
+std::optional<bool> CGUIManager::TickObjects()
 {
 	PROFILE3("gui tick");
 
@@ -394,16 +415,20 @@ void CGUIManager::TickObjects()
 	while (!m_PageStack.empty())
 	{
 		const size_t stackSize{m_PageStack.size()};
-		const std::optional<SGUIPage::CloseResult> result{m_PageStack.back().MaybeClose()};
+		const std::optional<SGUIPage::CloseResult> result{
+			m_PageStack.back().MaybeClose(stackSize == 1)};
 		if (!result.has_value())
 			break;
 		ENSURE(m_PageStack.size() == stackSize);
 		m_PageStack.pop_back();
-		if (!m_PageStack.empty())
+		if (m_PageStack.empty())
+			return !result.value().arg;
+		else
 			m_PageStack.back().Refocus(result.value());
 
 		m_ScriptContext.RunJobs();
 	}
+	return std::nullopt;
 }
 
 void CGUIManager::Draw(CCanvas2D& canvas) const

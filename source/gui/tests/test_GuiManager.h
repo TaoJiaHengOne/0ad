@@ -284,4 +284,16 @@ public:
 		CloseTopmostPage();
 		TS_ASSERT_EQUALS(g_GUI->GetPageCount(), 0);
 	}
+
+	void test_Result()
+	{
+		const ScriptRequest rq{g_GUI->GetScriptInterface()};
+		g_GUI->OpenChildPage(L"Result/page_Result.xml",
+			Script::WriteStructuredClone(rq, JS::FalseHandleValue));
+		TS_ASSERT(!g_GUI->TickObjects().value());
+
+		g_GUI->OpenChildPage(L"Result/page_Result.xml",
+			Script::WriteStructuredClone(rq, JS::TrueHandleValue));
+		TS_ASSERT(g_GUI->TickObjects().value());
+	}
 };

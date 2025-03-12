@@ -172,11 +172,6 @@ void RestartEngine()
 	g_Shutdown = ShutdownType::Restart;
 }
 
-void StartAtlas()
-{
-	g_Shutdown = ShutdownType::RestartAsAtlas;
-}
-
 // main app message handler
 static InReaction MainInputHandler(const SDL_Event_* ev)
 {
@@ -430,9 +425,9 @@ static void Frame(RL::Interface* rlInterface)
 	if (g_NetClient)
 		g_NetClient->Poll();
 
-	g_GUI->TickObjects();
-	if (g_GUI->GetPageCount() == 0)
-		QuitEngine();
+	std::optional<bool> completionCommand{g_GUI->TickObjects()};
+	if (completionCommand.has_value())
+		g_Shutdown = completionCommand.value() ? ShutdownType::RestartAsAtlas : ShutdownType::Quit;
 
 	if (rlInterface)
 		rlInterface->TryApplyMessage();

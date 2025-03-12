@@ -275,7 +275,7 @@ var g_MainMenuItems = [
 	{
 		"caption": translate("Scenario Editor"),
 		"tooltip": translate('Open the Atlas Scenario Editor in a new window. You can run this more reliably by starting the game with the command-line argument "-editor".'),
-		"onPress": async() => {
+		"onPress": async(closePageCallback) => {
 			if (!Engine.AtlasIsAvailable())
 			{
 				messageBox(
@@ -292,7 +292,7 @@ var g_MainMenuItems = [
 				[translate("No"), translate("Yes")]);
 
 			if (buttonIndex === 1)
-				Engine.RestartInAtlas();
+				closePageCallback(Engine.startAtlas);
 		}
 	},
 	{

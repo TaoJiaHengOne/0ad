@@ -34,15 +34,8 @@
 #include "scriptinterface/FunctionWrapper.h"
 #include "tools/atlas/GameInterface/GameLoop.h"
 
-extern void StartAtlas();
-
 namespace JSI_Main
 {
-void StartAtlas()
-{
-	::StartAtlas();
-}
-
 bool AtlasIsAvailable()
 {
 	return ATLAS_IsAvailable();
@@ -120,7 +113,6 @@ std::string CalculateMD5(const std::string& input)
 
 void RegisterScriptFunctions(const ScriptRequest& rq)
 {
-	ScriptFunction::Register<&StartAtlas>(rq, "RestartInAtlas");
 	ScriptFunction::Register<&AtlasIsAvailable>(rq, "AtlasIsAvailable");
 	ScriptFunction::Register<&IsAtlasRunning>(rq, "IsAtlasRunning");
 	ScriptFunction::Register<&OpenURL>(rq, "OpenURL");

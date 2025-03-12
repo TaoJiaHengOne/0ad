@@ -96,8 +96,10 @@ public:
 
 	/**
 	 * See CGUI::TickObjects; applies to @em all loaded pages.
+	 * When the root page is closed it's returned wheter Atlas should be
+	 * started.
 	 */
-	void TickObjects();
+	std::optional<bool> TickObjects();
 
 	/**
 	 * See CGUI::Draw; applies to @em all loaded pages.
@@ -156,7 +158,7 @@ private:
 		 * returns the result of the @c init function.
 		 * If this page wasn't closed an empty optional is returned.
 		 */
-		std::optional<CloseResult> MaybeClose();
+		std::optional<CloseResult> MaybeClose(const bool topmostPage);
 
 		/**
 		 * This function should be called when a child page got closed. The
