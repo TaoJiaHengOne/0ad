@@ -6,7 +6,9 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Manual"),
 				"tooltip": translate("Open the 0 A.D. Game Manual."),
-				"onPress": Engine.OpenChildPage.bind(null, "page_manual.xml")
+				"onPress": () => {
+					Engine.OpenChildPage("page_manual.xml");
+				}
 			},
 			{
 				"caption": translate("Tutorial"),
@@ -41,23 +43,31 @@ var g_MainMenuItems = [
 				"caption": translate("Structure Tree"),
 				"tooltip": colorizeHotkey(translate("%(hotkey)s: View the structure tree of civilizations featured in 0 A.D."), "structree"),
 				"hotkey": "structree",
-				"onPress": pageLoop.bind(null, "page_structree.xml")
+				"onPress": () => {
+					pageLoop("page_structree.xml");
+				}
 			},
 			{
 				"caption": translate("Civilization Overview"),
 				"tooltip": colorizeHotkey(translate("%(hotkey)s: Learn about the civilizations featured in 0 A.D."), "civinfo"),
 				"hotkey": "civinfo",
-				"onPress": pageLoop.bind(null, "page_civinfo.xml")
+				"onPress": () => {
+					pageLoop("page_civinfo.xml");
+				}
 			},
 			{
 				"caption": translate("Catafalque Overview"),
 				"tooltip": translate("Compare the bonuses of catafalques featured in 0 A.D."),
-				"onPress": Engine.OpenChildPage.bind(null, "page_catafalque.xml")
+				"onPress": () => {
+					Engine.OpenChildPage("page_catafalque.xml");
+				}
 			},
 			{
 				"caption": translate("Map Overview"),
 				"tooltip": translate("View the different maps featured in 0 A.D."),
-				"onPress": Engine.OpenChildPage.bind(null, "page_mapbrowser.xml")
+				"onPress": () => {
+					Engine.OpenChildPage("page_mapbrowser.xml");
+				}
 			}
 		]
 	},
@@ -235,12 +245,16 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Hotkeys"),
 				"tooltip": translate("Adjust hotkeys."),
-				"onPress": Engine.OpenChildPage.bind(null, "hotkeys/page_hotkeys.xml")
+				"onPress": () => {
+					Engine.OpenChildPage("hotkeys/page_hotkeys.xml");
+				}
 			},
 			{
 				"caption": translate("Language"),
 				"tooltip": translate("Choose the language of the game."),
-				"onPress": Engine.OpenChildPage.bind(null, "page_locale.xml")
+				"onPress": () => {
+					Engine.OpenChildPage("page_locale.xml");
+				}
 			},
 			{
 				"caption": translate("Mod Selection"),
@@ -252,7 +266,9 @@ var g_MainMenuItems = [
 			{
 				"caption": translate("Welcome Screen"),
 				"tooltip": translate("Show the Welcome Screen again. Useful if you hid it by mistake."),
-				"onPress": Engine.OpenChildPage.bind(null, "page_splashscreen.xml")
+				"onPress": () => {
+					Engine.OpenChildPage("page_splashscreen.xml");
+				}
 			}
 		]
 	},
@@ -282,7 +298,9 @@ var g_MainMenuItems = [
 	{
 		"caption": translate("Credits"),
 		"tooltip": translate("Show the 0 A.D. credits."),
-		"onPress": Engine.OpenChildPage.bind(null, "page_credits.xml")
+		"onPress": () => {
+			Engine.OpenChildPage("page_credits.xml");
+		}
 	},
 	{
 		"caption": translate("Exit"),
