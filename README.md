@@ -8,6 +8,10 @@
 [![Game References Checks Status](https://gitea.wildfiregames.com/0ad/0ad/actions/workflows/checkrefs.yml/badge.svg?branch=main)](https://gitea.wildfiregames.com/0ad/0ad/actions?workflow=checkrefs.yml)
 [![Pre-commit Checks Status](https://gitea.wildfiregames.com/0ad/0ad/actions/workflows/pre-commit.yml/badge.svg?branch=main)](https://gitea.wildfiregames.com/0ad/0ad/actions?workflow=pre-commit.yml)
 
+[![Bi-Weekly Bundles Status](https://jenkins.wildfiregames.com/job/0ad-bundles/badge/icon?subject=Bi-Weekly%20Bundles&style=plastic)](https://jenkins.wildfiregames.com/job/0ad-bundles)
+[![Technical Docs Status](https://jenkins.wildfiregames.com/job/0ad-technical-docs/badge/icon?subject=Technical%20Docs&style=plastic)](https://docs.wildfiregames.com/)
+[![Nightly Build Status](https://jenkins.wildfiregames.com/job/0ad-nightly/badge/icon?subject=Nightly%20Build&style=plastic)](https://gitea.wildfiregames.com/0ad/0ad/wiki/NightlyBuild)
+
 0 A.D. (pronounced "zero ey-dee") is a free, open-source, cross-platform
 real-time strategy game of ancient warfare.
 
