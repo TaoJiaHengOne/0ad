@@ -17,7 +17,7 @@ import plistlib
 import shutil
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 
 import dmgbuild
 
@@ -139,8 +139,7 @@ with open(BUNDLE_CONTENTS + "/Info.plist", "wb") as f:
             "CFBundleIconFile": "0ad",
             "LSHasLocalizedDisplayName": True,
             "LSMinimumSystemVersion": BUNDLE_MIN_OSX_VERSION,
-            "NSHumanReadableCopyright": f"Copyright © {datetime.now(tz=datetime.UTC).year} "
-            f"Wildfire Games",
+            "NSHumanReadableCopyright": f"Copyright © {datetime.now(tz=UTC).year} Wildfire Games",
             "UTExportedTypeDeclarations": [
                 {
                     "UTTypeIdentifier": BUNDLE_IDENTIFIER,
