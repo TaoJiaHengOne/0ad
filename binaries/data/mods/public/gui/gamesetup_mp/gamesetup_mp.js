@@ -252,7 +252,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					if (message.reason === 16)
 						reportHandshakeDisconnect(message.mismatch_type, message.client_mismatch, message.server_mismatch);
 					else
-						reportDisconnect(message.reason, false);
+						reportDisconnect(message, false);
 					return true;
 
 				default:

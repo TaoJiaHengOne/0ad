@@ -28,7 +28,7 @@ class ChatInputPanel
 	{
 		if (message.status == "disconnected")
 		{
-			reportDisconnect(message.reason, true);
+			reportDisconnect(message, true);
 			this.chatInput.hidden = true;
 			this.chatSubmitButton.hidden = true;
 		}

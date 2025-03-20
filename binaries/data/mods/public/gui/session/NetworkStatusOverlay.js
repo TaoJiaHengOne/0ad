@@ -38,7 +38,7 @@ NetworkStatusOverlay.prototype.StatusCaption = {
 	"authenticated": msg => translate("Connection to the server has been authenticated."),
 	"connected": msg => translate("Connected to the server."),
 	"disconnected": msg => translate("Connection to the server has been lost.") + "\n" +
-		getDisconnectReason(msg.reason, true),
+		getDisconnectReason(msg.reason),
 	"waiting_for_players": msg => translate("Waiting for players to connect:"),
 	"join_syncing": msg => translate("Synchronizing gameplay with other players…"),
 	"active": msg => ""
