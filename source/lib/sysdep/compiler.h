@@ -36,18 +36,6 @@
 #else
 # define MSC_VERSION 0
 #endif
-// .. LCC (Win32) and MCST LCC (E2K) compilers define same identifier (__LCC__)
-#if defined(__LCC__) && !defined(__MCST__)
-# define LCC_VERSION __LCC__
-#else
-# define LCC_VERSION 0
-#endif
-// .. MCST LCC (eLbrus Compiler Collection)
-#if defined(__LCC__) && defined(__MCST__)
-# define MCST_LCC_VERSION (__LCC__*100 + __LCC_MINOR__)
-#else
-# define MCST_LCC_VERSION 0
-#endif
 // .. GCC
 #ifdef __GNUC__
 # define GCC_VERSION (__GNUC__*100 + __GNUC_MINOR__)
