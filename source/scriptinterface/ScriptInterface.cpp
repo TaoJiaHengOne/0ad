@@ -626,6 +626,7 @@ bool ScriptInterface::LoadScript(const VfsPath& filename, const std::string& cod
 	// TODO: it would probably be better to not implicitly introduce JS scopes.
 	options.setFileAndLine(filenameStr.c_str(), 0);
 	options.setIsRunOnce(false);
+	options.setForceStrictMode();
 
 	JS::SourceText<mozilla::Utf8Unit> src;
 	ENSURE(src.init(rq.cx, code.c_str(), code.length(), JS::SourceOwnership::Borrowed));
@@ -655,6 +656,7 @@ bool ScriptInterface::LoadGlobalScript(const VfsPath& filename, const std::strin
 	JS::RootedValue rval(rq.cx);
 	JS::CompileOptions opts(rq.cx);
 	opts.setFileAndLine(filenameStr.c_str(), 1);
+	opts.setForceStrictMode();
 
 	JS::SourceText<mozilla::Utf8Unit> src;
 	ENSURE(src.init(rq.cx, code.c_str(), code.length(), JS::SourceOwnership::Borrowed));
@@ -695,6 +697,7 @@ bool ScriptInterface::Eval(const char* code) const
 
 	JS::CompileOptions opts(rq.cx);
 	opts.setFileAndLine("(eval)", 1);
+	opts.setForceStrictMode();
 	JS::SourceText<mozilla::Utf8Unit> src;
 	ENSURE(src.init(rq.cx, code, strlen(code), JS::SourceOwnership::Borrowed));
 	if (JS::Evaluate(rq.cx, opts, src, &rval))
@@ -710,6 +713,7 @@ bool ScriptInterface::Eval(const char* code, JS::MutableHandleValue rval) const
 
 	JS::CompileOptions opts(rq.cx);
 	opts.setFileAndLine("(eval)", 1);
+	opts.setForceStrictMode();
 	JS::SourceText<mozilla::Utf8Unit> src;
 	ENSURE(src.init(rq.cx, code, strlen(code), JS::SourceOwnership::Borrowed));
 	if (JS::Evaluate(rq.cx, opts, src, rval))

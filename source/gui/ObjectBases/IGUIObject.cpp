@@ -315,6 +315,7 @@ void IGUIObject::RegisterScriptHandler(const CStr& eventName, const CStr& Code, 
 	JS::CompileOptions options(rq.cx);
 	options.setFileAndLine(CodeName.c_str(), 0);
 	options.setIsRunOnce(false);
+	options.setForceStrictMode();
 
 	JS::SourceText<mozilla::Utf8Unit> src;
 	ENSURE(src.init(rq.cx, Code.c_str(), Code.length(), JS::SourceOwnership::Borrowed));

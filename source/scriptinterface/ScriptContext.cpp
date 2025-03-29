@@ -127,8 +127,6 @@ ScriptContext::ScriptContext(int contextSize, int heapGrowthBytesGCTrigger):
 	JS_SetGlobalJitCompilerOption(m_cx, JSJITCOMPILER_SPECTRE_STRING_MITIGATIONS, 0);
 	JS_SetGlobalJitCompilerOption(m_cx, JSJITCOMPILER_SPECTRE_OBJECT_MITIGATIONS, 0);
 
-	JS::ContextOptionsRef(m_cx).setStrictMode(true);
-
 	ScriptEngine::GetSingleton().RegisterContext(m_cx);
 
 	JS::SetJobQueue(m_cx, m_JobQueue.get());
