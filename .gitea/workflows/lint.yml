@@ -7,6 +7,12 @@ on:
 jobs:
   cppcheck:
     runs-on: ubuntu-latest
+    env:
+      BASE_SHA: >-
+          ${{
+              github.event_name == 'pull_request' && github.event.pull_request.base.sha ||
+              github.event_name == 'push' && github.event.push.before
+          }}
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +43,7 @@ jobs:
         run: sudo apt-get --assume-yes --no-install-recommends install cppcheck
 
       - name: Fetch the base branch, so we can use `git diff`
-        run: git fetch origin ${{ github.event.pull_request.base.ref }}:${{ github.event.pull_request.base.ref }}
+        run: git fetch origin ${{ env.BASE_SHA }}
 
       - name: Check for issues
-        run: ./source/tools/lint/cppcheck/cppcheck.sh --diff ${{ github.event.pull_request.base.ref }}
+        run: ./source/tools/lint/cppcheck/cppcheck.sh --diff ${{ env.BASE_SHA }}
