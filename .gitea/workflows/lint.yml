@@ -3,11 +3,13 @@
 name: lint
 on:
   - pull_request
+env:
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
 jobs:
   cppcheck:
     runs-on: ubuntu-latest
-    env:
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,3 +44,18 @@ jobs:
 
       - name: Check for issues
         run: ./source/tools/lint/cppcheck/cppcheck.sh --diff ${{ env.BASE_SHA }}
+
+  copyright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch the base branch, so we can use `git diff`
+        run: git fetch origin ${{ env.BASE_SHA }}
+
+      - name: Check for issues with copyright
+        run: ./source/tools/lint/copyright/copyright.sh --from ${{ env.BASE_SHA }} --to ${{ env.HEAD_SHA }}

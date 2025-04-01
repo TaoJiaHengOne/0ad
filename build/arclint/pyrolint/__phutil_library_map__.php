@@ -11,7 +11,6 @@ phutil_register_library_map(array(
   'class' => array(
     'ESLintLinter' => 'src/ESLintLinter.php',
     'JenkinsRenderer' => 'src/JenkinsRenderer.php',
-    'LicenceYearLinter' => 'src/LicenceYearLinter.php',
   ),
   'function' => array(
     'remove_null' => 'src/JenkinsRenderer.php',
@@ -19,6 +18,5 @@ phutil_register_library_map(array(
   'xmap' => array(
     'ESLintLinter' => 'ArcanistExternalLinter',
     'JenkinsRenderer' => 'ArcanistLintRenderer',
-    'LicenceYearLinter' => 'ArcanistLinter',
   ),
 ));

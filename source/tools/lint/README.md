@@ -16,3 +16,7 @@ The format for an error suppression is one of:
 ### libraries
 
 Adding library cfg's for other deps could improve cppchecks ability to find issues.
+
+## copyright
+
+A linter for checking copyright dates in file headers are up to date.

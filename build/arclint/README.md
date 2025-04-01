@@ -8,7 +8,6 @@ https://secure.phabricator.com/book/phabricator/article/arcanist_lint/
 
 - `text` is configured to detect whitespace issues.
 - `json` detects JSON syntax errors.
-- `licence-year` detects Copyright header years and compares against modification time.
 - `eslint`, if installed, will run on javascript files.
 
 ## Installation
