@@ -58,7 +58,8 @@ namespace
 [[nodiscard]] JSObject* CompileModule(const ScriptRequest& rq, ModuleLoader::RegistryType& registry,
 	const VfsPath& filePath)
 {
-	const auto insertResult = registry.try_emplace(filePath, rq, filePath);
+	const VfsPath normalizedPath{filePath.fileSystemPath().lexically_normal().generic_string()};
+	const auto insertResult = registry.try_emplace(normalizedPath, rq, normalizedPath);
 	return std::get<1>(*std::get<0>(insertResult)).m_ModuleObject;
 }
 

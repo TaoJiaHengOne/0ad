@@ -97,4 +97,21 @@ public:
 		TS_ASSERT_THROWS(script.GetModuleLoader().LoadModule(rq, "nonexistent.js"),
 			const std::runtime_error&);
 	}
+
+	void test_EvaluateOnce()
+	{
+		ScriptInterface script{"Test", "Test", g_ScriptContext};
+		const ScriptRequest rq{script};
+
+		{
+			TestLogger logger;
+			script.GetModuleLoader().LoadModule(rq, "blabbermouth.js");
+			TS_ASSERT_STR_CONTAINS(logger.GetOutput(), "blah blah blah");
+		}
+		{
+			TestLogger logger;
+			script.GetModuleLoader().LoadModule(rq, "include/../blabbermouth.js");
+			TS_ASSERT_STR_NOT_CONTAINS(logger.GetOutput(), "blah blah blah");
+		}
+	}
 };
