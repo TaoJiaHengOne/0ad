@@ -154,18 +154,27 @@ function tryAutoComplete(text, autoCompleteList)
 	if (!lastWord.length)
 		return text;
 
+	const matchingWords = [];
 	for (var word of autoCompleteList)
 	{
 		if (word.toLowerCase().indexOf(lastWord.toLowerCase()) != 0)
 			continue;
 
-		text = wordSplit.join(" ");
-		if (text.length > 0)
-			text += " ";
+		matchingWords.push(word)
 
-		text += word;
-		break;
+		if (matchingWords.length > 1)
+			break;
 	}
+
+	if (matchingWords.length != 1)
+	    return text;
+
+	text = wordSplit.join(" ");
+	if (text.length > 0)
+		text += " ";
+
+	text += matchingWords[0];
+
 	return text;
 }
 
