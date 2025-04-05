@@ -27,6 +27,8 @@
 #include "scriptinterface/ScriptEngine.h"
 #include "scriptinterface/ScriptInterface.h"
 
+#include "js/friend/PerformanceHint.h"
+
 void GCSliceCallbackHook(JSContext* UNUSED(cx), JS::GCProgress progress, const JS::GCDescription& UNUSED(desc))
 {
 	/**
@@ -127,6 +129,10 @@ ScriptContext::ScriptContext(int contextSize, int heapGrowthBytesGCTrigger):
 	JS_SetGlobalJitCompilerOption(m_cx, JSJITCOMPILER_SPECTRE_STRING_MITIGATIONS, 0);
 	JS_SetGlobalJitCompilerOption(m_cx, JSJITCOMPILER_SPECTRE_OBJECT_MITIGATIONS, 0);
 
+	// Workaround to turn off nursery size heuristic.
+	// See https://gitea.wildfiregames.com/0ad/0ad/issues/7714 for details.
+	js::gc::SetPerformanceHint(m_cx, js::gc::PerformanceHint::InPageLoad);
+
 	ScriptEngine::GetSingleton().RegisterContext(m_cx);
 
 	JS::SetJobQueue(m_cx, m_JobQueue.get());
@@ -136,6 +142,9 @@ ScriptContext::ScriptContext(int contextSize, int heapGrowthBytesGCTrigger):
 ScriptContext::~ScriptContext()
 {
 	ENSURE(ScriptEngine::IsInitialised() && "The ScriptEngine must be active (initialized and not yet shut down) when destroying a ScriptContext!");
+
+	// Switch back to normal performance mode to avoid assertion in debug mode.
+	js::gc::SetPerformanceHint(m_cx, js::gc::PerformanceHint::Normal);
 
 	JS_DestroyContext(m_cx);
 	ScriptEngine::GetSingleton().UnRegisterContext(m_cx);
