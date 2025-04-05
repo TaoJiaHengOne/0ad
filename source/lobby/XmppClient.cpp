@@ -169,6 +169,8 @@ XmppClient::XmppClient(const ScriptInterface* scriptInterface, const std::string
  */
 XmppClient::~XmppClient()
 {
+	this->disconnect();
+
 	DbgXMPP("XmppClient destroyed");
 	delete m_registration;
 	delete m_mucRoom;
