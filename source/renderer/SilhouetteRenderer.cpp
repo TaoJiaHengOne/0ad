@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -180,10 +180,13 @@ static void ComputeScreenBounds(Occluder& occluder, const CBoundingBoxAligned& b
 			for (size_t iz = 0; iz <= 1; ++iz)
 			{
 				CVector4D svec = proj.Transform(CVector4D(bounds[ix].X, bounds[iy].Y, bounds[iz].Z, 1.0f));
-				x0 = std::min(x0,  static_cast<u16>(g_HalfMaxCoord + static_cast<u16>(g_HalfMaxCoord * svec.X / svec.W)));
-				y0 = std::min(y0,  static_cast<u16>(g_HalfMaxCoord + static_cast<u16>(g_HalfMaxCoord * svec.Y / svec.W)));
-				x1 = std::max(x1,  static_cast<u16>(g_HalfMaxCoord + static_cast<u16>(g_HalfMaxCoord * svec.X / svec.W)));
-				y1 = std::max(y1,  static_cast<u16>(g_HalfMaxCoord + static_cast<u16>(g_HalfMaxCoord * svec.Y / svec.W)));
+				// Avoid overflows
+				u16 svx = g_HalfMaxCoord + static_cast<u16>(Clamp(g_HalfMaxCoord * svec.X / svec.W, 0.f, static_cast<float>(g_MaxCoord - 1)));
+				u16 svy = g_HalfMaxCoord + static_cast<u16>(Clamp(g_HalfMaxCoord * svec.Y / svec.W, 0.f, static_cast<float>(g_MaxCoord - 1)));
+				x0 = std::min(x0, svx);
+				y0 = std::min(y0, svy);
+				x1 = std::max(x1, svx);
+				y1 = std::max(y1, svy);
 				z0 = std::min(z0, svec.Z / svec.W);
 			}
 		}
