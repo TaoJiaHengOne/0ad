@@ -181,25 +181,20 @@ function process_raw_data(data, range)
 
     var frames = [];
     var last_frame_time_start = undefined;
-    var last_frame_time_end = undefined;
 
     var stack = [];
     for (var i = 0; i < data.length; ++i)
     {
         if (data[i][0] == ITEM_EVENT && data[i][2] == '__framestart')
         {
-            if (last_frame_time_end)
-                frames.push({'t0': last_frame_time_start, 't1': last_frame_time_end});
+            if (last_frame_time_start)
+                frames.push({'t0': last_frame_time_start, 't1': data[i][1]});
             last_frame_time_start = data[i][1];
         }
         if (data[i][0] == ITEM_ENTER)
             stack.push(data[i][2]);
         if (data[i][0] == ITEM_LEAVE)
-        {
-            if (stack[stack.length-1] == 'frame')
-                last_frame_time_end = data[i][1];
             stack.pop();
-        }
     }
     if(!range)
     {
