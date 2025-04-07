@@ -52,8 +52,8 @@
   </Resistance>
   <Sound>
     <SoundGroups>
-      <select>interface/select/building/sel_iber_monument.xml</select>
-      <constructed>interface/complete/building/complete_iber_monument.xml</constructed>
+      <select>interface/select/building/sel_tholos.xml</select>
+      <constructed>interface/complete/building/complete_tholos.xml</constructed>
     </SoundGroups>
   </Sound>
   <TerritoryInfluence>
