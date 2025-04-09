@@ -155,7 +155,7 @@ class GameSettings
 
 		// NB: for multiplayer support, the clients must be listening to "start" net messages.
 		if (this.isNetworked)
-			Engine.StartNetworkGame(this.savegameID, this.finalizedAttributes, storeReplay);
+			Engine.StartNetworkGame(this.savegameID, this.finalizedAttributes);
 		else
 			Engine.StartGame(this.finalizedAttributes, playerAssignments.local.player, storeReplay);
 	}
