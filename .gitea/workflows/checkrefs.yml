@@ -11,21 +11,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - name: Install lxml
-        run: pip3 install lxml
+      - name: Add remote fork origin for LFS
+        run: |
+          PR_REPO="${{ gitea.event.pull_request.head.repo.full_name || gitea.repository }}"
+          git remote add ${{ gitea.actor }} https://gitea.wildfiregames.com/${PR_REPO}.git
       - name: Workaround for authentication problem with LFS
         # https://gitea.com/gitea/act_runner/issues/164
-        run: >
-          git config --local
+        run: |
+          git config --local \
           http.${{ gitea.server_url }}/${{ gitea.repository }}.git/info/lfs/objects/.extraheader ''
-      - name: Add remote fork origin for LFS
-        run: >
-          git remote add ${{ gitea.actor }} \
-            git@gitea.wildfiregames.com:${{ gitea.actor }}/${{ gitea.head_ref }}.git
+
+          PR_REPO="${{ gitea.event.pull_request.head.repo.full_name || gitea.repository }}"
+          EXTRAHEADER="$(git config --get --local http.${{ gitea.server_url }}/.extraheader)"
+          git config --local \
+            http.${{ gitea.server_url }}/${PR_REPO}.git/info/lfs/objects/batch.extraheader \
+            '${EXTRAHEADER}'
+          git config --local \
+            http.${{ gitea.server_url }}/${PR_REPO}.git/info/lfs/objects/.extraheader ''
       - name: Download necessary LFS assets
-        run: >
-          git lfs pull -I binaries/data/mods/public/maps &&
+        shell: sh {0}
+        run: |
+          git lfs pull -I binaries/data/mods/public/maps
+          ORIGIN_LFS_PULL_RESULT=$?
           git lfs pull ${{ gitea.actor }} -I binaries/data/mods/public/maps
+          FORK_LFS_PULL_RESULT=$?
+
+          PR_REPO="${{ gitea.event.pull_request.head.repo.full_name || gitea.repository }}"
+          if [ "$ORIGIN_LFS_PULL_RESULT" = "0" ]; then
+            echo "SUCCESS: Found all LFS assets in the LFS storage of ${{ gitea.repository }}."
+          elif [ "$FORK_LFS_PULL_RESULT" = "0" ]; then
+            echo "SUCCESS: Found all LFS assets in the LFS storage of ${PR_REPO}."
+          else
+            echo "ERROR: Couldn't find all LFS assets in either of the LFS storages."
+            false;
+          fi
+      - name: Install lxml
+        run: pip3 install lxml
       - name: Check for missing references
         run: |
           ./source/tools/entity/checkrefs.py \
