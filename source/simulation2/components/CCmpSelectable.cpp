@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -104,19 +104,19 @@ public:
 						"<element name='Shape' a:help='Specifies shape of overlay. If not specified, footprint shape will be used.'>"
 							"<choice>"
 								"<element name='Square' a:help='Set the overlay to a square of the given size'>"
-									"<attribute name='width' a:help='Size of the overlay along the left/right direction (in metres)'>"
+									"<attribute name='width' a:help='Size of the overlay along the left/right direction (in meters)'>"
 										"<data type='decimal'>"
 											"<param name='minExclusive'>0.0</param>"
 										"</data>"
 									"</attribute>"
-									"<attribute name='depth' a:help='Size of the overlay along the front/back direction (in metres)'>"
+									"<attribute name='depth' a:help='Size of the overlay along the front/back direction (in meters)'>"
 										"<data type='decimal'>"
 											"<param name='minExclusive'>0.0</param>"
 										"</data>"
 									"</attribute>"
 								"</element>"
 								"<element name='Circle' a:help='Set the overlay to a circle of the given size'>"
-									"<attribute name='radius' a:help='Radius of the overlay (in metres)'>"
+									"<attribute name='radius' a:help='Radius of the overlay (in meters)'>"
 										"<data type='decimal'>"
 											"<param name='minExclusive'>0.0</param>"
 										"</data>"

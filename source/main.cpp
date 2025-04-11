@@ -520,7 +520,7 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 
 	if (args.Has("autostart-nonvisual") && args.Get("autostart").empty() && !args.Has("rl-interface") && !args.Has("autostart-client"))
 	{
-		LOGERROR("-autostart-nonvisual cant be used alone. A map with -autostart=\"TYPEDIR/MAPNAME\" is needed.");
+		LOGERROR("-autostart-nonvisual can't be used alone. A map with -autostart=\"TYPEDIR/MAPNAME\" is needed.");
 		return;
 	}
 

@@ -420,7 +420,7 @@ function handleNetMessages()
 		if (g_NetMessageTypes[msg.type])
 			g_NetMessageTypes[msg.type](msg);
 		else
-			error("Unrecognised net message type '" + msg.type + "'");
+			error("Unrecognized net message type '" + msg.type + "'");
 	}
 }
 

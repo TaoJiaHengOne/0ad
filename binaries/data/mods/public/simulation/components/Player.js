@@ -313,7 +313,7 @@ Player.prototype.SubtractResourcesOrNotify = function(amounts)
 		else if (i == 4)
 			msg = markForTranslation("Insufficient resources - %(resourceAmount1)s %(resourceType1)s, %(resourceAmount2)s %(resourceType2)s, %(resourceAmount3)s %(resourceType3)s, %(resourceAmount4)s %(resourceType4)s");
 		else
-			warn("Localisation: Strings are not localised for more than 4 resources");
+			warn("Localization: Strings are not localized for more than 4 resources");
 
 		// Send as time-notification.
 		let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -146,7 +146,7 @@ CTextureConverter::SettingsFile* CTextureConverter::LoadSettings(const VfsPath& 
 
 	if (root.GetNodeName() != el_textures)
 	{
-		LOGERROR("Invalid texture settings file \"%s\" (unrecognised root element)", path.string8());
+		LOGERROR("Invalid texture settings file \"%s\" (unrecognized root element)", path.string8());
 		return NULL;
 	}
 

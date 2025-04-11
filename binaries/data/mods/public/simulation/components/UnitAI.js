@@ -5298,7 +5298,7 @@ UnitAI.prototype.GetTargetPositions = function()
 			break;
 
 		default:
-			error("GetTargetPositions: Unrecognised order type '"+order.type+"'");
+			error("GetTargetPositions: Unrecognized order type '"+order.type+"'");
 			return [];
 		}
 	}

@@ -4,10 +4,10 @@ Capturable.prototype.Schema =
 	"<element name='CapturePoints' a:help='Maximum capture points.'>" +
 		"<ref name='positiveDecimal'/>" +
 	"</element>" +
-	"<element name='RegenRate' a:help='Number of capture points that are regenerated per second in favour of the owner.'>" +
+	"<element name='RegenRate' a:help='Number of capture points that are regenerated per second in favor of the owner.'>" +
 		"<ref name='nonNegativeDecimal'/>" +
 	"</element>" +
-	"<element name='GarrisonRegenRate' a:help='Factor how much each garrisoned entity will add capture points to the regeneration per second in favour of the owner.'>" +
+	"<element name='GarrisonRegenRate' a:help='Factor how much each garrisoned entity will add capture points to the regeneration per second in favor of the owner.'>" +
 		"<ref name='nonNegativeDecimal'/>" +
 	"</element>";
 

@@ -9,5 +9,5 @@
 		{ "value": "Researcher/TechCostMultiplier/time", "multiply": 0.85 }
 	],
 	"auraDescription": "Structures −15% technology resource costs and research time.",
-	"auraName": "Centre of Scholarship"
+	"auraName": "Center of Scholarship"
 }

@@ -4,7 +4,7 @@ var g_AttackTypes = ["Melee", "Ranged", "Capture"];
 
 Attack.prototype.preferredClassesSchema =
 	"<optional>" +
-		"<element name='PreferredClasses' a:help='Space delimited list of classes preferred for attacking. If an entity has any of theses classes, it is preferred. The classes are in descending order of preference'>" +
+		"<element name='PreferredClasses' a:help='Space delimited list of classes preferred for attacking. If an entity has any of these classes, it is preferred. The classes are in descending order of preference'>" +
 			"<attribute name='datatype'>" +
 				"<value>tokens</value>" +
 			"</attribute>" +
@@ -114,9 +114,9 @@ Attack.prototype.Schema =
 					"<text/>" +
 				"</element>" +
 				AttackHelper.BuildAttackEffectsSchema() +
-				"<element name='MaxRange' a:help='Maximum attack range (in metres)'><ref name='nonNegativeDecimal'/></element>" +
+				"<element name='MaxRange' a:help='Maximum attack range (in meters)'><ref name='nonNegativeDecimal'/></element>" +
 				"<optional>" +
-					"<element name='MinRange' a:help='Minimum attack range (in metres). Defaults to 0.'><ref name='nonNegativeDecimal'/></element>" +
+					"<element name='MinRange' a:help='Minimum attack range (in meters). Defaults to 0.'><ref name='nonNegativeDecimal'/></element>" +
 				"</optional>" +
 				"<optional>"+
 					"<element name='Origin' a:help='The offset from which the attack occurs, relative to the entity position. Defaults to {0,0,0}.'>" +

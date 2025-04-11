@@ -35,7 +35,7 @@ function GetTechModifiedProperty_generic(modifications, classes, originalValue)
 		if (!DoesModificationApply(modification, classes))
 			continue;
 		if (!modification.replace)
-			warn("GetTechModifiedProperty: modification format not recognised : " + uneval(modification));
+			warn("GetTechModifiedProperty: modification format not recognized : " + uneval(modification));
 
 		return modification.replace;
 	}
@@ -59,7 +59,7 @@ function GetTechModifiedProperty_numeric(modifications, classes, originalValue)
 		else if (modification.add)
 			add += modification.add;
 		else
-			warn("GetTechModifiedProperty: numeric modification format not recognised : " + uneval(modification));
+			warn("GetTechModifiedProperty: numeric modification format not recognized : " + uneval(modification));
 	}
 	return originalValue * multiply + add;
 }
@@ -80,7 +80,7 @@ function GetTechModifiedProperty_string(modifications, classes, originalValue)
 		if (modification.tokens !== undefined)
 			value = HandleTokens(value, modification.tokens);
 		else
-			warn("GetTechModifiedProperty: string modification format not recognised : " + uneval(modification));
+			warn("GetTechModifiedProperty: string modification format not recognized : " + uneval(modification));
 	}
 	return value;
 }

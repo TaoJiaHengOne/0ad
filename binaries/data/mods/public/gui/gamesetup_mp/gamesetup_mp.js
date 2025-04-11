@@ -64,7 +64,7 @@ async function init(attribs)
 		break;
 	}
 	default:
-		error("Unrecognised multiplayer game type: " + attribs.multiplayerGameType);
+		error("Unrecognized multiplayer game type: " + attribs.multiplayerGameType);
 		break;
 	}
 
@@ -110,7 +110,7 @@ function cancelSetup()
 	else if (g_GameType == "server")
 		switchSetupPage("pageHost");
 	else
-		error("cancelSetup: Unrecognised multiplayer game type: " + g_GameType);
+		error("cancelSetup: Unrecognized multiplayer game type: " + g_GameType);
 	return false;
 }
 
@@ -240,7 +240,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					return true;
 
 				default:
-					error("Unrecognised netstatus type: " + message.status);
+					error("Unrecognized netstatus type: " + message.status);
 					break;
 				}
 				break;
@@ -256,7 +256,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					return true;
 
 				default:
-					error("Unrecognised netstatus type: " + message.status);
+					error("Unrecognized netstatus type: " + message.status);
 					break;
 				}
 				break;
@@ -282,7 +282,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				break;
 
 			default:
-				error("Unrecognised net message type: " + message.type);
+				error("Unrecognized net message type: " + message.type);
 			}
 		}
 		else
@@ -298,7 +298,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					return true;
 
 				default:
-					error("Unrecognised netstatus type: " + message.status);
+					error("Unrecognized netstatus type: " + message.status);
 					break;
 				}
 				break;
@@ -321,7 +321,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 					return;
 
 				default:
-					error("Unrecognised netstatus type: " + message.status);
+					error("Unrecognized netstatus type: " + message.status);
 					break;
 				}
 				break;
@@ -330,7 +330,7 @@ function pollAndHandleNetworkClient(loadSavedGame)
 				break;
 
 			default:
-				error("Unrecognised net message type: " + message.type);
+				error("Unrecognized net message type: " + message.type);
 				break;
 			}
 		}

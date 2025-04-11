@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -264,7 +264,7 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(
 				const uint32_t set = descriporSetsChild.GetAttributes().GetNamedItem(at_set).ToUInt();
 				if (useDescriptorIndexing && set == 0 && !descriporSetsChild.GetChildNodes().empty())
 				{
-					LOGERROR("Descritor set for descriptor indexing shouldn't contain bindings.");
+					LOGERROR("Descriptor set for descriptor indexing shouldn't contain bindings.");
 					return false;
 				}
 				XERO_ITER_EL(descriporSetsChild, descriporSetChild)

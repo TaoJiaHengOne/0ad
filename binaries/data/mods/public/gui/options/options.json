@@ -244,7 +244,7 @@
 			{
 				"type": "slider",
 				"label": "Sharpness factor",
-				"tooltip": "The sharpness of the choosen pass.",
+				"tooltip": "The sharpness of the chosen pass.",
 				"dependencies": [
 					"postproc",
 					{ "config": "rendererbackend", "op": "!=", "value": "glarb" },
@@ -643,7 +643,7 @@
 	},
 	{
 		"label": "Display",
-		"tooltip": "Customise the in-game display.",
+		"tooltip": "Customize the in-game display.",
 		"options":
 		[
 			{

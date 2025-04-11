@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -81,10 +81,10 @@ public:
 			"<element name='DelayTime' a:help='Time to wait before starting to sink, in seconds'>"
 				"<ref name='nonNegativeDecimal'/>"
 			"</element>"
-			"<element name='SinkRate' a:help='Initial rate of sinking, in metres per second'>"
+			"<element name='SinkRate' a:help='Initial rate of sinking, in meters per second'>"
 				"<ref name='nonNegativeDecimal'/>"
 			"</element>"
-			"<element name='SinkAccel' a:help='Acceleration rate of sinking, in metres per second per second'>"
+			"<element name='SinkAccel' a:help='Acceleration rate of sinking, in meters per second per second'>"
 				"<ref name='nonNegativeDecimal'/>"
 			"</element>";
 	}

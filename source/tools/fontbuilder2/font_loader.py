@@ -37,7 +37,7 @@ _cairo_so.cairo_status.argtypes = [ctypes.c_void_p]
 # initialize freetype
 _ft_lib = ctypes.c_void_p()
 if FT_Err_Ok != _freetype_so.FT_Init_FreeType(ctypes.byref(_ft_lib)):
-    raise Exception("Error initialising FreeType library.")
+    raise Exception("Error initializing FreeType library.")
 
 _surface = cairo.ImageSurface(cairo.FORMAT_A8, 0, 0)
 

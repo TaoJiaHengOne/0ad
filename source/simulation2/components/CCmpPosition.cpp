@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -119,7 +119,7 @@ public:
 					"<value a:help='Rotate in all directions to follow the terrain (e.g. carts)'>pitch-roll</value>"
 				"</choice>"
 			"</element>"
-			"<element name='Altitude' a:help='Height above terrain in metres'>"
+			"<element name='Altitude' a:help='Height above terrain in meters'>"
 				"<data type='decimal'/>"
 			"</element>"
 			"<element name='Floating' a:help='Whether the entity floats on water'>"

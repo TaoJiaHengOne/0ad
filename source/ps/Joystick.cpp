@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ void CJoystick::Initialise()
 
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
 	{
-		LOGERROR("CJoystick::Initialise failed to initialise joysticks (\"%s\")", SDL_GetError());
+		LOGERROR("CJoystick::Initialise failed to initialize joysticks (\"%s\")", SDL_GetError());
 		return;
 	}
 

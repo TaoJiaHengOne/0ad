@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -296,7 +296,7 @@ void CBinarySerializerScriptImpl::HandleScriptVal(JS::HandleValue val)
 			else
 			{
 				// Unrecognized class
-				LOGERROR("Cannot serialise JS objects with unrecognized class '%s'", jsclass->name);
+				LOGERROR("Cannot serialize JS objects with unrecognized class '%s'", jsclass->name);
 				throw PSERROR_Serialize_InvalidScriptValue();
 			}
 		}
@@ -369,7 +369,7 @@ void CBinarySerializerScriptImpl::HandleScriptVal(JS::HandleValue val)
 			}
 		}
 
-		LOGERROR("Cannot serialise JS objects of type 'function': %s", utf8_from_wstring(funcname));
+		LOGERROR("Cannot serialize JS objects of type 'function': %s", utf8_from_wstring(funcname));
 		throw PSERROR_Serialize_InvalidScriptValue();
 	}
 	case JSTYPE_STRING:

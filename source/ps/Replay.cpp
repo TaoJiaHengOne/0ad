@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -306,7 +306,7 @@ void CReplayPlayer::Replay(const bool serializationtest, const int rejointesttur
 				g_ProfileViewer.SaveToFile();
 		}
 		else
-			debug_printf("Unrecognised replay token %s\n", type.c_str());
+			debug_printf("Unrecognized replay token %s\n", type.c_str());
 	}
 	}
 

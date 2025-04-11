@@ -62,7 +62,7 @@ function getDisconnectReason(id)
 {
 	switch (id)
 	{
-	case 0: return translate("An unknown error ocurred.");
+	case 0: return translate("An unknown error occurred.");
 	case 1: return translate("The connection request has timed out.");
 	case 2: return translate("The host has ended the game.");
 	case 3: return translate("Incorrect network protocol version.");
@@ -106,7 +106,7 @@ function getMismatchMessage(mismatchType, clientMismatchInfo, serverMismatchInfo
 			"clientMismatch": clientMismatchInfo,
 			"serverMismatch": serverMismatchInfo
 		});
-		default: return sprintf(translate("Unrecognised handshake mismatch type: %(mismatchType)s"), {
+		default: return sprintf(translate("Unrecognized handshake mismatch type: %(mismatchType)s"), {
 			"mismatchType": mismatchType
 		});
 	}

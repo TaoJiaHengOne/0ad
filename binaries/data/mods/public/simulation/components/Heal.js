@@ -14,7 +14,7 @@ Heal.prototype.Schema =
 		"<UnhealableClasses datatype=\"tokens\">Cavalry</UnhealableClasses>" +
 		"<HealableClasses datatype=\"tokens\">Support Infantry</HealableClasses>" +
 	"</a:example>" +
-	"<element name='Range' a:help='Range (in metres) where healing is possible.'>" +
+	"<element name='Range' a:help='Range (in meters) where healing is possible.'>" +
 		"<ref name='nonNegativeDecimal'/>" +
 	"</element>" +
 	"<optional>" +

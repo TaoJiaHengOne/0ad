@@ -1,6 +1,6 @@
 [font="sans-bold-18"]0 A.D. Empires Ascendant Multiplayer Lobby Privacy Policy[/font]
 
-[font="sans-bold-14"]Document Date:[/font] 2023-07-27
+[font="sans-bold-14"]Document Date:[/font] 2025-04-10
 
 [font="sans-bold-16"]Personal data processed by Wildfire Games and purposes of processing:[/font]
 [font="sans-bold-14"]1. Player name[/font]
@@ -67,10 +67,10 @@ Requests that are manifestly unfounded or excessive are not responded to or may 
  2. Wildfire Games documents their processing activities appropriately, in particular the categories of processed personal data and security measures to protect it (GDPR 30).
  3. Wildfire Games processes personal data lawfully, fairly and transparently (GDPR 5.1.a, GDPR 12.1).
  4. Wildfire Games informs users of the purposes, legal grounds, legitimate interests and retention periods of personal data processing at the time it is processed, recipients of personal data and where applicable, transfer of personal data to third countries and automated decision-making (GDPR 13.1.c-f, GDPR 13.2.a, GDPR 13.2.e-f, GDPR 15.1, GDPR 15.4).
- 5. Wildfire Games does not processes personal data for purposes other than the specified ones (GDPR 5.1.b, 'purpose limitation', GDPR 13.3).
+ 5. Wildfire Games does not process personal data for purposes other than the specified ones (GDPR 5.1.b, 'purpose limitation', GDPR 13.3).
  6. Wildfire Games does not process personal data that is not needed for the specified purposes (GDPR 5.1.c, 'data minimization').
  7. Wildfire Games uses a storage form that does not allow identification of natural persons for longer than necessary (GDPR 5.1.e 'storage limitation').
- 8. Wildfire Games secures personal data processing to prevent unauthorised or unlawful processing and accidental loss (GDPR 5.1.f. 'integrity and confidentiality').
+ 8. Wildfire Games secures personal data processing to prevent unauthorized or unlawful processing and accidental loss (GDPR 5.1.f. 'integrity and confidentiality').
  9. Wildfire Games informs users of their right to access, to rectify, to erase personal data and the right to restrict, to withdraw consent to, to object to personal data processing and to complain at a supervisory authority (GDPR 13.2.b, GDPR 13.2.c, GDPR 13.2.d).
 10. Wildfire Games facilitates the exercise of user rights where possible (GDPR 12.2), without undue delay (GDPR 12.3).
 11. Wildfire Games informs the users that to exercise their rights, users might need to provide additional information to identify the natural person or the data (GDPR 12.6, GDPR 13.2.e).

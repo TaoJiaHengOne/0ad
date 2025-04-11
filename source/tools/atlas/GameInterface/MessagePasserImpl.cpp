@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -45,10 +45,10 @@ void MessagePasserImpl::Add(IMessage* msg)
 	}
 	else
 	{
-		debug_warn(L"Unrecognised message");
+		debug_warn(L"Unrecognized message");
 		// CLogger might not be initialised, but this error will be sent
 		// to the debug output window anyway so people can still see it
-		LOGERROR("Unrecognised message (%s)", msg->GetName());
+		LOGERROR("Unrecognized message (%s)", msg->GetName());
 	}
 	// Delete the object - we took ownership of it.
 	AtlasMessage::ShareableDelete(msg);
@@ -69,10 +69,10 @@ void MessagePasserImpl::Query(QueryMessage* msg, void(* UNUSED(timeoutCallback) 
 	}
 	else
 	{
-		debug_warn(L"Unrecognised message");
+		debug_warn(L"Unrecognized message");
 		// CLogger might not be initialised, but this error will be sent
 		// to the debug output window anyway so people can still see it
-		LOGERROR("Unrecognised message (%s)", msg->GetName());
+		LOGERROR("Unrecognized message (%s)", msg->GetName());
 	}
 }
 

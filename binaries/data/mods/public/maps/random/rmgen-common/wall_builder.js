@@ -253,7 +253,7 @@ function getWallElement(element, style)
 				ret.length = 0;
 			}
 			else
-				warn("Unrecognised wall element: '" + element + "' (" + style + "). Defaulting to " + (wallset.tower ? "'tower'." : "a blank element."));
+				warn("Unrecognized wall element: '" + element + "' (" + style + "). Defaulting to " + (wallset.tower ? "'tower'." : "a blank element."));
 		}
 	}
 

@@ -21,7 +21,7 @@ Trigger.prototype.tutorialGoals = [
 	},
 	{
 		"instructions": [
-			markForTranslation("Now that the Civic Center is selected, you will notice that a production panel will appear on the lower right of your screen detailing the actions that the buildings supports. For the production panel, available actions are not masked in any color, while an icon masked in either grey or red indicates that the action has not been unlocked or you do not have sufficient resources to perform that action, respectively. Additionally, you can hover the cursor over any icon to show a tooltip with more details.\n"),
+			markForTranslation("Now that the Civic Center is selected, you will notice that a production panel will appear on the lower right of your screen detailing the actions that the buildings supports. For the production panel, available actions are not masked in any color, while an icon masked in either gray or red indicates that the action has not been unlocked or you do not have sufficient resources to perform that action, respectively. Additionally, you can hover the cursor over any icon to show a tooltip with more details.\n"),
 			markForTranslation("The top row of buttons contains portraits of units that may be trained at the building while the bottom one or two rows will have researchable technologies. Hover the cursor over the II icon. The tooltip will tell us that advancing to Town Phase requires both more constructed structures as well as more food and wood resources.")
 		]
 	},

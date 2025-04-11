@@ -45,7 +45,7 @@ EntityLimits.prototype.Schema =
 	"</element>" +
 	"<element name='LimitRemovers' a:help='List of building/unit(s) requirements to lift a specific limit.'>" +
 		"<zeroOrMore>" +
-			"<element a:help='Specifies a category of building/unit on which to remove this limit. The limit will be removed if all the followings requirements are satisfied'>" +
+			"<element a:help='Specifies a category of building/unit on which to remove this limit. The limit will be removed if all the following requirements are satisfied'>" +
 				"<anyName />" +
 				"<oneOrMore>" +
 					"<element a:help='Possible requirements are: RequiredTechs and RequiredClasses'>" +

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -63,26 +63,26 @@ public:
 			"</a:example>"
 			"<choice>"
 				"<element name='Square' a:help='Set the footprint to a square of the given size'>"
-					"<attribute name='width' a:help='Size of the footprint along the left/right direction (in metres)'>"
+					"<attribute name='width' a:help='Size of the footprint along the left/right direction (in meters)'>"
 						"<data type='decimal'>"
 							"<param name='minExclusive'>0.0</param>"
 						"</data>"
 					"</attribute>"
-					"<attribute name='depth' a:help='Size of the footprint along the front/back direction (in metres)'>"
+					"<attribute name='depth' a:help='Size of the footprint along the front/back direction (in meters)'>"
 						"<data type='decimal'>"
 							"<param name='minExclusive'>0.0</param>"
 						"</data>"
 					"</attribute>"
 				"</element>"
 				"<element name='Circle' a:help='Set the footprint to a circle of the given size'>"
-					"<attribute name='radius' a:help='Radius of the footprint (in metres)'>"
+					"<attribute name='radius' a:help='Radius of the footprint (in meters)'>"
 						"<data type='decimal'>"
 							"<param name='minExclusive'>0.0</param>"
 						"</data>"
 					"</attribute>"
 				"</element>"
 			"</choice>"
-			"<element name='Height' a:help='Vertical extent of the footprint (in metres)'>"
+			"<element name='Height' a:help='Vertical extent of the footprint (in meters)'>"
 				"<ref name='nonNegativeDecimal'/>"
 			"</element>"
 			"<optional>"

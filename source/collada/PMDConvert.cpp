@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -319,7 +319,7 @@ public:
 						{
 							// The relevant joint does exist, but it's not a recognised
 							// bone in our chosen skeleton structure
-							Log(LOG_ERROR, "Vertex influenced by unrecognised bone '%s'", joint->GetName().c_str());
+							Log(LOG_ERROR, "Vertex influenced by unrecognized bone '%s'", joint->GetName().c_str());
 							continue;
 						}
 
@@ -456,7 +456,7 @@ public:
 		}
 		else
 		{
-			throw ColladaException("Unrecognised object type");
+			throw ColladaException("Unrecognized object type");
 		}
 
 	}
