@@ -573,7 +573,6 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	capabilities.debugScopedLabels = enableDebugScopedLabels;
 	capabilities.S3TC = choosenDevice.features.textureCompressionBC;
 	capabilities.ARBShaders = false;
-	capabilities.ARBShadersShadow = false;
 	capabilities.computeShaders = true;
 	capabilities.storage = choosenDevice.properties.limits.maxStorageBufferRange >= GiB;
 	capabilities.instancing = true;

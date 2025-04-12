@@ -358,8 +358,6 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 
 	Capabilities& capabilities = device->m_Capabilities;
 	capabilities.ARBShaders = !ogl_HaveExtensions(0, "GL_ARB_vertex_program", "GL_ARB_fragment_program", nullptr);
-	if (capabilities.ARBShaders)
-		capabilities.ARBShadersShadow = ogl_HaveExtension("GL_ARB_fragment_program_shadow");
 	capabilities.computeShaders = !device->m_ARB && ogl_HaveVersion(4, 3);
 #if CONFIG2_GLES
 	// Some GLES implementations have GL_EXT_texture_compression_dxt1

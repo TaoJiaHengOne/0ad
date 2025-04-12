@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -215,11 +215,8 @@ void CSceneRenderer::ReloadShaders(Renderer::Backend::IDevice* device)
 	if (g_RenderingOptions.GetShadows())
 	{
 		m->globalContext.Add(str_USE_SHADOW, str_1);
-		if (device->GetBackend() == Renderer::Backend::Backend::GL_ARB &&
-			device->GetCapabilities().ARBShadersShadow)
-		{
+		if (device->GetBackend() == Renderer::Backend::Backend::GL_ARB)
 			m->globalContext.Add(str_USE_FP_SHADOW, str_1);
-		}
 		if (g_RenderingOptions.GetShadowPCF())
 			m->globalContext.Add(str_USE_SHADOW_PCF, str_1);
 		const int cascadeCount = m->shadow.GetCascadeCount();
