@@ -221,7 +221,7 @@ private:
 	};
 
 	using BoundBuffer = std::pair<GLenum, GLuint>;
-	std::array<BoundBuffer, 2> m_BoundBuffers;
+	std::array<BoundBuffer, 4> m_BoundBuffers;
 	class ScopedBufferBind
 	{
 	public:

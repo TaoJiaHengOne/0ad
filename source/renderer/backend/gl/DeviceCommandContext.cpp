@@ -246,6 +246,9 @@ CDeviceCommandContext::CDeviceCommandContext(CDevice* device)
 	for (size_t index = 0; index < m_BoundBuffers.size(); ++index)
 	{
 		const CBuffer::Type type = static_cast<CBuffer::Type>(index);
+		// Currently we don't support upload buffers for GL.
+		if (type == CBuffer::Type::UPLOAD)
+			continue;
 		const GLenum target = BufferTypeToGLTarget(type);
 		const GLuint handle = 0;
 		m_BoundBuffers[index].first = target;
@@ -1456,6 +1459,7 @@ CDeviceCommandContext::ScopedBufferBind::ScopedBufferBind(
 {
 	ENSURE(buffer);
 	m_CacheIndex = static_cast<size_t>(buffer->GetType());
+	ENSURE(m_CacheIndex < m_DeviceCommandContext->m_BoundBuffers.size());
 	const GLenum target = BufferTypeToGLTarget(buffer->GetType());
 	const GLuint handle = buffer->GetHandle();
 	if (m_DeviceCommandContext->m_BoundBuffers[m_CacheIndex].first == target &&
