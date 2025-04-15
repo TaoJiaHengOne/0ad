@@ -86,10 +86,8 @@ std::string EscapeString(const CStr& str)
 
 } // anonymous namespace
 
-typedef std::map<CStr, CConfigValueSet> TConfigMap;
-
 #define GETVAL(type)\
-	void CConfigDB::GetValue(EConfigNamespace ns, const CStr& name, type& value)\
+	void CConfigDB::GetValue(EConfigNamespace ns, const std::string_view name, type& value)\
 	{\
 		CHECK_NS(;);\
 		std::lock_guard<std::recursive_mutex> s(m_Mutex);\
