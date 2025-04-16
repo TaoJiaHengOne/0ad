@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -20,12 +20,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "lib/config2.h"
-
 #include <memory>
 
 class CProfiler2;
-class CProfiler2GPUARB;
+class CProfiler2GPUImpl;
+
+namespace Renderer
+{
+namespace Backend
+{
+class IDeviceCommandContext;
+}
+}
 
 /**
  * Used by CProfiler2 for GPU profiling support.
@@ -38,15 +44,12 @@ public:
 	CProfiler2GPU(CProfiler2& profiler);
 	~CProfiler2GPU();
 
-	void FrameStart();
-	void FrameEnd();
-	void RegionEnter(const char* id);
-	void RegionLeave(const char* id);
+	void FrameStart(Renderer::Backend::IDeviceCommandContext* deviceCommandContext);
+	void FrameEnd(Renderer::Backend::IDeviceCommandContext* deviceCommandContext);
+	void RegionEnter(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id);
+	void RegionLeave(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id);
 
 private:
-#if !CONFIG2_GLES
 	CProfiler2& m_Profiler;
-#endif
-
-	std::unique_ptr<CProfiler2GPUARB> m_ProfilerARB;
+	std::unique_ptr<CProfiler2GPUImpl> m_Impl;
 };

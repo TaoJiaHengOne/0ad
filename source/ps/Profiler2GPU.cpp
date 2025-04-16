@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,35 +24,29 @@
 
 #include "Profiler2GPU.h"
 
-#include "lib/ogl.h"
 #include "ps/ConfigDB.h"
 #include "ps/Profiler2.h"
 #include "ps/VideoMode.h"
 #include "renderer/backend/IDevice.h"
+#include "renderer/Renderer.h"
 
 #include <deque>
 #include <stack>
 #include <vector>
 
-#if !CONFIG2_GLES
-
-/*
- * GL_ARB_timer_query supports sync and async queries for absolute GPU
- * timestamps, which lets us time regions of code relative to the CPU.
- * At the start of a frame, we record the CPU time and sync GPU timestamp,
- * giving the time-vs-timestamp offset.
+/**
  * At each enter/leave-region event, we do an async GPU timestamp query.
  * When all the queries for a frame have their results available,
- * we convert their GPU timestamps into CPU times and record the data.
+ * we convert their GPU timestamps into durations and record the data.
  */
-class CProfiler2GPUARB
+class CProfiler2GPUImpl
 {
-	NONCOPYABLE(CProfiler2GPUARB);
+	NONCOPYABLE(CProfiler2GPUImpl);
 
 	struct SEvent
 	{
 		const char* id;
-		GLuint query;
+		uint32_t queryHandle;
 		bool isEnter; // true if entering region; false if leaving
 	};
 
@@ -60,8 +54,7 @@ class CProfiler2GPUARB
 	{
 		u32 num;
 
-		double syncTimeStart; // CPU time at start of maybe this frame or a recent one
-		GLint64 syncTimestampStart; // GL timestamp corresponding to timeStart
+		double syncTimeStart; // CPU time at start of this frame.
 
 		std::vector<SEvent> events;
 	};
@@ -69,45 +62,35 @@ class CProfiler2GPUARB
 	std::deque<SFrame> m_Frames;
 
 public:
-	static bool IsSupported()
+	CProfiler2GPUImpl(CProfiler2& profiler)
+		: m_Profiler(profiler), m_Storage(*new CProfiler2::ThreadStorage(profiler, "gpu"))
 	{
-		if (g_VideoMode.GetBackendDevice()->GetBackend() != Renderer::Backend::Backend::GL)
-			return false;
-		return ogl_HaveExtension("GL_ARB_timer_query");
-	}
-
-	CProfiler2GPUARB(CProfiler2& profiler)
-		: m_Profiler(profiler), m_Storage(*new CProfiler2::ThreadStorage(profiler, "gpu_arb"))
-	{
-		// TODO: maybe we should check QUERY_COUNTER_BITS to ensure it's
-		// high enough (but apparently it might trigger GL errors on ATI)
-
 		m_Storage.RecordSyncMarker(m_Profiler.GetTime());
 		m_Storage.Record(CProfiler2::ITEM_EVENT, m_Profiler.GetTime(), "thread start");
 
 		m_Profiler.AddThreadStorage(&m_Storage);
 	}
 
-	~CProfiler2GPUARB()
+	~CProfiler2GPUImpl()
 	{
-		// Pop frames to return queries to the free list
 		while (!m_Frames.empty())
 			PopFrontFrame();
 
-		if (!m_FreeQueries.empty())
-			glDeleteQueriesARB(m_FreeQueries.size(), &m_FreeQueries[0]);
-		ogl_WarnIfError();
+		for (const uint32_t queryHandle : m_FreeQueries)
+			g_VideoMode.GetBackendDevice()->FreeQuery(queryHandle);
+		m_FreeQueries.clear();
 
 		m_Profiler.RemoveThreadStorage(&m_Storage);
 	}
 
-	void FrameStart()
+	void FrameStart(Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 	{
 		ProcessFrames();
 
 		SFrame frame;
 		frame.num = m_Profiler.GetFrameNumber();
 
+		// GL backend:
 		// On (at least) some NVIDIA Windows drivers, when GPU-bound, or when
 		// vsync enabled and not CPU-bound, the first glGet* call at the start
 		// of a frame appears to trigger a wait (to stop the GPU getting too
@@ -116,90 +99,81 @@ public:
 		// reported results. So we'll only do it fairly rarely, and for most
 		// frames we'll just assume the clocks don't drift much
 
-		const double RESYNC_PERIOD = 1.0; // seconds
+		// Timestamps might shift and overflow for all backends. So for
+		// simplicity we don't synchronize the frame start on CPU and GPU. As
+		// we only need durations. We just roughly assume that the first
+		// timestamp on GPU matches the CPU frame start. For real timestamps
+		// it's better to use GPU Trace instruments.
 
-		double now = m_Profiler.GetTime();
-
-		if (m_Frames.empty() || now > m_Frames.back().syncTimeStart + RESYNC_PERIOD)
-		{
-			PROFILE2("profile timestamp resync");
-
-			glGetInteger64v(GL_TIMESTAMP, &frame.syncTimestampStart);
-			ogl_WarnIfError();
-
-			frame.syncTimeStart = m_Profiler.GetTime();
-			// (Have to do GetTime again after GL_TIMESTAMP, because GL_TIMESTAMP
-			// might wait a while before returning its now-current timestamp)
-		}
-		else
-		{
-			// Reuse the previous frame's sync data
-			frame.syncTimeStart = m_Frames[m_Frames.size()-1].syncTimeStart;
-			frame.syncTimestampStart = m_Frames[m_Frames.size()-1].syncTimestampStart;
-		}
-
+		frame.syncTimeStart = m_Profiler.GetTime();
 		m_Frames.push_back(frame);
 
-		RegionEnter("frame");
+		RegionEnter(deviceCommandContext, "frame");
 	}
 
-	void FrameEnd()
+	void FrameEnd(Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 	{
-		RegionLeave("frame");
+		RegionLeave(deviceCommandContext, "frame");
 	}
 
-	void RecordRegion(const char* id, bool isEnter)
+	void RecordRegion(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id, bool isEnter)
 	{
 		ENSURE(!m_Frames.empty());
 		SFrame& frame = m_Frames.back();
 
 		SEvent event;
 		event.id = id;
-		event.query = NewQuery();
+		event.queryHandle = NewQuery();
 		event.isEnter = isEnter;
 
-		glQueryCounter(event.query, GL_TIMESTAMP);
-		ogl_WarnIfError();
+		deviceCommandContext->InsertTimestampQuery(event.queryHandle, isEnter);
 
 		frame.events.push_back(event);
 	}
 
-	void RegionEnter(const char* id)
+	void RegionEnter(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id)
 	{
-		RecordRegion(id, true);
+		RecordRegion(deviceCommandContext, id, true);
 	}
 
-	void RegionLeave(const char* id)
+	void RegionLeave(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id)
 	{
-		RecordRegion(id, false);
+		RecordRegion(deviceCommandContext, id, false);
 	}
 
 private:
 
 	void ProcessFrames()
 	{
+		Renderer::Backend::IDevice* device{g_VideoMode.GetBackendDevice()};
 		while (!m_Frames.empty())
 		{
 			SFrame& frame = m_Frames.front();
 
-			// Queries become available in order so we only need to check the last one
-			GLint available = 0;
-			glGetQueryObjectivARB(frame.events.back().query, GL_QUERY_RESULT_AVAILABLE, &available);
-			ogl_WarnIfError();
-			if (!available)
+			// We assume queries become available in order so we only need to
+			// check the last one.
+			if (!device->IsQueryResultAvailable(frame.events.back().queryHandle))
 				break;
 
-			// The frame's queries are now available, so retrieve and record all their results:
+			// We use the first event GPU timestamp as a frame start.
+			const uint64_t firstFrameTimestamp{!frame.events.empty()
+				? device->GetQueryResult(frame.events[0].queryHandle) : 0u};
 
+			const double timestampMultiplier{
+				device->GetCapabilities().timestampMultiplier};
+
+			std::vector<std::pair<int, uint64_t>> stack;
+
+			// The frame's queries are now available, so retrieve and record all their results:
 			for (size_t i = 0; i < frame.events.size(); ++i)
 			{
-				GLuint64 queryTimestamp = 0;
-				glGetQueryObjectui64v(frame.events[i].query, GL_QUERY_RESULT, &queryTimestamp);
-					// (use the non-suffixed function here, as defined by GL_ARB_timer_query)
-				ogl_WarnIfError();
+				const uint64_t queryTimestamp{
+					i == 0 ? firstFrameTimestamp : device->GetQueryResult(frame.events[i].queryHandle)};
+				ENSURE(queryTimestamp >= firstFrameTimestamp);
 
 				// Convert to absolute CPU-clock time
-				double t = frame.syncTimeStart + (double)(queryTimestamp - frame.syncTimestampStart) / 1e9;
+				const double t{
+					frame.syncTimeStart + static_cast<double>(queryTimestamp - firstFrameTimestamp) * timestampMultiplier};
 
 				// Record a frame-start for syncing
 				if (i == 0)
@@ -224,83 +198,60 @@ private:
 		ENSURE(!m_Frames.empty());
 		SFrame& frame = m_Frames.front();
 		for (size_t i = 0; i < frame.events.size(); ++i)
-			m_FreeQueries.push_back(frame.events[i].query);
+			m_FreeQueries.push_back(frame.events[i].queryHandle);
 		m_Frames.pop_front();
 	}
 
-	// Returns a new GL query object (or a recycled old one)
-	GLuint NewQuery()
+	// Returns a new backend query handle (or a recycled old one).
+	uint32_t NewQuery()
 	{
 		if (m_FreeQueries.empty())
-		{
-			// Generate a batch of new queries
-			m_FreeQueries.resize(8);
-			glGenQueriesARB(m_FreeQueries.size(), &m_FreeQueries[0]);
-			ogl_WarnIfError();
-		}
+			return g_VideoMode.GetBackendDevice()->AllocateQuery();
 
-		GLuint query = m_FreeQueries.back();
+		const uint32_t queryHandle{m_FreeQueries.back()};
 		m_FreeQueries.pop_back();
-		return query;
+		return queryHandle;
 	}
 
 	CProfiler2& m_Profiler;
 	CProfiler2::ThreadStorage& m_Storage;
 
-	std::vector<GLuint> m_FreeQueries; // query objects that are allocated but not currently in used
+	std::vector<uint32_t> m_FreeQueries; // query objects that are allocated but not currently in used
 };
 
 CProfiler2GPU::CProfiler2GPU(CProfiler2& profiler) :
 	m_Profiler(profiler)
 {
-	if (g_ConfigDB.Get("profiler2.gpu.arb.enable", false) && CProfiler2GPUARB::IsSupported())
+	if (g_ConfigDB.Get("profiler2.gpu.enable", false) && g_VideoMode.GetBackendDevice()->GetCapabilities().timestamps)
 	{
-		m_ProfilerARB = std::make_unique<CProfiler2GPUARB>(m_Profiler);
+		m_Impl = std::make_unique<CProfiler2GPUImpl>(m_Profiler);
 	}
 }
 
 CProfiler2GPU::~CProfiler2GPU() = default;
 
-void CProfiler2GPU::FrameStart()
+void CProfiler2GPU::FrameStart(Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
-	if (m_ProfilerARB)
-		m_ProfilerARB->FrameStart();
+	if (m_Impl)
+		m_Impl->FrameStart(deviceCommandContext);
 }
 
-void CProfiler2GPU::FrameEnd()
+void CProfiler2GPU::FrameEnd(Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
-	if (m_ProfilerARB)
-		m_ProfilerARB->FrameEnd();
+	if (m_Impl)
+		m_Impl->FrameEnd(deviceCommandContext);
 }
 
-void CProfiler2GPU::RegionEnter(const char* id)
+void CProfiler2GPU::RegionEnter(
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id)
 {
-	if (m_ProfilerARB)
-		m_ProfilerARB->RegionEnter(id);
+	if (m_Impl)
+		m_Impl->RegionEnter(deviceCommandContext, id);
 }
 
-void CProfiler2GPU::RegionLeave(const char* id)
+void CProfiler2GPU::RegionLeave(
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id)
 {
-	if (m_ProfilerARB)
-		m_ProfilerARB->RegionLeave(id);
+	if (m_Impl)
+		m_Impl->RegionLeave(deviceCommandContext, id);
 }
-
-#else // CONFIG2_GLES
-
-class CProfiler2GPUARB
-{
-public:
-};
-
-CProfiler2GPU::CProfiler2GPU(CProfiler2& UNUSED(profiler))
-{
-}
-
-CProfiler2GPU::~CProfiler2GPU() = default;
-
-void CProfiler2GPU::FrameStart() { }
-void CProfiler2GPU::FrameEnd() { }
-void CProfiler2GPU::RegionEnter(const char* UNUSED(id)) { }
-void CProfiler2GPU::RegionLeave(const char* UNUSED(id)) { }
-
-#endif

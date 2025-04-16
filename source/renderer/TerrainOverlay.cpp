@@ -117,7 +117,7 @@ void ITerrainOverlay::RenderOverlaysBeforeWater(
 	if (g_TerrainOverlayList.empty())
 		return;
 
-	PROFILE3_GPU("terrain overlays (before)");
+	PROFILE3("terrain overlays (before)");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render terrain overlays before water");
 
 	for (size_t i = 0; i < g_TerrainOverlayList.size(); ++i)
@@ -130,7 +130,7 @@ void ITerrainOverlay::RenderOverlaysAfterWater(
 	if (g_TerrainOverlayList.empty())
 		return;
 
-	PROFILE3_GPU("terrain overlays (after)");
+	PROFILE3("terrain overlays (after)");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render terrain overlays after water");
 
 	for (size_t i = 0; i < g_TerrainOverlayList.size(); ++i)

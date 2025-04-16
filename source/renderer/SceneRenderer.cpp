@@ -296,7 +296,7 @@ void CSceneRenderer::RenderShadowMap(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context)
 {
-	PROFILE3_GPU("shadow map");
+	PROFILE3_GPU(deviceCommandContext, "shadow map");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render shadow map");
 
 	CShaderDefines shadowsContext = context;
@@ -337,7 +337,7 @@ void CSceneRenderer::RenderPatches(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context, int cullGroup)
 {
-	PROFILE3_GPU("patches");
+	PROFILE3("patches");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render patches");
 
 	// Switch on wireframe if we need it.
@@ -367,7 +367,7 @@ void CSceneRenderer::RenderModels(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context, int cullGroup)
 {
-	PROFILE3_GPU("models");
+	PROFILE3("models");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render models");
 
 	int flags = 0;
@@ -390,7 +390,7 @@ void CSceneRenderer::RenderTransparentModels(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context, int cullGroup, ETransparentMode transparentMode)
 {
-	PROFILE3_GPU("transparent models");
+	PROFILE3("transparent models");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render transparent models");
 
 	int flags = 0;
@@ -545,7 +545,7 @@ void CSceneRenderer::RenderReflections(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context, const CBoundingBoxAligned& scissor)
 {
-	PROFILE3_GPU("water reflections");
+	PROFILE3_GPU(deviceCommandContext, "water reflections");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render water reflections");
 
 	WaterManager& wm = m->waterManager;
@@ -622,7 +622,7 @@ void CSceneRenderer::RenderRefractions(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context, const CBoundingBoxAligned &scissor)
 {
-	PROFILE3_GPU("water refractions");
+	PROFILE3_GPU(deviceCommandContext, "water refractions");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render water refractions");
 
 	WaterManager& wm = m->waterManager;
@@ -699,7 +699,7 @@ void CSceneRenderer::RenderSilhouettes(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context)
 {
-	PROFILE3_GPU("silhouettes");
+	PROFILE3("silhouettes");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render silhouettes");
 
 	CShaderDefines contextOccluder = context;
@@ -752,7 +752,7 @@ void CSceneRenderer::RenderParticles(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	int cullGroup)
 {
-	PROFILE3_GPU("particles");
+	PROFILE3("particles");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render particles");
 
 	m->particleRenderer.RenderParticles(
@@ -770,7 +770,7 @@ void CSceneRenderer::PrepareSubmissions(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CBoundingBoxAligned& waterScissor)
 {
-	PROFILE3("prepare submissions");
+	PROFILE3_GPU(deviceCommandContext, "prepare submissions");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Prepare submissions");
 
 	m->skyManager.LoadAndUploadSkyTexturesIfNeeded(deviceCommandContext);
@@ -824,7 +824,7 @@ void CSceneRenderer::PrepareSubmissions(
 		{
 			m->waterManager.UpdateQuality();
 
-			PROFILE3_GPU("water scissor");
+			PROFILE3_GPU(deviceCommandContext, "water scissor");
 			if (g_RenderingOptions.GetWaterReflection())
 				RenderReflections(deviceCommandContext, context, waterScissor);
 
@@ -936,7 +936,7 @@ void CSceneRenderer::DisplayFrustum()
 // Text overlay rendering
 void CSceneRenderer::RenderTextOverlays(CCanvas2D& canvas)
 {
-	PROFILE3_GPU("text overlays");
+	PROFILE3("text overlays");
 
 	if (m_DisplayTerrainPriorities)
 		m->terrainRenderer.RenderPriorities(canvas, CULL_DEFAULT);

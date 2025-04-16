@@ -693,6 +693,7 @@ void CPostprocManager::ApplyPostproc(
 	if (!hasEffects && !hasAA && !hasSharp)
 		return;
 
+	PROFILE3_GPU(deviceCommandContext, "Render postproc");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render postproc");
 
 	if (hasEffects)

@@ -195,7 +195,7 @@ void CConsole::Render(CCanvas2D& canvas)
 	if (!(m_Visible || m_Toggle))
 		return;
 
-	PROFILE3_GPU("console");
+	PROFILE3("console");
 
 	DrawWindow(canvas);
 

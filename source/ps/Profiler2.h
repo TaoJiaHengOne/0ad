@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -86,6 +86,14 @@
 #include <thread>
 #include <vector>
 
+namespace Renderer
+{
+namespace Backend
+{
+class IDeviceCommandContext;
+}
+}
+
 struct mg_context;
 
 // Note: Lots of functions are defined inline, to hypothetically
@@ -95,7 +103,7 @@ class CProfiler2GPU;
 
 class CProfiler2
 {
-	friend class CProfiler2GPUARB;
+	friend class CProfiler2GPUImpl;
 public:
 	// Items stored in the buffers:
 
@@ -327,10 +335,10 @@ public:
 		va_end(argp);
 	}
 
-	void RecordGPUFrameStart();
-	void RecordGPUFrameEnd();
-	void RecordGPURegionEnter(const char* id);
-	void RecordGPURegionLeave(const char* id);
+	void RecordGPUFrameStart(Renderer::Backend::IDeviceCommandContext* deviceCommandContext);
+	void RecordGPUFrameEnd(Renderer::Backend::IDeviceCommandContext* deviceCommandContext);
+	void RecordGPURegionEnter(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id);
+	void RecordGPURegionLeave(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id);
 
 	/**
 	 * Call in any thread to produce a JSON representation of the general
@@ -418,15 +426,17 @@ protected:
 class CProfile2GPURegion
 {
 public:
-	CProfile2GPURegion(const char* name) : m_Name(name)
+	CProfile2GPURegion(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* name)
+		: m_DeviceCommandContext(deviceCommandContext), m_Name(name)
 	{
-		g_Profiler2.RecordGPURegionEnter(m_Name);
+		g_Profiler2.RecordGPURegionEnter(m_DeviceCommandContext, m_Name);
 	}
 	~CProfile2GPURegion()
 	{
-		g_Profiler2.RecordGPURegionLeave(m_Name);
+		g_Profiler2.RecordGPURegionLeave(m_DeviceCommandContext, m_Name);
 	}
 private:
+	Renderer::Backend::IDeviceCommandContext* m_DeviceCommandContext;
 	const char* m_Name;
 };
 
@@ -439,7 +449,7 @@ private:
  */
 #define PROFILE2(region) CProfile2Region profile2__(region)
 
-#define PROFILE2_GPU(region) CProfile2GPURegion profile2gpu__(region)
+#define PROFILE2_GPU(deviceCommandContext, region) CProfile2GPURegion profile2gpu__(deviceCommandContext, region)
 
 /**
  * Record the named event at the current time.

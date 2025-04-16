@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -481,7 +481,7 @@ void OverlayRenderer::Upload(
 void OverlayRenderer::RenderOverlaysBeforeWater(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
-	PROFILE3_GPU("overlays (before)");
+	PROFILE3("overlays (before)");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render overlays before water");
 
 	for (SOverlayLine* line : m->lines)
@@ -496,7 +496,7 @@ void OverlayRenderer::RenderOverlaysBeforeWater(
 void OverlayRenderer::RenderOverlaysAfterWater(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
-	PROFILE3_GPU("overlays (after)");
+	PROFILE3("overlays (after)");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render overlays after water");
 
 	RenderTexturedOverlayLines(deviceCommandContext);
@@ -656,7 +656,7 @@ void OverlayRenderer::RenderForegroundOverlays(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CCamera& viewCamera)
 {
-	PROFILE3_GPU("overlays (fg)");
+	PROFILE3("overlays (fg)");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render foreground overlays");
 
 	const CVector3D right = -viewCamera.GetOrientation().GetLeft();
@@ -791,7 +791,7 @@ void OverlayRendererInternals::GenerateSphere()
 void OverlayRenderer::RenderSphereOverlays(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
-	PROFILE3_GPU("overlays (spheres)");
+	PROFILE3("overlays (spheres)");
 
 	if (m->spheres.empty() || m->shaderOverlaySolid.technique)
 		return;

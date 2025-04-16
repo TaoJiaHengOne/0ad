@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -169,7 +169,7 @@ void CLogger::WriteWarning(const char* message)
 
 void CLogger::Render(CCanvas2D& canvas)
 {
-	PROFILE3_GPU("logger");
+	PROFILE3("logger");
 
 	CleanupRenderQueue();
 

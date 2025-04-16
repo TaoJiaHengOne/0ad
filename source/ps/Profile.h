@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -165,6 +165,6 @@ public:
 #define PROFILE3(name) PROFILE(name); PROFILE2(name)
 
 // Also do GPU
-#define PROFILE3_GPU(name) PROFILE(name); PROFILE2(name); PROFILE2_GPU(name)
+#define PROFILE3_GPU(deviceCommandContext, name) PROFILE(name); PROFILE2(name); PROFILE2_GPU(deviceCommandContext, name)
 
 #endif // INCLUDED_PROFILE

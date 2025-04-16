@@ -472,7 +472,7 @@ void CRenderer::RenderFrameImpl(const bool renderGUI, const bool renderLogger)
 {
 	PROFILE3("render");
 
-	g_Profiler2.RecordGPUFrameStart();
+	g_Profiler2.RecordGPUFrameStart(m->deviceCommandContext.get());
 
 	g_TexMan.UploadResourcesIfNeeded(m->deviceCommandContext.get());
 
@@ -605,7 +605,7 @@ void CRenderer::RenderFrameImpl(const bool renderGUI, const bool renderLogger)
 	PROFILE2_ATTR("blend splats: %zu", stats.m_BlendSplats);
 	PROFILE2_ATTR("particles: %zu", stats.m_Particles);
 
-	g_Profiler2.RecordGPUFrameEnd();
+	g_Profiler2.RecordGPUFrameEnd(m->deviceCommandContext.get());
 }
 
 void CRenderer::RenderFrame2D(const bool renderGUI, const bool renderLogger)

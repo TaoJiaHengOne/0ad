@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -256,28 +256,28 @@ void CProfiler2::Shutdown()
 	m_Initialised = false;
 }
 
-void CProfiler2::RecordGPUFrameStart()
+void CProfiler2::RecordGPUFrameStart(Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
 	if (m_GPU)
-		m_GPU->FrameStart();
+		m_GPU->FrameStart(deviceCommandContext);
 }
 
-void CProfiler2::RecordGPUFrameEnd()
+void CProfiler2::RecordGPUFrameEnd(Renderer::Backend::IDeviceCommandContext* deviceCommandContext)
 {
 	if (m_GPU)
-		m_GPU->FrameEnd();
+		m_GPU->FrameEnd(deviceCommandContext);
 }
 
-void CProfiler2::RecordGPURegionEnter(const char* id)
+void CProfiler2::RecordGPURegionEnter(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id)
 {
 	if (m_GPU)
-		m_GPU->RegionEnter(id);
+		m_GPU->RegionEnter(deviceCommandContext, id);
 }
 
-void CProfiler2::RecordGPURegionLeave(const char* id)
+void CProfiler2::RecordGPURegionLeave(Renderer::Backend::IDeviceCommandContext* deviceCommandContext, const char* id)
 {
 	if (m_GPU)
-		m_GPU->RegionLeave(id);
+		m_GPU->RegionLeave(deviceCommandContext, id);
 }
 
 void CProfiler2::RegisterCurrentThread(const std::string& name)

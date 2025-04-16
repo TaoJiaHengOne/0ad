@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -443,7 +443,7 @@ bool TerrainRenderer::RenderFancyWater(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	const CShaderDefines& context, int cullGroup, ShadowMap* shadow)
 {
-	PROFILE3_GPU("fancy water");
+	PROFILE3("fancy water");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render fancy water");
 
 	CSceneRenderer& sceneRenderer = g_Renderer.GetSceneRenderer();
@@ -660,7 +660,7 @@ void TerrainRenderer::RenderSimpleWater(
 	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
 	int cullGroup)
 {
-	PROFILE3_GPU("simple water");
+	PROFILE3("simple water");
 	GPU_SCOPED_LABEL(deviceCommandContext, "Render Simple Water");
 
 	const WaterManager& waterManager = g_Renderer.GetSceneRenderer().GetWaterManager();

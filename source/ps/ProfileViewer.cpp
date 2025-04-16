@@ -154,7 +154,7 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 		return;
 	}
 
-	PROFILE3_GPU("profile viewer");
+	PROFILE3("profile viewer");
 
 	AbstractProfileTable* table = m->path[m->path.size() - 1];
 	const std::vector<ProfileColumn>& columns = table->GetColumns();
