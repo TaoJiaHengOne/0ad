@@ -61,6 +61,8 @@ public:
 		uint32_t maxTextureSize;
 		bool instancing;
 		bool storage;
+		bool timestamps;
+		double timestampMultiplier;
 	};
 
 	virtual ~IDevice() {}
@@ -176,6 +178,32 @@ public:
 	 */
 	virtual Format GetPreferredDepthStencilFormat(
 		const uint32_t usage, const bool depth, const bool stencil) const = 0;
+
+	virtual uint32_t AllocateQuery() = 0;
+
+	virtual void FreeQuery(const uint32_t handle) = 0;
+
+	/**
+	 * @see GetQueryResult
+	 *
+	 * It must be called only if the query was submitted via
+	 * IDeviceCommandContext::Flush.
+	 *
+	 * @param handle Must be a valid handle of a query.
+	 *
+	 * @return True if a result for the query is available.
+	 */
+	virtual bool IsQueryResultAvailable(const uint32_t handle) const = 0;
+
+	/**
+	 * After a call of the function the query result becomes invalid.
+	 *
+	 * @param handle Must be a valid handle of a query.
+	 *
+	 * @return A result for the query. The result is undefined if the query isn't
+	 * ready.
+	 */
+	virtual uint64_t GetQueryResult(const uint32_t handle) = 0;
 
 	virtual const Capabilities& GetCapabilities() const = 0;
 };

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -221,6 +221,17 @@ public:
 		const float valueZ, const float valueW) = 0;
 	virtual void SetUniform(
 		const int32_t bindingSlot, PS::span<const float> values) = 0;
+
+	/**
+	 * Insert a timestamp query which can be later requested via IDevice.
+	 * @see IDevice::IsQueryResultAvailable
+	 * It can be used only outside of a framebuffer pass. The query must
+	 * not be used till Flush.
+	 *
+	 * @param handle Must be a valid handle to a query.
+	 * @param isScopeBegin True if it's a scope start.
+	 */
+	virtual void InsertTimestampQuery(const uint32_t handle, const bool isScopeBegin) = 0;
 
 	virtual void BeginScopedLabel(const char* name) = 0;
 	virtual void EndScopedLabel() = 0;
