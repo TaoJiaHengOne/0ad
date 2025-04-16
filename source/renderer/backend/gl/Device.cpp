@@ -435,6 +435,7 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 #if CONFIG2_GLES
 	capabilities.instancing = false;
 	capabilities.storage = false;
+	capabilities.timestamps = false;
 #else
 	capabilities.instancing =
 		!device->m_ARB &&
@@ -458,6 +459,9 @@ std::unique_ptr<IDevice> CDevice::Create(SDL_Window* window, const bool arb)
 		&& ogl_HaveExtension("GL_ARB_shader_storage_buffer_object")
 		&& ogl_HaveExtension("GL_ARB_half_float_vertex")
 		&& ogl_HaveExtension("GL_ARB_program_interface_query");
+	capabilities.timestamps = !device->m_ARB && ogl_HaveExtension("GL_ARB_timer_query");
+	if (capabilities.timestamps)
+		capabilities.timestampMultiplier = 1.0 / 1e9;
 #endif
 
 	return device;
@@ -467,6 +471,15 @@ CDevice::CDevice() = default;
 
 CDevice::~CDevice()
 {
+#if !CONFIG2_GLES
+	for (Query& query : m_Queries)
+	{
+		ENSURE(!query.occupied);
+		glDeleteQueriesARB(1, &query.query);
+	}
+	ogl_WarnIfError();
+#endif
+
 	if (m_Context)
 		SDL_GL_DeleteContext(m_Context);
 }
@@ -1079,6 +1092,69 @@ Format CDevice::GetPreferredDepthStencilFormat(
 #endif
 	else
 		return Format::D24_UNORM;
+}
+
+uint32_t CDevice::AllocateQuery()
+{
+	auto it = std::find_if(
+		m_Queries.begin(), m_Queries.end(), [](const CDevice::Query& query)
+		{
+			return !query.occupied;
+		});
+	if (it == m_Queries.end())
+	{
+		m_Queries.emplace_back();
+#if !CONFIG2_GLES
+		glGenQueriesARB(1, &m_Queries.back().query);
+		ogl_WarnIfError();
+#endif
+		it = prev(m_Queries.end());
+	}
+	it->occupied = true;
+	return std::distance(m_Queries.begin(), it);
+}
+
+void CDevice::FreeQuery(const uint32_t handle)
+{
+	ENSURE(handle < m_Queries.size());
+	ENSURE(m_Queries[handle].occupied);
+	m_Queries[handle].occupied = false;
+}
+
+bool CDevice::IsQueryResultAvailable(const uint32_t handle) const
+{
+	ENSURE(handle < m_Queries.size());
+
+	GLint available{};
+#if !CONFIG2_GLES
+	glGetQueryObjectivARB(m_Queries[handle].query, GL_QUERY_RESULT_AVAILABLE, &available);
+	ogl_WarnIfError();
+#endif
+	return available;
+}
+
+uint64_t CDevice::GetQueryResult(const uint32_t handle)
+{
+	ENSURE(handle < m_Queries.size());
+	// TODO: maybe we should check QUERY_COUNTER_BITS to ensure it's
+	// high enough (but apparently it might trigger GL errors on ATI)
+
+	GLuint64 queryTimestamp{};
+#if !CONFIG2_GLES
+	// Use the non-suffixed function here, as defined by GL_ARB_timer_query.
+	glGetQueryObjectui64v(m_Queries[handle].query, GL_QUERY_RESULT, &queryTimestamp);
+	ogl_WarnIfError();
+#endif
+	return queryTimestamp;
+}
+
+void CDevice::InsertTimestampQuery(const uint32_t handle)
+{
+	ENSURE(handle < m_Queries.size());
+#if !CONFIG2_GLES
+	glQueryCounter(m_Queries[handle].query, GL_TIMESTAMP);
+	ogl_WarnIfError();
+#endif
 }
 
 std::unique_ptr<IDevice> CreateDevice(SDL_Window* window, const bool arb)

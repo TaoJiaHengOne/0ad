@@ -72,6 +72,8 @@ namespace Vulkan
 namespace
 {
 
+constexpr size_t QUERY_POOL_SIZE{NUMBER_OF_FRAMES_IN_FLIGHT * 1024};
+
 std::vector<const char*> GetRequiredSDLExtensions(SDL_Window* window)
 {
 	if (!window)
@@ -597,6 +599,14 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 	capabilities.maxAnisotropy = choosenDevice.properties.limits.maxSamplerAnisotropy;
 	capabilities.maxTextureSize =
 		choosenDevice.properties.limits.maxImageDimension2D;
+	capabilities.timestamps =
+		choosenDevice.properties.limits.timestampComputeAndGraphics
+		&& choosenDevice.properties.limits.timestampPeriod > 0;
+	if (capabilities.timestamps)
+	{
+		capabilities.timestampMultiplier =
+			device->m_ChoosenDevice.properties.limits.timestampPeriod / 1e9;
+	}
 
 	device->m_RenderPassManager =
 		std::make_unique<CRenderPassManager>(device.get());
@@ -634,6 +644,19 @@ std::unique_ptr<CDevice> CDevice::Create(SDL_Window* window)
 
 	device->m_Extensions = choosenDevice.extensions;
 
+	if (device->m_Capabilities.timestamps)
+	{
+		VkQueryPoolCreateInfo queryPoolInfo{};
+		queryPoolInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+		queryPoolInfo.queryType = VK_QUERY_TYPE_TIMESTAMP;
+		queryPoolInfo.queryCount = QUERY_POOL_SIZE;
+
+		ENSURE_VK_SUCCESS(vkCreateQueryPool(
+			device->GetVkDevice(), &queryPoolInfo, nullptr, &device->m_QueryPool));
+
+		device->m_Queries.resize(QUERY_POOL_SIZE);
+	}
+
 	return device;
 }
 
@@ -650,6 +673,9 @@ CDevice::~CDevice()
 	m_BackbufferReadbackTexture.reset();
 
 	m_SubmitScheduler.reset();
+
+	if (m_QueryPool)
+		vkDestroyQueryPool(GetVkDevice(), m_QueryPool, nullptr);
 
 	ProcessDeviceObjectToDestroyQueue(true);
 
@@ -895,6 +921,52 @@ Format CDevice::GetPreferredDepthStencilFormat(
 	return format;
 }
 
+uint32_t CDevice::AllocateQuery()
+{
+	ENSURE(m_Capabilities.timestamps);
+	auto it = std::find_if(
+		m_Queries.begin(), m_Queries.end(), [](const CDevice::Query& query)
+		{
+			return !query.occupied;
+		});
+	ENSURE(it != m_Queries.end());
+	it->occupied = true;
+	return std::distance(m_Queries.begin(), it);
+}
+
+void CDevice::FreeQuery(const uint32_t handle)
+{
+	ENSURE(handle < m_Queries.size());
+	ENSURE(m_Queries[handle].occupied);
+	m_Queries[handle].occupied = false;
+}
+
+bool CDevice::IsQueryResultAvailable(const uint32_t handle) const
+{
+	ENSURE(handle < m_Queries.size());
+	const Query& query{m_Queries[handle]};
+	ENSURE(query.occupied);
+	ENSURE(query.submitted);
+	if (query.lastUsageFrameID + NUMBER_OF_FRAMES_IN_FLIGHT > m_FrameID)
+		return false;
+	uint64_t data{};
+	return vkGetQueryPoolResults(
+		GetVkDevice(), m_QueryPool, handle, 1, sizeof(data), &data, 0, VK_QUERY_RESULT_64_BIT) != VK_NOT_READY;
+}
+
+uint64_t CDevice::GetQueryResult(const uint32_t handle)
+{
+	ENSURE(handle < m_Queries.size());
+	Query& query{m_Queries[handle]};
+	ENSURE(query.occupied);
+	ENSURE(query.submitted);
+	uint64_t data{};
+	ENSURE_VK_SUCCESS(vkGetQueryPoolResults(
+		GetVkDevice(), m_QueryPool, handle, 1, sizeof(data), &data, 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT));
+	query.submitted = false;
+	return data;
+}
+
 bool CDevice::IsFormatSupportedForUsage(const Format format, const uint32_t usage) const
 {
 	VkFormatProperties formatProperties{};
@@ -912,6 +984,17 @@ bool CDevice::IsFormatSupportedForUsage(const Format format, const uint32_t usag
 	if (usage & ITexture::Usage::TRANSFER_DST)
 		expectedFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 	return (formatProperties.optimalTilingFeatures & expectedFeatures) == expectedFeatures;
+}
+
+void CDevice::InsertTimestampQuery(VkCommandBuffer commandBuffer, const uint32_t handle, const bool isScopeBegin)
+{
+	ENSURE(handle < m_Queries.size());
+	vkCmdResetQueryPool(
+		commandBuffer, m_QueryPool, handle, 1);
+	vkCmdWriteTimestamp(
+		commandBuffer, isScopeBegin ? VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT : VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, m_QueryPool, handle);
+	m_Queries[handle].lastUsageFrameID = m_FrameID;
+	m_Queries[handle].submitted = true;
 }
 
 void CDevice::ScheduleObjectToDestroy(

@@ -164,6 +164,25 @@ Format CDevice::GetPreferredDepthStencilFormat(
 	return Format::D24_UNORM_S8_UINT;
 }
 
+uint32_t CDevice::AllocateQuery()
+{
+	return 0;
+}
+
+void CDevice::FreeQuery(const uint32_t UNUSED(handle))
+{
+}
+
+bool CDevice::IsQueryResultAvailable(const uint32_t UNUSED(handle)) const
+{
+	return false;
+}
+
+uint64_t CDevice::GetQueryResult(const uint32_t UNUSED(handle))
+{
+	return 0;
+}
+
 std::unique_ptr<IDevice> CreateDevice(SDL_Window* UNUSED(window))
 {
 	return std::make_unique<Dummy::CDevice>();

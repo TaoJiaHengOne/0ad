@@ -1011,6 +1011,12 @@ void CDeviceCommandContext::SetUniform(
 	m_ShaderProgram->SetUniform(bindingSlot, values);
 }
 
+void CDeviceCommandContext::InsertTimestampQuery(const uint32_t handle, const bool isScopeBegin)
+{
+	ENSURE(!m_InsideFramebufferPass);
+	m_Device->InsertTimestampQuery(m_CommandContext->GetCommandBuffer(), handle, isScopeBegin);
+}
+
 void CDeviceCommandContext::BeginScopedLabel(const char* name)
 {
 	if (!m_DebugScopedLabels)

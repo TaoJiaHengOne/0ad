@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -89,6 +89,10 @@ void CDeviceCommandContext::UploadBufferRegion(
 
 void CDeviceCommandContext::UploadBufferRegion(
 	IBuffer*, const uint32_t, const uint32_t, const UploadBufferFunction&)
+{
+}
+
+void CDeviceCommandContext::InsertTimestampQuery(const uint32_t, const bool)
 {
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -128,11 +128,22 @@ public:
 	Format GetPreferredDepthStencilFormat(
 		const uint32_t usage, const bool depth, const bool stencil) const override;
 
+	bool IsQueryResultAvailable(const uint32_t handle) const override;
+
+	uint32_t AllocateQuery() override;
+
+	void FreeQuery(const uint32_t handle) override;
+
+	uint64_t GetQueryResult(const uint32_t handle) override;
+
 	const Capabilities& GetCapabilities() const override { return m_Capabilities; }
 
-	VkDevice GetVkDevice() { return m_Device; }
+	VkDevice GetVkDevice() const { return m_Device; }
 
 	VmaAllocator GetVMAAllocator() { return m_VMAAllocator; }
+
+	void InsertTimestampQuery(
+		VkCommandBuffer commandBuffer, const uint32_t handle, const bool isScopeBegin);
 
 	void ScheduleObjectToDestroy(
 		VkObjectType type, const void* handle, const VmaAllocation allocation)
@@ -203,6 +214,15 @@ private:
 	VmaAllocator m_VMAAllocator = VK_NULL_HANDLE;
 	VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 	uint32_t m_GraphicsQueueFamilyIndex = std::numeric_limits<uint32_t>::max();
+
+	VkQueryPool m_QueryPool{VK_NULL_HANDLE};
+	struct Query
+	{
+		uint32_t lastUsageFrameID{};
+		bool occupied{};
+		bool submitted{};
+	};
+	std::vector<Query> m_Queries;
 
 	std::unique_ptr<CSwapChain> m_SwapChain;
 	std::unique_ptr<CTexture> m_BackbufferReadbackTexture;

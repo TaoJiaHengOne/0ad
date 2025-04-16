@@ -120,6 +120,16 @@ public:
 	Format GetPreferredDepthStencilFormat(
 		const uint32_t usage, const bool depth, const bool stencil) const override;
 
+	uint32_t AllocateQuery() override;
+
+	void FreeQuery(const uint32_t handle) override;
+
+	bool IsQueryResultAvailable(const uint32_t handle) const override;
+
+	uint64_t GetQueryResult(const uint32_t handle) override;
+
+	void InsertTimestampQuery(const uint32_t handle);
+
 	const Capabilities& GetCapabilities() const override { return m_Capabilities; }
 
 private:
@@ -155,6 +165,13 @@ private:
 		BackbufferKey, std::unique_ptr<CFramebuffer>, BackbufferKeyHash> m_Backbuffers;
 	bool m_BackbufferAcquired = false;
 	bool m_UseFramebufferInvalidating = false;
+
+	struct Query
+	{
+		GLuint query{};
+		bool occupied{};
+	};
+	std::vector<Query> m_Queries;
 
 	Capabilities m_Capabilities{};
 };

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -150,6 +150,8 @@ public:
 		const float valueZ, const float valueW) override;
 	void SetUniform(
 		const int32_t bindingSlot, PS::span<const float> values) override;
+
+	void InsertTimestampQuery(const uint32_t handle, const bool isScopeBegin) override;
 
 	void BeginScopedLabel(const char* name) override;
 	void EndScopedLabel() override;
