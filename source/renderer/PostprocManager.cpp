@@ -29,6 +29,7 @@
 #include "ps/CStrInternStatic.h"
 #include "ps/Filesystem.h"
 #include "ps/Game.h"
+#include "ps/Profile.h"
 #include "ps/World.h"
 #include "renderer/backend/IDevice.h"
 #include "renderer/Renderer.h"
