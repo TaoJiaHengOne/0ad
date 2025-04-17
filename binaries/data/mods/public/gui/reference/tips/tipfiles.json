@@ -2,7 +2,7 @@
   {
     "name": "Beginner",
     "loadingScreenOccurrence_SP": 0.33,
-    "loadingScreenOccurrence_MP": 0.0,
+    "loadingScreenOccurrence_MP": 0.15,
     "files": [
       {
         "textFile": "autoqueue.txt",
@@ -130,7 +130,7 @@
   {
     "name": "Intermediate",
     "loadingScreenOccurrence_SP": 0.33,
-    "loadingScreenOccurrence_MP": 0.1,
+    "loadingScreenOccurrence_MP": 0.25,
     "files": [
       {
         "textFile": "arrow_ship.txt",
@@ -391,7 +391,7 @@
   {
     "name": "Multiplayer",
     "loadingScreenOccurrence_SP": 0.0,
-    "loadingScreenOccurrence_MP": 0.6,
+    "loadingScreenOccurrence_MP": 0.3,
     "files": [
       {
         "textFile": "dont_cheat.txt",
