@@ -29,7 +29,7 @@ class CounterPopulation
 
 		this.panel.tooltip =
 			setStringTags(translate(this.PopulationTooltip), CounterManager.ResourceTitleTags) +
-			getAllyStatTooltip(this.getTooltipData.bind(this)) + "\n" + coloredText(this.CurrentGatherersTooltip, total ? this.DefaultTotalGatherersColor : this.DefaultTotalGatherersColorZero);
+			getAllyStatTooltip(this.getTooltipData.bind(this));
 	}
 
 	getTooltipData(playerState, playername)
@@ -63,11 +63,6 @@ CounterPopulation.prototype.CounterCaption = markForTranslation("%(popCount)s/%(
 CounterPopulation.prototype.PopulationTooltip = markForTranslation("Population: current/limit (max)");
 
 CounterPopulation.prototype.AllyPopulationTooltip = markForTranslation("%(popCount)s/%(popLimit)s (%(popMax)s)");
-
-/**
- * Storing the translated and formatted gatherer string in the prototype.
- */
-CounterPopulation.prototype.CurrentGatherersTooltip = setStringTags(translate("Gatherers: current"), {"font": "sans-bold-16"});
 
 /**
  * Color to highlight the total number of gatherers at zero.

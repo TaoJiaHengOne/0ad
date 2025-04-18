@@ -28,7 +28,7 @@ class CounterResource
 		this.panel.tooltip =
 			setStringTags(resourceNameFirstWord(this.resCode), CounterManager.ResourceTitleTags) +
 			description +
-			getAllyStatTooltip(this.getTooltipData.bind(this)) + "\n" + coloredText(CounterPopulation.prototype.CurrentGatherersTooltip, gatherers ? this.DefaultResourceGatherersColor : this.DefaultResourceGatherersColorZero);
+			getAllyStatTooltip(this.getTooltipData.bind(this));
 	}
 
 	getTooltipData(playerState, playername)
