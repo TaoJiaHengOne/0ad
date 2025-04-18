@@ -4,5 +4,5 @@
 	size="50%-48 -26 50%+48 70"
 	name="civIcon"
 >
-	<object name="civIconOverlay" style="CivIconOverlay" type="button" tooltip_style="sessionToolTipBold"/>
+	<object name="civIconOverlay" style="CivIconOverlay" type="button" tooltip_style="sessionToolTip"/>
 </object>

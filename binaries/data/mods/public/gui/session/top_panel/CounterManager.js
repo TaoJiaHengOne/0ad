@@ -123,10 +123,14 @@ class CounterManager
 
 		return this.orderTooltip +
 			tooltipData.reduce((result, data) =>
-				result + "\n" + sprintf(translate(this.AllyStatTooltip), data), "");
+				setStringTags(
+					result + "\n" + sprintf(translate(this.AllyStatTooltip), data),
+					this.AllyStatTags
+				), "");
 	}
 }
 
 CounterManager.ResourceTitleTags = { "font": "sans-bold-16" };
 
 CounterManager.prototype.AllyStatTooltip = markForTranslation("%(playername)s: %(statValue)s");
+CounterManager.prototype.AllyStatTags = { "font": "sans-bold-stroke-14" };

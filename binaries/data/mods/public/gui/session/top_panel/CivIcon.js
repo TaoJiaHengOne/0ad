@@ -65,6 +65,6 @@ class CivIcon
 }
 
 CivIcon.prototype.Tooltip =
-	markForTranslation("%(civ)s\n%(hotkey_civinfo)s / %(hotkey_structree)s: View Civilization Overview / Structure Tree\nLast opened will be reopened on click.");
+	markForTranslation("%(civ)s\n%(hotkey_civinfo)s: View Civilization Overview\n%(hotkey_structree)s: View Structure Tree\nLast opened view will be reopened on click.");
 
-CivIcon.prototype.CivTags = { "font": "sans-bold-stroke-14" };
+CivIcon.prototype.CivTags = { "font": "sans-bold-16" };
