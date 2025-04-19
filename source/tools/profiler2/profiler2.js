@@ -44,7 +44,7 @@ function save_as_file()
 
 function get_history_data(report, thread, type)
 {
-    var ret = {"time_by_frame":[], "max" : 0, "log_scale" : null};
+    var ret = {"time_by_frame":[], "max" : 0};
 
     var report_data = g_reports[report].data().threads[thread];
     var interval_data = report_data.intervals;
@@ -53,9 +53,6 @@ function get_history_data(report, thread, type)
     if (!data)
         return ret;
 
-    let max = 0;
-    let avg = [];
-    let current_frame = 0;
     for (let i = 0; i < data.length; i++)
     {
         ret.time_by_frame.push(0);
@@ -66,10 +63,6 @@ function get_history_data(report, thread, type)
     // somehow JS sorts 0.03 lower than 3e-7 otherwise
     let sorted = ret.time_by_frame.slice(0).sort((a,b) => a-b);
     ret.max = sorted[sorted.length-1];
-    avg = sorted[Math.round(avg.length/2)];
-
-    if (ret.max > avg * 3)
-        ret.log_scale = true;
 
     return ret;
 }
@@ -89,7 +82,6 @@ function draw_frequency_graph()
         return;
 
     var series_data = {};
-    var use_log_scale = null;
 
     var x_scale = 0;
     var y_scale = 0;
@@ -114,16 +106,7 @@ function draw_frequency_graph()
                 x_scale = series_data[name].length;
             if (data.max > y_scale)
                 y_scale = data.max;
-            if (use_log_scale === null && data.log_scale)
-                use_log_scale = true;
         }
-    }
-    if (use_log_scale)
-    {
-        let legend_item = document.createElement("p");
-        legend_item.style.borderColor = "transparent";
-        legend_item.textContent = " -- log x scale -- ";
-        legend.appendChild(legend_item);
     }
     let id = 0;
     for (let type in series_data)
@@ -148,9 +131,6 @@ function draw_frequency_graph()
                 x1 = (time_by_frame.length-1)*canvas.width;
 
             let y = time_by_frame[i]/y_scale;
-            if (use_log_scale)
-                y = Math.log10(1 + time_by_frame[i]/y_scale * 9);
-
             context.globalCompositeOperation = "lighter";
 
             context.beginPath();
@@ -186,8 +166,6 @@ function draw_frequency_graph()
     [0.02,0.05,0.1,0.25,0.5,0.75].forEach(function(y_val)
     {
         let y = y_val;
-        if (use_log_scale)
-            y = Math.log10(1 + y_val * 9);
 
         context.beginPath();
         context.lineWidth="1";
@@ -217,7 +195,6 @@ function draw_history_graph()
         return;
 
     var series_data = {};
-    var use_log_scale = null;
 
     var frames_nb = Infinity;
     var x_scale = 0;
@@ -241,16 +218,7 @@ function draw_history_graph()
                 series_data[rep + "/" + g_active_elements[typeI]] = smooth_1D_array(data.time_by_frame, +document.getElementById('smooth').value);
             if (data.max > y_scale)
                 y_scale = data.max;
-            if (use_log_scale === null && data.log_scale)
-                use_log_scale = true;
         }
-    }
-    if (use_log_scale)
-    {
-        let legend_item = document.createElement("p");
-        legend_item.style.borderColor = "transparent";
-        legend_item.textContent = " -- log y scale -- ";
-        legend.appendChild(legend_item);
     }
     canvas.width = Math.max(frames_nb,600);
     x_scale = frames_nb / canvas.width;
@@ -271,8 +239,6 @@ function draw_history_graph()
             let smoothed_time = time_by_frame[i];//smooth_1D(time_by_frame.slice(0), i, 3);
 
             let y = smoothed_time/y_scale;
-            if (use_log_scale)
-                y = Math.log10(1 + smoothed_time/y_scale * 9);
 
             if (item_nb === 1)
             {
@@ -318,8 +284,6 @@ function draw_history_graph()
     [0.1,0.25,0.5,0.75].forEach(function(y_val)
     {
         let y = y_val;
-        if (use_log_scale)
-            y = Math.log10(1 + y_val * 9);
 
         context.beginPath();
         context.lineWidth="1";
