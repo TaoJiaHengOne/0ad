@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Wildfire Games.
+// Copyright (C) 2025 Wildfire Games.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ var g_current_report = 0;
 
 var g_profile_path = null;
 var g_active_elements = [];
-var g_loading_timeout = null;
 
 function save_as_file()
 {
@@ -409,9 +408,6 @@ function load_report_from_file(evt)
 
 function load_report(trylive, file)
 {
-    if (g_loading_timeout != undefined)
-        return;
-
     let reportID = g_reports.length;
     let nav = document.querySelector("header nav");
     let newRep = document.createElement("p");
@@ -422,7 +418,6 @@ function load_report(trylive, file)
     nav.appendChild(newRep);
 
     g_reports.push(Profiler2Report(on_report_loaded, trylive, file));
-    g_loading_timeout = setTimeout(function() { on_report_loaded(false); }, 5000);
 }
 
 function on_report_loaded(success)
@@ -432,14 +427,12 @@ function on_report_loaded(success)
     if (!success)
     {
         element.className = "fail";
-        setTimeout(function() { element.parentNode.removeChild(element); clearTimeout(g_loading_timeout); g_loading_timeout = null; }, 1000 );
+        setTimeout(function() { element.parentNode.removeChild(element); }, 1000 );
         g_reports = g_reports.slice(0,-1);
         if (g_reports.length === 0)
             g_current_report = null;
         return;
     }
-    clearTimeout(g_loading_timeout);
-    g_loading_timeout = null;
     select_report(+element.dataset.id);
     element.onclick = function() { select_report(+element.dataset.id);};
 }
