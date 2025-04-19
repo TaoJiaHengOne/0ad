@@ -397,12 +397,14 @@ function update_analysis()
     draw_frequency_graph();
 }
 
-function load_report_from_file(evt)
+function load_reports_from_files(evt)
 {
-    var file = evt.target.files[0];
-    if (!file)
-        return;
-    load_report(false, file);
+    for (var i = 0; i < evt.target.files.length; i++) {
+        file = evt.target.files[i];
+        if (!file)
+            continue;
+        load_report(false, file);
+    }
     evt.target.value = null;
 }
 
@@ -417,13 +419,13 @@ function load_report(trylive, file)
     newRep.dataset.id = reportID;
     nav.appendChild(newRep);
 
-    g_reports.push(Profiler2Report(on_report_loaded, trylive, file));
+    let callback = on_report_loaded.bind(undefined, reportID);
+    g_reports.push(Profiler2Report(callback, trylive, file));
 }
 
-function on_report_loaded(success)
+function on_report_loaded(reportID, success)
 {
-    let element = document.getElementById("Report" + (g_reports.length-1));
-    let report = g_reports[g_reports.length-1];
+    let element = document.getElementById("Report" + reportID);
     if (!success)
     {
         element.className = "fail";
@@ -456,7 +458,7 @@ window.onload = function()
     load_report(true, {"name":"live"});
 
     // add new reports
-    document.getElementById('report_load_input').addEventListener('change', load_report_from_file, false);
+    document.getElementById('report_load_input').addEventListener('change', load_reports_from_files, false);
 }
 
 
