@@ -379,8 +379,7 @@ InReaction CGUIManager::HandleEvent(const SDL_Event_* ev)
 
 void CGUIManager::SendEventToAll(const CStr& eventName) const
 {
-	// Save an immutable copy so iterators aren't invalidated by handlers
-	PageStackType pageStack = m_PageStack;
+	const auto pageStack = GetCopyOfFrozenStack();
 
 	for (const SGUIPage& p : pageStack)
 		p.gui->SendEventToAll(eventName);
@@ -389,8 +388,7 @@ void CGUIManager::SendEventToAll(const CStr& eventName) const
 
 void CGUIManager::SendEventToAll(const CStr& eventName, JS::HandleValueArray paramData) const
 {
-	// Save an immutable copy so iterators aren't invalidated by handlers
-	PageStackType pageStack = m_PageStack;
+	const auto pageStack = GetCopyOfFrozenStack();
 
 	for (const SGUIPage& p : pageStack)
 		p.gui->SendEventToAll(eventName, paramData);
@@ -404,8 +402,7 @@ std::optional<bool> CGUIManager::TickObjects()
 	// This call makes sure we trigger GC regularly even if the simulation is not running.
 	m_ScriptContext.MaybeIncrementalGC();
 
-	// Save an immutable copy so iterators aren't invalidated by tick handlers
-	PageStackType pageStack = m_PageStack;
+	const auto pageStack = GetCopyOfFrozenStack();
 
 	for (const SGUIPage& p : pageStack)
 		p.gui->TickObjects();
@@ -441,8 +438,7 @@ void CGUIManager::Draw(CCanvas2D& canvas) const
 
 void CGUIManager::UpdateResolution()
 {
-	// Save an immutable copy so iterators aren't invalidated by event handlers
-	PageStackType pageStack = m_PageStack;
+	const auto pageStack = GetCopyOfFrozenStack();
 
 	for (const SGUIPage& p : pageStack)
 	{
@@ -488,4 +484,11 @@ std::shared_ptr<CGUI> CGUIManager::top() const
 {
 	ENSURE(m_PageStack.size());
 	return m_PageStack.back().gui;
+}
+
+PS::StaticVector<CGUIManager::SGUIPage, 16> CGUIManager::GetCopyOfFrozenStack() const
+{
+	PS::StaticVector<CGUIManager::SGUIPage, 16> stack;
+	std::copy(m_PageStack.begin(), m_PageStack.end(), std::back_inserter(stack));
+	return stack;
 }

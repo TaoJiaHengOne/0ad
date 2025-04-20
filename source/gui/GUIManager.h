@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 
 #include "lib/file/vfs/vfs_path.h"
 #include "lib/input.h"
+#include "ps/containers/StaticVector.h"
 #include "ps/CStr.h"
 #include "ps/TemplateLoader.h"
 #include "scriptinterface/StructuredClone.h"
@@ -211,6 +212,11 @@ private:
 		}
 	};
 	PageStackType m_PageStack;
+
+	/**
+	 * Returns an immutable copy so iterators aren't invalidated by handlers.
+	 */
+	PS::StaticVector<SGUIPage, 16> GetCopyOfFrozenStack() const;
 
 	CTemplateLoader m_TemplateLoader;
 };

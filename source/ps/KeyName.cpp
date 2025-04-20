@@ -91,7 +91,7 @@ SDL_Scancode FindScancode(const CStr8& keyname)
 {
 	// Find (ignoring case) a corresponding scancode, if one exists.
 	std::unordered_map<int, std::vector<CStr>>::const_iterator it =
-		std::find_if(scancodemap.begin(), scancodemap.end(), [&keyname](const std::pair<int, std::vector<CStr>>& names) {
+		std::find_if(scancodemap.begin(), scancodemap.end(), [&keyname](const std::pair<const int, std::vector<CStr>>& names) {
 			return std::find_if(names.second.begin(), names.second.end(), [&keyname](const CStr& t) {
 				return t.LowerCase() == keyname.LowerCase();
 			})!= names.second.end();

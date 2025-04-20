@@ -33,6 +33,7 @@
 
 #include "CStr.h"
 #include "lib/input.h"
+#include "ps/containers/StaticVector.h"
 
 #include <unordered_map>
 #include <vector>
@@ -64,7 +65,7 @@ struct SHotkeyMapping
 {
 	CStr name; // name of the hotkey
 	SKey primary; // the primary key
-	std::vector<SKey> required; // list of non-primary keys that must also be active
+	PS::StaticVector<SKey, 8> required; // list of non-primary keys that must also be active
 };
 
 typedef std::vector<SHotkeyMapping> KeyMapping;

@@ -93,7 +93,7 @@ static void LoadConfigBindings(CConfigDB& configDB)
 
 		for (const CStr& hotkey : configPair.second)
 		{
-			std::vector<SKey> keyCombination;
+			PS::StaticVector<SKey, 8> keyCombination;
 
 			// Iterate through multiple-key bindings (e.g. Ctrl+I)
 			boost::char_separator<char> sep("+");
@@ -113,7 +113,7 @@ static void LoadConfigBindings(CConfigDB& configDB)
 				keyCombination.push_back(key);
 			}
 
-			std::vector<SKey>::iterator itKey, itKey2;
+			PS::StaticVector<SKey, 8>::iterator itKey, itKey2;
 			for (itKey = keyCombination.begin(); itKey != keyCombination.end(); ++itKey)
 			{
 				SHotkeyMapping bindCode;
@@ -329,14 +329,14 @@ InReaction HotkeyInputPrepHandler(const SDL_Event_* ev)
 				continue;
 
 			// Check if this is an equally precise or more precise match
-			if (hotkey.required.size() + 1 >= closestMapMatch)
+			if (hotkey.required.size() + 1u >= closestMapMatch)
 			{
 				// Check if more precise
-				if (hotkey.required.size() + 1 > closestMapMatch)
+				if (hotkey.required.size() + 1u > closestMapMatch)
 				{
 					// Throw away the old less-precise matches
 					newPressedHotkeys.clear();
-					closestMapMatch = hotkey.required.size() + 1;
+					closestMapMatch = hotkey.required.size() + 1u;
 				}
 				newPressedHotkeys.emplace_back(&hotkey, isReleasedKey);
 			}
@@ -371,7 +371,7 @@ InReaction HotkeyInputActualHandler(const SDL_Event_* ev)
 				std::find_if(newPressedHotkeys.begin(), newPressedHotkeys.end(),
 							 [&hotkey](const PressedHotkey& v){ return v.mapping->name == hotkey.mapping->name; })->retriggered = hotkey.retriggered;
 			// If the already-pressed hotkey has a lower specificity than the new hotkey(s), de-activate it.
-			else if (hotkey.mapping->required.size() + 1 < closestMapMatch)
+			else if (hotkey.mapping->required.size() + 1u < closestMapMatch)
 			{
 				releasedHotkeys.emplace_back(hotkey.mapping->name.c_str(), hotkey.retriggered);
 				continue;
@@ -393,9 +393,9 @@ InReaction HotkeyInputActualHandler(const SDL_Event_* ev)
 				// If this hotkey has higher specificity than the new hotkeys we wanted to trigger/retrigger,
 				// then discard this new addition(s). This works because at any given time, all hotkeys
 				// active must have the same specificity.
-				if (hotkey.mapping->required.size() + 1 > closestMapMatch)
+				if (hotkey.mapping->required.size() + 1u > closestMapMatch)
 				{
-					closestMapMatch = hotkey.mapping->required.size() + 1;
+					closestMapMatch = hotkey.mapping->required.size() + 1u;
 					newPressedHotkeys.clear();
 					newPressedHotkeys.emplace_back(hotkey.mapping, hotkey.retriggered);
 				}
