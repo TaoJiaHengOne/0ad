@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -105,7 +105,7 @@ void CShaderParams<value_t>::Set(CStrIntern name, const value_t& value)
 	typename SItems::Item addedItem = std::make_pair(name, value);
 
 	// Add the new item in a way that preserves the sortedness and uniqueness of item names
-	for (typename std::vector<typename SItems::Item>::iterator it = items.items.begin(); ; ++it)
+	for (typename SItems::ItemsContainers::iterator it = items.items.begin(); ; ++it)
 	{
 		if (it == items.items.end() || addedItem.first < it->first)
 		{
@@ -143,8 +143,8 @@ template<typename value_t>
 std::map<CStrIntern, value_t> CShaderParams<value_t>::GetMap() const
 {
 	std::map<CStrIntern, value_t> ret;
-	for (size_t i = 0; i < m_Items->items.size(); ++i)
-		ret[m_Items->items[i].first] = m_Items->items[i].second;
+	for (const typename SItems::Item& item : m_Items->items)
+		ret[item.first] = item.second;
 	return ret;
 }
 
@@ -158,10 +158,10 @@ template<typename value_t>
 void CShaderParams<value_t>::SItems::RecalcHash()
 {
 	size_t h = 0;
-	for (size_t i = 0; i < items.size(); ++i)
+	for (const Item& item : items)
 	{
-		hash_combine(h, items[i].first);
-		hash_combine(h, items[i].second);
+		hash_combine(h, item.first);
+		hash_combine(h, item.second);
 	}
 	hash = h;
 }
@@ -175,12 +175,12 @@ void CShaderDefines::Add(CStrIntern name, CStrIntern value)
 int CShaderDefines::GetInt(const char* name) const
 {
 	CStrIntern nameIntern(name);
-	for (size_t i = 0; i < m_Items->items.size(); ++i)
+	for (const SItems::Item& item : m_Items->items)
 	{
-		if (m_Items->items[i].first == nameIntern)
+		if (item.first == nameIntern)
 		{
 			int ret;
-			std::stringstream str(m_Items->items[i].second.c_str());
+			std::stringstream str(item.second.c_str());
 			str >> ret;
 			return ret;
 		}
@@ -197,11 +197,11 @@ void CShaderUniforms::Add(const char* name, const CVector4D& value)
 CVector4D CShaderUniforms::GetVector(const char* name) const
 {
 	CStrIntern nameIntern(name);
-	for (size_t i = 0; i < m_Items->items.size(); ++i)
+	for (const SItems::Item& item : m_Items->items)
 	{
-		if (m_Items->items[i].first == nameIntern)
+		if (item.first == nameIntern)
 		{
-			return m_Items->items[i].second;
+			return item.second;
 		}
 	}
 	return CVector4D();

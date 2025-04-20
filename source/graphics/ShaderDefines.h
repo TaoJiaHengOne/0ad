@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #ifndef INCLUDED_SHADERDEFINES
 #define INCLUDED_SHADERDEFINES
 
+#include "ps/containers/StaticVector.h"
 #include "ps/CStr.h"
 #include "ps/CStrIntern.h"
 #include "renderer/backend/IDeviceCommandContext.h"
@@ -100,8 +101,11 @@ public:
 		// Name/value pair
 		using Item = std::pair<CStrIntern, value_t>;
 
-		// Sorted by name; no duplicated names
-		std::vector<Item> items;
+		// Sorted by name; no duplicated names. We can use the StaticVector
+		// because we shouldn't have too many shader parameters of a single
+		// type.
+		using ItemsContainers = PS::StaticVector<Item, 32>;
+		ItemsContainers items;
 
 		size_t hash;
 
