@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -104,6 +104,12 @@ public:
 			vec.emplace_back(count);
 			vec.insert(vec.begin(), ConstructionCounter{count});
 			TS_ASSERT_EQUALS(count, 2);
+
+			{
+				ConstructionCounter lval{count};
+				vec.insert(vec.begin(), lval);
+			}
+			TS_ASSERT_EQUALS(count, 3);
 		}
 		TS_ASSERT_EQUALS(count, 0);
 
@@ -190,6 +196,27 @@ public:
 		TS_ASSERT((PS::StaticVector<int, 20>{0, 1, 2, 3} != PS::StaticVector<int, 20>{0, 1, 2}));
 		TS_ASSERT((PS::StaticVector<int, 5>{0, 1, 2, 3} != PS::StaticVector<int, 1>{0}));
 		TS_ASSERT((PS::StaticVector<int, 20>{0, 1, 2, 3} != PS::StaticVector<int, 20>{3, 2, 1, 0}));
+	}
+
+	void test_resize()
+	{
+		size_t count{0};
+
+		{
+			PS::StaticVector<ConstructionCounter, 8> vec{};
+
+			vec.resize(4, ConstructionCounter{count});
+
+			TS_ASSERT_EQUALS(count, 4);
+
+			{
+				ConstructionCounter lval{count};
+				vec.resize(8, lval);
+			}
+			TS_ASSERT_EQUALS(count, 8);
+		}
+
+		TS_ASSERT_EQUALS(count, 0);
 	}
 
 	// Types

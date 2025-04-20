@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -418,7 +418,7 @@ public:
 		new(end()) T{std::move(back())};
 		++m_Size;
 
-		const iterator mutableLocation{MutableIter(location)};
+		const iterator mutableLocation{MakeMutableIterator(location)};
 		std::move_backward(mutableLocation, std::prev(end(), 2), std::prev(end(), 1));
 
 		*mutableLocation = value;
