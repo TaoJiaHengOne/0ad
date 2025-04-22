@@ -93,7 +93,7 @@ You may change hotkeys in [font="sans-bold-14"]Options > Hotkeys[font="sans-14"]
   hotkey.lobby – Show the multiplayer lobby in a dialog window
   hotkey.session.gui.diplomacy.toggle – Toggle in-game diplomacy panel
   hotkey.session.gui.barter.toggle – Toggle in-game barter and trade panel
-  hotkey.session.gui.objectives.toggle – Toggle in-game objectives panel
+  hotkey.session.gui.matchsettings.toggle – Toggle in-game match settings panel
   hotkey.session.gui.tutorial.toggle – Toggle in-game tutorial panel
   hotkey.structree – Toggle structure tree panel
   hotkey.civinfo – Toggle civilization info panel

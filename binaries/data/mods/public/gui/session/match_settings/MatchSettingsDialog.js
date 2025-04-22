@@ -1,17 +1,17 @@
-class ObjectivesDialog
+class MatchSettingsDialog
 {
 	constructor(playerViewControl, mapCache)
 	{
 		this.gameDescription = Engine.GetGUIObjectByName("gameDescription");
-		this.objectivesPlayerstate = Engine.GetGUIObjectByName("objectivesPlayerstate");
-		this.objectivesPanel = Engine.GetGUIObjectByName("objectivesPanel");
-		this.objectivesTitle = Engine.GetGUIObjectByName("objectivesTitle");
+		this.matchSettingsPlayerstate = Engine.GetGUIObjectByName("matchSettingsPlayerstate");
+		this.matchSettingsPanel = Engine.GetGUIObjectByName("matchSettingsPanel");
+		this.matchSettingsTitle = Engine.GetGUIObjectByName("matchSettingsTitle");
 
 		// TODO: atlas should support this
 		if (!Engine.IsAtlasRunning())
 			Engine.GetGUIObjectByName("gameDescriptionText").caption = getGameDescription(g_InitAttributes, mapCache);
 
-		Engine.GetGUIObjectByName("closeObjectives").onPress = this.close.bind(this);
+		Engine.GetGUIObjectByName("matchSettingsCloseButton").onPress = this.close.bind(this);
 
 		registerPlayersInitHandler(this.rebuild.bind(this));
 		registerPlayersFinishedHandler(this.rebuild.bind(this));
@@ -20,17 +20,17 @@ class ObjectivesDialog
 
 	open()
 	{
-		this.objectivesPanel.hidden = false;
+		this.matchSettingsPanel.hidden = false;
 	}
 
 	close()
 	{
-		this.objectivesPanel.hidden = true;
+		this.matchSettingsPanel.hidden = true;
 	}
 
 	isOpen()
 	{
-		return !this.objectivesPanel.hidden;
+		return !this.matchSettingsPanel.hidden;
 	}
 
 	toggle()
@@ -49,11 +49,11 @@ class ObjectivesDialog
 		const playerState = player && player.state;
 		const isActive = !playerState || playerState == "active";
 
-		this.objectivesPlayerstate.hidden = isActive;
-		this.objectivesPlayerstate.caption = g_PlayerStateMessages[playerState] || "";
+		this.matchSettingsPlayerstate.hidden = isActive;
+		this.matchSettingsPlayerstate.caption = g_PlayerStateMessages[playerState] || "";
 
 		const size = this.gameDescription.size;
-		size.top = (isActive ? this.objectivesTitle : this.objectivesPlayerstate).size.bottom;
+		size.top = (isActive ? this.matchSettingsTitle : this.matchSettingsPlayerstate).size.bottom;
 		this.gameDescription.size = size;
 	}
 }

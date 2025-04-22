@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object
-	name="objectivesPanel"
+	name="matchSettingsPanel"
 	size="50%-300 24%-70 50%+300 76%-70"
 	type="image"
 	hidden="true"
 	sprite="ModernDialog"
 >
 	<object
-		name="objectivesTitle"
+		name="matchSettingsTitle"
 		type="text"
 		style="TitleText"
 		size="50%-128 -16 50%+128 16"
 	>
-		<translatableAttribute id="caption">Objectives</translatableAttribute>
+		<translatableAttribute id="caption">Match Settings</translatableAttribute>
 	</object>
 
 	<object
-		name="objectivesPlayerstate"
+		name="matchSettingsPlayerstate"
 		size="20 40 100%-20 80"
 		font="sans-bold-18"
 		type="text"
@@ -39,7 +39,7 @@
 		/>
 	</object>
 
-	<object name="closeObjectives" size="50%-64 100%-50 50%+64 100%-22" type="button" style="StoneButton">
+	<object name="matchSettingsCloseButton" size="50%-64 100%-50 50%+64 100%-22" type="button" style="StoneButton">
 		<translatableAttribute id="caption">Close</translatableAttribute>
 	</object>
 

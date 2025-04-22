@@ -3,7 +3,7 @@
  */
 class TopPanel
 {
-	constructor(playerViewControl, diplomacyDialog, tradeDialog, objectivesDialog, gameSpeedControl)
+	constructor(playerViewControl, diplomacyDialog, tradeDialog, matchSettingsDialog, gameSpeedControl)
 	{
 		this.counterManager = new CounterManager(playerViewControl);
 		this.civIcon = new CivIcon(playerViewControl);
@@ -13,7 +13,7 @@ class TopPanel
 
 		this.diplomacyDialogButton = new DiplomacyDialogButton(playerViewControl, diplomacyDialog);
 		this.gameSpeedButton = new GameSpeedButton(gameSpeedControl);
-		this.objectivesDialogButton = new ObjectivesDialogButton(objectivesDialog);
+		this.matchSettingsDialogButton = new MatchSettingsDialogButton(matchSettingsDialog);
 		this.tradeDialogButton = new TradeDialogButton(playerViewControl, tradeDialog);
 	}
 }
