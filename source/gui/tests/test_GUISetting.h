@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include "gui/CGUIText.h"
 #include "gui/ObjectBases/IGUIObject.h"
 #include "gui/SettingTypes/CGUIString.h"
+#include "i18n/L10n.h"
 #include "ps/CLogger.h"
 #include "ps/ConfigDB.h"
 #include "ps/Filesystem.h"
@@ -41,6 +42,7 @@ class TestGUISetting : public CxxTest::TestSuite
 	std::optional<CXeromycesEngine> m_XeromycesEngine;
 	std::unique_ptr<CProfileViewer> m_Viewer;
 	std::unique_ptr<CRenderer> m_Renderer;
+	std::unique_ptr<L10n> m_L10n;
 
 public:
 	class TestGUIObject : public IGUIObject
@@ -70,10 +72,12 @@ public:
 		g_VideoMode.CreateBackendDevice(false);
 		m_Viewer = std::make_unique<CProfileViewer>();
 		m_Renderer = std::make_unique<CRenderer>(g_VideoMode.GetBackendDevice());
+		m_L10n = std::make_unique<L10n>();
 	}
 
 	void tearDown()
 	{
+		m_L10n.reset();
 		m_Renderer.reset();
 		m_Viewer.reset();
 		g_VideoMode.Shutdown();

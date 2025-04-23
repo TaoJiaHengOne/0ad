@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -19,68 +19,451 @@
 #include "Font.h"
 
 #include "graphics/FontManager.h"
+#include "graphics/TextureManager.h"
 #include "ps/Filesystem.h"
 #include "ps/CLogger.h"
-#include "renderer/Renderer.h"
+#include "ps/Profile.h"
 
+#include <algorithm>
 #include <map>
+#include <numeric>
 #include <string>
 
-CFont::GlyphMap::GlyphMap()
+namespace
 {
-	memset(m_Data, 0, sizeof(m_Data));
+struct FTGlyphDeleter {
+	void operator()(FT_Glyph glyph) const
+	{
+		FT_Done_Glyph(glyph);
+	}
+};
+
+using UniqueFTGlyph = std::unique_ptr<std::remove_pointer_t<FT_Glyph>, FTGlyphDeleter>;
+
+} // end namespace
+
+const CFont::GlyphData* CFont::GlyphMap::get(u16 codepoint) const
+{
+	if (!m_Data[codepoint >> 8])
+		return nullptr;
+	if (!(*m_Data[codepoint >> 8])[codepoint & 0xff].defined)
+		return nullptr;
+	return &(*m_Data[codepoint >> 8])[codepoint & 0xff];
 }
 
-CFont::GlyphMap::~GlyphMap()
+void CFont::GlyphMap::set(u16 codepoint, const GlyphData& glyph)
 {
-	for (size_t i = 0; i < ARRAY_SIZE(m_Data); i++)
-		delete[] m_Data[i];
+	if (!m_Data[codepoint >> 8])
+		m_Data[codepoint >> 8] = std::make_unique<std::array<GlyphData, 256>>();
+	(*m_Data[codepoint >> 8])[codepoint & 0xff] = glyph;
+	(*m_Data[codepoint >> 8])[codepoint & 0xff].defined = 1;
 }
 
-void CFont::GlyphMap::set(u16 i, const GlyphData& val)
+int CFont::GetCharacterWidth(wchar_t c)
 {
-	if (!m_Data[i >> 8])
-		m_Data[i >> 8] = new GlyphData[256]();
-	m_Data[i >> 8][i & 0xff] = val;
-	m_Data[i >> 8][i & 0xff].defined = 1;
+	PROFILE2("GetCharacterWidth font texture generate");
+	const CFont::GlyphData* g{GetGlyph(c)};
+
+	return g ? g->xadvance : 0;
 }
 
-int CFont::GetCharacterWidth(wchar_t c) const
+void CFont::CalculateStringSize(const wchar_t* string, int& width, int& height)
 {
-	const GlyphData* g = m_Glyphs.get(c);
-
-	if (!g)
-		g = m_Glyphs.get(0xFFFD); // Use the missing glyph symbol
-
-	if (!g)
-		return 0;
-
-	return g->xadvance;
-}
-
-void CFont::CalculateStringSize(const wchar_t* string, int& width, int& height) const
-{
+	PROFILE2("CalculateStringSize font texture generate");
 	width = 0;
 	height = m_Height;
 
 	// Compute the width as the width of the longest line.
-	int lineWidth = 0;
-	for (const wchar_t* c = string; *c != '\0'; c++)
+	std::wistringstream stream{string};
+	std::wstring line;
+	while (std::getline(stream, line))
 	{
-		const GlyphData* g = m_Glyphs.get(*c);
+		FT_UInt glyphIndexStorage{0};
+		const int lineWidth{std::accumulate(line.begin(), line.end(), 0, [&](int sum, wchar_t c)
+			{
+				const CFont::GlyphData* g{GetGlyph(c)};
 
-		if (!g)
-			g = m_Glyphs.get(0xFFFD); // Use the missing glyph symbol
+				if (!g)
+					return sum;
 
-		if (g)
-			lineWidth += g->xadvance; // Add the character's advance distance
+				if (!FT_HAS_KERNING(m_Font))
+					return sum + g->xadvance;
 
-		if (*c == L'\n')
+				const FT_UInt glyphIndex{FT_Get_Char_Index(m_Font.get(), c)};
+				if (!glyphIndex)
+					return sum + g->xadvance;
+
+				const FT_UInt prevGlyph{std::exchange(glyphIndexStorage, glyphIndex)};
+				if (!prevGlyph)
+					return sum + g->xadvance;
+
+				// Get the kerning value between the previous and current glyph.
+				FT_Vector kerning;
+				FT_Get_Kerning(m_Font.get(), prevGlyph, glyphIndex, FT_KERNING_DEFAULT, &kerning);
+				// Add the kerning distance.
+				return sum + g->xadvance + static_cast<int>(kerning.x >> SUBPIXEL_SHIFT);
+			})
+		};
+
+		width = std::max(width, lineWidth);
+		height += m_LineSpacing;
+	}
+}
+
+bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& fontName, int size, int strokeWidth)
+{
+	// TODO: expose the Stroke Width outside class.
+	m_StrokeWidth = strokeWidth;
+	m_FontSize = size;
+	m_FontName = fontName;
+
+	FT_Face face;
+	if (FT_Error error{FT_New_Face(m_FreeType, fontPath.c_str(), 0, &face)})
+	{
+		if (error == FT_Err_Unknown_File_Format)
 		{
-			height += m_LineSpacing;
-			width = std::max(width, lineWidth);
-			lineWidth = 0;
+			LOGERROR("Font file format is not supported: %s", fontPath.c_str());
+			return false;
+		}
+		LOGERROR("Failed to load font %s: %d", fontPath.c_str(), error);
+		return false;
+	}
+	m_Font.reset(face);
+
+	// Set the font size.
+	if (FT_Error error{FT_Set_Pixel_Sizes(m_Font.get(), 0, m_FontSize)})
+	{
+		LOGERROR("Failed to set font size %d: %d", size, error);
+		return false;
+	}
+
+	if (m_StrokeWidth)
+	{
+		FT_Stroker stroker;
+		if (FT_Error error{FT_Stroker_New(m_FreeType, &stroker)})
+		{
+			LOGERROR("Failed to create stroker: %d", error);
+			return false;
+		}
+		m_Stroker.reset(stroker);
+		FT_Stroker_Set(m_Stroker.get(), m_StrokeWidth * 64, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+	}
+
+	if (!ConstructTextureAtlas())
+	{
+		LOGERROR("Failed to create font texture atlas %s", fontName);
+		return false;
+	}
+
+	// Get the height of the font.
+	m_Height = m_Font->size->metrics.height >> SUBPIXEL_SHIFT;
+
+	// Get the line spacing of the font.
+	m_LineSpacing = (m_Font->size->metrics.ascender - m_Font->size->metrics.descender) >> SUBPIXEL_SHIFT;
+
+	m_IsLoading = true;
+
+	return true;
+}
+
+Renderer::Backend::Sampler::Desc CFont::ChooseTextureFormatAndSampler()
+{
+	Renderer::Backend::Sampler::Desc defaultSamplerDesc{
+		Renderer::Backend::Sampler::MakeDefaultSampler(
+			Renderer::Backend::Sampler::Filter::LINEAR,
+			Renderer::Backend::Sampler::AddressMode::CLAMP_TO_EDGE)
+	};
+
+	if (m_StrokeWidth > 0)
+		return defaultSamplerDesc;
+
+	// TODO: Add Support for R8_UNORM.
+	// for R8 we will use texture swizzling to convert to RGBA.
+	// and sampler will be changed
+
+	// Legacy Format
+	m_TextureFormat = Renderer::Backend::Format::A8_UNORM;
+	m_TextureFormatStride = 1;
+	m_HasRGB = false;
+
+	return defaultSamplerDesc;
+}
+
+bool CFont::ConstructTextureAtlas()
+{
+	Renderer::Backend::IDevice* backendDevice = g_Renderer.GetDeviceCommandContext()->GetDevice();
+
+	// Make backend texture ahead of time.
+	// TODO: calculate based on device support.
+	const int textureSize{1024};
+	m_AtlasWidth = textureSize;
+	m_AtlasHeight = textureSize;
+	m_HasRGB = true;
+	m_AtlasPadding = 4 + m_StrokeWidth * 2;
+	m_AtlasX = m_AtlasY = 0;
+
+	m_Bounds.right = textureSize;
+	m_Bounds.bottom = textureSize;
+
+	// TODO: preload from cache?.
+
+	const Renderer::Backend::Sampler::Desc defaultSamplerDesc{ChooseTextureFormatAndSampler()};
+
+	m_AtlasSize = m_AtlasWidth * m_AtlasHeight * m_TextureFormatStride;
+
+	m_Texture = g_Renderer.GetTextureManager().WrapBackendTexture(backendDevice->CreateTexture2D(
+		("Font Texture " + m_FontName).c_str(),
+		Renderer::Backend::ITexture::Usage::TRANSFER_DST |
+		Renderer::Backend::ITexture::Usage::SAMPLED,
+		m_TextureFormat,
+		textureSize, textureSize, defaultSamplerDesc
+	));
+
+	if (!m_Texture)
+	{
+		LOGERROR("Failed to create font texture %s", m_FontName);
+		return false;
+	}
+
+	// Initialise texture with transparency, for the areas we don't
+	// overwrite with uploading later.
+	m_TexData = std::make_unique<u8[]>(m_AtlasSize);
+	std::fill_n(m_TexData.get(), m_AtlasSize, 0x00);
+
+	g_Renderer.GetDeviceCommandContext()->UploadTexture(
+		m_Texture->GetBackendTexture(), m_TextureFormat,
+		m_TexData.get(), m_AtlasSize);
+
+	return true;
+}
+
+const CFont::GlyphData* CFont::GetGlyph(u16 codepoint)
+{
+	const CFont::GlyphData* g{m_Glyphs.get(codepoint)};
+	return (g && g->defined) ? g : ExtractAndGenerateGlyph(codepoint);
+}
+
+const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
+{
+	PROFILE2("Glyph font texture generate");
+
+	const FT_UInt glyphIndex{FT_Get_Char_Index(m_Font.get(), codepoint)};
+	const FT_Int32 loadFlags{FT_LOAD_DEFAULT | (m_FontSize <= MINIMAL_FONT_SIZE_ANTIALIASING ? FT_LOAD_TARGET_MONO : 0)};
+
+	if (FT_Error error{FT_Load_Glyph(m_Font.get(), glyphIndex, loadFlags)})
+	{
+		LOGERROR("Failed to load glyph %u: %d", codepoint, error);
+		return nullptr;
+	}
+
+	const FT_GlyphSlot slot{m_Font->glyph};
+	FT_Glyph glyph;
+	if (FT_Error error{FT_Get_Glyph(slot, &glyph)})
+	{
+		LOGERROR("Failed to get glyph %u: %d", codepoint, error);
+		return nullptr;
+	}
+	UniqueFTGlyph glyphPtr(glyph);
+
+	const int baselineInAtlas{static_cast<int>(m_Font->size->metrics.ascender >> SUBPIXEL_SHIFT)};
+	const int glyphW{static_cast<int>(slot->advance.x >> SUBPIXEL_SHIFT)};
+
+	if (m_AtlasX + glyphW + m_StrokeWidth + m_AtlasPadding > m_AtlasWidth)
+	{
+		m_AtlasX = 0;
+		m_AtlasY += m_Height + m_AtlasPadding;
+	}
+
+	if (m_AtlasY + m_Height + m_StrokeWidth + m_AtlasPadding > m_AtlasHeight)
+	{
+		LOGERROR("Font texture atlas is full, cannot load more glyphs");
+		return nullptr;
+	}
+
+	m_IsDirty = true;
+	CFont::Offset offset{0,0};
+
+	const FT_Render_Mode renderMode{FT_RENDER_MODE_NORMAL};
+
+	if (m_StrokeWidth)
+	{
+		std::optional<CFont::Offset> offsetStroke{GenerateStrokeGlyphBitmap(glyph, codepoint, renderMode, baselineInAtlas)};
+		if (!offsetStroke.has_value())
+		{
+			LOGERROR("Failed to generate stroke glyph %u", codepoint);
+			return nullptr;
+		}
+
+		offset = offsetStroke.value();
+	}
+
+	std::optional<CFont::Offset> offsetGlyph{GenerateGlyphBitmap(glyph, codepoint, renderMode, offset, baselineInAtlas)};
+	if (!offsetGlyph.has_value())
+	{
+		LOGERROR("Failed to generate glyph %u", codepoint);
+		return nullptr;
+	}
+	offset = offsetGlyph.value();
+
+	CFont::GlyphData gd;
+	gd.u0 = static_cast<float>(m_AtlasX) / m_AtlasWidth;
+	gd.v0 = static_cast<float>(m_AtlasY) / m_AtlasHeight;
+	gd.u1 = static_cast<float>(m_AtlasX - offset.x + glyphW + m_StrokeWidth * 2) / m_AtlasWidth;
+	gd.v1 = static_cast<float>(m_AtlasY + offset.y + m_Height + m_StrokeWidth * 2) / m_AtlasHeight;
+
+	gd.x0 = offset.x - m_StrokeWidth;
+	gd.y0 = - (m_Height + offset.y + m_StrokeWidth);
+	gd.x1 = glyphW + m_StrokeWidth;
+	gd.y1 = m_StrokeWidth;
+
+	gd.xadvance = glyphW;
+	gd.defined = 1;
+
+	m_Glyphs.set(codepoint, gd);
+
+	// Update positions for next glyph.
+	m_AtlasX += glyphW + m_StrokeWidth + m_AtlasPadding;
+
+	return m_Glyphs.get(codepoint);
+}
+
+std::optional<CFont::Offset> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, const int baselineInAtlas)
+{
+	FT_Glyph strokedGlyph;
+	if (FT_Error error{FT_Glyph_Copy(glyph, &strokedGlyph)})
+	{
+		LOGERROR("Failed to copy glyph %u: %d", codepoint, error);
+		return std::nullopt;
+	}
+	UniqueFTGlyph strokeGlyphPtr(strokedGlyph);
+		
+	if (FT_Error error{FT_Glyph_StrokeBorder(&strokedGlyph, m_Stroker.get(), 0, 0)})
+	{
+		LOGERROR("Failed to stroke glyph %u: %d", codepoint, error);
+		return std::nullopt;
+	}
+
+	if (FT_Error error{FT_Glyph_To_Bitmap(&strokedGlyph, renderMode, nullptr, 0)})
+	{
+		LOGERROR("Failed to render glyph %u: %d", codepoint, error);
+		return std::nullopt;
+	}
+
+	FT_BitmapGlyph bitmapGlyph{reinterpret_cast<FT_BitmapGlyph>(strokedGlyph)};
+	FT_Bitmap& bitmapStroke{bitmapGlyph->bitmap};
+
+	CFont::Offset offset{0,0};
+	int targetStrokeY{m_AtlasY + m_StrokeWidth + baselineInAtlas - bitmapGlyph->top};
+	int targetStrokeX{m_AtlasX + m_StrokeWidth + bitmapGlyph->left};
+	if (targetStrokeX < m_AtlasX)
+	{
+		offset.x = bitmapGlyph->left + m_StrokeWidth;
+		targetStrokeX = m_AtlasX;
+	}
+	if (targetStrokeY < m_AtlasY)
+	{
+		offset.y = bitmapGlyph->top - baselineInAtlas - m_StrokeWidth;
+		targetStrokeY = m_AtlasY;
+	}
+	BlendGlyphBitmapToTexture(bitmapStroke, targetStrokeX, targetStrokeY, 0, 0, 0);
+	return offset;
+}
+
+std::optional<CFont::Offset> CFont::GenerateGlyphBitmap(FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, CFont::Offset offset, const int baselineInAtlas)
+{
+	if (FT_Error error{FT_Glyph_To_Bitmap(&glyph, renderMode, nullptr, 0)})
+	{
+		LOGERROR("Failed to render glyph %u: %d", codepoint, error);
+		return std::nullopt;
+	}
+	FT_BitmapGlyph bitmapGlyph{reinterpret_cast<FT_BitmapGlyph>(glyph)};
+	FT_Bitmap& bitmap{bitmapGlyph->bitmap};
+
+	int targetY{m_AtlasY + offset.y + m_StrokeWidth + baselineInAtlas - bitmapGlyph->top};
+	int targetX{m_AtlasX - offset.x + m_StrokeWidth + bitmapGlyph->left};
+	CFont::Offset newOffset{0,0};
+	if (targetX < m_AtlasX)
+	{
+		newOffset.x = bitmapGlyph->left + m_StrokeWidth;
+		targetX = m_AtlasX;
+	}
+
+	if (targetY < m_AtlasY)
+	{
+		newOffset.y = bitmapGlyph->top - baselineInAtlas - m_StrokeWidth;
+		targetY = m_AtlasY;
+	}
+
+	BlendGlyphBitmapToTexture(bitmap, targetX, targetY, 255, 255, 255);
+	return newOffset;
+}
+
+void CFont::UploadTextureAtlasToGPU()
+{
+	if (std::exchange(m_IsLoading, false))
+		return;
+
+	if (!m_IsDirty)
+		return;
+
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext = g_Renderer.GetDeviceCommandContext();
+	PROFILE2("Loading font texture");
+	GPU_SCOPED_LABEL(deviceCommandContext, "Loading font texture");
+
+	deviceCommandContext->UploadTextureRegion(
+		m_Texture->GetBackendTexture(),
+		m_TextureFormat,
+		m_TexData.get(),
+		m_AtlasSize,
+		0, 0, m_AtlasWidth, m_AtlasHeight
+	);
+
+	m_IsDirty = false;
+}
+
+void CFont::BlendGlyphBitmapToTexture(const FT_Bitmap& bitmap, int targetX, int targetY, u8 r, u8 g, u8 b)
+{
+	PROFILE2("BlendGlyphBitmapToTexture font texture generate");
+	if (m_TextureFormat == Renderer::Backend::Format::R8G8B8A8_UNORM)
+		BlendGlyphBitmapToTextureRGBA(bitmap, targetX, targetY, r, g, b);
+	else
+		BlendGlyphBitmapToTextureR8(bitmap, targetX, targetY);
+}
+
+void CFont::BlendGlyphBitmapToTextureRGBA(const FT_Bitmap& bitmap, int targetX, int targetY, u8 r, u8 g, u8 b)
+{
+	for (uint y{0}; y != bitmap.rows; ++y)
+	{
+		const u8* srcRow{bitmap.buffer + y * bitmap.pitch};
+		u8* dstRow{m_TexData.get() + ((targetY + y) * m_AtlasWidth + targetX) * m_TextureFormatStride};
+
+		for (uint x{0}; x != bitmap.width; ++x)
+		{
+			const PS::span<u8> tempDstRow{dstRow + x * m_TextureFormatStride, 4};
+			u8 alpha{srcRow[x]};
+
+			const float srcAlpha{m_StrokeWidth > 0 ? (*m_GammaCorrectionLUT)[alpha] : alpha/255.0f};
+			const float dstAlpha{tempDstRow[3] / 255.0f};
+			const float outAlpha{srcAlpha + dstAlpha * (1.0f - srcAlpha)};
+
+			if (outAlpha == 0.0f)
+				continue;
+
+			tempDstRow[0] = static_cast<u8>(std::round(((r * srcAlpha + tempDstRow[0] * dstAlpha * (1.0f - srcAlpha)) / outAlpha)));
+			tempDstRow[1] = static_cast<u8>(std::round(((g * srcAlpha + tempDstRow[1] * dstAlpha * (1.0f - srcAlpha)) / outAlpha)));
+			tempDstRow[2] = static_cast<u8>(std::round(((b * srcAlpha + tempDstRow[2] * dstAlpha * (1.0f - srcAlpha)) / outAlpha)));
+			tempDstRow[3] = static_cast<u8>(std::round(outAlpha * 255.0f));
 		}
 	}
-	width = std::max(width, lineWidth);
+}
+
+void  CFont::BlendGlyphBitmapToTextureR8(const FT_Bitmap& bitmap, int targetX, int targetY)
+{
+	for (uint y{0}; y != bitmap.rows; ++y)
+	{
+		const u8* srcRow{bitmap.buffer + y * bitmap.pitch};
+		u8* dstRow{m_TexData.get() + ((targetY + y) * m_AtlasWidth + targetX)};
+
+		std::memcpy(dstRow, srcRow, bitmap.width);
+	}
 }

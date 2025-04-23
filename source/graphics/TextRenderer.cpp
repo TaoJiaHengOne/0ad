@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -230,8 +230,6 @@ void CTextRenderer::Render(
 	{
 		SBatch& batch = *it;
 
-		const CFont::GlyphMap& glyphs = batch.font->GetGlyphs();
-
 		if (lastTexture != batch.font->GetTexture().get())
 		{
 			lastTexture = batch.font->GetTexture().get();
@@ -285,11 +283,14 @@ void CTextRenderer::Render(
 			i16 y = run.y;
 			for (size_t i = 0; i < run.text->size(); ++i)
 			{
-				const CFont::GlyphData* g = glyphs.get((*run.text)[i]);
+				const CFont::GlyphData* g = batch.font->GetGlyph((*run.text)[i]);
 
+				// Use the missing glyph symbol.
 				if (!g)
-					g = glyphs.get(0xFFFD); // Use the missing glyph symbol
-				if (!g) // Missing the missing glyph symbol - give up
+					g = batch.font->GetGlyph(0xFFFD);
+
+				// Missing the missing glyph symbol - give up.
+				if (!g)
 					continue;
 
 				uvs[idx*4].X = g->u1;

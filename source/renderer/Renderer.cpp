@@ -644,6 +644,8 @@ void CRenderer::RenderFrame2D(const bool renderGUI, const bool renderLogger)
 		// Profile information
 		g_ProfileViewer.RenderProfile(canvas);
 	}
+
+	this->GetFontManager().UploadTexturesAtlasToGPU();
 }
 
 void CRenderer::RenderScreenShot(const bool needsPresent)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -21,128 +21,186 @@
 
 #include "graphics/Font.h"
 #include "graphics/TextureManager.h"
+#include "i18n/L10n.h"
 #include "ps/CLogger.h"
+#include "ps/ConfigDB.h"
 #include "ps/CStr.h"
 #include "ps/CStrInternStatic.h"
 #include "ps/Filesystem.h"
 #include "renderer/Renderer.h"
 
+#include <string>
+#include <regex>
 #include <limits>
+
+namespace {
+struct FontSpec {
+	std::string type;
+	bool bold{false};
+	bool italic{false};
+	bool stroke{false};
+	int size{0};
+};
+
+FontSpec ParseFontSpec(const std::string& spec)
+{
+	// Regex breakdown:
+	//   ^([^\\-]+)           → capture fontType (one or more non-'-')
+	//   (?:-(bold|italic))?  → optional "-bold" or "-italic"
+	//   (?:-(stroke))?       → optional "-stroke"
+	//   -([0-9]+)$           → "-" then fontSize digits at end
+	// examples:
+	// "Roboto-italic-stroke-24",
+	// "OpenSans-bold-32",
+	// "Arial-stroke-16",
+	// "Lato-14"
+	static const std::regex pattern{R"(^([^\-]+)(?:-(bold|italic))?(?:-(stroke))?-([0-9]+)$)",
+		std::regex::icase};
+
+	std::smatch m;
+	if (!std::regex_match(spec, m, pattern))
+	{
+		LOGERROR("Invalid font specification: %s", spec.c_str());
+		return {};
+	}
+
+	FontSpec fs;
+	fs.type = m[1].str();
+
+	if (m[2].matched)
+	{
+		std::string style = m[2].str();
+		if (strcasecmp(style.c_str(), "bold") == 0)
+			fs.bold = true;
+		else if (strcasecmp(style.c_str(), "italic") == 0)
+			fs.italic = true;
+	}
+
+	if (m[3].matched)
+		fs.stroke = true;
+
+	fs.size = std::stoi(m[4].str());
+
+	return fs;
+}
+} // namespace
+
+CFontManager::CFontManager()
+{
+	FT_Library lib;
+	FT_Error error{FT_Init_FreeType(&lib)};
+	if (error)
+		throw std::runtime_error{"Failed to initialize FreeType " + std::to_string(error)};
+	m_FreeType.reset(lib);
+
+	m_GammaCorrectionLUT = std::make_shared<std::array<float, 256>>();
+
+	std::generate(m_GammaCorrectionLUT->begin(), m_GammaCorrectionLUT->end(), [i = 0]() mutable {
+		return std::pow((i++) / 255.0f, 1.0f / GAMMA_CORRECTION);
+	});
+}
 
 std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 {
-	FontsMap::iterator it = m_Fonts.find(fontName);
+	const std::string locale{g_L10n.GetCurrentLocale() != icu::Locale::getUS() ? g_L10n.GetCurrentLocaleString() : ""};
+	CStrIntern localeFontName{locale + fontName.string()};
+
+	FontsMap::iterator it{m_Fonts.find(localeFontName)};
 	if (it != m_Fonts.end())
 		return it->second;
 
-	std::shared_ptr<CFont> font(new CFont());
+	// TODO: use hooks or something to hotrealoding default font.
+	const std::string defaultFont{g_ConfigDB.Get("fonts.default", std::string{})};
 
-	if (!ReadFont(font.get(), fontName))
+	if (defaultFont.empty())
 	{
-		// Fall back to default font (unless this is the default font)
-		if (fontName == str_sans_10)
-			font.reset();
-		else
-			font = LoadFont(str_sans_10);
+		LOGERROR("Default font not set in config");
+		return nullptr;
 	}
 
-	m_Fonts[fontName] = font;
+	// FontName contain the format fontType(-fontBold|fontItalic)(-fontStroke)-fontSize.
+	// We are going to split it to get the fontType and fontSize.
+	FontSpec fontSpec{ParseFontSpec(fontName.string())};
+
+	if (fontSpec.type.empty())
+	{
+		LOGERROR("Failed to parse font specification: %s, using default font", fontName.string().c_str());
+		fontSpec = ParseFontSpec(str_sans_10.string());
+	}
+
+	// Check for font configuration or fallback.
+	const std::string fontToSearch{[&]
+		{
+			std::vector<std::string> candidateFonts;
+			// 3 types * 2 (bold, italic).
+			candidateFonts.reserve(6); 
+
+			// TODO: explicit Locale like RTL or Arabic fonts.
+			// 1. Locale-specific fonts first
+			if (!locale.empty())
+			{
+				candidateFonts.push_back(fmt::format("fonts.{}.{}.regular", locale, fontSpec.type));
+				if (fontSpec.bold)
+					candidateFonts.push_back(fmt::format("fonts.{}.{}.bold", locale, fontSpec.type));
+				if (fontSpec.italic)
+					candidateFonts.push_back(fmt::format("fonts.{}.{}.italic", locale, fontSpec.type));
+			}
+
+			// 2. Then global fonts
+			candidateFonts.push_back(fmt::format("fonts.{}.regular", fontSpec.type));
+			if (fontSpec.bold)
+				candidateFonts.push_back(fmt::format("fonts.{}.bold", fontSpec.type));
+			if (fontSpec.italic)
+				candidateFonts.push_back(fmt::format("fonts.{}.italic", fontSpec.type));
+
+			for (const std::string& key : candidateFonts)
+			{
+				std::string value = g_ConfigDB.Get(key, std::string{});
+				if (!value.empty())
+					return value;
+			}
+
+			// Fallback to default.
+			return defaultFont;
+		}()
+	};
+
+	std::shared_ptr<CFont> font{std::make_shared<CFont>(this->m_FreeType.get(), m_GammaCorrectionLUT)};
+
+	const VfsPath path(L"fonts/");
+	const VfsPath fntName(fontToSearch);
+	OsPath realPath;
+
+	if (!VfsFileExists(path / fntName))
+	{
+		LOGERROR("Font file %s not found", fontToSearch.c_str());
+		return nullptr;
+	}
+
+	g_VFS->GetOriginalPath(path / fntName, realPath);
+	if (realPath.empty())
+	{
+		LOGERROR("Font file %s not found", fontToSearch.c_str());
+		return nullptr;
+	}
+
+	// TODO: For now set strokeWith = 1, later we can expose it to the GUI.
+	if (!font.get()->SetFontFromPath(realPath.string8(), localeFontName.string(), fontSpec.size, fontSpec.stroke ? 1 : 0))
+	{
+		return nullptr;
+	}
+
+	m_Fonts[localeFontName] = font;
 	return font;
 }
 
-bool CFontManager::ReadFont(CFont* font, CStrIntern fontName)
+void CFontManager::UploadTexturesAtlasToGPU()
 {
-	const VfsPath path(L"fonts/");
-
-	// Read font definition file into a stringstream
-	std::shared_ptr<u8> buffer;
-	size_t size;
-	const VfsPath fntName(fontName.string() + ".fnt");
-	if (g_VFS->LoadFile(path / fntName, buffer, size) < 0)
+	for (auto& [fontName, fontPtr] : m_Fonts)
 	{
-		LOGERROR("Failed to open font file %s", (path / fntName).string8());
-		return false;
-	}
-	std::istringstream fontStream(
-		std::string(reinterpret_cast<const char*>(buffer.get()), size));
-
-	int version;
-	fontStream >> version;
-	// Make sure this is from a recent version of the font builder.
-	if (version != 101)
-	{
-		LOGERROR("Font %s has invalid version", fontName.c_str());
-		return false;
-	}
-
-	int textureWidth, textureHeight;
-	fontStream >> textureWidth >> textureHeight;
-
-	std::string format;
-	fontStream >> format;
-	if (format == "rgba")
-		font->m_HasRGB = true;
-	else if (format == "a")
-		font->m_HasRGB = false;
-	else
-	{
-		LOGWARNING("Invalid .fnt format string");
-		return false;
-	}
-
-	int mumberOfGlyphs;
-	fontStream >> mumberOfGlyphs;
-
-	fontStream >> font->m_LineSpacing;
-	fontStream >> font->m_Height;
-
-	font->m_BoundsX0 = std::numeric_limits<float>::max();
-	font->m_BoundsY0 = std::numeric_limits<float>::max();
-	font->m_BoundsX1 = -std::numeric_limits<float>::max();
-	font->m_BoundsY1 = -std::numeric_limits<float>::max();
-
-	for (int i = 0; i < mumberOfGlyphs; ++i)
-	{
-		int codepoint, textureX, textureY, width, height, offsetX, offsetY, advance;
-		fontStream >> codepoint
-			>> textureX >> textureY >> width >> height
-			>> offsetX >> offsetY >> advance;
-
-		if (codepoint < 0 || codepoint > 0xFFFF)
-		{
-			LOGWARNING("Font %s has invalid codepoint 0x%x", fontName.c_str(), codepoint);
+		if (!fontPtr)
 			continue;
-		}
 
-		const float u = static_cast<float>(textureX) / textureWidth;
-		const float v = static_cast<float>(textureY) / textureHeight;
-		const float w = static_cast<float>(width) / textureWidth;
-		const float h = static_cast<float>(height) / textureHeight;
-
-		CFont::GlyphData g =
-		{
-			u, -v, u + w, -v + h,
-			static_cast<i16>(offsetX), static_cast<i16>(-offsetY),
-			static_cast<i16>(offsetX + width), static_cast<i16>(-offsetY + height),
-			static_cast<i16>(advance)
-		};
-		font->m_Glyphs.set(static_cast<u16>(codepoint), g);
-
-		font->m_BoundsX0 = std::min(font->m_BoundsX0, static_cast<float>(g.x0));
-		font->m_BoundsY0 = std::min(font->m_BoundsY0, static_cast<float>(g.y0));
-		font->m_BoundsX1 = std::max(font->m_BoundsX1, static_cast<float>(g.x1));
-		font->m_BoundsY1 = std::max(font->m_BoundsY1, static_cast<float>(g.y1));
+		fontPtr->UploadTextureAtlasToGPU();
 	}
-
-	// Ensure the height has been found (which should always happen if the font includes an 'I').
-	ENSURE(font->m_Height);
-
-	// Load glyph texture
-	const VfsPath imageName(fontName.string() + ".png");
-	CTextureProperties textureProps(path / imageName,
-		font->m_HasRGB ? Renderer::Backend::Format::R8G8B8A8_UNORM : Renderer::Backend::Format::A8_UNORM);
-	textureProps.SetIgnoreQuality(true);
-	font->m_Texture = g_Renderer.GetTextureManager().CreateTexture(textureProps);
-
-	return true;
 }

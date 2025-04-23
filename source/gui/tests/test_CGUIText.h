@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 #include "gui/CGUI.h"
 #include "gui/CGUIText.h"
 #include "gui/SettingTypes/CGUIString.h"
+#include "i18n/L10n.h"
 #include "ps/CLogger.h"
 #include "ps/ConfigDB.h"
 #include "ps/Filesystem.h"
@@ -39,6 +40,7 @@ class TestCGUIText : public CxxTest::TestSuite
 	std::optional<CXeromycesEngine> m_XeromycesEngine;
 	CProfileViewer* m_Viewer = nullptr;
 	CRenderer* m_Renderer = nullptr;
+	std::unique_ptr<L10n> m_L10n;
 
 public:
 	void setUp()
@@ -56,14 +58,23 @@ public:
 		// TODO: decouple this.
 		CConfigDB::Initialise();
 		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "rendererbackend", "dummy");
+
+		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "fonts.default", "LinBiolinum_Rah.ttf");
+		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "fonts.sans.regular", "LinBiolinum_Rah.ttf");
+		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "fonts.sans.bold", "LinBiolinum_RBah.ttf");
+		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "fonts.sans.italic", "LinBiolinum_RIah.ttf");
+		CConfigDB::Instance()->SetValueString(CFG_SYSTEM, "fonts.mono.regular", "DejaVuSansMono.ttf");
+
 		g_VideoMode.InitNonSDL();
 		g_VideoMode.CreateBackendDevice(false);
 		m_Viewer = new CProfileViewer;
 		m_Renderer = new CRenderer(g_VideoMode.GetBackendDevice());
+		m_L10n = std::make_unique<L10n>();
 	}
 
 	void tearDown()
 	{
+		m_L10n.reset();
 		delete m_Renderer;
 		delete m_Viewer;
 		g_VideoMode.Shutdown();
@@ -83,11 +94,11 @@ public:
 	{
 		CGUI gui{*g_ScriptContext};
 
-		const CStrW font = L"console";
-		// Make sure this matches the value of the file.
-		// TODO: load dynamically.
-		const float lineHeight = 12.f;
-		const float lineSpacing = 15.f;
+		const CStrW font{L"mono-10"};
+		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+
+		const float lineHeight{static_cast<float>(fontMetrics.GetHeight())};
+		const float lineSpacing{static_cast<float>(fontMetrics.GetLineSpacing())};
 
 		CGUIString string;
 		CGUIText text;
@@ -114,13 +125,13 @@ public:
 		// We have 10 calls: the 9 words (wrap-around is split in two), the space after the newline.
 		TS_ASSERT_EQUALS(text.GetTextCalls().size(), 10);
 		TS_ASSERT_LESS_THAN(text.GetSize().Width, width);
-		TS_ASSERT_EQUALS(text.GetSize().Height, padding * 2 + lineHeight + lineSpacing * 4);
+		TS_ASSERT_EQUALS(text.GetSize().Height, padding * 2 + lineHeight + lineSpacing * 3);
 
 		align = EAlign::RIGHT;
 		text = CGUIText(gui, string, font, width, padding, align, nullptr);
 		TS_ASSERT_EQUALS(text.GetTextCalls().size(), 10);
 		TS_ASSERT_EQUALS(text.GetSize().Width, renderedWidth); // Should be the same width as the left-case.
-		TS_ASSERT_EQUALS(text.GetSize().Height, padding * 2 + lineHeight + lineSpacing * 4);
+		TS_ASSERT_EQUALS(text.GetSize().Height, padding * 2 + lineHeight + lineSpacing * 3);
 
 		width = 400.f;
 		padding = 3.0f;
@@ -194,7 +205,7 @@ public:
 		const CStrW text = firstWord + L" " + secondWord;
 		CGUIString string;
 		string.SetValue(text);
-		const CStrW font = L"console";
+		const CStrW font{L"mono-10"};
 		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
 
 		int firstWordWidth = 0, firstWordHeight = 0;
@@ -270,11 +281,10 @@ public:
 	{
 		CGUI gui{*g_ScriptContext};
 
-		const CStrW font = L"console";
-		// Make sure this matches the value of the file.
-		// TODO: load dynamically.
-		const float lineHeight = 12.f;
-		const float lineSpacing = 15.f;
+		const CStrW font{L"mono-10"};
+		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+		const float lineHeight{static_cast<float>(fontMetrics.GetHeight())};
+		const float lineSpacing{static_cast<float>(fontMetrics.GetLineSpacing())};
 
 		float renderedWidth = 0.f;
 		const float width = 200.f;
@@ -318,31 +328,32 @@ public:
 
 	void test_regression_rP26522()
 	{
-		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "mod" / "", VFS_MOUNT_MUST_EXIST));
-
 		CGUI gui{*g_ScriptContext};
 
-		const CStrW font = L"sans-bold-13";
+		const CStrW font{L"sans-bold-13"};
+		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+		const float lineHeight = fontMetrics.GetHeight();
+		const float lineSpacing = fontMetrics.GetLineSpacing();
+
 		CGUIString string;
 		CGUIText text;
 
 		// rP26522 introduced a bug that triggered in rare cases with word-wrapping.
 		string.SetValue(L"90–120 min");
-		text = CGUIText(gui, string, L"sans-bold-13", 53, 8.f, EAlign::LEFT, nullptr);
+		text = CGUIText(gui, string, font, 53, 8.f, EAlign::LEFT, nullptr);
 
 		TS_ASSERT_EQUALS(text.GetTextCalls().size(), 2);
-		TS_ASSERT_EQUALS(text.GetSize().Height, 14 + 9 + 8 * 2);
+		TS_ASSERT_EQUALS(text.GetSize().Height, lineHeight + lineSpacing + 8 * 2);
 	}
 
 	void test_multiple_blank_spaces()
 	{
 		CGUI gui{*g_ScriptContext};
 
-		const CStrW font = L"console";
-		// Make sure this matches the value of the file.
-		// TODO: load dynamically.
-		const float lineHeight = 12.f;
-		const float lineSpacing = 15.f;
+		const CStrW font{L"mono-10"};
+		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+		const float lineHeight{static_cast<float>(fontMetrics.GetHeight())};
+		const float lineSpacing{static_cast<float>(fontMetrics.GetLineSpacing())};
 
 		CGUIString string;
 		CGUIText text;
@@ -357,7 +368,8 @@ public:
 		// Blank spaces are treated as a word.
 		TS_ASSERT_EQUALS(text.GetTextCalls().size(), 26);
 		TS_ASSERT_EQUALS(text.GetSize().Height, lineHeight + lineSpacing * 4);
-		TS_ASSERT_EQUALS(text.GetSize().Width, 89.f);
+		// The longest line in text is "    spaces   " which amounts to 13 characters with a character width of 6.
+		TS_ASSERT_EQUALS(text.GetSize().Width, 78.f);
 		renderedWidth = text.GetSize().Width;
 
 		align = EAlign::RIGHT;
