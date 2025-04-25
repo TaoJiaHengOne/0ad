@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -236,12 +236,10 @@ void CModel::ValidatePosition()
 	// For CPU skinning, we precompute as much as possible so that the only
 	// per-vertex work is a single matrix*vec multiplication.
 	// For GPU skinning, we try to minimise CPU work by doing most computation
-	// in the vertex shader instead.
-	// Using g_RenderingOptions to detect CPU vs GPU is a bit hacky,
-	// and this doesn't allow the setting to change at runtime, but there isn't
-	// an obvious cleaner way to determine what data needs to be computed.
-	bool worldSpaceBoneMatrices = !g_RenderingOptions.GetGPUSkinning();
-	bool computeBlendMatrices = !g_RenderingOptions.GetGPUSkinning();
+	// in the compute shader instead.
+	const bool isGPUSkinningEnabled{g_RenderingOptions.GetGPUSkinning()};
+	const bool worldSpaceBoneMatrices{!isGPUSkinningEnabled};
+	const bool computeBlendMatrices{!isGPUSkinningEnabled};
 
 	if (m_BoneMatrices && worldSpaceBoneMatrices)
 	{
