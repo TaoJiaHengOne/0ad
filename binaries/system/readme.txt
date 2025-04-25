@@ -88,6 +88,9 @@ Advanced / diagnostic:
 -hashtest-full=X    whether to enable computation of full hashes in replaymode (default true). Can be disabled to improve performance.
 -hashtest-quick=X   whether to enable computation of quick hashes in replaymode (default false). Can be enabled for debugging purposes.
 
+-fixed-frame-frequency=F fixes the frame time. With that flags it equals to 1/F. For example,
+                         if F=60 it means the game behaves like it's always running with 60 FPS.
+
 Archive builder:
 -archivebuild=PATH            system PATH of the base directory containing mod data to be archived/precached
                                 specify all mods it depends on with -mod=NAME

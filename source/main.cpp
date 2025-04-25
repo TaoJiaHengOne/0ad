@@ -362,7 +362,7 @@ static void RendererIncrementalLoad()
 	while (more && timer_Time() - startTime < maxTime);
 }
 
-static void Frame(RL::Interface* rlInterface)
+static void Frame(RL::Interface* rlInterface, const int fixedFrameFrequency)
 {
 	g_Profiler2.RecordFrameStart();
 	PROFILE2("frame");
@@ -382,7 +382,8 @@ static void Frame(RL::Interface* rlInterface)
 
 	// .. new method - filtered and more smooth, but errors may accumulate
 #else
-	const float realTimeSinceLastFrame = 1.0 / g_frequencyFilter->SmoothedFrequency();
+	const float realTimeSinceLastFrame{static_cast<float>(
+		1.0 / (fixedFrameFrequency > 0 ? fixedFrameFrequency : g_frequencyFilter->SmoothedFrequency()))};
 #endif
 	ENSURE(realTimeSinceLastFrame > 0.0f);
 
@@ -530,6 +531,9 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 	const bool isVisualReplay = args.Has("replay-visual");
 	const bool isNonVisualReplay = args.Has("replay");
 	const bool isVisual = !args.Has("autostart-nonvisual");
+
+	const int fixedFrameFrequency{args.Has("fixed-frame-frequency")
+		? args.Get("fixed-frame-frequency").ToInt() : 0};
 
 	const OsPath replayFile(
 		isVisualReplay ? args.Get("replay-visual") :
@@ -695,7 +699,7 @@ static void RunGameOrAtlas(const PS::span<const char* const> argv)
 		while (g_Shutdown == ShutdownType::None)
 		{
 			if (isVisual)
-				Frame(rlInterface ? &*rlInterface : nullptr);
+				Frame(rlInterface ? &*rlInterface : nullptr, fixedFrameFrequency);
 			else if(rlInterface)
 				rlInterface->TryApplyMessage();
 			else
