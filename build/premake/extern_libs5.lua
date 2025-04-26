@@ -747,7 +747,11 @@ extern_lib_defs = {
 		end,
 		link_settings = function()
 			if os.istarget("windows") then
-				libdirs { libraries_dir.."wxwidgets/lib/vc_lib" }
+				if arch == "amd64" then
+					libdirs { libraries_dir.."wxwidgets/lib/vc_x64_lib" }
+				else
+					libdirs { libraries_dir.."wxwidgets/lib/vc_lib" }
+				end
 			else
 				pkgconfig.add_links(nil, wx_config_path(), "--unicode=yes --libs std,gl")
 			end
