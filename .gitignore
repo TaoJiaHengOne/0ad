@@ -12,6 +12,7 @@ build/workspaces/*
 # Libraries
 libraries/macos
 libraries/win32
+libraries/win64
 
 libraries/source/cxxtest-4.4/*
 libraries/source/fcollada/*
