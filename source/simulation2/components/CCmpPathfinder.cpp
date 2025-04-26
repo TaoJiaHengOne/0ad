@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include "simulation2/MessageTypes.h"
 #include "simulation2/components/ICmpObstruction.h"
 #include "simulation2/components/ICmpObstructionManager.h"
+#include "simulation2/components/ICmpPosition.h"
 #include "simulation2/components/ICmpTerrain.h"
 #include "simulation2/components/ICmpWaterManager.h"
 #include "simulation2/helpers/HierarchicalPathfinder.h"
@@ -855,6 +856,88 @@ bool CCmpPathfinder::IsGoalReachable(entity_pos_t x0, entity_pos_t z0, const Pat
 		m_PathfinderHier->FindNearestPassableNavcell(i, j, passClass);
 
 	return m_PathfinderHier->IsGoalReachable(i, j, goal, passClass);
+}
+
+std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_id_t> units, entity_pos_t x, entity_pos_t z) const
+{
+	PROFILE2("DistributeAround");
+
+	std::vector<CFixedVector2D> positions;
+	if (units.empty())
+		return positions;
+
+	positions.reserve(units.size());
+
+	// Initialize spiral parameters
+	fixed angle = fixed::Zero();
+	fixed radius = fixed::FromInt(1);
+	const fixed increment = fixed::FromInt(7) / 4;
+
+	// Calculate the angle step so that at this radius we don't crowd the units
+	fixed angleStep = fixed::FromInt(9).MulDiv(fixed::FromInt(1), fixed::Pi().Multiply(radius));
+
+	for (size_t i = 0; i < units.size(); ++i)
+	{
+		CFixedVector2D offset(radius, fixed::Zero());
+		offset = offset.Rotate(angle);
+
+		positions.emplace_back(x + offset.X, z + offset.Y);
+
+		angle += angleStep;
+		// If we complete a circle, increase radius and recalculate angle step
+		if (angle >= fixed::Pi().Multiply(fixed::FromInt(2)))
+		{
+			angle = fixed::Zero();
+			radius += increment;
+			angleStep = fixed::FromInt(9).MulDiv(fixed::FromInt(1), fixed::Pi().Multiply(radius));
+		}
+	}
+
+	// Get current unit positions to calculate travel distances
+	std::vector<CFixedVector2D> unitPositions;
+	unitPositions.reserve(units.size());
+
+	CmpPtr<ICmpPosition> cmpPosition(GetSystemEntity());
+	for (entity_id_t unit : units)
+	{
+		CmpPtr<ICmpPosition> unitPos(GetSimContext(), unit);
+		if (!unitPos || !unitPos->IsInWorld())
+			return positions;
+
+		CFixedVector2D pos(unitPos->GetPosition2D());
+		unitPositions.push_back(pos);
+	}
+
+	// Optimize positions by swapping them if it reduces total travel distance.
+	bool improved;
+	do
+	{
+		improved = false;
+		for (size_t i = 0; i < positions.size(); ++i)
+		{
+			// Helper to compute squared distance between two points as integers
+			auto distSq = [](const CFixedVector2D& p1, const CFixedVector2D& p2) -> u32 {
+				i32 dx = (p1.X - p2.X).ToInt_RoundToInfinity();
+				i32 dy = (p1.Y - p2.Y).ToInt_RoundToInfinity();
+				return dx*dx + dy*dy;
+			};
+
+			for (size_t j = i + 1; j < positions.size(); ++j)
+			{
+				u32 currentDistSq = distSq(positions[i], unitPositions[i]) + distSq(positions[j], unitPositions[j]);
+				u32 swappedDistSq = distSq(positions[j], unitPositions[i]) + distSq(positions[i], unitPositions[j]);
+
+				// Swap if it reduces total squared distance
+				if (swappedDistSq < currentDistSq)
+				{
+					std::swap(positions[i], positions[j]);
+					improved = true;
+				}
+			}
+		}
+	} while (improved);
+
+	return positions;
 }
 
 bool CCmpPathfinder::CheckMovement(const IObstructionTestFilter& filter,

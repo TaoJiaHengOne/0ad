@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -224,6 +224,8 @@ public:
 	void GetDebugData(u32& steps, double& time, Grid<u8>& grid) const override;
 
 	void SetAtlasOverlay(bool enable, pass_class_t passClass = 0) override;
+
+	std::vector<CFixedVector2D> DistributeAround(std::vector<entity_id_t> units, entity_pos_t x, entity_pos_t z) const override;
 
 	bool CheckMovement(const IObstructionTestFilter& filter, entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r, pass_class_t passClass) const override;
 

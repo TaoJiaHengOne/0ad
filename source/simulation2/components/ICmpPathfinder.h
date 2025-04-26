@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -129,6 +129,11 @@ public:
 	 * If the debug overlay is enabled, render the path that will computed by ComputePath.
 	 */
 	virtual void SetDebugPath(entity_pos_t x0, entity_pos_t z0, const PathGoal& goal, pass_class_t passClass) = 0;
+
+	/**
+	 * Distribute units around a point, returning a list of positions.
+	 */
+	virtual std::vector<CFixedVector2D> DistributeAround(std::vector<entity_id_t> units, entity_pos_t x, entity_pos_t z) const = 0;
 
 	/**
 	 * @return true if the goal is reachable from (x0, z0) for the given passClass, false otherwise.

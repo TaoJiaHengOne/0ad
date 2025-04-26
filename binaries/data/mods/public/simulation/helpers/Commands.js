@@ -104,9 +104,18 @@ var g_Commands = {
 
 	"walk": function(player, cmd, data)
 	{
-		GetFormationUnitAIs(data.entities, player, cmd, data.formation).forEach(cmpUnitAI => {
-			cmpUnitAI.Walk(cmd.x, cmd.z, cmd.queued, cmd.pushFront);
-		});
+		const ents = data.entities.length;
+		const uais = GetFormationUnitAIs(data.entities, player, cmd, data.formation);
+		if (uais.length === 1 || uais.length !== ents)
+			uais.forEach(cmpUnitAI => {
+				cmpUnitAI.Walk(cmd.x, cmd.z, cmd.queued, cmd.pushFront);
+			});
+		else {
+			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
+			uais.forEach((cmpUnitAI, index) => {
+				cmpUnitAI.Walk(positions[index].x, positions[index].y, cmd.queued, cmd.pushFront);
+			});
+		}
 	},
 
 	"walk-custom": function(player, cmd, data)
@@ -130,9 +139,18 @@ var g_Commands = {
 
 	"attack-walk": function(player, cmd, data)
 	{
-		GetFormationUnitAIs(data.entities, player, cmd, data.formation).forEach(cmpUnitAI => {
-			cmpUnitAI.WalkAndFight(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued, cmd.pushFront);
-		});
+		const ents = data.entities.length;
+		const uais = GetFormationUnitAIs(data.entities, player, cmd, data.formation);
+		if (uais.length === 1 || uais.length !== ents)
+			uais.forEach(cmpUnitAI => {
+				cmpUnitAI.WalkAndFight(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued, cmd.pushFront);
+			});
+		else {
+			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
+			uais.forEach((cmpUnitAI, index) => {
+				cmpUnitAI.WalkAndFight(positions[index].x, positions[index].y, cmd.targetClasses, cmd.allowCapture, cmd.queued, cmd.pushFront);
+			});
+		}
 	},
 
 	"attack-walk-custom": function(player, cmd, data)
@@ -152,9 +170,18 @@ var g_Commands = {
 
 	"patrol": function(player, cmd, data)
 	{
-		GetFormationUnitAIs(data.entities, player, cmd, data.formation).forEach(cmpUnitAI =>
-			cmpUnitAI.Patrol(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued)
-		);
+		const ents = data.entities.length;
+		const uais = GetFormationUnitAIs(data.entities, player, cmd, data.formation);
+		if (uais.length === 1 || uais.length !== ents)
+			uais.forEach(cmpUnitAI => {
+				cmpUnitAI.Patrol(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued)
+			});
+		else {
+			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
+			uais.forEach((cmpUnitAI, index) => {
+				cmpUnitAI.Patrol(positions[index].x, positions[index].y, cmd.targetClasses, cmd.allowCapture, cmd.queued)
+			});
+		}
 	},
 
 	"heal": function(player, cmd, data)
