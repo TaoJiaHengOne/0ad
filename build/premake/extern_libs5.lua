@@ -142,10 +142,6 @@ local function add_default_links(def)
 		names = def.unix_names
 	end
 
-	local arch_suffix = ""
-	if os.istarget("windows") and arch == "amd64" then
-		arch_suffix = "64"
-	end
 	local suffix = "d"
 	-- library is overriding default suffix (typically "" to indicate there is none)
 	if def["dbg_suffix"] then
@@ -157,8 +153,6 @@ local function add_default_links(def)
 	if not os.istarget("windows") then
 		suffix = ""
 	end
-
-	suffix = arch_suffix .. suffix
 
 	for i,name in pairs(names) do
 		filter "Debug"
