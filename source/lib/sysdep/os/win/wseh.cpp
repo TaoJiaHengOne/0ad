@@ -162,7 +162,11 @@ static const wchar_t* GetSehExceptionDescription(const EXCEPTION_RECORD* er,
 		// special case: display type and address.
 		const wchar_t* accessType = (ei[0])? L"writing" : L"reading";
 		const ULONG_PTR address = ei[1];
+#if defined(_WIN64)
+		swprintf_s(description, maxChars, L"Access violation %ls 0x%08llX", accessType, address);
+#else
 		swprintf_s(description, maxChars, L"Access violation %ls 0x%08X", accessType, address);
+#endif
 		return description;
 	}
 	case EXCEPTION_DATATYPE_MISALIGNMENT:    return L"Datatype misalignment";

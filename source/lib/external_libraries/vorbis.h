@@ -29,12 +29,21 @@
 
 #include <vorbis/vorbisfile.h>
 
+// TODO: remove hardcoded libraries.
 #if MSC_VERSION
+#if _WIN64
+# ifdef NDEBUG
+#  pragma comment(lib, "vorbisfile.lib")
+# else
+#  pragma comment(lib, "vorbisfiled.lib")
+# endif
+#else
 # ifdef NDEBUG
 #  pragma comment(lib, "libvorbisfile.lib")
 # else
 #  pragma comment(lib, "libvorbisfiled.lib")
 # endif
+#endif
 #endif
 
 #endif	// #ifndef INCLUDED_VORBIS

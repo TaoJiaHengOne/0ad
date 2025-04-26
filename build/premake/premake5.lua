@@ -44,8 +44,6 @@ end
 -- Root directory of project checkout relative to this .lua file
 rootdir = "../.."
 
-dofile("extern_libs5.lua")
-
 -- detect compiler for non-Windows
 if os.istarget("macosx") then
 	cc = "clang"
@@ -116,6 +114,9 @@ else
 		print("WARNING: Cannot determine architecture from GCC, assuming x86")
 	end
 end
+
+-- External libraries should know about arch.
+dofile("extern_libs5.lua")
 
 -- Test whether we need to link libexecinfo.
 -- This is mostly the case on musl systems, as well as on BSD systems : only glibc provides the
@@ -538,7 +539,11 @@ function project_add_manifest()
 	-- To use XP-style themed controls, we need to use the manifest to specify the
 	-- desired version. (This must be set in the game's .exe in order to affect Atlas.)
 	-- We can remove it once we remove wxWidgets
-	linkoptions { "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df'\"" }
+	if arch == "amd64" then
+		linkoptions { "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df'\"" }
+	else
+		linkoptions { "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df'\"" }
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -577,7 +582,11 @@ function setup_static_lib_project (project_name, rel_source_dirs, extern_libs, e
 	-- The exception to this principle is Atlas UI, which is not a static library.
 	rtti "off"
 
-	if os.istarget("macosx") then
+	if os.istarget("windows") then
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
+	elseif os.istarget("macosx") then
 		architecture(macos_arch)
 		buildoptions { "-arch " .. macos_arch }
 		linkoptions { "-arch " .. macos_arch }
@@ -607,6 +616,9 @@ function setup_shared_lib_project (project_name, rel_source_dirs, extern_libs, e
 
 	if os.istarget("windows") then
 		links { "delayimp" }
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
 	elseif os.istarget("macosx") then
 		architecture(macos_arch)
 		buildoptions { "-arch " .. macos_arch }
@@ -1083,7 +1095,11 @@ function setup_main_exe ()
 		end
 
 		-- see manifest.cpp
-		project_add_manifest()
+		project_add_manifest(arch)
+
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
 
 	elseif os.istarget("linux") or os.istarget("bsd") then
 
@@ -1161,6 +1177,9 @@ function setup_atlas_project(project_name, target_type, rel_source_dirs, rel_inc
 	if os.istarget("windows") then
 		-- Link to required libraries
 		links { "winmm", "delayimp" }
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
 
 	elseif os.istarget("macosx") then
 		architecture(macos_arch)
@@ -1285,7 +1304,10 @@ function setup_atlas_frontend_project (project_name)
 	-- Platform Specifics
 	if os.istarget("windows") then
 		-- see manifest.cpp
-		project_add_manifest()
+		project_add_manifest(arch)
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
 
 	else -- Non-Windows, = Unix
 		links { "AtlasObject" }
@@ -1321,6 +1343,9 @@ function setup_collada_project(project_name, target_type, rel_source_dirs, rel_i
 	-- Platform Specifics
 	if os.istarget("windows") then
 		characterset "MBCS"
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
 	elseif os.istarget("linux") then
 		defines { "LINUX" }
 
@@ -1374,7 +1399,6 @@ function setup_collada_projects()
 	},{	-- include
 	},{	-- extern_libs
 		"fcollada",
-		"iconv",
 		"libxml2"
 	},{	-- extra_params
 	})
@@ -1482,7 +1506,10 @@ function setup_tests()
 
 		links { "delayimp" }
 
-		project_add_manifest()
+		project_add_manifest(arch)
+		if arch == "amd64" then
+			architecture("x86_64")
+		end
 
 	elseif os.istarget("linux") or os.istarget("bsd") then
 

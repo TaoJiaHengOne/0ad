@@ -9,13 +9,21 @@
 if os.istarget("macosx") then
 	libraries_dir = rootdir.."/libraries/macos/"
 elseif os.istarget("windows") then
-	libraries_dir = rootdir.."/libraries/win32/"
+	if arch == "amd64" then
+		libraries_dir = rootdir.."/libraries/win64/"
+	else
+		libraries_dir = rootdir.."/libraries/win32/"
+	end
 else
 	-- No Unix-specific libs yet (use source directory instead!)
 end
 -- directory for shared, bundled libraries
 if os.istarget("windows") then
-	libraries_source_dir = rootdir.."/libraries/win32/"
+	if arch == "amd64" then
+		libraries_source_dir = rootdir.."/libraries/win64/"
+	else
+		libraries_source_dir = rootdir.."/libraries/win32/"
+	end
 else
 	libraries_source_dir = rootdir.."/libraries/source/"
 end
@@ -134,6 +142,10 @@ local function add_default_links(def)
 		names = def.unix_names
 	end
 
+	local arch_suffix = ""
+	if os.istarget("windows") and arch == "amd64" then
+		arch_suffix = "64"
+	end
 	local suffix = "d"
 	-- library is overriding default suffix (typically "" to indicate there is none)
 	if def["dbg_suffix"] then
@@ -145,6 +157,8 @@ local function add_default_links(def)
 	if not os.istarget("windows") then
 		suffix = ""
 	end
+
+	suffix = arch_suffix .. suffix
 
 	for i,name in pairs(names) do
 		filter "Debug"
@@ -712,9 +726,15 @@ extern_lib_defs = {
 		link_settings = function()
 			if os.istarget("windows") then
 				add_default_lib_paths("vorbis")
-				add_default_links({
-					win_names  = { "libvorbisfile" },
-				})
+				if arch == "amd64" then
+					add_default_links({
+						win_names  = { "vorbisfile" },
+					})
+				else
+					add_default_links({
+						win_names  = { "libvorbisfile" },
+					})
+				end
 			else
 				pkgconfig.add_links("vorbisfile")
 			end
