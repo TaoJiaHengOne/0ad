@@ -9,7 +9,7 @@ set -e
 cd "$(dirname "$0")"
 
 PV=5.0.0-beta4
-LIB_VERSION=${PV}+wfg0
+LIB_VERSION=${PV}+wfg1
 
 fetch()
 {
@@ -59,7 +59,7 @@ patch -d "premake-core-${PV}" -p1 <patches/0001-Make-clang-default-toolset-for-B
 			${MAKE} "${JOBS}" -f Bootstrap.mak windows
 			;;
 		Darwin)
-			${MAKE} "${JOBS}" -f Bootstrap.mak osx
+			${MAKE} "${JOBS}" -f Bootstrap.mak PREMAKE_OPTS="--zlib-src=none --curl-src=none" osx
 			;;
 		*BSD)
 			${MAKE} "${JOBS}" -f Bootstrap.mak bsd

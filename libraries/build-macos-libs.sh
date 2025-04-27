@@ -28,7 +28,7 @@ SDL2_VERSION="SDL2-2.24.0"
 # NOTE: remember to also update LIB_URL below when changing version
 BOOST_VERSION="boost_1_81_0"
 # NOTE: remember to also update LIB_URL below when changing version
-WXWIDGETS_VERSION="wxWidgets-3.1.4"
+WXWIDGETS_VERSION="wxWidgets-3.2.8"
 # libpng was included as part of X11 but that's removed from Mountain Lion
 # (also the Snow Leopard version was ancient 1.2)
 PNG_VERSION="libpng-1.6.44"
@@ -476,7 +476,7 @@ echo "Building wxWidgets..."
 	LIB_VERSION="${WXWIDGETS_VERSION}"
 	LIB_ARCHIVE="$LIB_VERSION.tar.bz2"
 	LIB_DIRECTORY="$LIB_VERSION"
-	LIB_URL="http://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/"
+	LIB_URL="http://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/"
 
 	mkdir -p wxwidgets
 	cd wxwidgets
@@ -509,7 +509,6 @@ echo "Building wxWidgets..."
 				--without-x
 				--disable-stc
 				--disable-webview
-				--disable-webkit
 				--disable-webviewwebkit
 				--disable-webviewie
 				--without-libjpeg"
@@ -645,6 +644,7 @@ OGG_DIR="$(pwd)/libogg"
 			-S $LIB_DIRECTORY \
 			-G "Unix Makefiles" \
 			-DCMAKE_INSTALL_PREFIX="$OGG_DIR" \
+			-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 			-DBUILD_SHARED_LIBS=OFF \
 			-DINSTALL_DOCS=OFF \
 			-DCMAKE_C_FLAGS="$CFLAGS" \
@@ -685,6 +685,7 @@ echo "Building libvorbis..."
 			-G "Unix Makefiles" \
 			-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
 			-DCMAKE_PREFIX_PATH="$OGG_DIR" \
+			-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 			-DBUILD_SHARED_LIBS=OFF \
 			-DINSTALL_DOCS=OFF \
 			-DCMAKE_C_FLAGS="$CFLAGS" \
