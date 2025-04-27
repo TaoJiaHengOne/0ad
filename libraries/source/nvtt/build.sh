@@ -6,7 +6,7 @@ set -e
 cd "$(dirname "$0")"
 
 PV=28209
-LIB_VERSION=${PV}
+LIB_VERSION=${PV}+wfg1
 
 fetch()
 {
@@ -45,6 +45,11 @@ fi
 # unpack
 rm -Rf nvtt-${PV}
 "${TAR}" xf nvtt-${PV}.tar.xz
+
+# patch
+patch -d nvtt-${PV} -p1 <patches/0001-Don-t-overspecify-flags.patch
+patch -d nvtt-${PV} -p1 <patches/0002-Bump-cmake-min-version-to-3.10.patch
+patch -d nvtt-${PV} -p1 <patches/0003-Use-execute_process-insted-of-exec_program.patch
 
 # build
 (
