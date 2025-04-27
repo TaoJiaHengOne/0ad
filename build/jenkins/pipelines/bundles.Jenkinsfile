@@ -32,6 +32,8 @@ pipeline {
 
     parameters {
         string(name: 'BUNDLE_VERSION', defaultValue: '0.28.0dev', description: 'Bundle Version')
+        string(name: 'NIGHTLY_REVISION', defaultValue: 'HEAD', description: 'Nightly SVN revision from which to build the bundles')
+        booleanParam(name: 'PATCH_BUILD', defaultValue: false, description: 'Apply patch generated from upstream job patch-release onto the nightly build')
         booleanParam(name: 'DO_GZIP', defaultValue: true, description: 'Create .gz unix tarballs as well as .xz')
     }
 
@@ -44,10 +46,20 @@ pipeline {
             steps {
                 checkout changelog: false, poll: false, scm: [
                     $class: 'SubversionSCM',
-                    locations: [[local: '.', remote: 'https://svn.wildfiregames.com/nightly-build/trunk']],
+                    locations: [[local: '.', remote: "https://svn.wildfiregames.com/nightly-build/trunk@${NIGHTLY_REVISION}"]],
                     quietOperation: false,
                     workspaceUpdater: [$class: 'UpdateWithCleanUpdater']]
-                sh 'svn cleanup'
+            }
+        }
+
+        stage('Patch Nightly Build') {
+            when {
+                expression { return params.PATCH_BUILD }
+            }
+            steps {
+                copyArtifacts projectName: '0ad-patch-release', selector: upstream()
+                sh "svn patch ${BUNDLE_VERSION}.patch"
+                untar file: "${params.BUNDLE_VERSION}-nightly-patch.tar.gz", keepPermissions: false
             }
         }
 
@@ -145,6 +157,10 @@ pipeline {
     post {
         success {
             archiveArtifacts '*.dmg,*.exe,*.tar.gz,*.tar.xz,*.minisig,*.md5sum,*.sha1sum'
+        }
+        cleanup {
+            sh 'svn revert -R .'
+            sh 'svn cleanup --remove-unversioned'
         }
     }
 }
