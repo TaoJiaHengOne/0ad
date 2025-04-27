@@ -14,7 +14,9 @@ if "%1" == "--amd64" (
     set "REPO_NAME=windows-libs"
 )
 
-svn co https://svn.wildfiregames.com/public/%REPO_NAME%/trunk@%svnrev% %LIBS_PATH% || exit /b 1
+svn co https://svn.wildfiregames.com/public/%REPO_NAME%/trunk@%svnrev% %LIBS_PATH% || ^
+svn export --force https://svn.wildfiregames.com/public/%REPO_NAME%/trunk@%svnrev% %LIBS_PATH% || ^
+exit /b 1
 
 rem **Copy dependencies' binaries to binaries/system/**
 
