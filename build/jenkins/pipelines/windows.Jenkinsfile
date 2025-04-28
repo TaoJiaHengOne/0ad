@@ -17,8 +17,27 @@
 
 // This pipeline builds the game on Windows (with the MSVC 15.0 compiler) and runs tests.
 
-def visualStudioPath = '"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe"'
-def buildOptions = '/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test %JOBS% /nologo -clp:NoSummary'
+def visualStudioPath = 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe'
+def buildOptions = '/p:PlatformToolset=v141_xp /p:XPDeprecationWarning=false /t:pyrogenesis /t:AtlasUI /t:test /nologo -clp:NoSummary'
+
+def getHOSTTYPE(String arch) {
+    return arch == 'win64' ? 'amd64' : 'x86'
+}
+
+def getParserConfig(String arch, String buildType) {
+    def config
+    if (arch.startsWith('win32')) {
+        config = [ 'name': 'Win32', 'id': 'win32' + buildType]
+        } else {
+        config = [ 'name': 'Win64', 'id': 'win64' + buildType ]
+    }
+    if (buildType.matches('Debug')) {
+        config['name'] += ' Debug Build'
+    } else {
+        config['name'] += ' Release Build'
+    }
+    return config
+}
 
 pipeline {
     // Stop previous build in pull requests, but not in branches
@@ -28,86 +47,116 @@ pipeline {
         booleanParam description: 'Non-incremental build', name: 'CLEANBUILD'
     }
 
-    agent {
-        node {
-            label 'WindowsAgent'
-            customWorkspace 'workspace/win32-pch'
-        }
-    }
+    agent none
 
     stages {
-        stage('Pre-build') {
-            steps {
-                discoverGitReferenceBuild()
-
-                bat 'git lfs pull -I binaries/data/tests'
-                bat 'git lfs pull -I "binaries/data/mods/_test.*"'
-
-                bat 'cd libraries && get-windows-libs.bat'
-                bat '(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\lib libraries\\win32\\wxwidgets\\lib) ^& IF %ERRORLEVEL% LEQ 1 exit 0'
-                bat '(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\include libraries\\win32\\wxwidgets\\include) ^& IF %ERRORLEVEL% LEQ 1 exit 0'
-                bat 'cd build\\workspaces && update-workspaces.bat --jenkins-tests'
-
-                script {
-                    if (params.CLEANBUILD) {
-                        bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug /t:Clean"
-                        bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release /t:Clean"
+        stage('Windows Build') {
+            matrix {
+                axes {
+                    axis {
+                        name 'ARCH'
+                        values 'win32', 'win64'
+                    }
+                    axis {
+                        name 'BUILD_TYPE'
+                        values 'Debug', 'Release'
                     }
                 }
-            }
-        }
 
-        stage('Debug Build') {
-            steps {
-                bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Debug ${buildOptions}"
-            }
-            post {
-                failure {
-                    script {
-                        if (!params.CLEANBUILD) {
-                            build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
+                environment {
+                    HOSTTYPE = getHOSTTYPE(env.ARCH)
+                }
+
+                stages {
+                    stage('Matrix run') {
+                        agent {
+                            node {
+                                label 'WindowsAgent'
+                                // Share workspace for different build types as the precompiled libs
+                                // are only seperated by arch.
+                                customWorkspace "workspace/${ARCH}-pch"
+                            }
+                        }
+
+                        stages {
+                            stage('Pre-build') {
+                                steps {
+                                    bat 'git lfs pull -I binaries/data/tests'
+                                    bat 'git lfs pull -I "binaries/data/mods/_test.*"'
+
+                                    script {
+                                        if (env.ARCH.startsWith('win64')) {
+                                            bat 'cd libraries && get-windows-libs.bat --amd64'
+                                        } else {
+                                            bat 'cd libraries && get-windows-libs.bat'
+                                        }
+                                    }
+                                    bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\lib libraries\\${ARCH}\\wxwidgets\\lib) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+                                    bat "(robocopy /MIR /NDL /NJH /NJS /NP /NS /NC E:\\wxWidgets-3.2.6\\include libraries\\${ARCH}\\wxwidgets\\include) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+                                    bat 'cd build\\workspaces && update-workspaces.bat --jenkins-tests'
+
+                                    script {
+                                        if (params.CLEANBUILD) {
+                                            bat "cd build\\workspaces\\vs2017 && \"${visualStudioPath}\" pyrogenesis.sln /p:Configuration=Debug /t:Clean"
+                                            bat "cd build\\workspaces\\vs2017 && \"${visualStudioPath}\" pyrogenesis.sln /p:Configuration=Release /t:Clean"
+                                        }
+                                    }
+                                }
+                            }
+
+                            stage('Build') {
+                                steps {
+                                    powershell """
+                                        cd build\\workspaces\\vs2017
+                                        & \"${visualStudioPath}\" pyrogenesis.sln /p:Configuration=${BUILD_TYPE} ${buildOptions} \$env:JOBS | Tee-Object -FilePath ${BUILD_TYPE}-build.log
+                                    """
+                                }
+                                post {
+                                    failure {
+                                        script {
+                                            if (!params.CLEANBUILD) {
+                                                build wait: false, job: "$JOB_NAME", parameters: [booleanParam(name: 'CLEANBUILD', value: true)]
+                                            }
+                                        }
+                                    }
+                                    always {
+                                        script {
+                                            def config = getParserConfig(env.ARCH, env.BUILD_TYPE)
+                                            recordIssues(
+                                                tool: analysisParser(
+                                                    analysisModelId: 'msbuild',
+                                                    name: config['name'],
+                                                    id : config['id'],
+                                                    pattern: "build\\workspaces\\vs2017\\${BUILD_TYPE}-build.log"
+                                                ),
+                                                skipPublishingChecks: true,
+                                                enabledForFailure: true,
+                                                qualityGates: [[threshold: 1, type: 'TOTAL', criticality: 'FAILURE']]
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            stage('Test') {
+                                steps {
+                                    timeout(time: 15) {
+                                        script {
+                                            def bin = env.BUILD_TYPE == 'Debug' ? 'test_dbg' : 'test'
+                                            bat "cd binaries\\system && ${bin}.exe > cxxtest.xml"
+                                        }
+                                    }
+                                }
+                                post {
+                                    always {
+                                        junit(skipPublishingChecks: true, testResults: 'binaries/system/cxxtest.xml')
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-
-        stage('Debug Tests') {
-            steps {
-                timeout(time: 15) {
-                    bat 'cd binaries\\system && test_dbg.exe > cxxtest-debug.xml'
-                }
-            }
-            post {
-                always {
-                    junit 'binaries/system/cxxtest-debug.xml'
-                }
-            }
-        }
-
-        stage('Release Build') {
-            steps {
-                bat "cd build\\workspaces\\vs2017 && ${visualStudioPath} pyrogenesis.sln /p:Configuration=Release ${buildOptions}"
-            }
-        }
-
-        stage('Release Tests') {
-            steps {
-                timeout(time: 5) {
-                    bat 'cd binaries\\system && test.exe > cxxtest-release.xml'
-                }
-            }
-            post {
-                always {
-                    junit 'binaries/system/cxxtest-release.xml'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            recordIssues enabledForFailure: true, qualityGates: [[threshold: 1, type: 'NEW']], tool: msBuild()
         }
     }
 }
