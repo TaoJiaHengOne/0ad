@@ -22,6 +22,8 @@
 # pragma warning(disable:4505) // unreferenced local function has been removed
 # pragma warning(disable:4365) // signed unsigned mismatch
 # pragma warning(disable:4191) // unsafe conversion
+# pragma warning(disable:4244) // narrowing
+# pragma warning(disable:4267) // narrowing
 # pragma warning(disable:4820) // incorrect padding
 # pragma warning(disable:4668) // macro error
 # pragma warning(disable:4710) // function not inlined
