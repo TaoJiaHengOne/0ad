@@ -3,6 +3,7 @@ Version=1.4
 Name=0 A.D.
 Exec=0ad %F
 Icon=0ad
+StartupWMClass=pyrogenesis
 Terminal=false
 MimeType=application/x-pyromod+zip;
 Type=Application
