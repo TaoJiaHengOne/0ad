@@ -281,6 +281,9 @@ function project_set_build_flags()
 		-- use native wchar_t type (not typedef to unsigned short)
 		nativewchar "on"
 
+		-- FIXME: conversion warnings, should add -Wconversion to gcc and clang flags as well
+		disablewarnings { "4267" }
+
 	else	-- *nix
 
 		-- exclude most non-essential build options for minimal-flags
@@ -292,6 +295,7 @@ function project_set_build_flags()
 				"-Wno-invalid-offsetof",	-- offsetof on non-POD types (see comment in renderer/PatchRData.cpp)
 
 				"-Wextra",
+				-- "-Wconversion", FIXME: should seriously consider fixing so this warning can be enabled.
 				"-Wno-missing-field-initializers",	-- (this is common in external headers we can't fix)
 
 				-- add some other useful warnings that need to be enabled explicitly
