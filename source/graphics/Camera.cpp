@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -418,7 +418,7 @@ CBoundingBoxAligned CCamera::GetBoundsInViewPort(const CBoundingBoxAligned& boun
 	for (size_t idxBegin = 0; idxBegin < 8; ++idxBegin)
 		for (size_t nextComponent = 0; nextComponent < 3; ++nextComponent)
 		{
-			const size_t idxEnd = idxBegin | (1u << nextComponent);
+			const size_t idxEnd = idxBegin | (static_cast<size_t>(1) << nextComponent);
 			if (idxBegin == idxEnd || isBehindNearPlane[idxBegin] == isBehindNearPlane[idxEnd])
 				continue;
 			CVector3D intersection;
