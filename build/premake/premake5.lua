@@ -36,15 +36,6 @@ if _ACTION == "gmake" then
 	os.exit(1)
 end
 
--- On Windows check if wxWidgets is available, if not disable atlas and emit warning.
--- This is because there are currently not prebuilt binaries provided.
-if not _OPTIONS["without-atlas"] and os.istarget("windows") then
-	if not os.isfile("../../libraries/win32/wxwidgets/include/wx/wx.h") then
-		print("wxWidgets not found, disableing atlas")
-		_OPTIONS["without-atlas"] = ""
-	end
-end
-
 -- Root directory of project checkout relative to this .lua file
 rootdir = "../.."
 
@@ -116,6 +107,16 @@ else
 		arch = "ppc64"
 	else
 		print("WARNING: Cannot determine architecture from GCC, assuming x86")
+	end
+end
+
+-- On Windows check if wxWidgets is available, if not disable atlas and emit warning.
+-- This is because there are currently not prebuilt binaries provided.
+if not _OPTIONS["without-atlas"] and os.istarget("windows") then
+	local win_libs_dir = rootdir .. "/libraries/" .. ( arch == "amd64" and "win64" or "win32" )
+	if not os.isfile( win_libs_dir .. "/wxwidgets/include/wx/wx.h") then
+		print("wxWidgets not found, disabling atlas")
+		_OPTIONS["without-atlas"] = ""
 	end
 end
 
