@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -557,7 +557,7 @@ void MapSidebar::OnFirstDisplay()
 	AtObj sizes = AtlasObject::LoadFromJSON(*qrySizes.sizes);
 	wxChoice* sizeChoice = wxDynamicCast(FindWindow(ID_RandomSize), wxChoice);
 	for (AtIter s = sizes["Data"]["item"]; s.defined(); ++s)
-		sizeChoice->Append(wxString::FromUTF8(s["Name"]), reinterpret_cast<void*>((*s["Tiles"]).getLong()));
+		sizeChoice->Append(wxString::FromUTF8(s["Name"]), reinterpret_cast<void*>(static_cast<intptr_t>((*s["Tiles"]).getLong())));
 	sizeChoice->SetSelection(0);
 
 	// Load the RMS script list
