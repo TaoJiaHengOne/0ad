@@ -759,7 +759,7 @@ function placeLine(teamsArray, distance, groupedDistance, startAngle)
 	const mapCenter = g_Map.getCenter();
 	const numAcross = 2 * getNumPlayers() / teamsArray.length; // if its two teams, numAcross is the same as numPlayers.
 	const dist = fractionToTiles(numAcross == 2 ? 0.45 : 0.66 + (-0.01 * numAcross));
-	groupedDistance = groupedDistance * (3.00 + (-0.225 * numAcross));
+	groupedDistance *= (3.00 + (-0.225 * numAcross));
 	for (let i = 0; i < teamsArray.length; ++i)
 	{
 		let safeDist = distance;

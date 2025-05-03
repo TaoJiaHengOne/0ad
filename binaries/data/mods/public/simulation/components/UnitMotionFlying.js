@@ -210,7 +210,7 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 			else if (pos.y > targetHeight)
 			{
 				pos.y = Math.max(targetHeight, pos.y - turnLength * this.template.ClimbRate);
-				this.pitch = -1 * this.pitch;
+				this.pitch *= -1;
 			}
 		}
 	}

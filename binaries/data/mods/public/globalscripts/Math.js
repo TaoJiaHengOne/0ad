@@ -23,7 +23,7 @@ Math.cos = function(a)
 
 	// make b = 0 if a < pi/2 and b=1 if a > pi/2
 	var b = (a-Math.PI/2) + Math.abs(a-Math.PI/2);
-	b = b/(b+1e-30); // normalize b to one while avoiding divide by zero errors.
+	b /=(b+1e-30); // normalize b to one while avoiding divide by zero errors.
 
 	// if a > pi/2 send a to pi-a, otherwise just send a to -a which has no effect
 	// Using the symmetry cos(x) = -cos(pi-x) to bring a to the 0 to pi/2 range.
@@ -197,7 +197,7 @@ Math.exp = function(x)
 		return iPart;
 
 	// the integer part is known, work further with the decimal part of x
-	x = x - Math.floor(x); // x \in [0,1)
+	x -= Math.floor(x); // x \in [0,1)
 
 	// taylor series around 0
 	// max error ~=~ 10^(-16)
