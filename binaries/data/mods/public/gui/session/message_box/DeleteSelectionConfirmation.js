@@ -15,6 +15,6 @@ DeleteSelectionConfirmation.prototype.Buttons = [
 	},
 	{
 		"caption": translate("Yes"),
-		"onPress": function() { this.deleteSelection();  }
+		"onPress": function() { this.deleteSelection(); }
 	}
 ];

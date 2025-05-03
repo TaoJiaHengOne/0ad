@@ -15,8 +15,8 @@ function test_deepCompare()
 	TS_ASSERT(!deepCompare({ "foo": undefined }, {}));
 
 	// Ordering in objects does not matter.
-	TS_ASSERT(deepCompare({ "foo": NaN, "bar": NaN }, { "foo": NaN, "bar": NaN  }));
-	TS_ASSERT(deepCompare({ "foo": NaN, "bar": NaN }, { "bar": NaN, "foo": NaN  }));
+	TS_ASSERT(deepCompare({ "foo": NaN, "bar": NaN }, { "foo": NaN, "bar": NaN }));
+	TS_ASSERT(deepCompare({ "foo": NaN, "bar": NaN }, { "bar": NaN, "foo": NaN }));
 
 	// Test some other JS structures.
 	TS_ASSERT(deepCompare(new Set(), new Set()));

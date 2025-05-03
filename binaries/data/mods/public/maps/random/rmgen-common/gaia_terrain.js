@@ -280,7 +280,7 @@ function createVolcano(position, tileClass, terrainTexture, lavaTextures, smoke,
 /**
  * Paint the given terrain texture in the given sizes at random places of the map to diversify monotone land texturing.
  */
-function createPatches(sizes, terrain, constraints, count,  tileClass, failFraction =  0.5)
+function createPatches(sizes, terrain, constraints, count, tileClass, failFraction = 0.5)
 {
 	for (const size of sizes)
 		createAreas(

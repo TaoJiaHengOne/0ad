@@ -814,7 +814,7 @@ g_SelectionPanels.Research = {
 				addResearchToQueue(data.item.researchFacilityId, t);
 			})(tech);
 
-			let showTemplateFunc =  (t => function() {
+			let showTemplateFunc = (t => function() {
 				showTemplateDetails(
 					t,
 					GetTemplateData(data.unitEntStates.find(state => state.id == data.item.researchFacilityId).template).nativeCiv);

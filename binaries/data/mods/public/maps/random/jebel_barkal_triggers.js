@@ -120,7 +120,7 @@ var jebelBarkal_firstCityPatrolTime = (difficulty, isNomad) =>
 var jebelBarkal_firstAttackTime = (difficulty, isNomad) =>
 	jebelBarkal_attackInterval(0, difficulty) +
 	2 * Math.max(0, 3 - difficulty) +
-	(isNomad ?  9 - difficulty : 0);
+	(isNomad ? 9 - difficulty : 0);
 
 /**
  * Account for varying mapsizes and number of players when spawning attackers.

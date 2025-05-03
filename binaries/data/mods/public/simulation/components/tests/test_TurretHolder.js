@@ -162,7 +162,7 @@ Engine.AddEntity = function() {
 	return spawned;
 }
 
-const GetUpgradedTemplate = (_, template)  => template === "units/iber/cavalry_javelineer_b" ? "units/iber/cavalry_javelineer_a" : template;
+const GetUpgradedTemplate = (_, template) => template === "units/iber/cavalry_javelineer_b" ? "units/iber/cavalry_javelineer_a" : template;
 Engine.RegisterGlobal("GetUpgradedTemplate", GetUpgradedTemplate);
 cmpTurretHolder.OnOwnershipChanged({
 	"to": 1,

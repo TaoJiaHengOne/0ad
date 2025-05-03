@@ -76,7 +76,7 @@ class BarterButton
 		});
 
 		let isSelected = this.resourceCode == this.barterButtonManager.selectedResource;
-		let icon = "stretched:" +  (isSelected ? this.SelectedModifier : "") + this.iconPath;
+		let icon = "stretched:" + (isSelected ? this.SelectedModifier : "") + this.iconPath;
 		this.sellIcon.sprite = (neededResourcesSell ? this.DisabledModifier : "") + icon;
 		this.buyIcon.sprite = (neededResourcesBuy ? this.DisabledModifier : "") + icon;
 

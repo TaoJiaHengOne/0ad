@@ -21,7 +21,7 @@ class Menu
 		if (handlerNames.length > menuButtons.length)
 			throw new Error(
 				"There are " + handlerNames.length + " menu buttons defined, " +
-				"but only " + menuButtons.length  + " objects!");
+				"but only " + menuButtons.length + " objects!");
 
 		this.buttons = handlerNames.map((handlerName, i) => {
 			let handler = new MenuButtons.prototype[handlerName](menuButtons[i], pauseControl, playerViewControl, chat);
