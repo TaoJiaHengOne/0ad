@@ -161,11 +161,11 @@ function* GenerateMap(mapSettings) {
 				0,
 				[Math.floor(fractionToTiles(0.01))]),
 			[
-				new LayeredPainter([tHill,tMainTerrain], [Math.floor(elevRand / 3), 40]),
+				new LayeredPainter([tHill, tMainTerrain], [Math.floor(elevRand / 3), 40]),
 				new SmoothElevationPainter(ELEVATION_SET, elevRand, Math.floor(elevRand / 3)),
 				new TileClassPainter(clHill)
 			],
-			[avoidClasses(clPlayer, 16),stayClasses(clLand, 28)]);
+			[avoidClasses(clPlayer, 16), stayClasses(clLand, 28)]);
 	}
 
 	const nonMountainPosition = Vector2D.add(mapCenter, new Vector2D(0, fractionToTiles(0.10)).rotate(startAngle).rotate(Math.PI)).round();
@@ -192,7 +192,7 @@ function* GenerateMap(mapSettings) {
 				new SmoothElevationPainter(ELEVATION_SET, elevRand, randIntInclusive(18, 30)),
 				new TileClassPainter(clMountain)
 			],
-			[avoidClasses(clNotMountain,2, clMountain, 3)]);
+			[avoidClasses(clNotMountain, 2, clMountain, 3)]);
 	}
 	for (let m = 0; m < randIntInclusive(100, 180); ++m) {
 		const elevRand = randIntInclusive(24, 38);
@@ -218,7 +218,7 @@ function* GenerateMap(mapSettings) {
 	const [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
 	createDefaultForests(
 		[tMainTerrain, tForestFloor1, tForestFloor2, pForest1, pForest2],
-		[avoidClasses(clPlayer, 20, clForest, 17, clMountain, 8, clBaseResource,2), stayClasses(clLand, 4)],
+		[avoidClasses(clPlayer, 20, clForest, 17, clMountain, 8, clBaseResource, 2), stayClasses(clLand, 4)],
 		clForest,
 		forestTrees);
 
@@ -227,8 +227,8 @@ function* GenerateMap(mapSettings) {
 	g_Map.log("Creating dirt patches");
 	createLayeredPatches(
 	 [scaleByMapSize(3, 6), scaleByMapSize(5, 10), scaleByMapSize(8, 21)],
-	 [[tMainTerrain,tTier1Terrain],[tTier1Terrain,tTier2Terrain], [tTier2Terrain,tTier3Terrain]],
-	 [1,1],
+	 [[tMainTerrain, tTier1Terrain], [tTier1Terrain, tTier2Terrain], [tTier2Terrain, tTier3Terrain]],
+	 [1, 1],
 	 [avoidClasses(clForest, 0, clDirt, 5, clPlayer, 12), stayClasses(clLand, 5)],
 	 scaleByMapSize(15, 45),
 	 clDirt);

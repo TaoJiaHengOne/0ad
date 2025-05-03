@@ -71,7 +71,7 @@ Trigger.prototype.IntervalAction = function(data)
 	var cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
 		"type": "dialog",
-		"players": [1,2,3,4,5,6,7,8],
+		"players": [1, 2, 3, 4, 5, 6, 7, 8],
 		"dialogName": "yes-no",
 		"data": {
 			"text": {

@@ -90,7 +90,7 @@ Math.atan = function(a)
 /**
  * Approximation of arctangent of y/x, returns angle from -pi to pi
  */
-Math.atan2 = function(y,x)
+Math.atan2 = function(y, x)
 {
 	// get unsigned x,y for ease of calculation, this means all angles are in the range [0, pi/2]
 	var ux = Math.abs(x);

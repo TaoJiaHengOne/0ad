@@ -95,7 +95,7 @@ ChainPlacer.prototype.place = function(constraint)
 			     Math.abs(this.centerPosition.y - pos.y) > this.maxDistance))
 				continue;
 
-			if (gotRet[at(pos.x,pos.y)] != 1)
+			if (gotRet[at(pos.x, pos.y)] != 1)
 				continue;
 
 			if (pos.x > 0 && gotRet[at(pos.x - 1, pos.y)] == 0 ||

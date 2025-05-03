@@ -1670,7 +1670,7 @@ function ClusterEntities(ents, separationDistance)
 		for (let i = matrix.length - 1; i >= 0 && !closeClusters; --i)
 			for (let j = i - 1; j >= 0 && !closeClusters; --j)
 				if (matrix[i][j] < distSq)
-					closeClusters = [i,j];
+					closeClusters = [i, j];
 
 		// if no more close clusters found, just return all found clusters so far
 		if (!closeClusters)
@@ -1694,16 +1694,16 @@ function ClusterEntities(ents, separationDistance)
 		}
 		// remove the rows and columns in the matrix for the merged clusters,
 		// and the clusters themselves from the cluster list
-		clusters.splice(closeClusters[0],1);
-		clusters.splice(closeClusters[1],1);
-		matrix.splice(closeClusters[0],1);
-		matrix.splice(closeClusters[1],1);
+		clusters.splice(closeClusters[0], 1);
+		clusters.splice(closeClusters[1], 1);
+		matrix.splice(closeClusters[0], 1);
+		matrix.splice(closeClusters[1], 1);
 		for (let i = 0; i < matrix.length; ++i)
 		{
 			if (matrix[i].length > closeClusters[0])
-				matrix[i].splice(closeClusters[0],1);
+				matrix[i].splice(closeClusters[0], 1);
 			if (matrix[i].length > closeClusters[1])
-				matrix[i].splice(closeClusters[1],1);
+				matrix[i].splice(closeClusters[1], 1);
 		}
 		// add a new row of distances to the matrix and the new cluster
 		clusters.push(newCluster);

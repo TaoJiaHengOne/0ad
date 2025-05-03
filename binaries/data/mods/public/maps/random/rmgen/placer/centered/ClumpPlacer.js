@@ -38,7 +38,7 @@ ClumpPlacer.prototype.place = function(constraint)
 	let perim = 4 * radius * 2 * Math.PI;
 	let intPerim = Math.ceil(perim);
 
-	let ctrlPts = 1 + Math.floor(1.0/Math.max(this.smoothness,1.0/intPerim));
+	let ctrlPts = 1 + Math.floor(1.0/Math.max(this.smoothness, 1.0/intPerim));
 
 	if (ctrlPts > radius * 2 * Math.PI)
 		ctrlPts = Math.floor(radius * 2 * Math.PI) + 1;

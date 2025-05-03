@@ -192,7 +192,7 @@ GameSettings.prototype.Attributes.PlayerColor = class PlayerColor extends GameSe
 GameSettings.prototype.Attributes.PlayerColor.prototype.DefaultColors = [
 	{ "r": 10, "g": 10, "b": 190 },
 	{ "r": 230, "g": 10, "b": 10 },
-	{ "r": 125 , "g": 235, "b": 15 },
+	{ "r": 125, "g": 235, "b": 15 },
 	{ "r": 255, "g": 255, "b": 55 },
 	{ "r": 130, "g": 0, "b": 230 },
 	{ "r": 255, "g": 130, "b": 0 },

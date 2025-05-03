@@ -138,7 +138,7 @@ function* GenerateMap(mapSettings)
 				0,
 				[Math.floor(fractionToTiles(0.01))]),
 			[
-				new LayeredPainter([tCliff, tHill,tMainTerrain], [Math.floor(elevRand / 8), 40]),
+				new LayeredPainter([tCliff, tHill, tMainTerrain], [Math.floor(elevRand / 8), 40]),
 				new SmoothElevationPainter(ELEVATION_SET, elevRand, randIntInclusive(18, 25)),
 				new TileClassPainter(clHill)
 			],
