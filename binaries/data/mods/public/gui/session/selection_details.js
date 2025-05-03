@@ -333,7 +333,7 @@ function displaySingle(entState)
 		// Reveal phases to mutual allies and observers
 		if (g_ViewedPlayer == -1 || playerState.isMutualAlly[g_ViewedPlayer])
 		{
-			const civPhase = g_SimState.players[entState.player].phase
+			const civPhase = g_SimState.players[entState.player].phase;
 			civPhaseEmblems = "session/panel_phase_emblems_" + civPhase + ".png";
 			const civPhaseData = GetTechnologyData("phase_" + civPhase + "_" + playerState.civ, playerState.civ) ||
 				GetTechnologyData("phase_" + civPhase, playerState.civ);

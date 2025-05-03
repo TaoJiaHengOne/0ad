@@ -388,7 +388,7 @@ Attack.prototype.GetBestAttackAgainst = function(target, allowCapture)
 		const prefA = getPreferrence(a);
 		const prefB = getPreferrence(b);
 		return (types.indexOf(a) + (prefA > 0 ? prefA + types.length : 0)) -
-			(types.indexOf(b) + (prefB > 0 ? prefB + types.length : 0))
+			(types.indexOf(b) + (prefB > 0 ? prefB + types.length : 0));
 	}).pop();
 };
 

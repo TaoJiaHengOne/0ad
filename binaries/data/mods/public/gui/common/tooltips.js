@@ -978,7 +978,7 @@ function getRequirementsTooltip(enabled, requirements, civ)
 	if ("Tooltip" in requirements)
 		return objectionFont(translate(requirements.Tooltip));
 
-	warn("Complex requirements found, but no tooltip specified. More complex requirements can't be translated on the fly easily.")
+	warn("Complex requirements found, but no tooltip specified. More complex requirements can't be translated on the fly easily.");
 	return "";
 }
 

@@ -60,6 +60,6 @@ class SavegameDeleter
 			error("Could not delete saved game: " + gameID);
 
 		for (let handler of this.savegameListChangeHandlers)
-			handler.onSavegameListChange()
+			handler.onSavegameListChange();
 	}
 }

@@ -23,7 +23,7 @@ Engine.LoadComponentScript("interfaces/ModifiersManager.js");
 
 let applyModifierOverride = (key, val, ent) => {
 	return val;
-}
+};
 
 AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
 	"ApplyModifiers": (key, val, ent) => {
@@ -56,12 +56,12 @@ TS_ASSERT_EQUALS(cmpLootNoXp.GetXp(), 0);
 
 applyModifierOverride = (key, val, ent) => {
 	return key == "Loot/xp" ? 100 : val;
-}
+};
 
 TS_ASSERT_EQUALS(cmpLootNoXp.GetXp(), 100);
 
 applyModifierOverride = (key, val, ent) => {
 	return key == "Loot/wood" ? 100 : val;
-}
+};
 
 TS_ASSERT_EQUALS(cmpLootNoXp.GetResources().wood, 100);

@@ -10,7 +10,7 @@ Engine.TextureExists = () => false;
 Engine.OpenChildPage = () => {};
 Engine.SwitchGuiPage = () => {};
 
-var translateObjectKeys = () => {}
+var translateObjectKeys = () => {};
 var translate = x => x;
 var translateWithContext = x => x;
 
@@ -38,7 +38,7 @@ function autostartHost(cmdLineArgs, networked = false)
 	Engine.LoadScript("gui/common/Observable.js");
 	Engine.LoadScript("gui/common/settings.js");
 
-	Engine.LoadScript("gui/maps/MapCache.js")
+	Engine.LoadScript("gui/maps/MapCache.js");
 
 	Engine.LoadScript("gamesettings/");
 	Engine.LoadScript("gamesettings/attributes/");

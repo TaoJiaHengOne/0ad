@@ -40,7 +40,7 @@ class GameSettingWarning
 			this.gameSettingWarning.parent.size.rtop,
 			neighborElement.size.rright,
 			this.gameSettingWarning.parent.size.rbottom
-		)
+		);
 		this.gameSettingWarning.hidden = !caption;
 	}
 }

@@ -283,7 +283,7 @@ var g_Commands = {
 			}
 			else
 			{
-				cmpUnitAI.DropAtNearestDropSite(cmd.queued, false)
+				cmpUnitAI.DropAtNearestDropSite(cmd.queued, false);
 				cmpUnitAI.WalkAndFight(cmd.position.x, cmd.position.z, cmd.targetClasses, cmd.allowCapture, true, false);
 			}
 		});

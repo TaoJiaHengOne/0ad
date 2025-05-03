@@ -186,7 +186,7 @@ function EntitySelection()
 EntitySelection.prototype.UpdateFormationSelectionBehaviour = function()
 {
 	this.SelectFormationAsOne = Engine.ConfigDB_GetValue("user", "gui.session.selectformationasone") == "true";
-}
+};
 
 /**
  * Deselect everything but entities of the chosen type.

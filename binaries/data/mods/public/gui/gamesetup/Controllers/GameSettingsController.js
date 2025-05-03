@@ -99,7 +99,7 @@ class GameSettingsController
 				error("There was an error loading game settings. You may need to disable persistent match settings.");
 				warn(err?.toString() ?? uneval(err));
 				if (err.stack)
-					warn(err.stack)
+					warn(err.stack);
 			}
 		}
 

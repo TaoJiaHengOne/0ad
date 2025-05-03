@@ -53,6 +53,6 @@ class ProductionRow
 
 	hide()
 	{
-		this.productionRow.hidden = true
+		this.productionRow.hidden = true;
 	}
 }

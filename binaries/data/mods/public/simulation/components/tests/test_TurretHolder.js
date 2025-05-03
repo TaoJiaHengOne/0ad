@@ -160,7 +160,7 @@ Engine.AddEntity = function() {
 		});
 	}
 	return spawned;
-}
+};
 
 const GetUpgradedTemplate = (_, template) => template === "units/iber/cavalry_javelineer_b" ? "units/iber/cavalry_javelineer_a" : template;
 Engine.RegisterGlobal("GetUpgradedTemplate", GetUpgradedTemplate);
@@ -202,7 +202,7 @@ Engine.AddEntity = function(t) {
 		"IsInWorld": () => true
 	});
 	return spawned;
-}
+};
 
 cmpTurretHolder = ConstructComponent(turretHolderID, "TurretHolder", {
 	"TurretPoints": {

@@ -19,7 +19,7 @@ class SavedGameLabel
 				savedGameLabel.parent.size.rtop,
 				bottomRightPanel.size.rleft,
 				savedGameLabel.parent.size.rbottom
-			)
+			);
 			savedGameLabel.hidden = false;
 		}
 	}

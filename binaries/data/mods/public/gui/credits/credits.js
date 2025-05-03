@@ -38,7 +38,7 @@ function init()
 		if (!json || !json.Content)
 		{
 			if (category == "translators")
-				warn("Translators credits are not present, pull translations from the nightly build to get them.")
+				warn("Translators credits are not present, pull translations from the nightly build to get them.");
 			else
 				error("Could not load credits for " + category + "!");
 			continue;

@@ -13,7 +13,7 @@ class TradeDialog
 		registerPlayersInitHandler(this.onPlayersInit.bind(this));
 		Engine.GetGUIObjectByName("closeTrade").onPress = this.close.bind(this);
 
-		registerSimulationUpdateHandler(this.updateIfOpen.bind(this))
+		registerSimulationUpdateHandler(this.updateIfOpen.bind(this));
 		registerEntitySelectionChangeHandler(this.updateIfOpen.bind(this));
 		playerViewControl.registerViewedPlayerChangeHandler(this.onViewedPlayerChange.bind(this));
 	}

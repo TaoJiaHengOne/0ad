@@ -5,8 +5,8 @@ Engine.LoadHelperScript("Player.js");
 
 const players = [10, 11];
 
-ConstructComponent(players[0], "Diplomacy", null)
-const cmpDiplomacy = ConstructComponent(players[1], "Diplomacy", {})
+ConstructComponent(players[0], "Diplomacy", null);
+const cmpDiplomacy = ConstructComponent(players[1], "Diplomacy", {});
 TS_ASSERT_EQUALS(cmpDiplomacy.GetTeam(), -1);
 TS_ASSERT_UNEVAL_EQUALS(cmpDiplomacy.GetAllies(), []);
 TS_ASSERT_UNEVAL_EQUALS(cmpDiplomacy.GetEnemies(), []);

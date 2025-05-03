@@ -28,7 +28,7 @@ var AccountSettingsPage = {
 
 	async _changePasswordLoop(...args)
 	{
-		const changePasswordButton = Engine.GetGUIObjectByName("as_ChangePasswordBtn")
+		const changePasswordButton = Engine.GetGUIObjectByName("as_ChangePasswordBtn");
 		while (true)
 		{
 			await new Promise(resolve => {

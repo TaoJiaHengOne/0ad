@@ -138,7 +138,7 @@ Diplomacy.prototype.SetDiplomacy = function(dipl)
 {
 	const playerID = Engine.QueryInterface(this.entity, IID_Player)?.GetPlayerID();
 	if (playerID === undefined)
-		return
+		return;
 
 	this.diplomacy = dipl.slice();
 

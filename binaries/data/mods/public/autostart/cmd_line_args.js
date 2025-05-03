@@ -116,19 +116,19 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 			value = [value];
 		// TODO: support more than 8 players
 		return value.find(x => x[0] == i)?.substring(2);
-	}
+	};
 
 	for (let i = 1; i <= settings.playerCount.nbPlayers; ++i)
 	{
-		const civ = getPlayer("civ", i)
+		const civ = getPlayer("civ", i);
 		if (civ)
 			settings.playerCiv.setValue(i - 1, civ);
 
-		const team = +getPlayer("team", i)
+		const team = +getPlayer("team", i);
 		if (team)
 			settings.playerTeam.setValue(i - 1, team - 1);
 
-		const ai = getPlayer("ai", i)
+		const ai = getPlayer("ai", i);
 		if (ai)
 			settings.playerAI.set(i - 1, {
 				"bot": ai,

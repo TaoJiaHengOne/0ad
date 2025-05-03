@@ -91,7 +91,7 @@ TechnologyManager.prototype.Technology.prototype.Finish = function()
 
 	const template = TechnologyTemplates.Get(this.templateName);
 	if (!template)
-		error("Trying to finish non-existing technology: " + this.templateName + ".")
+		error("Trying to finish non-existing technology: " + this.templateName + ".");
 
 	if (template.soundComplete)
 		Engine.QueryInterface(SYSTEM_ENTITY, IID_SoundManager)?.PlaySoundGroup(template.soundComplete, this.researcher);

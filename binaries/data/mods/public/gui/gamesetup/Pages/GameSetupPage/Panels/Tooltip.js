@@ -25,6 +25,6 @@ class Tooltip
 			this.onScreenTooltip.parent.size.rtop,
 			neighborElement.size.rleft,
 			this.onScreenTooltip.parent.size.rbottom
-		)
+		);
 	}
 }

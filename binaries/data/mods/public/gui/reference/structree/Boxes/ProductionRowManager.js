@@ -47,7 +47,7 @@ class ProductionRowManager
 				}
 
 				let rowIdx = this.sortProductionsByPhase ? Math.max(0, pIdx - phaseIdx) : 0;
-				this.productionRows[rowIdx].drawIcon(prod, civCode)
+				this.productionRows[rowIdx].drawIcon(prod, civCode);
 			}
 
 		if (template.upgrades)

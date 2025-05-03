@@ -9,7 +9,7 @@ class DiplomacyDialogColorsButton
 		this.diplomacyColorsWindowButtonIcon = Engine.GetGUIObjectByName("diplomacyColorsWindowButtonIcon");
 		this.diplomacyColorsWindowButton.onPress = diplomacyColors.toggle.bind(diplomacyColors);
 		registerHotkeyChangeHandler(this.onHotkeyChange.bind(this));
-		diplomacyColors.registerDiplomacyColorsChangeHandler(this.onDiplomacyColorsChange.bind(this))
+		diplomacyColors.registerDiplomacyColorsChangeHandler(this.onDiplomacyColorsChange.bind(this));
 	}
 
 	onHotkeyChange()

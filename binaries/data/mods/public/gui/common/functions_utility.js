@@ -160,7 +160,7 @@ function tryAutoComplete(text, autoCompleteList)
 		if (word.toLowerCase().indexOf(lastWord.toLowerCase()) != 0)
 			continue;
 
-		matchingWords.push(word)
+		matchingWords.push(word);
 
 		if (matchingWords.length > 1)
 			break;

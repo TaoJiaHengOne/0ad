@@ -105,7 +105,7 @@ class CounterManager
 					this.selectedOrder == 1 ?
 						translate("Descending") :
 						translate("Ascending")
-		})
+		});
 	}
 
 	getAllyStatTooltip(getTooltipData)

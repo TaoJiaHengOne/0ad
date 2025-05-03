@@ -448,7 +448,7 @@ async function saveChanges()
 async function shouldClosePage()
 {
 	if (!Engine.ConfigDB_HasChanges("user"))
-		return true
+		return true;
 
 	const buttonIndex = await messageBox(
 		500, 200,
