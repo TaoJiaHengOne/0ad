@@ -161,7 +161,8 @@ function createAreas(centeredPlacer, painter, constraints, amount, retryFactor =
 function createAreasInAreas(centeredPlacer, painter, constraints, amount, retryFactor, areas)
 {
 	areas = areas.filter(area => area.getPoints().length);
-	if (!areas.length) {
+	if (!areas.length) 
+	{
 		log("createAreasInAreas: 'areas' was either empty or only contained empty areas thus returning an empty array.\n" + new Error().stack);
 		return [];
 	}
@@ -195,7 +196,8 @@ function createObjectGroups(group, player, constraints, amount, retryFactor = 10
 function createObjectGroupsByAreas(group, player, constraints, amount, retryFactor, areas, behaveDeprecated = false)
 {
 	areas = areas.filter(area => area.getPoints().length);
-	if (!areas.length) {
+	if (!areas.length) 
+	{
 		log("createObjectGroupsByAreas: 'areas' was either empty or only contained empty areas.\n" + new Error().stack);
 		return [];
 	}

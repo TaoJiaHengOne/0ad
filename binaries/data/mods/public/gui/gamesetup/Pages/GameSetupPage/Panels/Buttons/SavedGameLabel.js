@@ -9,7 +9,8 @@ class SavedGameLabel
 		const savedGameLabel = Engine.GetGUIObjectByName("savedGameLabel");
 		let labelWidth = Math.min(Engine.GetTextWidth(savedGameLabel.font, savedGameLabel.caption) + 10, maxWidth);
 
-		if (isSavedGame) {
+		if (isSavedGame) 
+		{
 			savedGameLabel.parent.size = new GUISize(
 				bottomRightPanel.size.left - labelWidth - marginRight,
 				savedGameLabel.parent.size.top,

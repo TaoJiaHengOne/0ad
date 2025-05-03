@@ -68,7 +68,8 @@ GameSettings.prototype.Attributes.VictoryConditions = class VictoryConditions ex
 	_add(currentActive, currentDisabled, names)
 	{
 		let active = clone(currentActive);
-		for (const name of names) {
+		for (const name of names) 
+		{
 			if (currentDisabled.has(name))
 				continue;
 			active.add(name);
