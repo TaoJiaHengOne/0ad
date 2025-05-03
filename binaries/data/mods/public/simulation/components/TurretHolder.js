@@ -464,7 +464,7 @@ TurretHolder.prototype.Schema =
 		"<element name='LoadingRange' a:help='The maximum distance from this holder at which entities are allowed to occupy a turret point. Should be about 2.0 for land entities and preferably greater for ships.'>" +
 			"<ref name='nonNegativeDecimal'/>" +
 		"</element>" +
-	"</optional>"
+	"</optional>" +
 	"<optional>" +
 		"<element name='Pickup' a:help='This entity will try to move to pick up units to be turreted.'>" +
 			"<data type='boolean'/>" +
