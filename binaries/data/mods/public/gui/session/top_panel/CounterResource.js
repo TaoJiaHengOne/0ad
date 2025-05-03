@@ -36,7 +36,7 @@ class CounterResource
 		return {
 			"playername": playername,
 			"statValue": Math.round(playerState.resourceCounts[this.resCode]),
-			"orderValue":  Math.round(playerState.resourceCounts[this.resCode])
+			"orderValue": Math.round(playerState.resourceCounts[this.resCode])
 		};
 	}
 }

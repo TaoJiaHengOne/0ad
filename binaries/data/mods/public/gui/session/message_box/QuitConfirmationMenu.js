@@ -53,7 +53,7 @@ QuitConfirmationMenu.prototype.MultiplayerClient.prototype.Buttons =
 	},
 	{
 		"caption": translate("Yes"),
-		"onPress": 	() => {
+		"onPress": () => {
 			(new ReturnQuestion()).display();
 		}
 	}

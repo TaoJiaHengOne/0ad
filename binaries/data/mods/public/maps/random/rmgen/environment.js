@@ -53,7 +53,7 @@ function setSkySet(set)
 
 function setSunColor(r, g, b)
 {
-	g_Environment.SunColor = { "r" : r, "g" : g, "b" : b, "a" : 0 };
+	g_Environment.SunColor = { "r": r, "g": g, "b": b, "a": 0 };
 }
 
 function setSunElevation(e)
@@ -68,7 +68,7 @@ function setSunRotation(r)
 
 function setAmbientColor(r, g, b)
 {
-	g_Environment.AmbientColor = { "r" : r, "g" : g, "b" : b, "a" : 0 };
+	g_Environment.AmbientColor = { "r": r, "g": g, "b": b, "a": 0 };
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -77,12 +77,12 @@ function setAmbientColor(r, g, b)
 
 function setWaterColor(r, g, b)
 {
-	g_Environment.Water.WaterBody.Color = { "r" : r, "g" : g, "b" : b, "a" : 0 };
+	g_Environment.Water.WaterBody.Color = { "r": r, "g": g, "b": b, "a": 0 };
 }
 
 function setWaterTint(r, g, b)
 {
-	g_Environment.Water.WaterBody.Tint = { "r" : r, "g" : g, "b" : b, "a" : 0 };
+	g_Environment.Water.WaterBody.Tint = { "r": r, "g": g, "b": b, "a": 0 };
 }
 
 function setWaterHeight(h)
@@ -126,7 +126,7 @@ function setFogThickness(thickness)
 
 function setFogColor(r, g, b)
 {
-	g_Environment.Fog.FogColor = { "r" : r, "g" : g, "b" : b, "a" : 0 };
+	g_Environment.Fog.FogColor = { "r": r, "g": g, "b": b, "a": 0 };
 }
 
 ////////////////////////////////////////////////////////////////////////////

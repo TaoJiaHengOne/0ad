@@ -1231,7 +1231,7 @@ function TryConstructBuilding(player, cmpPlayer, controlAllUnits, cmd)
 
 	// send Metadata info if any
 	if (cmd.metadata)
-		Engine.PostMessage(ent, MT_AIMetadata, { "id": ent, "metadata" : cmd.metadata, "owner" : player } );
+		Engine.PostMessage(ent, MT_AIMetadata, { "id": ent, "metadata": cmd.metadata, "owner": player } );
 
 	// Tell the units to start building this new entity
 	if (cmd.autorepair)

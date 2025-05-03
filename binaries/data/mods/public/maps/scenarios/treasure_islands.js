@@ -110,7 +110,7 @@ Trigger.prototype.Victory = function(playerID)
 var cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 
 // TODO: It would be nice to get the total number of treasure on the map automatically somehow
-cmpTrigger.treasureCount = { "players": { "1":0, "2":0 }, "maximum": 36 };
+cmpTrigger.treasureCount = { "players": { "1": 0, "2": 0 }, "maximum": 36 };
 cmpTrigger.state = "start";
 cmpTrigger.DoAfterDelay(2000, "IntroductionMessage", {});
 cmpTrigger.RegisterTrigger("OnTreasureCollected", "TreasureCollected", { "enabled": true });
