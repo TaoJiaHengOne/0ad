@@ -67,7 +67,7 @@ Trigger.prototype.TreasureCollected = function(data)
 			var remainingTreasures = ( goalCount - count);
 			cmpGUIInterface.PushNotification({
 				"players": [data.player],
-				"parameters": {"remainingTreasures": remainingTreasures},
+				"parameters": { "remainingTreasures": remainingTreasures },
 				"message": markForTranslation("Treasures remaining to collect for victory:  %(remainingTreasures)s!"),
 				"translateMessage": true
 			});

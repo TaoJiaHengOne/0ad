@@ -290,7 +290,7 @@ notMet();
 
 template = {
 	"All": {
-		"Techs": { "_string": "!phase_town phase_city"}
+		"Techs": { "_string": "!phase_town phase_city" }
 	}
 };
 notMet();

@@ -277,11 +277,11 @@ BuildingAI.prototype.AddFocusTarget = function(ent, queued, push)
 	if (!ent || this.targetUnits.indexOf(ent) === -1)
 		return;
 	if (queued)
-		this.focusTargets.push({"entityId": ent});
+		this.focusTargets.push({ "entityId": ent });
 	else if (push)
-		this.focusTargets.unshift({"entityId": ent});
+		this.focusTargets.unshift({ "entityId": ent });
 	else
-		this.focusTargets = [{"entityId": ent}];
+		this.focusTargets = [{ "entityId": ent }];
 };
 
 /**
@@ -332,7 +332,7 @@ BuildingAI.prototype.FireArrows = function()
 	let addTarget = function(target)
 	{
 	    const pref = (cmpAttack.GetPreference(target) ?? 49);
-	    targets.push({"entityId": target, "preference": pref});
+	    targets.push({ "entityId": target, "preference": pref });
 	};
 
 	// Add the UnitAI target separately, as the UnitMotion and RangeManager implementations differ.
@@ -340,7 +340,7 @@ BuildingAI.prototype.FireArrows = function()
 		addTarget(this.unitAITarget);
 
 	else if (this.unitAITarget && this.targetUnits.indexOf(this.unitAITarget) != -1)
-		this.focusTargets = [{"entityId": this.unitAITarget}];
+		this.focusTargets = [{ "entityId": this.unitAITarget }];
 
 	if (!this.focusTargets.length)
 	{

@@ -232,7 +232,7 @@ function showModDescription()
 	let isInvalid = isSelectedModInvalid(selected);
 	Engine.GetGUIObjectByName("downloadButton").enabled = isSelected && !isInvalid;
 	Engine.GetGUIObjectByName("modDescription").caption = isSelected && !isInvalid ? g_ModsAvailableOnline[selected].summary : "";
-	Engine.GetGUIObjectByName("modError").caption = isSelected && isInvalid ? sprintf(translate("Invalid mod: %(error)s"), {"error": g_ModsAvailableOnline[selected].error }) : "";
+	Engine.GetGUIObjectByName("modError").caption = isSelected && isInvalid ? sprintf(translate("Invalid mod: %(error)s"), { "error": g_ModsAvailableOnline[selected].error }) : "";
 }
 
 function cancelModListUpdate(closePageCallback)
