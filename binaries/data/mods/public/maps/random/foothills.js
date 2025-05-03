@@ -108,7 +108,7 @@ function* GenerateMap(mapSettings)
 	yield 20;
 
 
-	for (let m = 0; m < randIntInclusive(40, 90); ++m) 
+	for (let m = 0; m < randIntInclusive(40, 90); ++m)
 	{
 		let elevRand = randIntInclusive(6, 12);
 		createArea(
@@ -127,7 +127,7 @@ function* GenerateMap(mapSettings)
 			],
 			[avoidClasses(clPlayer, 34, clHill, 8)]);
 	}
-	for (let m = 0; m < randIntInclusive(60, 100); ++m) 
+	for (let m = 0; m < randIntInclusive(60, 100); ++m)
 	{
 		const elevRand = randIntInclusive(14, 36);
 		createArea(

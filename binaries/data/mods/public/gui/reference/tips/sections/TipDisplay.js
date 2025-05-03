@@ -87,7 +87,7 @@ class TipDisplay
 		const random = Math.random() * totalProbability;
 
 		let cumulative = 0;
-		for (const category of tipFiles) 
+		for (const category of tipFiles)
 		{
 			cumulative += (isMultiplayer ? category.loadingScreenOccurrence_MP : category.loadingScreenOccurrence_SP);
 			if (random <= cumulative)

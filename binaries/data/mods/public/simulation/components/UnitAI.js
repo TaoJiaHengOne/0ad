@@ -3980,7 +3980,7 @@ UnitAI.prototype.PushOrder = function(type, data)
 			"data": this.order.data
 		});
 		// Check if the order appears to have been rejected
-		if (wasIdle && !this.order) 
+		if (wasIdle && !this.order)
 		{
 			this.UnitFsm.ProcessMessage(this, {
 				"type": "ReenterIdle",

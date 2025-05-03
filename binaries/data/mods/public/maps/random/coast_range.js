@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap(mapSettings) 
+function* GenerateMap(mapSettings)
 {
 
 	setBiome(mapSettings.Biome);
@@ -73,7 +73,7 @@ function* GenerateMap(mapSettings)
 	let startAngle = 0;
 	if ((pattern === "stronghold") || (pattern === "river"))
 	{
-		if (teams.length != 2) 
+		if (teams.length != 2)
 		{
 			throw new Error("Too many teams for " + pattern + ", use circle or make two teams.");
 			pattern = "circle";
@@ -180,7 +180,7 @@ function* GenerateMap(mapSettings)
 		]);
 
 	g_Map.log("Creating Plateau");
-	for (let m = 0; m < randIntInclusive(120, 240); ++m) 
+	for (let m = 0; m < randIntInclusive(120, 240); ++m)
 	{
 		let elevRand = randIntInclusive(18, 22);
 		createArea(
@@ -199,7 +199,7 @@ function* GenerateMap(mapSettings)
 			],
 			[avoidClasses(clNotMountain, 2, clMountain, 3)]);
 	}
-	for (let m = 0; m < randIntInclusive(100, 180); ++m) 
+	for (let m = 0; m < randIntInclusive(100, 180); ++m)
 	{
 		const elevRand = randIntInclusive(24, 38);
 		createArea(

@@ -76,7 +76,7 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 	settings.playerPlacement.setValue(cmdLineArgs['autostart-placement'] ?? "random");
 	if ('autostart-visibility' in cmdLineArgs)
 	{
-		switch (cmdLineArgs['autostart-visibility']) 
+		switch (cmdLineArgs['autostart-visibility'])
 		{
 		case 'revealed':
 			settings.mapExploration.setAllied(true);

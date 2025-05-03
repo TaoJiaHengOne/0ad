@@ -1093,7 +1093,7 @@ var g_UnitActions =
 				return false;
 
 			let actionInfo = getActionInfo("focus-fire", target, selection);
-			
+
 			return actionInfo.possible && {
 				"type": "focus-fire",
 				"cursor": actionInfo.cursor,

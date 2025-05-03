@@ -368,7 +368,7 @@ BuildingAI.prototype.FireArrows = function()
 	const yOrigin = cmpAttack.GetAttackYOrigin(attackType);
 
 	let firedArrows = 0;
-	let targetIndex = 0;	
+	let targetIndex = 0;
 	while (firedArrows < arrowsToFire && targetIndex < targets.length)
 	{
 

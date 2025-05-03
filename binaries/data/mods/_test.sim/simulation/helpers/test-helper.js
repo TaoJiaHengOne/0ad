@@ -1,4 +1,4 @@
-function AdditionHelper(a, b) 
+function AdditionHelper(a, b)
 {
 	return a+b;
 }

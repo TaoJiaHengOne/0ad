@@ -7,7 +7,7 @@ function init(initData)
 	this.settings.fromInitAttributes(initData.attribs);
 
 	this.settings.launchGame(initData.playerAssignments, initData.storeReplay);
-	
+
 	Engine.SwitchGuiPage("page_loading.xml", {
 		"attribs": this.settings.finalizedAttributes,
 		"playerAssignments": initData.playerAssignments

@@ -2,7 +2,7 @@ Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
 Engine.LoadLibrary("rmbiome");
 
-function* GenerateMap(mapSettings) 
+function* GenerateMap(mapSettings)
 {
 	setBiome(mapSettings.Biome);
 
@@ -93,7 +93,7 @@ function* GenerateMap(mapSettings)
 			undefined);
 
 	g_Map.log("Creating player islands");
-	for (let i = 0; i < numPlayers; ++i) 
+	for (let i = 0; i < numPlayers; ++i)
 	{
 		createArea(
 			new ClumpPlacer(diskArea(defaultPlayerBaseRadius() * 1.75), 0.8, 0.1, Infinity, playerPosition[i]),
@@ -319,7 +319,7 @@ function* GenerateMap(mapSettings)
 		3 * numPlayers, 50
 	);
 
-	if (currentBiome() == "generic/savanna") 
+	if (currentBiome() == "generic/savanna")
 	{
 		g_Map.log("Creating Island Fauna");
 		group = new SimpleGroup(

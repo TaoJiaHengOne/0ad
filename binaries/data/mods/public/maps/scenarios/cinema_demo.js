@@ -2,7 +2,7 @@ Trigger.prototype.CounterMessage = function(data)
 {
 	var cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
-		"players": [1, 2], 
+		"players": [1, 2],
 		"message": markForTranslation("Cutscene starts after 5 seconds"),
 		"translateMessage": true
 	});

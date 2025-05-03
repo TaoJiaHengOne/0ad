@@ -7,7 +7,7 @@ class TimeNotificationOverlay
 	constructor(playerViewControl)
 	{
 		this.notificationText = Engine.GetGUIObjectByName("notificationText");
-		
+
 		registerSimulationUpdateHandler(this.rebuild.bind(this));
 		playerViewControl.registerViewedPlayerChangeHandler(this.rebuild.bind(this));
 	}
