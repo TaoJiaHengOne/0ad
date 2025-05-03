@@ -2,7 +2,7 @@ function WeightedList()
 {
 	this.elements = new Map();
 	this.totalWeight = 0;
-};
+}
 
 WeightedList.prototype.length = function()
 {

@@ -323,7 +323,7 @@ function GetUpgradedTemplate(playerId, templateName)
 		template = cmpTemplateManager.GetTemplate(templateName);
 	}
 	return templateName;
-};
+}
 
 Engine.RegisterGlobal("GetUpgradedTemplate", GetUpgradedTemplate);
 Engine.RegisterGlobal("ChangeEntityTemplate", ChangeEntityTemplate);

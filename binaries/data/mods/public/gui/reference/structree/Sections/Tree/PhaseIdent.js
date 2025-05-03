@@ -54,5 +54,5 @@ class PhaseIdent
 
 		phaseIcon.sprite = "stretched:" + this.page.IconPath + prodPhaseTemplate.icon;
 		phaseIcon.tooltip = getEntityNamesFormatted(prodPhaseTemplate);
-	};
+	}
 }

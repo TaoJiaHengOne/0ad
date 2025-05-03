@@ -46,7 +46,7 @@ class TreeSection
 
 		phaseIcon.sprite = "stretched:" + this.page.IconPath + prodPhaseTemplate.icon;
 		phaseIcon.tooltip = getEntityNamesFormatted(prodPhaseTemplate);
-	};
+	}
 
 	onTrainerSectionWidthChange(trainerSectionWidth, trainerSectionVisible)
 	{
@@ -75,6 +75,6 @@ class TreeSection
 		size += rowHeight * (phases * idx - (idx - 1) * idx / 2); // phase rows (phase-currphase+1 per row)
 
 		return size;
-	};
+	}
 
 }
