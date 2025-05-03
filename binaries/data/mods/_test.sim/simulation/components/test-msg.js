@@ -41,9 +41,9 @@ TestScript2A.prototype.Init = function() {
 };
 
 TestScript2A.prototype.GetX = function() {
-	Engine.BroadcastMessage(MT_Update, { turnLength: 50 });
-	Engine.PostMessage(1, MT_Update, { turnLength: 500 });
-	Engine.PostMessage(2, MT_Update, { turnLength: 5000 });
+	Engine.BroadcastMessage(MT_Update, { "turnLength": 50 });
+	Engine.PostMessage(1, MT_Update, { "turnLength": 500 });
+	Engine.PostMessage(2, MT_Update, { "turnLength": 5000 });
 	return this.x;
 };
 

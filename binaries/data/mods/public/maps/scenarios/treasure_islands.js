@@ -7,7 +7,7 @@ Trigger.prototype.IntroductionMessage = function(data)
 	cmpGUIInterface.PushNotification({
 		"players": [1,2],
 		"message": markForTranslation("Collect the treasures before your enemy does! May the better win!"),
-		translateMessage: true
+		"translateMessage": true
 	});
 };
 

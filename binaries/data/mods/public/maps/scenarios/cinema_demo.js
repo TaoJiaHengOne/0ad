@@ -4,7 +4,7 @@ Trigger.prototype.CounterMessage = function(data)
 	cmpGUIInterface.PushNotification({
 		"players": [1, 2], 
 		"message": markForTranslation("Cutscene starts after 5 seconds"),
-		translateMessage: true
+		"translateMessage": true
 	});
 };
 
