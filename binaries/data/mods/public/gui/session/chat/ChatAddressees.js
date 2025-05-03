@@ -46,10 +46,10 @@ class ChatAddressees
 
 		let addressees = this.AddresseeTypes.filter(
 			addresseeType => addresseeType.isSelectable()).map(
-				addresseeType => ({
-					"label": translateWithContext("chat addressee", addresseeType.label),
-					"cmd": addresseeType.command
-				}));
+			addresseeType => ({
+				"label": translateWithContext("chat addressee", addresseeType.label),
+				"cmd": addresseeType.command
+			}));
 
 		// Add playernames for private messages
 		let guids = sortGUIDsByPlayerID();

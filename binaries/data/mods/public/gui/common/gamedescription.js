@@ -419,12 +419,12 @@ function getGameDescription(initAttributes, mapCache)
 		titles.push({
 			"label": translate("Rated game"),
 			"value": ratingDescription
-	});
+		});
 	else if (g_IsNetworked && Engine.HasXmppClient())
 		titles.push({
 			"label": translate("Rated game"),
 			"value": initAttributes.settings.RatingEnabled === true ?  ratingDescription : translateWithContext("game setup option", "disabled")
-	});
+		});
 
 	return titles.map(title => sprintf(translate("%(label)s %(details)s"), {
 		"label": coloredText(title.label, g_DescriptionHighlight),

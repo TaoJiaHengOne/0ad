@@ -6,10 +6,10 @@ class CivInfoPage extends ReferencePage
 
 		this.civSelection = new CivSelectDropdown(this.civData);
 		if (!this.civSelection.hasCivs())
-			{
-				this.closePage();
-				return;
-			}
+		{
+			this.closePage();
+			return;
+		}
 		this.civSelection.registerHandler(this.selectCiv.bind(this));
 
 		this.CivEmblem = Engine.GetGUIObjectByName("civEmblem");

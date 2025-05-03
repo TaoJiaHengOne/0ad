@@ -115,9 +115,9 @@ class DiplomacyColors
 				// Players see colors depending on diplomacy
 				this.displayedPlayerColors[i] =
 					g_ViewedPlayer == i ? this.getDiplomacyColor("self") :
-					g_Players[g_ViewedPlayer].isAlly[i] ? this.getDiplomacyColor("ally") :
-					g_Players[g_ViewedPlayer].isNeutral[i] ? this.getDiplomacyColor("neutral") :
-					this.getDiplomacyColor("enemy");
+						g_Players[g_ViewedPlayer].isAlly[i] ? this.getDiplomacyColor("ally") :
+							g_Players[g_ViewedPlayer].isNeutral[i] ? this.getDiplomacyColor("neutral") :
+								this.getDiplomacyColor("enemy");
 
 		this.displayedPlayerColors[0] = g_Players[0].color;
 	}

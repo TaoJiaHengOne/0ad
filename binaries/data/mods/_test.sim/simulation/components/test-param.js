@@ -2,7 +2,7 @@ function TestScript1_Init() {}
 
 TestScript1_Init.prototype.Init = function() {
 	var param = this.template;
-//	print("# ",uneval(param),"\n");
+	//	print("# ",uneval(param),"\n");
 	if (param)
 		this.x = (+param.x) + (+param.y._string) + (+param.y.z['@w']) + (+param.y.z.a);
 	else

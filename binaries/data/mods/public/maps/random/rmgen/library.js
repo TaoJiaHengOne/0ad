@@ -56,11 +56,11 @@ function getObstructionSize(templateName, margin = 0)
 		obstruction.Static ?
 			new Vector2D(obstruction.Static["@depth"], obstruction.Static["@width"]) :
 		// Used for gates, should consider the position too
-		obstruction.Obstructions ?
-			new Vector2D(
-				Object.keys(obstruction.Obstructions).reduce((depth, key) => Math.max(depth, +obstruction.Obstructions[key]["@depth"]), 0),
-				Object.keys(obstruction.Obstructions).reduce((width, key) => width + +obstruction.Obstructions[key]["@width"], 0)) :
-			new Vector2D(0, 0);
+			obstruction.Obstructions ?
+				new Vector2D(
+					Object.keys(obstruction.Obstructions).reduce((depth, key) => Math.max(depth, +obstruction.Obstructions[key]["@depth"]), 0),
+					Object.keys(obstruction.Obstructions).reduce((width, key) => width + +obstruction.Obstructions[key]["@width"], 0)) :
+				new Vector2D(0, 0);
 
 	return obstructionSize.div(TERRAIN_TILE_SIZE).add(new Vector2D(2, 2).mult(margin));
 }

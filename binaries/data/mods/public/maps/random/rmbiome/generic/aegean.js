@@ -1,10 +1,10 @@
 function setupBiome_aegean()
 {
 	[g_Gaia.tree1, g_Gaia.tree2] = pickRandom([[
-			"gaia/tree/cypress_wild",
-			"gaia/tree/pine_maritime_short",
-			"gaia/tree/cretan_date_palm_tall"
-		]]);
+		"gaia/tree/cypress_wild",
+		"gaia/tree/pine_maritime_short",
+		"gaia/tree/cretan_date_palm_tall"
+	]]);
 
 	g_Gaia.tree3 = pickRandom([
 		"gaia/tree/olive",

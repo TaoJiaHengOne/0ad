@@ -273,7 +273,7 @@ function createVolcano(position, tileClass, terrainTexture, lavaTextures, smoke,
 				clLava,
 				position),
 			0,
-		stayClasses(tileClass, 1));
+			stayClasses(tileClass, 1));
 	}
 }
 

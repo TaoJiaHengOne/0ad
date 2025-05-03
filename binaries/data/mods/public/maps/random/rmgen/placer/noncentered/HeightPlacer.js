@@ -14,10 +14,10 @@ function HeightPlacer(mode, minElevation, maxElevation)
 {
 	this.withinHeightRange =
 		mode == Elevation_ExcludeMin_ExcludeMax ? position => g_Map.getHeight(position) >  minElevation && g_Map.getHeight(position) < maxElevation :
-		mode == Elevation_IncludeMin_ExcludeMax ? position => g_Map.getHeight(position) >= minElevation && g_Map.getHeight(position) < maxElevation :
-		mode == Elevation_ExcludeMin_IncludeMax ? position => g_Map.getHeight(position) >  minElevation && g_Map.getHeight(position) <= maxElevation :
-		mode == Elevation_IncludeMin_IncludeMax ? position => g_Map.getHeight(position) >= minElevation && g_Map.getHeight(position) <= maxElevation :
-		undefined;
+			mode == Elevation_IncludeMin_ExcludeMax ? position => g_Map.getHeight(position) >= minElevation && g_Map.getHeight(position) < maxElevation :
+				mode == Elevation_ExcludeMin_IncludeMax ? position => g_Map.getHeight(position) >  minElevation && g_Map.getHeight(position) <= maxElevation :
+					mode == Elevation_IncludeMin_IncludeMax ? position => g_Map.getHeight(position) >= minElevation && g_Map.getHeight(position) <= maxElevation :
+						undefined;
 
 	if (!this.withinHeightRange)
 		throw new Error("Invalid HeightPlacer mode: " + mode);

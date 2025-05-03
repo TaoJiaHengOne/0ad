@@ -575,7 +575,7 @@ function partitionPlayers(playerIDs)
 		east.length > west.length ?
 			[east, west.concat(team)] :
 			[east.concat(team), west],
-		[[], []]);
+	[[], []]);
 }
 
 /**
@@ -619,18 +619,18 @@ function playerPlacementByPattern(patternName, distance = undefined, groupedDist
 
 	switch (patternName)
 	{
-		case "circle":
-			return playerPlacementCircle(distance, angle, center).slice(0, 2);
-		case "river":
-			return playerPlacementRiver(angle, distance, center);
-		case "groupedLines":
-			return placeLine(getTeamsArray(), distance, groupedDistance, angle);
-		case "stronghold":
-			return placeStronghold(getTeamsArray(), distance, groupedDistance, angle);
-		case "randomGroup":
-			return playerPlacementRandom(getPlayerIDs(), undefined);
-		default:
-			throw new Error("Unknown placement pattern: " + patternName);
+	case "circle":
+		return playerPlacementCircle(distance, angle, center).slice(0, 2);
+	case "river":
+		return playerPlacementRiver(angle, distance, center);
+	case "groupedLines":
+		return placeLine(getTeamsArray(), distance, groupedDistance, angle);
+	case "stronghold":
+		return placeStronghold(getTeamsArray(), distance, groupedDistance, angle);
+	case "randomGroup":
+		return playerPlacementRandom(getPlayerIDs(), undefined);
+	default:
+		throw new Error("Unknown placement pattern: " + patternName);
 	}
 }
 

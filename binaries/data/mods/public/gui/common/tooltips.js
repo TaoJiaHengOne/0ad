@@ -1248,14 +1248,14 @@ function getTemplateViewerOnClickTooltip()
  */
 function abbreviateLargeNumbers(number)
 {
-     if (number >= 1e6)
-        return Math.floor(number / 1e6) + translateWithContext("One letter abbreviation for million", 'M');
+	if (number >= 1e6)
+		return Math.floor(number / 1e6) + translateWithContext("One letter abbreviation for million", 'M');
 
-     if (number >= 1e5)
-        return Math.floor(number / 1e3) + translateWithContext("One letter abbreviation for thousand", 'k');
+	if (number >= 1e5)
+		return Math.floor(number / 1e3) + translateWithContext("One letter abbreviation for thousand", 'k');
 
-     if (number >= 1e4)
-        return (number / 1e3).toFixed(1).replace(/\.0$/, '') + translateWithContext("One letter abbreviation for thousand", 'k');
+	if (number >= 1e4)
+		return (number / 1e3).toFixed(1).replace(/\.0$/, '') + translateWithContext("One letter abbreviation for thousand", 'k');
 
-     return number;
+	return number;
 }

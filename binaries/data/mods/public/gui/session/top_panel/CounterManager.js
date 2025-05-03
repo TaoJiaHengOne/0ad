@@ -102,9 +102,9 @@ class CounterManager
 			"order":
 				this.selectedOrder == 0 ?
 					translate("Unordered") :
-				this.selectedOrder == 1 ?
-					translate("Descending") :
-					translate("Ascending")
+					this.selectedOrder == 1 ?
+						translate("Descending") :
+						translate("Ascending")
 		})
 	}
 

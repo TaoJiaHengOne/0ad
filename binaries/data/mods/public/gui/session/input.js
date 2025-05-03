@@ -1502,8 +1502,8 @@ function addTrainingToQueue(selection, trainEntType, playerState)
 		}
 
 		if (decrement || Engine.GuiInterfaceCall("GetNeededResources", {
-				"cost": multiplyEntityCosts(template, getBatchTrainingSize())
-			}))
+			"cost": multiplyEntityCosts(template, getBatchTrainingSize())
+		}))
 			return;
 
 		inputState = INPUT_BATCHTRAINING;

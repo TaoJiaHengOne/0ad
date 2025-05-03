@@ -36,8 +36,8 @@ var g_MainMenuItems = [
 				"caption": translate("Tips and Tricks"),
 				"tooltip": translate("Discover simple tips, tricks, and game mechanics."),
 				"onPress": Engine.OpenChildPage.bind(null, "page_tips.xml", {
-						"tipScrolling": true
-					})
+					"tipScrolling": true
+				})
 			},
 			{
 				"caption": translate("Structure Tree"),
@@ -197,24 +197,24 @@ var g_MainMenuItems = [
 				"caption": translate("Join Game"),
 				"tooltip": translate("Joining an existing multiplayer game."),
 				"onPress": Engine.OpenChildPage.bind(null, "page_gamesetup_mp.xml", {
-						"multiplayerGameType": "join"
-					})
+					"multiplayerGameType": "join"
+				})
 			},
 			{
 				"caption": translate("Host New Game"),
 				"tooltip": translate("Host a new multiplayer game."),
 				"onPress": Engine.OpenChildPage.bind(null, "page_gamesetup_mp.xml", {
-						"multiplayerGameType": "host",
-						"loadSavedGame": false
-					})
+					"multiplayerGameType": "host",
+					"loadSavedGame": false
+				})
 			},
 			{
 				"caption": translate("Host Saved Game"),
 				"tooltip": translate("Continue playing a game from a savegame."),
 				"onPress": Engine.OpenChildPage.bind(null, "page_gamesetup_mp.xml", {
-						"multiplayerGameType": "host",
-						"loadSavedGame": true
-					})
+					"multiplayerGameType": "host",
+					"loadSavedGame": true
+				})
 			},
 			{
 				"caption": translate("Replays"),

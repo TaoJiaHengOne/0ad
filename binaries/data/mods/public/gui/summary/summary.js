@@ -523,22 +523,22 @@ function initGUILabels()
 	Engine.GetGUIObjectByName("summaryText").caption =
 		g_GameData.gui.isInGame ?
 			translate("Current Scores") :
-		g_GameData.gui.isReplay ?
-			translate("Scores at the end of the game.") :
-		g_GameData.gui.disconnected ?
-			translate("You have been disconnected.") :
-		!assignedState ?
-			translate("You have left the game.") :
-		assignedState.state == "won" ?
-			translate("You have won the battle!") :
-		assignedState.state == "defeated" ?
-			translate("You have been defeated…") :
-			translate("You have abandoned the game.");
+			g_GameData.gui.isReplay ?
+				translate("Scores at the end of the game.") :
+				g_GameData.gui.disconnected ?
+					translate("You have been disconnected.") :
+					!assignedState ?
+						translate("You have left the game.") :
+						assignedState.state == "won" ?
+							translate("You have won the battle!") :
+							assignedState.state == "defeated" ?
+								translate("You have been defeated…") :
+								translate("You have abandoned the game.");
 
 	Engine.GetGUIObjectByName("timeElapsed").caption = sprintf(
 		translate("Game time elapsed: %(time)s"), {
 			"time": timeToString(g_GameData.sim.timeElapsed)
-	});
+		});
 
 	let mapType = g_Settings.MapTypes.find(type => type.Name == g_GameData.sim.mapSettings.mapType);
 	let mapSize = g_Settings.MapSizes.find(size => size.Tiles == g_GameData.sim.mapSettings.Size || 0);

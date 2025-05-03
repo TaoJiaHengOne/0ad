@@ -308,7 +308,7 @@ Trigger.prototype.UpdateCelticRitual = function()
 
 		let animations = ritualAnimations[
 			cmpIdentity.HasClass("Healer") ? "healer" :
-			cmpIdentity.HasClass("Female") ? "female" : "male"];
+				cmpIdentity.HasClass("Female") ? "female" : "male"];
 
 		let cmpVisual = Engine.QueryInterface(ent, IID_Visual);
 		if (!cmpVisual)

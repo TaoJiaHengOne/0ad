@@ -579,7 +579,7 @@ var g_Commands = {
 				// Only the owner of the garrisonHolder may unload entities from any owners
 				if (!IsOwnedByPlayer(player, garrisonHolder) && !data.controlAllUnits
 				    && player != +cmd.owner)
-						continue;
+					continue;
 
 				if (!cmpGarrisonHolder.UnloadTemplate(cmd.template, cmd.owner, cmd.all))
 					notifyUnloadFailure(player, garrisonHolder);

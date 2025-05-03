@@ -120,8 +120,8 @@ class HotkeysPage
 		{
 			let hotkey = hotkeyList.list_data[hotkeyList.hovered];
 			hotkeyList.tooltip = this.metadata.hotkeys[hotkey]?.desc ?
-						translateWithContext("hotkey metadata", this.metadata.hotkeys[hotkey]?.desc) :
-						translate(this.UnavailableTooltipString);
+				translateWithContext("hotkey metadata", this.metadata.hotkeys[hotkey]?.desc) :
+				translate(this.UnavailableTooltipString);
 		}
 	}
 

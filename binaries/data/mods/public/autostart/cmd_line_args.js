@@ -78,31 +78,31 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 	{
 		switch (cmdLineArgs['autostart-visibility']) 
 		{
-			case 'revealed':
-				settings.mapExploration.setAllied(true);
-				settings.mapExploration.setExplored(true);
-				settings.mapExploration.setRevealed(true);
-				break;
-			case 'explored':
-				settings.mapExploration.setAllied(false);
-				settings.mapExploration.setExplored(true);
-				settings.mapExploration.setRevealed(false);
-				break;
-			case 'hidden':
-				settings.mapExploration.setAllied(false);
-				settings.mapExploration.setExplored(false);
-				settings.mapExploration.setRevealed(false);
-				break;
-			case 'allied':
-				settings.mapExploration.setAllied(true);
-				settings.mapExploration.setExplored(false);
-				settings.mapExploration.setRevealed(false);
-				break;
-			case 'allied-explored':
-				settings.mapExploration.setAllied(true);
-				settings.mapExploration.setExplored(true);
-				settings.mapExploration.setRevealed(false);
-				break;
+		case 'revealed':
+			settings.mapExploration.setAllied(true);
+			settings.mapExploration.setExplored(true);
+			settings.mapExploration.setRevealed(true);
+			break;
+		case 'explored':
+			settings.mapExploration.setAllied(false);
+			settings.mapExploration.setExplored(true);
+			settings.mapExploration.setRevealed(false);
+			break;
+		case 'hidden':
+			settings.mapExploration.setAllied(false);
+			settings.mapExploration.setExplored(false);
+			settings.mapExploration.setRevealed(false);
+			break;
+		case 'allied':
+			settings.mapExploration.setAllied(true);
+			settings.mapExploration.setExplored(false);
+			settings.mapExploration.setRevealed(false);
+			break;
+		case 'allied-explored':
+			settings.mapExploration.setAllied(true);
+			settings.mapExploration.setExplored(true);
+			settings.mapExploration.setRevealed(false);
+			break;
 		}
 	}
 

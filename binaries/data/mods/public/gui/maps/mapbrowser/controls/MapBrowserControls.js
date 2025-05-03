@@ -10,20 +10,20 @@ class MapBrowserPageControls
 
 		this.setupButtons();
 
-        const alignmentHelper = new AlignmentHelper("max");
-        const labelMargin = 5;
+		const alignmentHelper = new AlignmentHelper("max");
+		const labelMargin = 5;
 
 		this.mapBrowserSearchBoxLabel = Engine.GetGUIObjectByName("mapBrowserSearchBoxLabel");
 		this.mapBrowserSearchBoxControl = Engine.GetGUIObjectByName("mapBrowserSearchBoxControl");
-        alignmentHelper.setObject(this.mapBrowserSearchBoxControl, "left", this.mapBrowserSearchBoxLabel.size.right + labelMargin);
+		alignmentHelper.setObject(this.mapBrowserSearchBoxControl, "left", this.mapBrowserSearchBoxLabel.size.right + labelMargin);
 
 		this.mapBrowserMapTypeLabel = Engine.GetGUIObjectByName("mapBrowserMapTypeLabel");
 		this.mapBrowserMapTypeControl = Engine.GetGUIObjectByName("mapBrowserMapTypeControl");
-        alignmentHelper.setObject(this.mapBrowserMapTypeControl, "left", this.mapBrowserMapTypeLabel.size.right + labelMargin);
+		alignmentHelper.setObject(this.mapBrowserMapTypeControl, "left", this.mapBrowserMapTypeLabel.size.right + labelMargin);
 
 		this.mapBrowserMapFilterLabel = Engine.GetGUIObjectByName("mapBrowserMapFilterLabel");
 		this.mapBrowserMapFilterControl = Engine.GetGUIObjectByName("mapBrowserMapFilterControl");
-        alignmentHelper.setObject(this.mapBrowserMapFilterControl, "left", this.mapBrowserMapFilterLabel.size.right + labelMargin);
+		alignmentHelper.setObject(this.mapBrowserMapFilterControl, "left", this.mapBrowserMapFilterLabel.size.right + labelMargin);
 	}
 
 	setupButtons()
@@ -68,16 +68,16 @@ class MapBrowserPageControls
 	}
 
 	static Captions =
-	{
-		"close":
+		{
+			"close":
 		{
 			"caption": translate("Close"),
 			"tooltip": translate("%(hotkey)s: Close map browser.")
 		},
-		"cancel":
+			"cancel":
 		{
 			"caption": translate("Cancel"),
 			"tooltip": translate("%(hotkey)s: Close map browser and discard the selection.")
 		}
-	};
+		};
 }

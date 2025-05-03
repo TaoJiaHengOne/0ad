@@ -13,7 +13,7 @@ const ownMarket = 6;
 const otherMarket = 7;
 
 AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
-        "GetPlayerByID": (i) => i
+	"GetPlayerByID": (i) => i
 });
 
 const cmpTrader = ConstructComponent(trader, "Trader", {

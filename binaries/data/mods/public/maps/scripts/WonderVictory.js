@@ -106,7 +106,7 @@ Trigger.prototype.WonderVictoryStartTimer = function(ent, player)
 					"players": [player],
 					"translateMessage": true
 				},
-			wonderDuration)
+				wonderDuration)
 		]
 	};
 };

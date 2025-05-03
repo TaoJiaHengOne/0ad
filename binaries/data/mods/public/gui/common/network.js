@@ -98,17 +98,17 @@ function getMismatchMessage(mismatchType, clientMismatchInfo, serverMismatchInfo
 {
 	switch (mismatchType)
 	{
-		case "engine": return sprintf(translate("Different engine versions detected client version: %(clientMismatch)s server version: %(serverMismatch)s"), {
-			"clientMismatch": clientMismatchInfo,
-			"serverMismatch": serverMismatchInfo
-		});
-		case "mod": return sprintf(translate("Different mods enabled, or mods enabled in a different order. Client mod: '%(clientMismatch)s' Server mod: '%(serverMismatch)s'"), {
-			"clientMismatch": clientMismatchInfo,
-			"serverMismatch": serverMismatchInfo
-		});
-		default: return sprintf(translate("Unrecognized handshake mismatch type: %(mismatchType)s"), {
-			"mismatchType": mismatchType
-		});
+	case "engine": return sprintf(translate("Different engine versions detected client version: %(clientMismatch)s server version: %(serverMismatch)s"), {
+		"clientMismatch": clientMismatchInfo,
+		"serverMismatch": serverMismatchInfo
+	});
+	case "mod": return sprintf(translate("Different mods enabled, or mods enabled in a different order. Client mod: '%(clientMismatch)s' Server mod: '%(serverMismatch)s'"), {
+		"clientMismatch": clientMismatchInfo,
+		"serverMismatch": serverMismatchInfo
+	});
+	default: return sprintf(translate("Unrecognized handshake mismatch type: %(mismatchType)s"), {
+		"mismatchType": mismatchType
+	});
 	}
 }
 

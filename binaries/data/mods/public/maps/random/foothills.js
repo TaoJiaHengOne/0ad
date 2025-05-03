@@ -108,42 +108,42 @@ function* GenerateMap(mapSettings)
 	yield 20;
 
 
-for (let m = 0; m < randIntInclusive(40, 90); ++m) {
-	let elevRand = randIntInclusive(6, 12);
-	createArea(
-		new ChainPlacer(
-			12,
-			28,
-			Math.floor(scaleByMapSize(5, 30)),
-			Infinity,
-			new Vector2D(fractionToTiles(randFloat(0, 1)), fractionToTiles(randFloat(0, 1))),
-			0,
-			[Math.floor(fractionToTiles(0.01))]),
-		[
-			new LayeredPainter([tHill, tMainTerrain, tCliff], [Math.floor(elevRand / 5), 40]),
-			new SmoothElevationPainter(ELEVATION_SET, elevRand, randIntInclusive(18, 35)),
-			new TileClassPainter(clHill)
-		],
-		[avoidClasses(clPlayer, 34, clHill, 8)]);
-}
-for (let m = 0; m < randIntInclusive(60, 100); ++m) {
-	const elevRand = randIntInclusive(14, 36);
-	createArea(
-		new ChainPlacer(
-			10,
-			20,
-			Math.floor(scaleByMapSize(8, 15)),
-			Infinity,
-			new Vector2D(fractionToTiles(randFloat(0, 1)), fractionToTiles(randFloat(0, 1))),
-			0,
-			[Math.floor(fractionToTiles(0.01))]),
-		[
-			new LayeredPainter([tCliff, tHill,tMainTerrain], [Math.floor(elevRand / 8), 40]),
-			new SmoothElevationPainter(ELEVATION_SET, elevRand, randIntInclusive(18, 25)),
-			new TileClassPainter(clHill)
-		],
-		[avoidClasses(clBaseResource, 2, clPlayer, 30), stayClasses(clHill, 1)]);
-}
+	for (let m = 0; m < randIntInclusive(40, 90); ++m) {
+		let elevRand = randIntInclusive(6, 12);
+		createArea(
+			new ChainPlacer(
+				12,
+				28,
+				Math.floor(scaleByMapSize(5, 30)),
+				Infinity,
+				new Vector2D(fractionToTiles(randFloat(0, 1)), fractionToTiles(randFloat(0, 1))),
+				0,
+				[Math.floor(fractionToTiles(0.01))]),
+			[
+				new LayeredPainter([tHill, tMainTerrain, tCliff], [Math.floor(elevRand / 5), 40]),
+				new SmoothElevationPainter(ELEVATION_SET, elevRand, randIntInclusive(18, 35)),
+				new TileClassPainter(clHill)
+			],
+			[avoidClasses(clPlayer, 34, clHill, 8)]);
+	}
+	for (let m = 0; m < randIntInclusive(60, 100); ++m) {
+		const elevRand = randIntInclusive(14, 36);
+		createArea(
+			new ChainPlacer(
+				10,
+				20,
+				Math.floor(scaleByMapSize(8, 15)),
+				Infinity,
+				new Vector2D(fractionToTiles(randFloat(0, 1)), fractionToTiles(randFloat(0, 1))),
+				0,
+				[Math.floor(fractionToTiles(0.01))]),
+			[
+				new LayeredPainter([tCliff, tHill,tMainTerrain], [Math.floor(elevRand / 8), 40]),
+				new SmoothElevationPainter(ELEVATION_SET, elevRand, randIntInclusive(18, 25)),
+				new TileClassPainter(clHill)
+			],
+			[avoidClasses(clBaseResource, 2, clPlayer, 30), stayClasses(clHill, 1)]);
+	}
 
 	const [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
 	createDefaultForests(

@@ -328,8 +328,8 @@ BuildingAI.prototype.FireArrows = function()
 	}
 
 	// Add targets to a list.
-    let targets = [];
-    let addTarget = function(target)
+	let targets = [];
+	let addTarget = function(target)
 	{
 	    const pref = (cmpAttack.GetPreference(target) ?? 49);
 	    targets.push({"entityId": target, "preference": pref});
@@ -347,15 +347,15 @@ BuildingAI.prototype.FireArrows = function()
 		for (let target of this.targetUnits)
 	        addTarget(target);
 		// Sort targets by preference and then by proximity.
-        targets.sort( (a,b) => {
+		targets.sort( (a,b) => {
 			if (a.preference > b.preference)
 				return 1;
 			else if (a.preference < b.preference)
 				return -1;
 			else if (PositionHelper.DistanceBetweenEntities(this.entity, a.entityId) > PositionHelper.DistanceBetweenEntities(this.entity, b.entityId))
 				return 1;
-            return -1;
-        });
+			return -1;
+		});
 	}
 	else
 		targets = this.focusTargets;
@@ -367,10 +367,10 @@ BuildingAI.prototype.FireArrows = function()
 	const range = cmpAttack.GetRange(attackType);
 	const yOrigin = cmpAttack.GetAttackYOrigin(attackType);
 
-    let firedArrows = 0;
+	let firedArrows = 0;
 	let targetIndex = 0;	
 	while (firedArrows < arrowsToFire && targetIndex < targets.length)
-        {
+	{
 
 		let selectedTarget = targets[targetIndex].entityId;
 		if (this.CheckTargetVisible(selectedTarget) && cmpObstructionManager.IsInTargetParabolicRange(

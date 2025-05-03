@@ -379,7 +379,7 @@ function updateTutorial(notification)
 	let notificationText =
 		notification.instructions.reduce((instructions, item) =>
 			instructions + (typeof item == "string" ? translate(item) : colorizeHotkey(translate(item.text), item.hotkey)),
-			"");
+		"");
 
 	Engine.GetGUIObjectByName("tutorialText").caption = g_TutorialMessages.concat(setStringTags(notificationText, g_TutorialNewMessageTags)).join("\n");
 	g_TutorialMessages.push(notificationText);

@@ -54,9 +54,9 @@ DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText = class
 			this.playerID == g_ViewedPlayer ? "" :
 				g_Players[this.playerID].isAlly[g_ViewedPlayer] ?
 					translate(this.Ally) :
-				g_Players[this.playerID].isNeutral[g_ViewedPlayer] ?
-					translate(this.Neutral) :
-					translate(this.Enemy);
+					g_Players[this.playerID].isNeutral[g_ViewedPlayer] ?
+						translate(this.Neutral) :
+						translate(this.Enemy);
 	}
 };
 

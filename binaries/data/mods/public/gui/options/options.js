@@ -130,11 +130,11 @@ var g_OptionType = {
 			sprintf(
 				option.min !== undefined && option.max !== undefined ?
 					translateWithContext("option number", "Min: %(min)s, Max: %(max)s") :
-				option.min !== undefined && option.max === undefined ?
-					translateWithContext("option number", "Min: %(min)s") :
-				option.min === undefined && option.max !== undefined ?
-					translateWithContext("option number", "Max: %(max)s") :
-					"",
+					option.min !== undefined && option.max === undefined ?
+						translateWithContext("option number", "Min: %(min)s") :
+						option.min === undefined && option.max !== undefined ?
+							translateWithContext("option number", "Max: %(max)s") :
+							"",
 				{
 					"min": option.min,
 					"max": option.max

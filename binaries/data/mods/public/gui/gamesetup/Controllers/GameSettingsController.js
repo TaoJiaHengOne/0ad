@@ -92,8 +92,8 @@ class GameSettingsController
 					if (initData?.gameSettings)
 						this.persistentMatchSettings.enabled = !!initData.gameSettings?.usePersistence;
 					const settings = initData?.gameSettings || this.persistentMatchSettings.loadFile();
-						if (settings)
-							this.parseSettings(settings, true);
+					if (settings)
+						this.parseSettings(settings, true);
 				}
 			} catch(err) {
 				error("There was an error loading game settings. You may need to disable persistent match settings.");

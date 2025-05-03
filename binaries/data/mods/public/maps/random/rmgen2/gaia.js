@@ -1090,24 +1090,24 @@ function findClearLine(bluffArea, angle)
 	let y;
 	switch (angle)
 	{
-		case 0:
-			offset = new Vector2D(-1, -1);
-			y = corners.max.y;
-			break;
-		case 1:
-			offset = new Vector2D(1, -1);
-			y = corners.max.y;
-			break;
-		case 2:
-			offset = new Vector2D(1, 1);
-			y = corners.min.y;
-			break;
-		case 3:
-			offset = new Vector2D(-1, 1);
-			y = corners.min.y;
-			break;
-		default:
-			throw new Error("Unknown angle " + angle);
+	case 0:
+		offset = new Vector2D(-1, -1);
+		y = corners.max.y;
+		break;
+	case 1:
+		offset = new Vector2D(1, -1);
+		y = corners.max.y;
+		break;
+	case 2:
+		offset = new Vector2D(1, 1);
+		y = corners.min.y;
+		break;
+	case 3:
+		offset = new Vector2D(-1, 1);
+		y = corners.min.y;
+		break;
+	default:
+		throw new Error("Unknown angle " + angle);
 	}
 
 	let clearLine;

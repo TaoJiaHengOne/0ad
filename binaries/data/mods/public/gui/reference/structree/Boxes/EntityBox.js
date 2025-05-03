@@ -11,9 +11,9 @@ class EntityBox
 	static setViewerOnPress(guiObject, templateName, civCode)
 	{
 		let viewerFunc = Engine.OpenChildPage.bind(null, "page_viewer.xml", {
-				"templateName": templateName,
-				"civ": civCode
-			});
+			"templateName": templateName,
+			"civ": civCode
+		});
 		guiObject.onPress = viewerFunc;
 		guiObject.onPressRight = viewerFunc;
 	}

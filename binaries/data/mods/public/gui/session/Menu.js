@@ -94,9 +94,9 @@ class Menu
 
 		let maxOffset =
 			this.endPosition + (
-			this.isOpen ?
-				-this.menuButtonPanel.size.bottom :
-				+this.menuButtonPanel.size.top);
+				this.isOpen ?
+					-this.menuButtonPanel.size.bottom :
+					+this.menuButtonPanel.size.top);
 
 
 		if (maxOffset <= 0)

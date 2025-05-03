@@ -114,7 +114,7 @@ Identity.prototype.Deserialize = function (data)
 		this.name = data.name;
 };
 
- Identity.prototype.Serialize = function()
+Identity.prototype.Serialize = function()
 {
 	const result = {
 		"phenotype": this.phenotype,

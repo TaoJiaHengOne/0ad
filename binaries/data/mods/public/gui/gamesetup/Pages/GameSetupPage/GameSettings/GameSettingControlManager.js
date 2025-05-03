@@ -30,7 +30,7 @@ class GameSettingControlManager
 			this.gameSettingControls[victoryCondition.Name] =
 				new VictoryConditionCheckbox(
 					victoryCondition, this, getCategory(victoryCondition.Name), undefined,
-						setupWindow, isSavedGame);
+					setupWindow, isSavedGame);
 
 		this.playerSettingControlManagers = Array.from(
 			new Array(g_MaxPlayers),

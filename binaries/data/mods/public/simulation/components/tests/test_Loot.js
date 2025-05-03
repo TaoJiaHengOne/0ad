@@ -22,7 +22,7 @@ Engine.LoadHelperScript("ValueModification.js");
 Engine.LoadComponentScript("interfaces/ModifiersManager.js");
 
 let applyModifierOverride = (key, val, ent) => {
-    return val;
+	return val;
 }
 
 AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
@@ -32,8 +32,8 @@ AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
 });
 
 const cmpLoot = ConstructComponent(30, "Loot", {
-    "xp": 35,
-    "metal": 10
+	"xp": 35,
+	"metal": 10
 });
 
 TS_ASSERT_EQUALS(cmpLoot.GetResources().xp, undefined);
@@ -43,8 +43,8 @@ TS_ASSERT_UNEVAL_EQUALS(cmpLoot.GetResources(), { "food": 0, "metal": 10, "stone
 TS_ASSERT_EQUALS(cmpLoot.GetXp(), 35);
 
 const cmpLootNoXp = ConstructComponent(30, "Loot", {
-    "metal": 10,
-    "wood": 20
+	"metal": 10,
+	"wood": 20
 });
 
 TS_ASSERT_EQUALS(cmpLootNoXp.GetResources().xp, undefined);
@@ -55,13 +55,13 @@ TS_ASSERT_UNEVAL_EQUALS(cmpLootNoXp.GetResources(), { "food": 0, "metal": 10, "s
 TS_ASSERT_EQUALS(cmpLootNoXp.GetXp(), 0);
 
 applyModifierOverride = (key, val, ent) => {
-    return key == "Loot/xp" ? 100 : val;
+	return key == "Loot/xp" ? 100 : val;
 }
 
 TS_ASSERT_EQUALS(cmpLootNoXp.GetXp(), 100);
 
 applyModifierOverride = (key, val, ent) => {
-    return key == "Loot/wood" ? 100 : val;
+	return key == "Loot/wood" ? 100 : val;
 }
 
 TS_ASSERT_EQUALS(cmpLootNoXp.GetResources().wood, 100);
