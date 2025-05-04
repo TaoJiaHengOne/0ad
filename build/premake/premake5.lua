@@ -285,7 +285,7 @@ function project_set_build_flags()
 
 				-- enable security features (stack checking etc) that shouldn't have
 				-- a significant effect on performance and can catch bugs
-				"-fstack-protector-all",
+				"-fstack-protector-strong",
 
 				-- always enable strict aliasing (useful in debug builds because of the warnings)
 				"-fstrict-aliasing",
