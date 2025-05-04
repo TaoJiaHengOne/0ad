@@ -230,7 +230,7 @@ function InterpretTechRequirements(civ, operator, value)
 
 	case "all":
 	{
-		let civPermitted = undefined; // tri-state (undefined, false, or true)
+		let civPermitted; // tri-state (undefined, false, or true)
 		for (let subvalue of value)
 		{
 			let newOper = Object.keys(subvalue)[0];

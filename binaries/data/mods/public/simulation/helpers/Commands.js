@@ -1665,7 +1665,7 @@ function ClusterEntities(ents, separationDistance)
 	while (clusters.length > 1)
 	{
 		// search two clusters that are closer than the required distance
-		let closeClusters = undefined;
+		let closeClusters;
 
 		for (let i = matrix.length - 1; i >= 0 && !closeClusters; --i)
 			for (let j = i - 1; j >= 0 && !closeClusters; --j)

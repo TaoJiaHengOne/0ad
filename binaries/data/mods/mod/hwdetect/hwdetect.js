@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -176,16 +176,16 @@ function RunDetection(settings)
 
 	// If variable value is not undefined it overrides default.cfg,
 	// local preferences have a higher priority anyway
-	var disable_audio = undefined;
-	var disable_s3tc = undefined;
-	var disable_shadows = undefined;
-	var disable_shadowpcf = undefined;
-	var disable_allwater = undefined;
-	var disable_fancywater = undefined;
-	var enable_glsl = undefined;
-	var enable_postproc = undefined;
-	var enable_smoothlos = undefined;
-	var override_renderpath = undefined;
+	var disable_audio;
+	var disable_s3tc;
+	var disable_shadows;
+	var disable_shadowpcf;
+	var disable_allwater;
+	var disable_fancywater;
+	var enable_glsl;
+	var enable_postproc;
+	var enable_smoothlos;
+	var override_renderpath;
 
 	// TODO: add some mechanism for setting config values
 	// (overriding default.cfg, but overridden by local.cfg)
