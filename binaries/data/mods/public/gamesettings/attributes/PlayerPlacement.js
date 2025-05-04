@@ -34,7 +34,14 @@ GameSettings.prototype.Attributes.PlayerPlacement = class PlayerPlacement extend
 
 	setValue(val)
 	{
-		this.value = val;
+		if (this.available)
+		{
+			this.value = val ?? "random";
+			return;
+		}
+
+		if (val !== undefined)
+			throw new Error("This map doesn't support player placements");
 	}
 
 	pickRandomItems()

@@ -75,7 +75,7 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 	settings.map.selectMap("maps/" + cmdLineArgs['autostart']);
 	settings.mapSize.setSize(+(cmdLineArgs['autostart-size'] ?? 192));
 	settings.biome.setBiome(cmdLineArgs['autostart-biome'] || "random");
-	settings.playerPlacement.setValue(cmdLineArgs['autostart-placement'] ?? "random");
+	settings.playerPlacement.setValue(cmdLineArgs['autostart-placement']);
 	if ('autostart-visibility' in cmdLineArgs)
 	{
 		switch (cmdLineArgs['autostart-visibility'])
