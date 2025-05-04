@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -1108,10 +1108,21 @@ int CXMLReader::ReadEntities(XMBElement parent, double end_time)
 				debug_warn(L"Invalid map XML data");
 		}
 
-		entity_id_t ent = sim.AddEntity(TemplateName, EntityUid);
 		entity_id_t player = cmpPlayerManager->GetPlayerByID(PlayerID);
+		CmpPtr<ICmpPlayer> cmpPlayer(sim, player);
+
+		// Don't add entities for removed players.
+		if (cmpPlayer && cmpPlayer->IsRemoved())
+		{
+			completed_jobs++;
+			LDR_CHECK_TIMEOUT(completed_jobs, total_jobs);
+			continue;
+		}
+
+		entity_id_t ent = sim.AddEntity(TemplateName, EntityUid);
 		if (ent == INVALID_ENTITY || player == INVALID_ENTITY)
-		{	// Don't add entities with invalid player IDs
+		{
+			// Don't add entities with invalid player IDs
 			LOGERROR("Failed to load entity template '%s'", utf8_from_wstring(TemplateName));
 		}
 		else
@@ -1497,9 +1508,16 @@ int CMapReader::ParseEntities()
 	{
 		// Get current entity struct
 		currEnt = entities[entity_idx];
+		entity_id_t player = cmpPlayerManager->GetPlayerByID(currEnt.playerID);
+		CmpPtr<ICmpPlayer> cmpPlayer(sim, player);
+		// Don't add entities for removed players.
+		if (cmpPlayer && cmpPlayer->IsRemoved())
+		{
+			entity_idx++;
+			continue;
+		}
 
 		entity_id_t ent = pSimulation2->AddEntity(currEnt.templateName, currEnt.entityID);
-		entity_id_t player = cmpPlayerManager->GetPlayerByID(currEnt.playerID);
 		if (ent == INVALID_ENTITY || player == INVALID_ENTITY)
 		{	// Don't add entities with invalid player IDs
 			LOGERROR("Failed to load entity template '%s'", utf8_from_wstring(currEnt.templateName));

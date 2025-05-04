@@ -66,8 +66,10 @@ function LoadPlayerSettings(settings, newPlayers)
 		cmpPlayer.SetColor(color.r, color.g, color.b);
 
 		// Special case for gaia
-		if (i == 0)
+		if (i === 0)
 			continue;
+
+		cmpPlayer.SetRemoved(getPlayerSetting(i, "Removed"));
 
 		// StartingResources
 		if (settings.PlayerData[i].Resources !== undefined)

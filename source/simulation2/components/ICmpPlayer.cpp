@@ -92,6 +92,11 @@ public:
 		return m_Script.Call<std::string>("GetState");
 	}
 
+	bool IsRemoved() override
+	{
+		return m_Script.Call<bool>("IsRemoved");
+	}
+
 	bool IsActive() final
 	{
 		return m_IsActive;

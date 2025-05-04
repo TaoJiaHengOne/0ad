@@ -18,6 +18,7 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		this.clientItemFactory = new PlayerAssignmentItem.Client();
 		this.aiItemFactory = new PlayerAssignmentItem.AI();
 		this.unassignedItem = new PlayerAssignmentItem.Unassigned().createItem();
+		this.removedItem = new PlayerAssignmentItem.Removed().createItem();
 
 		this.aiItems =
 			g_Settings.AIDescriptions.filter(ai => !ai.data.hidden).map(
@@ -31,10 +32,16 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		this.rebuildList();
 
 		const savedAI = this.isSavedGame && g_GameSettings.playerAI.get(this.playerIndex);
+		const savedRemoved = this.isSavedGame && g_GameSettings.playerRemoved.get(this.playerIndex);
 
 		if (savedAI)
 		{
 			this.setSelectedValue(savedAI.bot);
+			this.setEnabled(false);
+		}
+		else if (savedRemoved)
+		{
+			this.setSelectedValue(this.removedItem.Value);
 			this.setEnabled(false);
 		}
 		else
@@ -54,7 +61,8 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 	{
 		const isPlayerSlot = Object.values(g_PlayerAssignments).some(x => x.player === this.playerIndex + 1);
 		if (!isPlayerSlot && !g_GameSettings.playerAI.get(this.playerIndex) &&
-			this.playerIndex >= oldNb && this.playerIndex < g_GameSettings.playerCount.nbPlayers)
+		    !g_GameSettings.playerRemoved.get(this.playerIndex) &&
+		    this.playerIndex >= oldNb && this.playerIndex < g_GameSettings.playerCount.nbPlayers)
 		{
 			// Add AIs to unused slots by default.
 			// TODO: we could save the settings in case the player lowers, then re-raises the # of players.
@@ -104,6 +112,14 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 			this.setSelectedValue(ai.bot);
 			return;
 		}
+		
+		const isRemoved = g_GameSettings.playerRemoved.get(this.playerIndex);
+		if (isRemoved)
+		{
+			this.rebuildList();
+			this.setSelectedValue(this.removedItem.Value)
+			return;
+		}
 
 		this.setSelectedValue(undefined);
 	}
@@ -118,10 +134,12 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		// If loading a saved game clients and unassigned players can't be replaced by a AI. Don't show
 		// the AIs in the dropdown.
 		const disableAI = this.isSavedGame && !g_GameSettings.playerAI.get(this.playerIndex);
+		const disabledPlayer = this.isSavedGame && !g_GameSettings.playerRemoved.get(this.playerIndex);
 		this.values = prepareForDropdown([
 			...this.playerItems,
-			...disableAI ? [] : this.aiItems,
-			this.unassignedItem
+			...disableAI || disabledPlayer ? [] : this.aiItems,
+			this.unassignedItem,
+			this.removedItem
 		]);
 
 		const selected = this.dropdown.list_data?.[this.dropdown.selected];
@@ -173,6 +191,7 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 			guidToAssign, isSavedGame)
 		{
 			const sourcePlayer = g_PlayerAssignments[guidToAssign].player - 1;
+			g_GameSettings.playerRemoved.set(playerIndex, false);
 			if (sourcePlayer >= 0)
 			{
 				const ai = g_GameSettings.playerAI.get(playerIndex);
@@ -186,14 +205,8 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 					g_GameSettings.playerColor.swap(sourcePlayer, playerIndex);
 				}
 			}
-
 			playerAssignmentsController.assignPlayer(guidToAssign, playerIndex);
 			gameSettingsController.setNetworkInitAttributes();
-		}
-
-		isSelected(pData, guid, value)
-		{
-			return guid !== undefined && guid == value;
 		}
 	};
 
@@ -227,13 +240,8 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 				"difficulty": +Engine.ConfigDB_GetValue("user", "gui.gamesetup.aidifficulty"),
 				"behavior": Engine.ConfigDB_GetValue("user", "gui.gamesetup.aibehavior"),
 			});
-
+			g_GameSettings.playerRemoved.set(playerIndex, false);
 			gameSettingsController.setNetworkInitAttributes();
-		}
-
-		isSelected(pData, guid, value)
-		{
-			return !guid && pData.AI && pData.AI == value;
 		}
 	};
 
@@ -262,13 +270,9 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 			playerAssignmentsController.unassignClient(playerIndex + 1);
 
 			g_GameSettings.playerAI.setAI(playerIndex, undefined);
+			g_GameSettings.playerRemoved.set(playerIndex, false);
 
 			gameSettingsController.setNetworkInitAttributes();
-		}
-
-		isSelected(pData, guid, value)
-		{
-			return !guid && !pData.AI;
 		}
 	};
 
@@ -277,4 +281,35 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 
 	PlayerAssignmentItem.Unassigned.prototype.Tags =
 		{ "color": "140 140 140" };
+}
+
+{
+
+	PlayerAssignmentItem.Removed = class
+	{
+		createItem()
+		{
+			return {
+				"Handler": this,
+				"Value": "removed",
+				"Autocomplete": this.Label,
+				"Caption": setStringTags(this.Label, this.Tags)
+			};
+		}
+
+		onSelectionChange(gameSettingsController, playerAssignmentsController, playerIndex)
+		{
+			g_GameSettings.playerRemoved.set(playerIndex, true);
+			playerAssignmentsController.unassignClient(playerIndex + 1);
+			g_GameSettings.playerAI.setAI(playerIndex, undefined);
+
+			gameSettingsController.setNetworkInitAttributes();
+		}
+	};
+
+	PlayerAssignmentItem.Removed.prototype.Label =
+	translate("Removed");
+
+	PlayerAssignmentItem.Removed.prototype.Tags =
+	{ "color": "255 140 140" };
 }

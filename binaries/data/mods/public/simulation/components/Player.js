@@ -65,6 +65,7 @@ Player.prototype.Init = function()
 	this.startCam = undefined;
 	this.controlAllUnits = false;
 	this.isAI = false;
+	this.isRemoved = false;
 	this.cheatsEnabled = false;
 	this.panelEntities = [];
 	this.resourceNames = {};
@@ -576,6 +577,16 @@ Player.prototype.IsAI = function()
 	return this.isAI;
 };
 
+Player.prototype.SetRemoved = function(flag)
+{
+	this.isRemoved = flag;
+};
+
+Player.prototype.IsRemoved = function()
+{
+	return this.isRemoved;
+};
+
 /**
  * Do some map dependant initializations
  */
@@ -758,6 +769,10 @@ Player.prototype.OnGlobalPlayerDefeated = function(msg)
 {
 	const cmpSound = Engine.QueryInterface(this.entity, IID_Sound);
 	if (!cmpSound)
+		return;
+
+	// Don't play defeat/win sounds for removed players.
+	if (this.playerID === msg.playerId && this.IsRemoved() || QueryPlayerIDInterface(msg.playerId)?.IsRemoved())
 		return;
 
 	const soundGroup = cmpSound.GetSoundGroup(this.playerID === msg.playerId ? "defeated" : Engine.QueryInterface(this.entity, IID_Diplomacy).IsAlly(msg.playerId) ? "defeated_ally" : this.HasWon() ? "won" : "defeated_enemy");

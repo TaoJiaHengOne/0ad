@@ -47,10 +47,18 @@ function InitGame(settings)
 		const cmpPlayer = QueryPlayerIDInterface(i);
 		cmpPlayer.SetCheatsEnabled(!!settings.CheatsEnabled);
 
-		if (settings.PlayerData[i] && !!settings.PlayerData[i].AI)
+		if (settings.PlayerData[i])
 		{
-			cmpAIManager.AddPlayer(settings.PlayerData[i].AI, i, +settings.PlayerData[i].AIDiff, settings.PlayerData[i].AIBehavior || "random");
-			cmpPlayer.SetAI(true);
+			if(!!settings.PlayerData[i].Removed)
+			{
+				cmpPlayer.Defeat(undefined);
+				continue;
+			}
+			else if (!!settings.PlayerData[i].AI)
+			{
+				cmpAIManager.AddPlayer(settings.PlayerData[i].AI, i, +settings.PlayerData[i].AIDiff, settings.PlayerData[i].AIBehavior || "random");
+				cmpPlayer.SetAI(true);
+			}
 		}
 
 		if (settings.AllyView)

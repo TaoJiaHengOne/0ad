@@ -37,6 +37,7 @@ public:
 	virtual CFixedVector3D GetStartingCameraRot() = 0;
 
 	virtual bool HasStartingCamera() = 0;
+	virtual bool IsRemoved() = 0;
 	virtual std::string GetState() = 0;
 
 	// See the cpp file for why this is implemented in C++.
