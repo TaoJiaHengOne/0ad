@@ -125,19 +125,8 @@ Math.atan2 = function(y, x)
 	// puts the result into the correct quadrant
 	// 1/(-0) is the only way to determine the sign for a 0 value
 	if (x < 0 || 1/x === -Infinity)
-	{
-		if (y < 0 || 1/y === -Infinity)
-			return -Math.PI + r;
-		else
-			return Math.PI - r;
-	}
-	else
-	{
-		if (y < 0 || 1/y === -Infinity)
-			return -r;
-		else
-			return r;
-	}
+		return (y < 0 || 1/y === -Infinity) ? -Math.PI + r : Math.PI - r;
+	return (y < 0 || 1/y === -Infinity) ? -r : r;
 };
 
 Math.acos = function()
