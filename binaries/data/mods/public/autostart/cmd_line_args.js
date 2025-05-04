@@ -64,12 +64,14 @@
  */
 function parseCmdLineArgs(settings, cmdLineArgs)
 {
+	// eslint-disable-next-line dot-notation
 	const mapType = cmdLineArgs['autostart'].substring(0, cmdLineArgs['autostart'].indexOf('/'));
 	settings.map.setType({
 		"scenarios": "scenario",
 		"random": "random",
 		"skirmishes": "skirmish",
 	}[mapType]);
+	// eslint-disable-next-line dot-notation
 	settings.map.selectMap("maps/" + cmdLineArgs['autostart']);
 	settings.mapSize.setSize(+(cmdLineArgs['autostart-size'] ?? 192));
 	settings.biome.setBiome(cmdLineArgs['autostart-biome'] || "random");
