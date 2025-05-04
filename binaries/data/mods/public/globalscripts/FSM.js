@@ -335,9 +335,9 @@ FSM.prototype.SwitchToNextState = function(obj, nextStateName)
 	// If any enter/leave function returns true then abort the process
 	// (this lets them intercept the transition and start a new transition)
 
-	for (var equalPrefix = 0; fromState[equalPrefix] && fromState[equalPrefix] === toState[equalPrefix]; ++equalPrefix)
-	{
-	}
+	let equalPrefix = 0;
+	while (fromState[equalPrefix] && fromState[equalPrefix] === toState[equalPrefix])
+		++equalPrefix;
 
 	// If the next-state is the same as the current state, leave/enter up one level so cleanup gets triggered.
 	if (equalPrefix > 0 && equalPrefix === toState.length)

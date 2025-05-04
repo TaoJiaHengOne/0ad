@@ -20,11 +20,11 @@ Engine.RegisterComponentType(IID_Test1, "TestScript1_Init", TestScript1_Init);
 function TestScript1_readonly() {}
 
 TestScript1_readonly.prototype.GetX = function() {
-	try { this.template = null; } catch(e) { }
-	try { delete this.template; } catch(e) { }
-	try { this.template.x += 1000; } catch(e) { }
-	try { delete this.template.x; } catch(e) { }
-	try { this.template.y = 2000; } catch(e) { }
+	try { this.template = null; } catch(e) { /* noop */ }
+	try { delete this.template; } catch(e) { /* noop */ }
+	try { this.template.x += 1000; } catch(e) { /* noop */ }
+	try { delete this.template.x; } catch(e) { /* noop */ }
+	try { this.template.y = 2000; } catch(e) { /* noop */ }
 	return +(this.template.x || 1) + +(this.template.y || 2);
 };
 
