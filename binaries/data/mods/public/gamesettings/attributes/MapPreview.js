@@ -29,8 +29,8 @@ GameSettings.prototype.Attributes.MapPreview = class MapPreview extends GameSett
 	{
 		if (!subtype)
 			return undefined;
-		let substr = subtype.substr(subtype.lastIndexOf("/") + 1);
-		let path = basepath + "_" + substr + ".png";
+		const substr = subtype.substr(subtype.lastIndexOf("/") + 1);
+		const path = basepath + "_" + substr + ".png";
 		if (this.settings.mapCache.previewExists(path))
 			return this.settings.mapCache.getMapPreview(this.settings.map.type,
 				this.settings.map.map, path);
@@ -39,7 +39,7 @@ GameSettings.prototype.Attributes.MapPreview = class MapPreview extends GameSett
 
 	getLandscapePreview()
 	{
-		let filename = this.settings.landscape.getPreviewFilename();
+		const filename = this.settings.landscape.getPreviewFilename();
 		if (!filename)
 			return undefined;
 		return this.settings.mapCache.getMapPreview(this.settings.map.type,
@@ -55,7 +55,7 @@ GameSettings.prototype.Attributes.MapPreview = class MapPreview extends GameSett
 		}
 
 		// This handles "random" map type (mostly for convenience).
-		let mapPath = basename(this.settings.map.map);
+		const mapPath = basename(this.settings.map.map);
 		this.value = this.getPreviewForSubtype(mapPath, this.settings.biome.biome) ||
 			this.getLandscapePreview() ||
 			this.getPreviewForSubtype(mapPath, this.settings.daytime.value) ||

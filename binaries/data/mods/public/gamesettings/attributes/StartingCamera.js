@@ -46,9 +46,9 @@ GameSettings.prototype.Attributes.StartingCamera = class StartingCamera extends 
 
 	onMapChange()
 	{
-		let pData = this.getMapSetting("PlayerData");
+		const pData = this.getMapSetting("PlayerData");
 		this._resize(pData?.length || 0);
-		for (let i in pData)
+		for (const i in pData)
 			this.values[i] = pData?.[i]?.StartingCamera;
 	}
 

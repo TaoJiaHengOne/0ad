@@ -22,7 +22,7 @@ GameSettings.prototype.Attributes.Daytime = class Daytime extends GameSetting
 
 	onMapChange()
 	{
-		let mapData = this.settings.map.data;
+		const mapData = this.settings.map.data;
 		if (!mapData || !mapData.settings || !mapData.settings.Daytime)
 		{
 			this.setDataValueHelper(undefined, undefined);

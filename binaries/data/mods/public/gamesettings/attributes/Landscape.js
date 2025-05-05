@@ -47,8 +47,8 @@ GameSettings.prototype.Attributes.Landscape = class Landscape extends GameSettin
 	{
 		if (!this.value)
 			return undefined;
-		for (let group of this.data)
-			for (let item of group.Items)
+		for (const group of this.data)
+			for (const item of group.Items)
 				if (item.Id == this.value)
 					return item.Preview;
 		return undefined;
@@ -63,7 +63,7 @@ GameSettings.prototype.Attributes.Landscape = class Landscape extends GameSettin
 		let items = [];
 		if (this.value.indexOf("_") !== -1)
 		{
-			let subgroup = this.data.find(x => x.Id == this.value);
+			const subgroup = this.data.find(x => x.Id == this.value);
 			items = subgroup.Items.map(x => x.Id);
 		}
 		else

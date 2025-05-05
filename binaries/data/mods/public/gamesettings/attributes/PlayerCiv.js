@@ -18,7 +18,7 @@ GameSettings.prototype.Attributes.PlayerCiv = class PlayerCiv extends GameSettin
 			attribs.settings.PlayerData = [];
 		while (attribs.settings.PlayerData.length < this.values.length)
 			attribs.settings.PlayerData.push({});
-		for (let i in this.values)
+		for (const i in this.values)
 			if (this.values[i])
 				attribs.settings.PlayerData[i].Civ = this.values[i];
 	}
@@ -76,7 +76,7 @@ GameSettings.prototype.Attributes.PlayerCiv = class PlayerCiv extends GameSettin
 		const civs = Object.keys(this.settings.civData).filter(civ => this.settings.civData[civ].SelectableInGameSetup);
 
 		let picked = false;
-		for (let i in this.values)
+		for (const i in this.values)
 		{
 			if (this.values[i] != "random")
 				continue;
@@ -91,7 +91,7 @@ GameSettings.prototype.Attributes.PlayerCiv = class PlayerCiv extends GameSettin
 
 	_getMapData(i)
 	{
-		let data = this.settings.map.data;
+		const data = this.settings.map.data;
 		if (!data || !data.settings || !data.settings.PlayerData)
 			return undefined;
 		if (data.settings.PlayerData.length <= i)
@@ -101,7 +101,7 @@ GameSettings.prototype.Attributes.PlayerCiv = class PlayerCiv extends GameSettin
 
 	_set(playerIndex, value)
 	{
-		let map = this._getMapData(playerIndex);
+		const map = this._getMapData(playerIndex);
 		if (!!map)
 		{
 			this.values[playerIndex] = map;

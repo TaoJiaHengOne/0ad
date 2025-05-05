@@ -27,7 +27,7 @@ GameSettings.prototype.Attributes.SeaLevelRise = class SeaLevelRise extends Game
 			this.value = undefined;
 			return;
 		}
-		let mapData = this.settings.map.data;
+		const mapData = this.settings.map.data;
 		this.min = mapData.settings.SeaLevelRise.Min;
 		this.max = mapData.settings.SeaLevelRise.Max;
 		this.value = mapData.settings.SeaLevelRise.Default;

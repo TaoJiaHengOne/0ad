@@ -22,7 +22,7 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 		while (attribs.settings.PlayerData.length < this.values.length)
 			attribs.settings.PlayerData.push({});
 
-		for (let i in this.values)
+		for (const i in this.values)
 			if (this.values[i])
 				attribs.settings.PlayerData[i].Name = this.values[i];
 	}
@@ -69,17 +69,17 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 	{
 		const AIPlayerNamesList = [];
 		let picked = false;
-		for (let i in this.values)
+		for (const i in this.values)
 		{
 			if (!!this.values[i] &&
 				this.values[i] !== g_Settings.PlayerDefaults[+i + 1].Name)
 				continue;
 
-			let ai = this.settings.playerAI.values[i];
+			const ai = this.settings.playerAI.values[i];
 			if (!ai)
 				continue;
 
-			let civ = this.settings.playerCiv.values[i];
+			const civ = this.settings.playerCiv.values[i];
 			if (!civ || civ == "random")
 				continue;
 
@@ -125,7 +125,7 @@ GameSettings.prototype.Attributes.PlayerName = class PlayerName extends GameSett
 
 	_getMapData(i)
 	{
-		let data = this.settings.map.data;
+		const data = this.settings.map.data;
 		if (!data || !data.settings || !data.settings.PlayerData)
 			return undefined;
 		if (data.settings.PlayerData.length <= i)

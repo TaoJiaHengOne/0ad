@@ -84,7 +84,7 @@ GameSettings.prototype.Attributes.PlayerAI = class PlayerAI extends GameSetting
 
 	setAI(playerIndex, ai)
 	{
-		let old = this.values[playerIndex] ? this.values[playerIndex].bot : undefined;
+		const old = this.values[playerIndex] ? this.values[playerIndex].bot : undefined;
 		if (!ai)
 			this.values[playerIndex] = undefined;
 		else

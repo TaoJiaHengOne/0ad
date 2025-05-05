@@ -13,12 +13,12 @@ GameSettings.prototype.Attributes.VictoryConditions = class VictoryConditions ex
 	{
 		this.settings.map.watch(() => this.onMapChange(), ["map"]);
 
-		let conditions = loadVictoryConditions();
-		for (let cond of conditions)
+		const conditions = loadVictoryConditions();
+		for (const cond of conditions)
 			this.conditions[cond.Name] = cond;
 
-		let defaults = [];
-		for (let cond in this.conditions)
+		const defaults = [];
+		for (const cond in this.conditions)
 			if (this.conditions[cond].Default)
 				defaults.push(this.conditions[cond].Name);
 		this._add(this.active, this.disabled, defaults);
@@ -57,8 +57,8 @@ GameSettings.prototype.Attributes.VictoryConditions = class VictoryConditions ex
 
 	_reconstructDisabled(active)
 	{
-		let disabled = new Set();
-		for (let cond of active)
+		const disabled = new Set();
+		for (const cond of active)
 			if (this.conditions[cond].DisabledWhenChecked)
 				this.conditions[cond].DisabledWhenChecked.forEach(x => disabled.add(x));
 
@@ -67,7 +67,7 @@ GameSettings.prototype.Attributes.VictoryConditions = class VictoryConditions ex
 
 	_add(currentActive, currentDisabled, names)
 	{
-		let active = clone(currentActive);
+		const active = clone(currentActive);
 		for (const name of names)
 		{
 			if (currentDisabled.has(name))
@@ -84,7 +84,7 @@ GameSettings.prototype.Attributes.VictoryConditions = class VictoryConditions ex
 
 	_delete(names)
 	{
-		let active = clone(this.active);
+		const active = clone(this.active);
 		for (const name of names)
 			active.delete(name);
 		// TODO: sanity check

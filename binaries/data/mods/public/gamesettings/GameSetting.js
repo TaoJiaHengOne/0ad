@@ -13,7 +13,7 @@ class GameSetting extends Observable /* ProfilableMixin(Observable) /* Replace t
 
 	getDefaultValue(settingsProp, dataProp)
 	{
-		for (let index in g_Settings[settingsProp])
+		for (const index in g_Settings[settingsProp])
 			if (g_Settings[settingsProp][index].Default)
 				return g_Settings[settingsProp][index][dataProp];
 		return undefined;

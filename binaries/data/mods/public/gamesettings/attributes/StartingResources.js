@@ -19,7 +19,7 @@ GameSettings.prototype.Attributes.StartingResources = class StartingResources ex
 				attribs.settings.PlayerData = [];
 			while (attribs.settings.PlayerData.length < this.perPlayer.length)
 				attribs.settings.PlayerData.push({});
-			for (let i in this.perPlayer)
+			for (const i in this.perPlayer)
 				if (this.perPlayer[i])
 					attribs.settings.PlayerData[i].Resources = this.perPlayer[i];
 		}

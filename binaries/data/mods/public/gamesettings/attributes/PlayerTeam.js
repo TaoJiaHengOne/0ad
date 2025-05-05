@@ -18,7 +18,7 @@ GameSettings.prototype.Attributes.PlayerTeam = class PlayerTeam extends GameSett
 			attribs.settings.PlayerData = [];
 		while (attribs.settings.PlayerData.length < this.values.length)
 			attribs.settings.PlayerData.push({});
-		for (let i in this.values)
+		for (const i in this.values)
 			if (this.values[i] !== undefined)
 				attribs.settings.PlayerData[i].Team = this.values[i];
 	}

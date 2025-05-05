@@ -33,14 +33,14 @@ class GameSettings
 		});
 
 		// Load attributes as regular enumerable (i.e. iterable) properties.
-		for (let comp in GameSettings.prototype.Attributes)
+		for (const comp in GameSettings.prototype.Attributes)
 		{
-			let name = comp[0].toLowerCase() + comp.substr(1);
+			const name = comp[0].toLowerCase() + comp.substr(1);
 			if (name in this)
 				error("Game Settings attribute '" + name + "' is already used.");
 			this[name] = new GameSettings.prototype.Attributes[comp](this);
 		}
-		for (let comp in this)
+		for (const comp in this)
 			if (this[comp].init)
 				this[comp].init();
 
@@ -64,10 +64,10 @@ class GameSettings
 	 */
 	toInitAttributes()
 	{
-		let attribs = {
+		const attribs = {
 			"settings": {}
 		};
-		for (let comp in this)
+		for (const comp in this)
 			if (this[comp].toInitAttributes)
 				this[comp].toInitAttributes(attribs);
 

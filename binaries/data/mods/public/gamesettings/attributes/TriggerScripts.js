@@ -22,9 +22,9 @@ GameSettings.prototype.Attributes.TriggerScripts = class TriggerScripts extends 
 
 	updateVictoryScripts()
 	{
-		let setting = this.settings.victoryConditions;
-		let scripts = new Set();
-		for (let cond of setting.active)
+		const setting = this.settings.victoryConditions;
+		const scripts = new Set();
+		for (const cond of setting.active)
 			setting.conditions[cond].Scripts.forEach(script => scripts.add(script));
 		this.victoryScripts = scripts;
 	}
