@@ -130,12 +130,21 @@ pipeline {
 				sh "BUNDLE_VERSION=${params.BUNDLE_VERSION} DO_GZIP=${params.DO_GZIP} source/tools/dist/build-unix-win32.sh"
 			}
 		}
+
+		stage("Generate Signatures and Checksums") {
+			steps {
+				withCredentials([sshUserPrivateKey(credentialsId: 'minisign-releases-key', keyFileVariable: 'MINISIGN_KEY', passphraseVariable: 'MINISIGN_PASS')]) {
+					sh 'echo ${MINISIGN_PASS} | minisign -s ${MINISIGN_KEY} -Sm *.{dmg,exe,tar.gz,tar.xz}'
+				}
+				sh 'for file in *.{dmg,exe,tar.gz,tar.xz}; do md5sum "${file}" > "${file}".md5sum; done'
+				sh 'for file in *.{dmg,exe,tar.gz,tar.xz}; do sha1sum "${file}" > "${file}".sha1sum; done'
+			}
+		}
 	}
 
 	post {
 		success {
-			archiveArtifacts '*.dmg,*.exe,*.tar.gz,*.tar.xz'
-			sh "shasum -a 1 *.{dmg,exe,tar.gz,tar.xz}"
+			archiveArtifacts '*.dmg,*.exe,*.tar.gz,*.tar.xz,*.minisig,*.md5sum,*.sha1sum'
 		}
 	}
 }
