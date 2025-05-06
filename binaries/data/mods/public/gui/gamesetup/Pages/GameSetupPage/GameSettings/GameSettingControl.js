@@ -96,7 +96,7 @@ class GameSettingControl /* extends Profilable /* Uncomment to profile controls 
 
 	updateVisibility()
 	{
-		let hidden =
+		const hidden =
 			this.hidden ||
 			this.playerIndex === undefined &&
 				this.category != g_TabCategorySelected ||
@@ -109,7 +109,7 @@ class GameSettingControl /* extends Profilable /* Uncomment to profile controls 
 		if (hidden)
 			return;
 
-		let enabled = g_IsController && this.enabled;
+		const enabled = g_IsController && this.enabled;
 
 		if (this.setControlHidden)
 			this.setControlHidden(!enabled);
@@ -135,7 +135,7 @@ class GameSettingControl /* extends Profilable /* Uncomment to profile controls 
 			return;
 		}
 
-		let newEntries = this.getAutocompleteEntries();
+		const newEntries = this.getAutocompleteEntries();
 		if (newEntries)
 			autocomplete[this.AutocompleteOrder] =
 				(autocomplete[this.AutocompleteOrder] || []).concat(newEntries);

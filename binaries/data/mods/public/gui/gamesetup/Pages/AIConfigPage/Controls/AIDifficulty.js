@@ -12,7 +12,7 @@ AIGameSettingControls.AIDifficulty = class extends AIGameSettingControlDropdown
 		this.dropdown.list = g_Settings.AIDifficulties.map(AI => AI.Title);
 		this.dropdown.list_data = g_Settings.AIDifficulties.map((AI, i) => i);
 
-		let ai = g_GameSettings.playerAI.get(this.playerIndex);
+		const ai = g_GameSettings.playerAI.get(this.playerIndex);
 		this.setHidden(!ai);
 		if (!!ai)
 			this.setSelectedValue(ai.difficulty);

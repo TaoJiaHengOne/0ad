@@ -30,7 +30,7 @@ class GameSettingsPanel
 
 	triggerResizeHandlers()
 	{
-		for (let handler of this.gameSettingsPanelResizeHandlers)
+		for (const handler of this.gameSettingsPanelResizeHandlers)
 			handler(this.settingsPanelFrame);
 	}
 
@@ -51,19 +51,19 @@ class GameSettingsPanel
 
 	onTick()
 	{
-		let now = Date.now();
-		let tickLength = now - this.lastTickTime;
-		let previousTime = this.lastTickTime;
+		const now = Date.now();
+		const tickLength = now - this.lastTickTime;
+		const previousTime = this.lastTickTime;
 		this.lastTickTime = now;
 		if (previousTime === undefined)
 			return;
 
 		const distance = this.slideSpeed * (tickLength || 1);
-		let rightBorder = this.settingTabButtonsFrame.size.left;
+		const rightBorder = this.settingTabButtonsFrame.size.left;
 		let offset = 0;
 		if (g_TabCategorySelected === undefined)
 		{
-			let maxOffset = rightBorder - this.settingsPanelFrame.size.left;
+			const maxOffset = rightBorder - this.settingsPanelFrame.size.left;
 			if (maxOffset > 0)
 				offset = Math.min(distance, maxOffset);
 		}
@@ -73,7 +73,7 @@ class GameSettingsPanel
 		}
 		else
 		{
-			let maxOffset = this.settingsPanelFrame.size.left - rightBorder + (this.settingsPanelFrame.size.right - this.settingsPanelFrame.size.left);
+			const maxOffset = this.settingsPanelFrame.size.left - rightBorder + (this.settingsPanelFrame.size.right - this.settingsPanelFrame.size.left);
 			if (maxOffset > 0)
 				offset = -Math.min(distance, maxOffset);
 		}
@@ -92,7 +92,7 @@ class GameSettingsPanel
 		if (!offset)
 			return;
 
-		let size = this.settingsPanelFrame.size;
+		const size = this.settingsPanelFrame.size;
 		size.left += offset;
 		size.right += offset;
 		this.settingsPanelFrame.size = size;
@@ -106,17 +106,17 @@ class GameSettingsPanel
 	 */
 	positionSettings()
 	{
-		let gameSetupPageSize = this.gameSetupPage.getComputedSize();
+		const gameSetupPageSize = this.gameSetupPage.getComputedSize();
 
-		let columnWidth = Math.min(
+		const columnWidth = Math.min(
 			this.MaxColumnWidth,
 			(gameSetupPageSize.right - gameSetupPageSize.left + this.centerRightPanel.size.left) / 2);
 
 		let settingsPerColumn;
 		{
-			let settingPanelSize = this.settingsPanel.getComputedSize();
-			let maxSettingsPerColumn = Math.floor((settingPanelSize.bottom - settingPanelSize.top) / this.SettingHeight);
-			let settingCount = this.settingsPanel.children.filter(child => !child.children[0].hidden).length;
+			const settingPanelSize = this.settingsPanel.getComputedSize();
+			const maxSettingsPerColumn = Math.floor((settingPanelSize.bottom - settingPanelSize.top) / this.SettingHeight);
+			const settingCount = this.settingsPanel.children.filter(child => !child.children[0].hidden).length;
 			settingsPerColumn = settingCount / Math.ceil(settingCount / maxSettingsPerColumn);
 		}
 
@@ -124,13 +124,13 @@ class GameSettingsPanel
 		let column = 0;
 		let settingsThisColumn = 0;
 
-		let selectedTab = g_GameSettingsLayout[g_TabCategorySelected];
+		const selectedTab = g_GameSettingsLayout[g_TabCategorySelected];
 		if (!selectedTab)
 			return;
 
-		for (let name of selectedTab.settings)
+		for (const name of selectedTab.settings)
 		{
-			let settingFrame = this.gameSettingControlManager.gameSettingControls[name].frame;
+			const settingFrame = this.gameSettingControlManager.gameSettingControls[name].frame;
 			if (settingFrame.hidden)
 				continue;
 
@@ -152,7 +152,7 @@ class GameSettingsPanel
 		}
 
 		{
-			let size = this.settingsPanelFrame.size;
+			const size = this.settingsPanelFrame.size;
 			size.right = size.left + (column + 1) * columnWidth;
 			this.settingsPanelFrame.size = size;
 		}

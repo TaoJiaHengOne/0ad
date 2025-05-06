@@ -23,7 +23,7 @@ class ChatPanel
 			setupWindow.controls.netMessages, this.chatInputAutocomplete);
 
 		this.chatMessageEvents = [];
-		for (let name in ChatMessageEvents)
+		for (const name in ChatMessageEvents)
 			this.chatMessageEvents.push(new ChatMessageEvents[name](setupWindow, this.chatMessagesPanel));
 	}
 }

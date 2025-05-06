@@ -12,8 +12,8 @@ SetupWindowPages.GameSetupPage = class
 
 		// These classes manage GUI buttons.
 		{
-			let startGameButton = new StartGameButton(setupWindow);
-			let readyButton = new ReadyButton(setupWindow);
+			const startGameButton = new StartGameButton(setupWindow);
+			const readyButton = new ReadyButton(setupWindow);
 			this.panelButtons = {
 				"civInfoButton": new CivInfoButton(),
 				"lobbyButton": new LobbyButton(),
@@ -26,8 +26,8 @@ SetupWindowPages.GameSetupPage = class
 
 		// These classes manage GUI Objects.
 		{
-			let gameSettingTabs = new GameSettingTabs(setupWindow, this.panelButtons.lobbyButton);
-			let gameSettingsPanel = new GameSettingsPanel(
+			const gameSettingTabs = new GameSettingTabs(setupWindow, this.panelButtons.lobbyButton);
+			const gameSettingsPanel = new GameSettingsPanel(
 				setupWindow, gameSettingTabs, this.gameSettingControlManager);
 
 			this.panels = {

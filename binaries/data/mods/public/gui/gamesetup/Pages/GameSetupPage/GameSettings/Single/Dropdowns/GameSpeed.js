@@ -25,7 +25,7 @@ GameSettingControls.GameSpeed = class GameSpeed extends GameSettingControlDropdo
 	render()
 	{
 		let allowFastForward = true;
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (g_PlayerAssignments[guid].player != -1)
 			{
 				allowFastForward = false;
@@ -38,10 +38,10 @@ GameSettingControls.GameSpeed = class GameSpeed extends GameSettingControlDropdo
 			return;
 		}
 		this.previousAllowFastForward = allowFastForward;
-		let values = prepareForDropdown(
+		const values = prepareForDropdown(
 			g_Settings.GameSpeeds.filter(speed => !speed.FastForward || allowFastForward));
-		let currentSpeed = +this.dropdown.list_data?.[this.dropdown.selected];
-		let resetToDefault = values.Speed.indexOf(currentSpeed) === -1;
+		const currentSpeed = +this.dropdown.list_data?.[this.dropdown.selected];
+		const resetToDefault = values.Speed.indexOf(currentSpeed) === -1;
 
 		this.dropdown.list = values.Title;
 		this.dropdown.list_data = values.Speed;

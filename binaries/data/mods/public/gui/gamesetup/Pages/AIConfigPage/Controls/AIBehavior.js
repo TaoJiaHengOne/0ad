@@ -12,7 +12,7 @@ AIGameSettingControls.AIBehavior = class extends AIGameSettingControlDropdown
 		this.dropdown.list = g_Settings.AIBehaviors.map(AIBehavior => AIBehavior.Title);
 		this.dropdown.list_data = g_Settings.AIBehaviors.map(AIBehavior => AIBehavior.Name);
 
-		let ai = g_GameSettings.playerAI.get(this.playerIndex);
+		const ai = g_GameSettings.playerAI.get(this.playerIndex);
 		this.setHidden(!ai);
 		if (!!ai)
 			this.setSelectedValue(ai.behavior);

@@ -52,7 +52,7 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 
 	OnPlayerNbChange(oldNb)
 	{
-		let isPlayerSlot = Object.values(g_PlayerAssignments).some(x => x.player === this.playerIndex + 1);
+		const isPlayerSlot = Object.values(g_PlayerAssignments).some(x => x.player === this.playerIndex + 1);
 		if (!isPlayerSlot && !g_GameSettings.playerAI.get(this.playerIndex) &&
 			this.playerIndex >= oldNb && this.playerIndex < g_GameSettings.playerCount.nbPlayers)
 		{
@@ -71,7 +71,7 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 		// Rebuild the list to account for new/removed players.
 		this.rebuildList();
 		let newGUID;
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (g_PlayerAssignments[guid].player == this.playerIndex + 1)
 			{
 				newGUID = guid;
@@ -97,7 +97,7 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 			this.setSelectedValue(this.assignedGUID);
 			return;
 		}
-		let ai = g_GameSettings.playerAI.get(this.playerIndex);
+		const ai = g_GameSettings.playerAI.get(this.playerIndex);
 		if (ai)
 		{
 			this.rebuildList();
@@ -124,7 +124,7 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 			this.unassignedItem
 		]);
 
-		let selected = this.dropdown.list_data?.[this.dropdown.selected];
+		const selected = this.dropdown.list_data?.[this.dropdown.selected];
 		this.dropdown.list = this.values.Caption;
 		this.dropdown.list_data = this.values.Value.map(x => x || "undefined");
 		this.setSelectedValue(selected);
@@ -172,10 +172,10 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 		onSelectionChange(gameSettingsController, playerAssignmentsController, playerIndex,
 			guidToAssign, isSavedGame)
 		{
-			let sourcePlayer = g_PlayerAssignments[guidToAssign].player - 1;
+			const sourcePlayer = g_PlayerAssignments[guidToAssign].player - 1;
 			if (sourcePlayer >= 0)
 			{
-				let ai = g_GameSettings.playerAI.get(playerIndex);
+				const ai = g_GameSettings.playerAI.get(playerIndex);
 				// If the target was an AI, swap so AI settings are kept.
 				if (ai)
 					g_GameSettings.playerAI.swap(sourcePlayer, playerIndex);
@@ -209,7 +209,7 @@ PlayerSettingControls.PlayerAssignment.prototype.AutocompleteOrder = 100;
 	{
 		createItem(ai)
 		{
-			let aiName = translate(ai.data.name);
+			const aiName = translate(ai.data.name);
 			return {
 				"Handler": this,
 				"Value": ai.id,

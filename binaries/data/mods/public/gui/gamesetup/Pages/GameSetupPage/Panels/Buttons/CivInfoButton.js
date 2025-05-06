@@ -6,7 +6,7 @@ class CivInfoButton
 			"page": "page_civinfo.xml"
 		};
 
-		let civInfoButton = Engine.GetGUIObjectByName("civInfoButton");
+		const civInfoButton = Engine.GetGUIObjectByName("civInfoButton");
 		civInfoButton.onPress = this.onPress.bind(this);
 		civInfoButton.tooltip =
 			sprintf(translate(this.Tooltip), {

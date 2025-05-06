@@ -40,7 +40,7 @@ class LobbyGameRegistrationController
 	onGameStart()
 	{
 		this.sendImmediately();
-		let clients = this.formatClientsForStanza();
+		const clients = this.formatClientsForStanza();
 		Engine.SendChangeStateGame(clients.connectedPlayers, clients.list);
 	}
 
@@ -78,9 +78,9 @@ class LobbyGameRegistrationController
 			this.timer = undefined;
 		}
 
-		let clients = this.formatClientsForStanza();
+		const clients = this.formatClientsForStanza();
 
-		let stanza = {
+		const stanza = {
 			"name": this.serverName,
 			"hostUsername": Engine.LobbyGetNick(),
 			"hostJID": "", // Overwritten by C++, placeholder.
@@ -113,11 +113,11 @@ class LobbyGameRegistrationController
 	formatClientsForStanza()
 	{
 		let connectedPlayers = 0;
-		let playerData = [];
+		const playerData = [];
 
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 		{
-			let pData = { "Name": g_PlayerAssignments[guid].name };
+			const pData = { "Name": g_PlayerAssignments[guid].name };
 
 			if (g_PlayerAssignments[guid].player != -1)
 				++connectedPlayers;

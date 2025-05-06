@@ -27,8 +27,8 @@ class ReadyButton
 
 	onPlayerAssignmentsChange()
 	{
-		let playerAssignment = g_PlayerAssignments[Engine.GetPlayerGUID()];
-		let hidden = g_IsController || !playerAssignment || playerAssignment.player == -1;
+		const playerAssignment = g_PlayerAssignments[Engine.GetPlayerGUID()];
+		const hidden = g_IsController || !playerAssignment || playerAssignment.player == -1;
 
 		if (!hidden)
 		{
@@ -50,10 +50,10 @@ class ReadyButton
 
 	onPress()
 	{
-		let newState =
+		const newState =
 			(g_PlayerAssignments[Engine.GetPlayerGUID()].status + 1) % (this.readyController.StayReady + 1);
 
-		for (let handler of this.readyButtonPressHandlers)
+		for (const handler of this.readyButtonPressHandlers)
 			handler(newState);
 
 		this.readyController.setReady(newState, true);

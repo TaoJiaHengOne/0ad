@@ -19,7 +19,7 @@ GameSettingControls.WonderDuration = class WonderDuration extends GameSettingCon
 
 		if (g_GameSettings.wonder.available)
 		{
-			let value = g_GameSettings.wonder.duration;
+			const value = g_GameSettings.wonder.duration;
 			this.sprintfValue.min = value;
 			this.setSelectedValue(
 				g_GameSettings.wonder.duration,

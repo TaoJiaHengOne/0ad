@@ -51,9 +51,9 @@ PlayerSettingControls.PlayerCiv = class PlayerCiv extends GameSettingControlDrop
 
 	getItems(allItems)
 	{
-		let values = [];
+		const values = [];
 
-		for (let civ in g_CivData)
+		for (const civ in g_CivData)
 			if (allItems || g_CivData[civ].SelectableInGameSetup)
 				values.push({
 					"name": g_CivData[civ].Name,

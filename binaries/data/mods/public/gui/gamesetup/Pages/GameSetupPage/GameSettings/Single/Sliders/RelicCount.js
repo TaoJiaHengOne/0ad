@@ -19,7 +19,7 @@ GameSettingControls.RelicCount = class RelicCount extends GameSettingControlSlid
 
 		if (g_GameSettings.relic.available)
 		{
-			let value = g_GameSettings.relic.count;
+			const value = g_GameSettings.relic.count;
 			this.sprintfValue.number = value;
 			this.setSelectedValue(
 				g_GameSettings.relic.count,

@@ -6,7 +6,7 @@ class TipsPanel
 {
 	constructor(gameSettingsPanel)
 	{
-		let available = !g_IsNetworked && Engine.ConfigDB_GetValue("user", this.Config) == "true";
+		const available = !g_IsNetworked && Engine.ConfigDB_GetValue("user", this.Config) == "true";
 
 		this.spTips = Engine.GetGUIObjectByName("spTips");
 		this.spTips.hidden = !available;

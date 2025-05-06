@@ -15,13 +15,13 @@ class PlayerSettingControlManager
 	{
 		this.playerSettingControls = {};
 
-		for (let name in PlayerSettingControls)
+		for (const name in PlayerSettingControls)
 			this.playerSettingControls[name] = new PlayerSettingControls[name](undefined, undefined, ...args);
 	}
 
 	addAutocompleteEntries(autocomplete)
 	{
-		for (let name in this.playerSettingControls)
+		for (const name in this.playerSettingControls)
 			this.playerSettingControls[name].addAutocompleteEntries(name, autocomplete);
 	}
 }

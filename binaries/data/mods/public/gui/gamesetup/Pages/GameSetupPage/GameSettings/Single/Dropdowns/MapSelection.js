@@ -120,7 +120,7 @@ GameSettingControls.MapSelection = class MapSelection extends GameSettingControl
 		// which takes a few ms, but this could only be done once per frame anyways.
 		// NB: this technically makes it possible to start the game without the change going through
 		// but it's essentially impossible to trigger accidentally.
-		let call = () => {
+		const call = () => {
 			g_GameSettings.map.selectMap(this.values.file[itemIdx]);
 			this.gameSettingsController.setNetworkInitAttributes();
 			delete this.reRenderTimeout;

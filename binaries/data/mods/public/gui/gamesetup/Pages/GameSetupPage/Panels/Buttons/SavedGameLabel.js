@@ -7,7 +7,7 @@ class SavedGameLabel
 
 		const bottomRightPanel = Engine.GetGUIObjectByName("bottomRightPanel");
 		const savedGameLabel = Engine.GetGUIObjectByName("savedGameLabel");
-		let labelWidth = Math.min(Engine.GetTextWidth(savedGameLabel.font, savedGameLabel.caption) + 10, maxWidth);
+		const labelWidth = Math.min(Engine.GetTextWidth(savedGameLabel.font, savedGameLabel.caption) + 10, maxWidth);
 
 		if (isSavedGame)
 		{

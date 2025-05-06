@@ -33,13 +33,13 @@ class SetupWindow
 		g_GameSettings.init(mapCache, g_IsController ? savedGame : undefined);
 
 
-		let netMessages = new NetMessages();
-		let mapFilters = new MapFilters(mapCache);
-		let playerAssignmentsController =
+		const netMessages = new NetMessages();
+		const mapFilters = new MapFilters(mapCache);
+		const playerAssignmentsController =
 			new PlayerAssignmentsController(this, netMessages, isSavedGame);
-		let gameSettingsController = new GameSettingsController(this, netMessages,
+		const gameSettingsController = new GameSettingsController(this, netMessages,
 			playerAssignmentsController, mapCache, isSavedGame);
-		let readyController = new ReadyController(netMessages, gameSettingsController, playerAssignmentsController);
+		const readyController = new ReadyController(netMessages, gameSettingsController, playerAssignmentsController);
 		const lobbyGameRegistrationController = g_IsController && Engine.HasXmppClient() &&
 			new LobbyGameRegistrationController(initData, this, netMessages, mapCache, playerAssignmentsController);
 
@@ -56,7 +56,7 @@ class SetupWindow
 
 		// These are the pages within the setup window that may use the controls defined above
 		this.pages = {};
-		for (let name in SetupWindowPages)
+		for (const name in SetupWindowPages)
 			this.pages[name] = new SetupWindowPages[name](this, isSavedGame);
 
 		netMessages.registerNetMessageHandler("netwarn", addNetworkWarning);
@@ -64,7 +64,7 @@ class SetupWindow
 		Engine.GetGUIObjectByName("setupWindow").onTick = () => this.onTick();
 
 		// This event is triggered after all classes have been instantiated and subscribed to each others events
-		for (let handler of this.loadHandlers)
+		for (const handler of this.loadHandlers)
 			handler(initData, hotloadData);
 
 		Engine.ProfileStop();
@@ -102,8 +102,8 @@ class SetupWindow
 
 	getHotloadData()
 	{
-		let object = {};
-		for (let handler of this.getHotloadDataHandlers)
+		const object = {};
+		for (const handler of this.getHotloadDataHandlers)
 			handler(object);
 		return object;
 	}
@@ -116,7 +116,7 @@ class SetupWindow
 
 	closePage()
 	{
-		for (let handler of this.closePageHandlers)
+		for (const handler of this.closePageHandlers)
 			handler();
 
 		Engine.DisconnectNetworkGame();

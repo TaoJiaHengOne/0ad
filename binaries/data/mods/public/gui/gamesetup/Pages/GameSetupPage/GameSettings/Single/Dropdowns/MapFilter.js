@@ -31,7 +31,7 @@ GameSettingControls.MapFilter = class MapFilter extends GameSettingControlDropdo
 		if (!g_GameSettings.map.type)
 			return;
 
-		let values = prepareForDropdown(
+		const values = prepareForDropdown(
 			this.mapFilters.getAvailableMapFilters(
 				g_GameSettings.map.type));
 

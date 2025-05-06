@@ -20,19 +20,19 @@ GameSettingControls.Landscape = class Landscape extends GameSettingControlDropdo
 		if (!g_GameSettings.landscape.data)
 			return;
 
-		let randomItems = [{
+		const randomItems = [{
 			"Id": "random",
 			"Name": setStringTags(translateWithContext("landscape selection", "Random"), this.RandomItemTags),
 			"Description": translateWithContext("landscape selection", "Select a random landscape.")
 		}];
-		let data = g_GameSettings.landscape.data;
+		const data = g_GameSettings.landscape.data;
 		let items = [];
-		for (let group of data)
+		for (const group of data)
 		{
-			let itemTag = this.translateItem(group);
+			const itemTag = this.translateItem(group);
 			itemTag.Name = setStringTags(itemTag.Name, this.RandomItemTags);
 			randomItems.push(itemTag);
-			let sort = (item1, item2) => item1.Name > item2.Name;
+			const sort = (item1, item2) => item1.Name > item2.Name;
 			items = items.concat(group.Items.map(this.translateItem).sort(sort));
 		}
 
@@ -59,7 +59,7 @@ GameSettingControls.Landscape = class Landscape extends GameSettingControlDropdo
 		if (!this.values)
 			return undefined;
 
-		let entries = [];
+		const entries = [];
 		for (let i = 0; i < this.values.Id.length; ++i)
 			if (!this.values.Id[i].startsWith("random"))
 				entries.push(this.values.Name[i]);

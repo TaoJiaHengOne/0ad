@@ -182,7 +182,7 @@ class GameSettingsController
 		// This assumes that messages aren't sent spuriously without changes
 		// (which is generally fair), but technically it would be good
 		// to check if the new data is different from the previous data.
-		for (let handler of this.settingsChangeHandlers)
+		for (const handler of this.settingsChangeHandlers)
 			handler();
 	}
 
@@ -191,7 +191,7 @@ class GameSettingsController
 	 */
 	getSettings()
 	{
-		let ret = g_GameSettings.toInitAttributes();
+		const ret = g_GameSettings.toInitAttributes();
 		ret.guiData = this.guiData.Serialize();
 		return ret;
 	}
@@ -211,7 +211,7 @@ class GameSettingsController
 		if (this.loading === loading)
 			return;
 		this.loading = loading;
-		for (let handler of this.loadingChangeHandlers)
+		for (const handler of this.loadingChangeHandlers)
 			handler(loading);
 	}
 
@@ -224,7 +224,7 @@ class GameSettingsController
 		if (this.layoutTimer)
 			return;
 		this.layoutTimer = setTimeout(() => {
-			for (let handler of this.updateLayoutHandlers)
+			for (const handler of this.updateLayoutHandlers)
 				handler();
 			delete this.layoutTimer;
 		}, 0);
@@ -241,7 +241,7 @@ class GameSettingsController
 	 */
 	setNetworkInitAttributes()
 	{
-		for (let handler of this.settingsChangeHandlers)
+		for (const handler of this.settingsChangeHandlers)
 			handler();
 
 		if (g_IsNetworked && this.timer === undefined)

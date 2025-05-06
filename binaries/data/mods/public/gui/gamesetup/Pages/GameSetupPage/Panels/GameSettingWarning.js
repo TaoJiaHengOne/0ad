@@ -19,7 +19,7 @@ class GameSettingWarning
 		const maxWidth = this.savedGameLabel.hidden ? 260 : 180;
 		const marginRight = 8;
 
-		let caption =
+		const caption =
 			g_GameSettings.cheats.enabled ?
 				this.CheatsEnabled :
 				g_GameSettings.rating.enabled ?
@@ -28,7 +28,7 @@ class GameSettingWarning
 
 		this.gameSettingWarning.caption = caption;
 
-		let labelWidth = Math.min(Engine.GetTextWidth(this.gameSettingWarning.font, this.gameSettingWarning.caption) + 10, maxWidth);
+		const labelWidth = Math.min(Engine.GetTextWidth(this.gameSettingWarning.font, this.gameSettingWarning.caption) + 10, maxWidth);
 
 		const neighborElement = !this.savedGameLabel.hidden ? this.savedGameLabel.parent : this.bottomRightPanel;
 		this.gameSettingWarning.parent.size = new GUISize(

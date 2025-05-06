@@ -49,7 +49,7 @@ class ReadyController
 
 	onReadyMessage(message)
 	{
-		let playerAssignment = g_PlayerAssignments[message.guid];
+		const playerAssignment = g_PlayerAssignments[message.guid];
 		if (playerAssignment)
 		{
 			playerAssignment.status = message.status;
@@ -60,11 +60,11 @@ class ReadyController
 	onPlayerAssignmentsChange()
 	{
 		// Don't let the host tell you that you're ready when you're not.
-		let playerAssignment = g_PlayerAssignments[Engine.GetPlayerGUID()];
+		const playerAssignment = g_PlayerAssignments[Engine.GetPlayerGUID()];
 		if (playerAssignment && playerAssignment.status > this.readyState)
 			playerAssignment.status = this.readyState;
 
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (this.previousAssignments[guid] &&
 				this.previousAssignments[guid].player != g_PlayerAssignments[guid].player)
 			{
@@ -86,7 +86,7 @@ class ReadyController
 			Engine.SendNetworkReady(ready);
 
 		// Update GUI objects instantly if relevant settingchange was detected
-		let playerAssignment = g_PlayerAssignments[Engine.GetPlayerGUID()];
+		const playerAssignment = g_PlayerAssignments[Engine.GetPlayerGUID()];
 		if (playerAssignment)
 		{
 			playerAssignment.status = ready;
@@ -101,7 +101,7 @@ class ReadyController
 		if (!g_IsNetworked || this.gameSettingsController.gameStarted)
 			return;
 
-		for (let handler of this.resetReadyHandlers)
+		for (const handler of this.resetReadyHandlers)
 			handler();
 
 		if (g_IsController)

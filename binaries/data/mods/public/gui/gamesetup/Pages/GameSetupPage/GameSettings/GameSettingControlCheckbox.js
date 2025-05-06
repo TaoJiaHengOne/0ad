@@ -13,12 +13,12 @@ class GameSettingControlCheckbox extends GameSettingControl
 
 	setControl(gameSettingControlManager)
 	{
-		let row = gameSettingControlManager.getNextRow("checkboxSettingFrame");
+		const row = gameSettingControlManager.getNextRow("checkboxSettingFrame");
 		this.frame = Engine.GetGUIObjectByName("checkboxSettingFrame[" + row + "]");
 		this.checkbox = Engine.GetGUIObjectByName("checkboxSettingControl[" + row + "]");
 		this.checkbox.onPress = this.onPressSuper.bind(this);
 
-		let labels = this.frame.children[0].children;
+		const labels = this.frame.children[0].children;
 		this.title = labels[0];
 		this.label = labels[1];
 	}

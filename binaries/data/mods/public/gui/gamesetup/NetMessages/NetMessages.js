@@ -7,7 +7,7 @@ class NetMessages
 	{
 		this.netMessageHandlers = {};
 
-		for (let messageType of this.MessageTypes)
+		for (const messageType of this.MessageTypes)
 			this.netMessageHandlers[messageType] = new Set();
 	}
 
@@ -31,14 +31,14 @@ class NetMessages
 	{
 		while (true)
 		{
-			let message = Engine.PollNetworkClient();
+			const message = Engine.PollNetworkClient();
 			if (!message)
 				break;
 
 			log("Net message: " + uneval(message));
 
 			if (this.netMessageHandlers[message.type])
-				for (let handler of this.netMessageHandlers[message.type])
+				for (const handler of this.netMessageHandlers[message.type])
 					handler(message);
 			else
 				error("Unrecognized net message type " + message.type);

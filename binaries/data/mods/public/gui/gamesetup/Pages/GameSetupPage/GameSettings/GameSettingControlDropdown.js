@@ -15,11 +15,11 @@ class GameSettingControlDropdown extends GameSettingControl
 
 	setControl(gameSettingControlManager)
 	{
-		let row = gameSettingControlManager.getNextRow("dropdownSettingFrame");
+		const row = gameSettingControlManager.getNextRow("dropdownSettingFrame");
 		this.frame = Engine.GetGUIObjectByName("dropdownSettingFrame[" + row + "]");
 		this.dropdown = Engine.GetGUIObjectByName("dropdownSettingControl[" + row + "]");
 
-		let labels = this.frame.children[0].children;
+		const labels = this.frame.children[0].children;
 		this.title = labels[0];
 		this.label = labels[1];
 	}
@@ -36,7 +36,7 @@ class GameSettingControlDropdown extends GameSettingControl
 
 	setSelectedValue(value)
 	{
-		let index = this.dropdown.list_data.indexOf(String(value));
+		const index = this.dropdown.list_data.indexOf(String(value));
 
 		this.isInGuiUpdate = true;
 		this.dropdown.selected = index;

@@ -8,7 +8,7 @@ class ChatInputPanel
 		resizeGUIObjectToCaption(this.chatSubmitButton, { "horizontal": "left" }, { "horizontal": 8 });
 
 		this.chatInput = Engine.GetGUIObjectByName("chatInput");
-		let size = this.chatInput.size;
+		const size = this.chatInput.size;
 		size.right = this.chatSubmitButton.size.left;
 		this.chatInput.size = size;
 
@@ -46,7 +46,7 @@ class ChatInputPanel
 		if (!g_IsNetworked)
 			return;
 
-		let text = this.chatInput.caption;
+		const text = this.chatInput.caption;
 		if (!text.length)
 			return;
 

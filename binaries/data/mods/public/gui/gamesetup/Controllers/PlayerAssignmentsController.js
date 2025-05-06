@@ -11,7 +11,7 @@ class PlayerAssignmentsController
 
 		if (!g_IsNetworked)
 		{
-			let name = singleplayerName();
+			const name = singleplayerName();
 
 			// Replace empty player name when entering a single-player match for the first time.
 			Engine.ConfigDB_CreateAndSaveValue("user", this.ConfigNameSingleplayer, name);
@@ -162,15 +162,15 @@ class PlayerAssignmentsController
 	 */
 	onPlayerAssignmentMessage(message)
 	{
-		let newAssignments = message.newAssignments;
-		for (let guid in newAssignments)
+		const newAssignments = message.newAssignments;
+		for (const guid in newAssignments)
 			if (!g_PlayerAssignments[guid])
-				for (let handler of this.clientJoinHandlers)
+				for (const handler of this.clientJoinHandlers)
 					handler(guid, message.newAssignments);
 
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (!newAssignments[guid])
-				for (let handler of this.clientLeaveHandlers)
+				for (const handler of this.clientLeaveHandlers)
 					handler(guid);
 
 		g_PlayerAssignments = newAssignments;
@@ -195,7 +195,7 @@ class PlayerAssignmentsController
 	{
 		if (g_PlayerAssignments[guidToAssign].player != -1)
 		{
-			for (let guid in g_PlayerAssignments)
+			for (const guid in g_PlayerAssignments)
 				if (g_PlayerAssignments[guid].player == playerIndex + 1)
 				{
 					this.assignClient(guid, g_PlayerAssignments[guidToAssign].player);
@@ -220,7 +220,7 @@ class PlayerAssignmentsController
 	{
 		if (g_IsNetworked)
 		{
-			for (let guid in g_PlayerAssignments)
+			for (const guid in g_PlayerAssignments)
 				if (g_PlayerAssignments[guid].player > g_GameSettings.playerCount.nbPlayers)
 					Engine.AssignNetworkPlayer(g_PlayerAssignments[guid].player, "");
 		}

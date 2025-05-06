@@ -16,7 +16,7 @@ SetupWindowPages.AIConfigPage = class
 		this.openPageHandlers = new Set();
 		this.AIGameSettingControls = {};
 
-		for (let name of this.AIGameSettingControlOrder)
+		for (const name of this.AIGameSettingControlOrder)
 			this.AIGameSettingControls[name] =
 				new AIGameSettingControls[name](this, undefined, undefined, setupWindow,
 					isSavedGame);
@@ -43,7 +43,7 @@ SetupWindowPages.AIConfigPage = class
 	{
 		this.playerIndex = playerIndex;
 
-		for (let handler of this.openPageHandlers)
+		for (const handler of this.openPageHandlers)
 			handler(playerIndex, enabled);
 
 		this.aiConfigPage.hidden = false;

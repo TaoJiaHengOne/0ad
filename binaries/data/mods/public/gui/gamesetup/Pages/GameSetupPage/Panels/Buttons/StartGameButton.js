@@ -20,7 +20,7 @@ class StartGameButton
 
 	update()
 	{
-		let isEveryoneReady = this.isEveryoneReady();
+		const isEveryoneReady = this.isEveryoneReady();
 		this.startGameButton.enabled = !this.gameStarted && isEveryoneReady;
 		this.startGameButton.tooltip =
 			!g_IsNetworked || isEveryoneReady ?
@@ -33,7 +33,7 @@ class StartGameButton
 		if (!g_IsNetworked)
 			return true;
 
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (g_PlayerAssignments[guid].player != -1 &&
 				g_PlayerAssignments[guid].status == this.setupWindow.controls.readyController.NotReady)
 				return false;

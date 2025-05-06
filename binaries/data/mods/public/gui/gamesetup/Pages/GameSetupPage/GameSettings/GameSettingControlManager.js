@@ -18,15 +18,15 @@ class GameSettingControlManager
 		this.rows = {};
 		this.gameSettingControls = {};
 
-		let getCategory = name =>
+		const getCategory = name =>
 			g_GameSettingsLayout.findIndex(category => category.settings.indexOf(name) != -1);
 
-		for (let name in GameSettingControls)
+		for (const name in GameSettingControls)
 			this.gameSettingControls[name] =
 				new GameSettingControls[name](
 					this, getCategory(name), undefined, setupWindow, isSavedGame);
 
-		for (let victoryCondition of g_VictoryConditions)
+		for (const victoryCondition of g_VictoryConditions)
 			this.gameSettingControls[victoryCondition.Name] =
 				new VictoryConditionCheckbox(
 					victoryCondition, this, getCategory(victoryCondition.Name), undefined,
@@ -50,16 +50,16 @@ class GameSettingControlManager
 
 	updateSettingVisibility()
 	{
-		for (let name in this.gameSettingControls)
+		for (const name in this.gameSettingControls)
 			this.gameSettingControls[name].updateVisibility();
 	}
 
 	addAutocompleteEntries(entries)
 	{
-		for (let name in this.gameSettingControls)
+		for (const name in this.gameSettingControls)
 			this.gameSettingControls[name].addAutocompleteEntries(name, entries);
 
-		for (let playerSettingControlManager of this.playerSettingControlManagers)
+		for (const playerSettingControlManager of this.playerSettingControlManagers)
 			playerSettingControlManager.addAutocompleteEntries(entries);
 	}
 }

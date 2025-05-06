@@ -18,7 +18,7 @@ PlayerSettingControls.PlayerName = class PlayerName extends GameSettingControl
 	{
 		this.guid = undefined;
 
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (g_PlayerAssignments[guid].player == this.playerIndex + 1)
 			{
 				this.guid = guid;
@@ -34,7 +34,7 @@ PlayerSettingControls.PlayerName = class PlayerName extends GameSettingControl
 
 		if (g_IsNetworked)
 		{
-			let status = this.guid ? g_PlayerAssignments[this.guid].status : this.ReadyTags.length - 1;
+			const status = this.guid ? g_PlayerAssignments[this.guid].status : this.ReadyTags.length - 1;
 			name = setStringTags(name, this.ReadyTags[status]);
 		}
 		else if (name)

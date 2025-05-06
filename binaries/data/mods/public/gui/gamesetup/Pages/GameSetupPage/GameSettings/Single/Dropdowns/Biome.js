@@ -24,7 +24,7 @@ GameSettingControls.Biome = class Biome extends GameSettingControlDropdown
 	{
 		this.setHidden(!g_GameSettings.biome.available.size);
 
-		let values = prepareForDropdown([
+		const values = prepareForDropdown([
 			{
 				"Title": setStringTags(this.RandomBiome, this.RandomItemTags),
 				"Id": "random"

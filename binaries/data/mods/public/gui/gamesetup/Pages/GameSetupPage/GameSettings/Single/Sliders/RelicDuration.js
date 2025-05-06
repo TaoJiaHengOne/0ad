@@ -19,7 +19,7 @@ GameSettingControls.RelicDuration = class RelicDuration extends GameSettingContr
 
 		if (g_GameSettings.relic.available)
 		{
-			let value = g_GameSettings.relic.duration;
+			const value = g_GameSettings.relic.duration;
 			this.sprintfValue.min = value;
 			this.setSelectedValue(
 				g_GameSettings.relic.duration,

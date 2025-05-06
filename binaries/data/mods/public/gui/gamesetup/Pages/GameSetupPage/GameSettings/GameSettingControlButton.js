@@ -5,7 +5,7 @@ class GameSettingControlButton extends GameSettingControl
 {
 	setControl(gameSettingControlManager)
 	{
-		let row = gameSettingControlManager.getNextRow("buttonSettingFrame");
+		const row = gameSettingControlManager.getNextRow("buttonSettingFrame");
 		this.frame = Engine.GetGUIObjectByName("buttonSettingFrame[" + row + "]");
 		this.button = Engine.GetGUIObjectByName("buttonSettingControl[" + row + "]");
 		this.button.onPress = this.onPress.bind(this);

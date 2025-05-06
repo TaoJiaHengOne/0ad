@@ -22,11 +22,11 @@ class ChatInputAutocomplete
 			return this.entries;
 
 		// Maps from priority to autocompletable strings
-		let entries = { "0": [] };
+		const entries = { "0": [] };
 
 		this.gameSettingControlManager.addAutocompleteEntries(entries);
 
-		let allEntries = Object.keys(entries).sort((a, b) => +b - +a).reduce(
+		const allEntries = Object.keys(entries).sort((a, b) => +b - +a).reduce(
 			(all, priority) => all.concat(entries[priority]),
 			[]);
 

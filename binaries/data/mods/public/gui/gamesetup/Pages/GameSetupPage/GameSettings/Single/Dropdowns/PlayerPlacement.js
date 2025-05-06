@@ -20,12 +20,12 @@ GameSettingControls.PlayerPlacement = class PlayerPlacement extends GameSettingC
 		if (!g_GameSettings.playerPlacement.value)
 			return;
 
-		let randomItem = clone(this.RandomItem);
+		const randomItem = clone(this.RandomItem);
 		randomItem.Name = setStringTags(randomItem.Name, this.RandomItemTags);
 
-		let patterns = [randomItem];
+		const patterns = [randomItem];
 
-		for (let pattern of g_GameSettings.playerPlacement.available)
+		for (const pattern of g_GameSettings.playerPlacement.available)
 			patterns.push(g_Settings.PlayerPlacements
 				.find(pObj => pObj.Id == pattern));
 
