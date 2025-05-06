@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -77,7 +77,7 @@ __declspec(noinline) static void Func3()
 
 class TestWdbgSym : public CxxTest::TestSuite
 {
-	// m_test_array might get inlined and that messes 
+	// m_test_array might get inlined and that messes
 	// with the test so in order to protect the stack
 	// trace we have to prevent it.
 	__declspec(noinline) static void m_test_array()
@@ -311,7 +311,7 @@ public:
 				ret = debug_ResolveSymbol(funcAddresses[idxFunc], funcName, 0, 0);
 				TS_ASSERT_OK(ret);
 				if(wcsstr(funcName, callerName))
-					foundFunctionBits |= BIT(idxFunc);
+					foundFunctionBits |= Bit<size_t>(idxFunc);
 			}
 		}
 		TS_ASSERT(foundFunctionBits == bit_mask<size_t>(ARRAY_SIZE(funcAddresses)));
