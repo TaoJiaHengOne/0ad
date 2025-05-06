@@ -13,7 +13,7 @@ class ProfilePage
 		this.fetchInput = Engine.GetGUIObjectByName("fetchInput");
 		this.fetchInputLabel = Engine.GetGUIObjectByName("fetchInputLabel");
 		resizeGUIObjectToCaption(this.fetchInputLabel, { "horizontal": "right" });
-		let size = this.fetchInput.size;
+		const size = this.fetchInput.size;
 		size.left = this.fetchInputLabel.size.right;
 		this.fetchInput.size = size;
 
@@ -77,17 +77,17 @@ class ProfilePage
 	{
 		this.profilePage.hidden = true;
 
-		for (let handler of this.closePageHandlers)
+		for (const handler of this.closePageHandlers)
 			handler();
 	}
 
 	onProfile()
 	{
-		let attributes = Engine.GetProfile()[0];
+		const attributes = Engine.GetProfile()[0];
 		if (this.profilePage.hidden || this.requestedPlayer != attributes.player)
 			return;
 
-		let profileFound = attributes.rating != "-2";
+		const profileFound = attributes.rating != "-2";
 		this.profileWindowArea.hidden = !profileFound;
 		this.profileErrorText.hidden = profileFound;
 

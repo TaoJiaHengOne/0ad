@@ -12,8 +12,8 @@ class KickStrings
 
 	get(banned, message)
 	{
-		let level = banned ? 1 : 0;
-		let me = message.nick == g_Nickname;
+		const level = banned ? 1 : 0;
+		const me = message.nick == g_Nickname;
 
 		let txt;
 		if (me)

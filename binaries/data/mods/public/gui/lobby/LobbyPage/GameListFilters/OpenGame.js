@@ -18,7 +18,7 @@ GameListFilters.OpenGame = class
 
 	filter(game)
 	{
-		let stanza = game.stanza;
+		const stanza = game.stanza;
 		return !this.checked || stanza.state == "init" && stanza.nbp < stanza.maxnbp;
 	}
 };

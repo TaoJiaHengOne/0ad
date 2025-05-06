@@ -9,7 +9,7 @@ class LeaderboardButton
 		this.leaderboardButton.caption = translate("Leaderboard");
 		this.leaderboardButton.onPress = leaderboardPage.openPage.bind(leaderboardPage);
 
-		let onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
+		const onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
 		xmppMessages.registerXmppMessageHandler("system", "connected", onConnectionStatusChange);
 		xmppMessages.registerXmppMessageHandler("system", "disconnected", onConnectionStatusChange);
 		this.onConnectionStatusChange();

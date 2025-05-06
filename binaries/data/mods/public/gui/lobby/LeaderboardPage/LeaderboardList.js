@@ -10,7 +10,7 @@ class LeaderboardList
 		this.leaderboardBox = Engine.GetGUIObjectByName("leaderboardBox");
 		this.leaderboardBox.onSelectionChange = this.onSelectionChange.bind(this);
 
-		let rebuild = this.rebuild.bind(this);
+		const rebuild = this.rebuild.bind(this);
 		xmppMessages.registerXmppMessageHandler("game", "leaderboard", rebuild);
 		xmppMessages.registerXmppMessageHandler("system", "disconnected", rebuild);
 
@@ -24,8 +24,8 @@ class LeaderboardList
 
 	onSelectionChange()
 	{
-		let playerName = this.selectedPlayer();
-		for (let handler of this.selectionChangeHandlers)
+		const playerName = this.selectedPlayer();
+		for (const handler of this.selectionChangeHandlers)
 			handler(playerName);
 	}
 
@@ -40,12 +40,12 @@ class LeaderboardList
 	rebuild()
 	{
 		// TODO: Display placeholder if the data is not available
-		let boardList = Engine.GetBoardList().sort(
+		const boardList = Engine.GetBoardList().sort(
 			(a, b) => b.rating - a.rating);
 
-		let list_name = [];
-		let list_rank = [];
-		let list_rating = [];
+		const list_name = [];
+		const list_rank = [];
+		const list_rating = [];
 
 		boardList.forEach((entry, i) => {
 			list_name.push(escapeText(entry.name));

@@ -21,7 +21,7 @@ class Game
 		// Used to compare which part of the stanza data changed,
 		// perform partial updates and trigger event notifications.
 		this.stanza = {};
-		for (let name of this.StanzaKeys)
+		for (const name of this.StanzaKeys)
 			this.stanza[name] = "";
 
 		// This will be displayed in the GameList and GameDetails
@@ -70,9 +70,9 @@ class Game
 	 */
 	update(newStanza, sortKey)
 	{
-		let oldStanza = this.stanza;
-		let displayData = this.displayData;
-		let sortValues = this.sortValues;
+		const oldStanza = this.stanza;
+		const displayData = this.displayData;
+		const sortValues = this.sortValues;
 
 		if (oldStanza.name != newStanza.name)
 		{
@@ -129,7 +129,7 @@ class Game
 			Engine.ProfileStop();
 		}
 
-		let playersChanged = oldStanza.players != newStanza.players;
+		const playersChanged = oldStanza.players != newStanza.players;
 		if (playersChanged)
 		{
 			Engine.ProfileStart("playerData");
@@ -177,9 +177,9 @@ class Game
 			let hasBuddies = 0;
 
 			let playerRatingTotal = 0;
-			for (let player of players)
+			for (const player of players)
 			{
-				let playerNickRating = splitRatingFromNick(player.Name);
+				const playerNickRating = splitRatingFromNick(player.Name);
 
 				if (player.Team == "observer")
 					++observerCount;
@@ -194,14 +194,14 @@ class Game
 			this.observerCount = observerCount;
 			this.hasBuddies = hasBuddies;
 
-			let displayData = this.displayData;
-			let sortValues = this.sortValues;
+			const displayData = this.displayData;
+			const sortValues = this.sortValues;
 			displayData.buddy = this.hasBuddies ? setStringTags(g_BuddySymbol, displayData.tags) : "";
 			sortValues.hasBuddyString = String(hasBuddies);
 			sortValues.buddy = sortValues.hasBuddyString + sortValues.gameName;
 
-			let playerCount = players.length - observerCount;
-			let gameRating =
+			const playerCount = players.length - observerCount;
+			const gameRating =
 				playerCount ?
 					Math.round(playerRatingTotal / playerCount) :
 					g_DefaultLobbyRating;
@@ -228,7 +228,7 @@ class Game
 
 		{
 			Engine.ProfileStart("hasSameMods");
-			let isCompatible = this.mods && hasSameMods(this.mods, Engine.GetEngineInfo().mods);
+			const isCompatible = this.mods && hasSameMods(this.mods, Engine.GetEngineInfo().mods);
 			if (this.isCompatible != isCompatible)
 			{
 				this.isCompatible = isCompatible;
@@ -241,7 +241,7 @@ class Game
 
 	updateGameTags(newStanza)
 	{
-		let displayData = this.displayData;
+		const displayData = this.displayData;
 		displayData.tags = this.isCompatible ? this.StateTags[newStanza.state] : this.IncompatibleTags;
 		displayData.buddy = this.hasBuddies ? setStringTags(g_BuddySymbol, displayData.tags) : "";
 		this.updateGameName(newStanza);
@@ -249,17 +249,17 @@ class Game
 
 	updateGameName(newStanza)
 	{
-		let displayData = this.displayData;
+		const displayData = this.displayData;
 		displayData.gameName = setStringTags(escapeText(newStanza.name), displayData.tags);
 
-		let sortValues = this.sortValues;
+		const sortValues = this.sortValues;
 		sortValues.gameName = sortValues.compatibility + sortValues.state + sortValues.gameName;
 		sortValues.buddy = sortValues.hasBuddyString + sortValues.gameName;
 	}
 
 	getTranslatedPlayerCount(newStanza)
 	{
-		let playerCountArgs = this.playerCountArgs;
+		const playerCountArgs = this.playerCountArgs;
 		playerCountArgs.current = setStringTags(escapeText(newStanza.nbp), this.PlayerCountTags.CurrentPlayers);
 		playerCountArgs.max = setStringTags(escapeText(newStanza.maxnbp), this.PlayerCountTags.MaxPlayers);
 

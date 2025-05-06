@@ -6,10 +6,10 @@ class XmppMessages
 	constructor()
 	{
 		this.xmppMessageHandlers = {};
-		for (let type in this.MessageTypes)
+		for (const type in this.MessageTypes)
 		{
 			this.xmppMessageHandlers[type] = {};
-			for (let level of this.MessageTypes[type])
+			for (const level of this.MessageTypes[type])
 				this.xmppMessageHandlers[type][level] = new Set();
 		}
 
@@ -54,7 +54,7 @@ class XmppMessages
 		this.handleMessages(Engine.LobbyGuiPollNewMessages);
 
 		if (Engine.LobbyGuiPollHasPlayerListUpdate())
-			for (let handler of this.playerListUpdateHandlers)
+			for (const handler of this.playerListUpdateHandlers)
 				handler();
 	}
 
@@ -65,22 +65,22 @@ class XmppMessages
 
 	handleMessages(getMessages)
 	{
-		let messages = getMessages();
+		const messages = getMessages();
 		if (!messages)
 			return;
 
-		for (let message of messages)
+		for (const message of messages)
 		{
 			if (!this.xmppMessageHandlers[message.type])
 				error("Unrecognized message type: " + message.type);
 			else if (!this.xmppMessageHandlers[message.type][message.level])
 				error("Unrecognized message level: " + message.level);
 			else
-				for (let handler of this.xmppMessageHandlers[message.type][message.level])
+				for (const handler of this.xmppMessageHandlers[message.type][message.level])
 					handler(message);
 		}
 
-		for (let handler of this.messageBatchProcessedHandlers)
+		for (const handler of this.messageBatchProcessedHandlers)
 			handler();
 	}
 }

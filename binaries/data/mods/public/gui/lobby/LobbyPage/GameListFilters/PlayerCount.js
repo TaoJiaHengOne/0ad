@@ -5,7 +5,7 @@ GameListFilters.PlayerCount = class
 		this.selected = "";
 		this.onFilterChange = onFilterChange;
 
-		let playersArray = Array(g_MaxPlayers).fill(0).map((v, i) => i + 1); // 1, 2, ... MaxPlayers
+		const playersArray = Array(g_MaxPlayers).fill(0).map((v, i) => i + 1); // 1, 2, ... MaxPlayers
 		this.playersNumberFilter = Engine.GetGUIObjectByName("playersNumberFilter");
 		this.playersNumberFilter.list = [translateWithContext("player number", "Any")].concat(playersArray);
 		this.playersNumberFilter.list_data = [""].concat(playersArray);

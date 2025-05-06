@@ -81,7 +81,7 @@ ChatMessageEvents.Role = class
 
 	onRoleChange(message)
 	{
-		let roleType = this.RoleStrings.find(type =>
+		const roleType = this.RoleStrings.find(type =>
 			type.newrole == message.newrole &&
 			(!type.oldrole || type.oldrole == message.oldrole));
 
@@ -139,7 +139,7 @@ ChatMessageEvents.Subject = class
 	onSubjectChange(message)
 	{
 		this.args.nick = escapeText(message.nick);
-		let subject = message.subject.trim();
+		const subject = message.subject.trim();
 		this.chatMessagesPanel.addText(
 			message.time,
 			this.statusMessageFormat.format(

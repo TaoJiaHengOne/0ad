@@ -98,8 +98,8 @@ var AccountSettingsPage = {
 		if (Engine.GetGUIObjectByName("as_PasswordInputConfirm").caption !== newPass)
 			throw new SetPasswordError(translate("Passwords do not match"));
 
-		let usn = Engine.LobbyGetJID();
-		let atIndex = usn.indexOf("@");
+		const usn = Engine.LobbyGetJID();
+		const atIndex = usn.indexOf("@");
 		if (atIndex == -1)
 		{
 			// Probably can't happen too easily, so error out.

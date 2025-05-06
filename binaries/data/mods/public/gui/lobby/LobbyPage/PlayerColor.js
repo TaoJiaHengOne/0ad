@@ -14,14 +14,14 @@ PlayerColor.GetPlayerColor = function(playername)
 {
 	// Generate a probably-unique hash for the player name and use that to create a color.
 	let hash = 0;
-	for (let i in playername)
+	for (const i in playername)
 		hash = playername.charCodeAt(i) + ((hash << 5) - hash);
 
 	// First create the color in RGB then HSL, clamp the lightness so it's not too dark to read, and then convert back to RGB to display.
 	// The reason for this roundabout method is this algorithm can generate values from 0 to 255 for RGB but only 0 to 100 for HSL; this gives
 	// us much more variety if we generate in RGB. Unfortunately, enforcing that RGB values are a certain lightness is very difficult, so
 	// we convert to HSL to do the computation. Since our GUI code only displays RGB colors, we have to convert back.
-	let [h, s, l] = rgbToHsl(hash >> 24 & 0xFF, hash >> 16 & 0xFF, hash >> 8 & 0xFF);
+	const [h, s, l] = rgbToHsl(hash >> 24 & 0xFF, hash >> 16 & 0xFF, hash >> 8 & 0xFF);
 	return hslToRgb(h, s, Math.max(0.7, l)).join(" ");
 };
 

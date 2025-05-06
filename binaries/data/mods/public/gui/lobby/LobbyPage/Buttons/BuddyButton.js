@@ -11,7 +11,7 @@ class BuddyButton
 		this.toggleBuddyButton = Engine.GetGUIObjectByName("toggleBuddyButton");
 		this.toggleBuddyButton.onPress = this.onPress.bind(this);
 
-		let rebuild = this.rebuild.bind(this);
+		const rebuild = this.rebuild.bind(this);
 		xmppMessages.registerXmppMessageHandler("system", "connected", rebuild);
 		xmppMessages.registerXmppMessageHandler("system", "disconnected", rebuild);
 
@@ -47,7 +47,7 @@ class BuddyButton
 		if (!this.playerName || this.playerName == g_Nickname || this.playerName.indexOf(g_BuddyListDelimiter) != -1)
 			return;
 
-		let index = g_Buddies.indexOf(this.playerName);
+		const index = g_Buddies.indexOf(this.playerName);
 		if (index != -1)
 			g_Buddies.splice(index, 1);
 		else
@@ -61,7 +61,7 @@ class BuddyButton
 
 		this.rebuild();
 
-		for (let handler of this.buddyChangedHandlers)
+		for (const handler of this.buddyChangedHandlers)
 			handler();
 	}
 }

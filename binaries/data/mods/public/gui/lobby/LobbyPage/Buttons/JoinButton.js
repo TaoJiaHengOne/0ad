@@ -29,12 +29,12 @@ class JoinButton
 	 */
 	async onPress()
 	{
-		let game = this.gameList.selectedGame();
+		const game = this.gameList.selectedGame();
 		if (!game)
 			return;
 
-		let rating = this.getRejoinRating(game);
-		let playername = rating ? g_Nickname + " (" + rating + ")" : g_Nickname;
+		const rating = this.getRejoinRating(game);
+		const playername = rating ? g_Nickname + " (" + rating + ")" : g_Nickname;
 
 		if (!game.isCompatible)
 		{
@@ -84,9 +84,9 @@ class JoinButton
 	 */
 	getRejoinRating(game)
 	{
-		for (let player of game.players)
+		for (const player of game.players)
 		{
-			let playerNickRating = splitRatingFromNick(player.Name);
+			const playerNickRating = splitRatingFromNick(player.Name);
 			if (playerNickRating.nick == g_Nickname)
 				return playerNickRating.rating;
 		}

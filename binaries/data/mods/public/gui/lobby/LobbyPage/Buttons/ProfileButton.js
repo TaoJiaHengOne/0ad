@@ -9,7 +9,7 @@ class ProfileButton
 		this.profileButton.caption = translate("Player Profile Lookup");
 		this.profileButton.onPress = profilePage.openPage.bind(profilePage, false);
 
-		let onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
+		const onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
 		xmppMessages.registerXmppMessageHandler("system", "connected", onConnectionStatusChange);
 		xmppMessages.registerXmppMessageHandler("system", "disconnected", onConnectionStatusChange);
 		this.onConnectionStatusChange();

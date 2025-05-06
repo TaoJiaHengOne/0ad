@@ -9,7 +9,7 @@ class HostButton
 		this.hostButton.onPress = this.onPress.bind(this, loadSavedGame);
 		this.hostButton.hidden = dialog;
 
-		let onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
+		const onConnectionStatusChange = this.onConnectionStatusChange.bind(this);
 		xmppMessages.registerXmppMessageHandler("system", "connected", onConnectionStatusChange);
 		xmppMessages.registerXmppMessageHandler("system", "disconnected", onConnectionStatusChange);
 		this.onConnectionStatusChange();

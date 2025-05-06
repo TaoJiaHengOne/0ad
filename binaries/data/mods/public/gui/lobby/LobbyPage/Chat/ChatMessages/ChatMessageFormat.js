@@ -30,15 +30,15 @@ class ChatMessageFormat
 				soundNotification("nick");
 		}
 
-		let sender = PlayerColor.ColorPlayerName(message.from, undefined, Engine.LobbyGetPlayerRole(message.from));
+		const sender = PlayerColor.ColorPlayerName(message.from, undefined, Engine.LobbyGetPlayerRole(message.from));
 
 		// Handle chat format commands
 		let formattedMessage;
-		let index = text.indexOf(" ");
+		const index = text.indexOf(" ");
 		if (text.startsWith("/") && index != -1)
 		{
-			let command = text.substr(1, index - 1);
-			let commandText = text.substr(index + 1);
+			const command = text.substr(1, index - 1);
+			const commandText = text.substr(index + 1);
 
 			switch (command)
 			{

@@ -29,8 +29,8 @@ class GameDetails
 
 	resize(dialog)
 	{
-		let bottom = Engine.GetGUIObjectByName(dialog ? "leaveButton" : "joinButton").size.top - 5;
-		let size = this.gameDetails.size;
+		const bottom = Engine.GetGUIObjectByName(dialog ? "leaveButton" : "joinButton").size.top - 5;
+		const size = this.gameDetails.size;
 		size.bottom = bottom;
 		this.gameDetails.size = size;
 	}
@@ -46,8 +46,8 @@ class GameDetails
 
 		Engine.ProfileStart("GameDetails");
 
-		let stanza = game.stanza;
-		let displayData = game.displayData;
+		const stanza = game.stanza;
+		const displayData = game.displayData;
 
 		if (stanza.mapType != this.lastGame.mapType || stanza.mapName != this.lastGame.mapName)
 		{
