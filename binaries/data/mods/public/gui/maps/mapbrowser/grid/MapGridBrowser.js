@@ -74,8 +74,8 @@ class MapGridBrowser extends GridBrowser
 			{
 				const filter = "all";
 				mapList.push(randomMap);
-				for (let type of g_MapTypes.Name)
-					for (let map of this.mapFilters.getFilteredMaps(type, filter))
+				for (const type of g_MapTypes.Name)
+					for (const map of this.mapFilters.getFilteredMaps(type, filter))
 						mapList.push(Object.assign({ "type": type, "filter": filter }, map));
 				mapList = MatchSort.get(filterText, mapList, "name");
 			}

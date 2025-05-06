@@ -20,12 +20,12 @@ return class
 	{
 		input = input.toLowerCase();
 
-		let result = [];
+		const result = [];
 
-		for (let obj of list)
+		for (const obj of list)
 		{
-			let text = key == null ? obj : obj[key];
-			let score = MatchSort.scoreText(input, text);
+			const text = key == null ? obj : obj[key];
+			const score = MatchSort.scoreText(input, text);
 			if (score !== undefined)
 				result.push([obj, score, text, text.startsWith(input)]);
 		}
@@ -67,14 +67,14 @@ return class
 
 		for (let i = 0; i < input.length; ++i)
 		{
-			let offsetNext = text.indexOf(input[i], offset + 1);
+			const offsetNext = text.indexOf(input[i], offset + 1);
 
 			// No match.
 			if (offsetNext == -1)
 				return undefined;
 
 			// Lower score increase if consecutive index.
-			let isConsecutive = offsetNext == offset + 1 ? 0 : 1;
+			const isConsecutive = offsetNext == offset + 1 ? 0 : 1;
 			score += offsetNext + isConsecutive * offsetNext;
 			offset = offsetNext;
 		}

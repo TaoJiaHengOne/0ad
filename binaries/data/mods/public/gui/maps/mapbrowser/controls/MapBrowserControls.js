@@ -2,7 +2,7 @@ class MapBrowserPageControls
 {
 	constructor(mapBrowserPage, gridBrowser)
 	{
-		for (let name in this)
+		for (const name in this)
 			this[name] = new this[name](mapBrowserPage, gridBrowser);
 
 		this.mapBrowserPage = mapBrowserPage;
@@ -30,7 +30,7 @@ class MapBrowserPageControls
 	{
 		this.pickRandom = Engine.GetGUIObjectByName("mapBrowserPagePickRandom");
 		this.pickRandom.onPress = () => {
-			let index = randIntInclusive(0, this.gridBrowser.itemCount - 1);
+			const index = randIntInclusive(0, this.gridBrowser.itemCount - 1);
 			this.gridBrowser.setSelectedIndex(index);
 			this.gridBrowser.goToPageOfSelected();
 		};

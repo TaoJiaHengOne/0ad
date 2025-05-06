@@ -54,7 +54,7 @@ class MapBrowser
 	{
 		if (this.open)
 			return;
-		for (let handler of this.openPageHandlers)
+		for (const handler of this.openPageHandlers)
 			handler(allowSelection);
 
 		this.allowSelection = allowSelection;
@@ -65,7 +65,7 @@ class MapBrowser
 	{
 		if (!this.open)
 			return;
-		for (let handler of this.closePageHandlers)
+		for (const handler of this.closePageHandlers)
 			handler();
 		this.open = false;
 	}

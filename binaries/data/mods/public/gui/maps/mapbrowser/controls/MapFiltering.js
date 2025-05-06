@@ -58,7 +58,7 @@ MapBrowserPageControls.prototype.MapFiltering = class
 
 	renderMapFilter()
 	{
-		let filters = this.mapFilters.getAvailableMapFilters(this.getSelectedMapType());
+		const filters = this.mapFilters.getAvailableMapFilters(this.getSelectedMapType());
 		this.mapFilter.render(filters.map(f => f.Title), filters.map(f => f.Name));
 	}
 

@@ -37,7 +37,7 @@ class MapGridBrowserItem extends GridBrowserItem
 
 	updateMapAssignment()
 	{
-		let map = this.gridBrowser.mapList[
+		const map = this.gridBrowser.mapList[
 			this.itemIndex + this.gridBrowser.currentPage * this.gridBrowser.itemsPerRow] || undefined;
 
 		if (!map)

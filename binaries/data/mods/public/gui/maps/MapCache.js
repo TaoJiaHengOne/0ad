@@ -22,7 +22,7 @@ class MapCache
 			return undefined;
 		if (!this.cache[mapPath])
 		{
-			let mapData = g_Settings.MapTypes.find(type => type.Name == mapType).GetData(mapPath);
+			const mapData = g_Settings.MapTypes.find(type => type.Name == mapType).GetData(mapPath);
 
 			// Remove gaia, TODO: Maps should be consistent
 			if (mapData &&
@@ -49,7 +49,7 @@ class MapCache
 		if (mapPath == "random")
 			return "random";
 
-		let mapData = this.getMapData(mapType, mapPath);
+		const mapData = this.getMapData(mapType, mapPath);
 		return mapData && mapData.settings && mapData.settings.Name || undefined;
 	}
 
@@ -65,7 +65,7 @@ class MapCache
 		if (mapPath == "random")
 			return translate("A randomly selected map.");
 
-		let mapData = this.getMapData(mapType, mapPath);
+		const mapData = this.getMapData(mapType, mapPath);
 		return mapData && mapData.settings && translate(mapData.settings.Description) || "";
 	}
 
@@ -78,7 +78,7 @@ class MapCache
 	{
 		if (!filename)
 		{
-			let mapData = this.getMapData(mapType, mapPath);
+			const mapData = this.getMapData(mapType, mapPath);
 			filename = mapData && mapData.settings && mapData.settings.Preview || this.DefaultPreview;
 		}
 

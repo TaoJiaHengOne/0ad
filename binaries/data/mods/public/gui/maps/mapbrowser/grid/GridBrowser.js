@@ -52,7 +52,7 @@ class GridBrowser
 	{
 		this.selected = index;
 
-		for (let handler of this.selectionChangeHandlers)
+		for (const handler of this.selectionChangeHandlers)
 			handler();
 	}
 
@@ -63,13 +63,13 @@ class GridBrowser
 
 		this.currentPage = pageNumber;
 
-		for (let handler of this.pageChangeHandlers)
+		for (const handler of this.pageChangeHandlers)
 			handler();
 	}
 
 	nextPage(wrapAround = true)
 	{
-		let numberPages = Math.max(1, this.pageCount);
+		const numberPages = Math.max(1, this.pageCount);
 		if (!wrapAround)
 			this.goToPage(Math.min(this.currentPage + 1, numberPages - 1));
 		else
@@ -78,7 +78,7 @@ class GridBrowser
 
 	previousPage(wrapAround = true)
 	{
-		let numberPages = Math.max(1, this.pageCount);
+		const numberPages = Math.max(1, this.pageCount);
 		if (!wrapAround)
 			this.goToPage(Math.max(this.currentPage - 1, 0));
 		else
@@ -97,7 +97,7 @@ class GridBrowser
 
 	increaseColumnCount(diff)
 	{
-		let isSelectedInPage =
+		const isSelectedInPage =
 			this.selected !== undefined &&
 			Math.floor(this.selected / this.itemsPerRow) >= this.currentPage &&
 			Math.floor(this.selected / this.itemsPerRow) < this.currentPage + this.rowCount;
@@ -113,11 +113,11 @@ class GridBrowser
 
 	resizeGrid()
 	{
-		let size = this.container.getComputedSize();
-		let width = size.right - size.left;
-		let height = size.bottom - size.top;
+		const size = this.container.getComputedSize();
+		const width = size.right - size.left;
+		const height = size.bottom - size.top;
 
-		let maxColumns = Math.floor(width / this.MinItemWidth);
+		const maxColumns = Math.floor(width / this.MinItemWidth);
 		if (maxColumns <= 0)
 			return;
 
@@ -139,7 +139,7 @@ class GridBrowser
 		// NB: pages only change by one row, so items are in several pages.
 		this.pageCount = Math.ceil(this.itemCount / this.itemsPerRow) - this.rowCount + 1;
 
-		for (let handler of this.gridResizeHandlers)
+		for (const handler of this.gridResizeHandlers)
 			handler();
 	}
 }

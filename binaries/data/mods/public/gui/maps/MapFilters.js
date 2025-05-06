@@ -25,14 +25,14 @@ class MapFilters
 		if (!mapTypeName || !filterName)
 			return existence ? false : [];
 
-		let index = g_MapTypes.Name.findIndex(name => name == mapTypeName);
+		const index = g_MapTypes.Name.findIndex(name => name == mapTypeName);
 		if (index == -1)
 		{
 			error("Can't get filtered maps for invalid maptype: " + mapTypeName);
 			return undefined;
 		}
 
-		let mapFilter = this.Filters.find(filter => filter.Name == filterName);
+		const mapFilter = this.Filters.find(filter => filter.Name == filterName);
 		if (!mapFilter)
 		{
 			error("Invalid mapfilter name: " + filterName);
@@ -41,15 +41,15 @@ class MapFilters
 
 		Engine.ProfileStart("getFilteredMaps");
 
-		let maps = [];
-		let mapTypePath = g_MapTypes.Path[index];
-		for (let filename of listFiles(mapTypePath, g_MapTypes.Suffix[index], false))
+		const maps = [];
+		const mapTypePath = g_MapTypes.Path[index];
+		for (const filename of listFiles(mapTypePath, g_MapTypes.Suffix[index], false))
 		{
 			if (filename.startsWith(this.HiddenFilesPrefix))
 				continue;
 
-			let mapPath = mapTypePath + filename;
-			let mapData = this.mapCache.getMapData(mapTypeName, mapPath);
+			const mapPath = mapTypePath + filename;
+			const mapData = this.mapCache.getMapData(mapTypeName, mapPath);
 
 			// Map files may come with custom json files
 			if (!mapData || !mapData.settings)

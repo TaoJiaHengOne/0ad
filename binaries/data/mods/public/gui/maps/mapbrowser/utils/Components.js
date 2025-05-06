@@ -20,15 +20,15 @@ class LabelledControl
 
 	resizeLabel()
 	{
-		let labelWidth = Engine.GetTextWidth(this.label.font, this.label.caption) + 15;
+		const labelWidth = Engine.GetTextWidth(this.label.font, this.label.caption) + 15;
 
 		{
-			let size = this.label.size;
+			const size = this.label.size;
 			size.right = labelWidth;
 			this.label.size = size;
 		}
 		{
-			let size = this.control.size;
+			const size = this.control.size;
 			size.left = labelWidth;
 			this.control.size = size;
 		}
@@ -45,7 +45,7 @@ class LabelledDropdown extends LabelledControl
 
 	render(names, data)
 	{
-		let selected = this.getSelected();
+		const selected = this.getSelected();
 		this.control.list = names;
 		this.control.list_data = data;
 		this.select(selected);
