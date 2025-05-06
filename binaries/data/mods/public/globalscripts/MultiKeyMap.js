@@ -11,13 +11,13 @@ function MultiKeyMap()
 
 MultiKeyMap.prototype.Serialize = function()
 {
-	let ret = [];
-	for (let primary of this.items.keys())
+	const ret = [];
+	for (const primary of this.items.keys())
 	{
 		// Keys of a Map can be arbitrary types whereas objects only support string, so use a list.
-		let vals = [primary, []];
+		const vals = [primary, []];
 		ret.push(vals);
-		for (let secondary of this.items.get(primary).keys())
+		for (const secondary of this.items.get(primary).keys())
 			vals[1].push([secondary, this.items.get(primary).get(secondary)]);
 	}
 	return ret;
@@ -25,10 +25,10 @@ MultiKeyMap.prototype.Serialize = function()
 
 MultiKeyMap.prototype.Deserialize = function(data)
 {
-	for (let primary in data)
+	for (const primary in data)
 	{
 		this.items.set(data[primary][0], new Map());
-		for (let secondary in data[primary][1])
+		for (const secondary in data[primary][1])
 			this.items.get(data[primary][0]).set(data[primary][1][secondary][0], data[primary][1][secondary][1]);
 	}
 };
@@ -58,7 +58,7 @@ MultiKeyMap.prototype.AddItem = function(primaryKey, itemID, item, secondaryKey,
 MultiKeyMap.prototype.AddItems = function(itemID, items, secondaryKey, stackable = false)
 {
 	let modified = false;
-	for (let primaryKey in items)
+	for (const primaryKey in items)
 		modified = this.AddItem(primaryKey, itemID, items[primaryKey], secondaryKey, stackable) || modified;
 	return modified;
 };
@@ -88,7 +88,7 @@ MultiKeyMap.prototype.RemoveAllItems = function(itemID, secondaryKey, stackable 
 {
 	let modified = false;
 	// Map doesn't implement some so use a for-loop here.
-	for (let primaryKey of this.items.keys())
+	for (const primaryKey of this.items.keys())
 		modified = this.RemoveItem(primaryKey, itemID, secondaryKey, stackable) || modified;
 	return modified;
 };
@@ -111,7 +111,7 @@ MultiKeyMap.prototype.HasItem = function(primaryKey, itemID, secondaryKey)
 MultiKeyMap.prototype.HasAnyItem = function(itemID, secondaryKey)
 {
 	// Map doesn't implement some so use for loops instead.
-	for (let primaryKey of this.items.keys())
+	for (const primaryKey of this.items.keys())
 		if (this.HasItem(primaryKey, itemID, secondaryKey))
 			return true;
 	return false;
@@ -132,10 +132,10 @@ MultiKeyMap.prototype.GetItems = function(primaryKey, secondaryKey)
  */
 MultiKeyMap.prototype.GetAllItems = function(secondaryKey)
 {
-	let items = {};
+	const items = {};
 
 	// Map doesn't implement filter so use a for loop.
-	for (let primaryKey of this.items.keys())
+	for (const primaryKey of this.items.keys())
 	{
 		if (!this.items.get(primaryKey).has(secondaryKey))
 			continue;
@@ -176,8 +176,8 @@ MultiKeyMap.prototype._getItemsOrInit = function(primaryKey, secondaryKey)
  */
 MultiKeyMap.prototype._AddItem = function(primaryKey, itemID, item, secondaryKey, stackable)
 {
-	let items = this._getItemsOrInit(primaryKey, secondaryKey);
-	for (let it of items)
+	const items = this._getItemsOrInit(primaryKey, secondaryKey);
+	for (const it of items)
 		if (it._ID == itemID)
 		{
 			it._count++;
@@ -192,16 +192,16 @@ MultiKeyMap.prototype._AddItem = function(primaryKey, itemID, item, secondaryKey
  */
 MultiKeyMap.prototype._RemoveItem = function(primaryKey, itemID, secondaryKey, stackable)
 {
-	let items = this._getItems(primaryKey, secondaryKey);
+	const items = this._getItems(primaryKey, secondaryKey);
 
-	let existingItem = items.filter(item => { return item._ID == itemID; });
+	const existingItem = items.filter(item => { return item._ID == itemID; });
 	if (!existingItem.length)
 		return false;
 
 	if (--existingItem[0]._count > 0)
 		return stackable;
 
-	let stilValidItems = items.filter(item => item._count > 0);
+	const stilValidItems = items.filter(item => item._count > 0);
 
 	// Delete entries from the map if necessary to clean up.
 	if (!stilValidItems.length)

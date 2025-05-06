@@ -1,4 +1,4 @@
-let resources = {
+const resources = {
 	"res_A": {
 		"code": "a",
 		"name": "A",
@@ -24,7 +24,7 @@ let resources = {
 Engine.ListDirectoryFiles = () => Object.keys(resources);
 Engine.ReadJSONFile = (file) => resources[file];
 
-let res = new Resources();
+const res = new Resources();
 
 TS_ASSERT_EQUALS(res.GetResources().length, 2);
 TS_ASSERT_EQUALS(res.GetResources()[0].code, "b");

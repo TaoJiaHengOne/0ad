@@ -11,10 +11,10 @@ class DamageTypesMetadata
 	{
 		this.damageTypeData = {};
 
-		let files = Engine.ListDirectoryFiles("simulation/data/damage_types", "*.json", false);
-		for (let filename of files)
+		const files = Engine.ListDirectoryFiles("simulation/data/damage_types", "*.json", false);
+		for (const filename of files)
 		{
-			let data = Engine.ReadJSONFile(filename);
+			const data = Engine.ReadJSONFile(filename);
 			if (!data)
 				continue;
 
@@ -27,7 +27,7 @@ class DamageTypesMetadata
 			this.damageTypeData[data.code] = data;
 		}
 
-		let hasMetadata = (a) => this.damageTypeData[a] ? -1 : 1;
+		const hasMetadata = (a) => this.damageTypeData[a] ? -1 : 1;
 		this._sort = (a, b) => {
 			if (this.damageTypeData[a] && this.damageTypeData[b])
 				return this.damageTypeData[a].order - this.damageTypeData[b].order;
@@ -42,7 +42,7 @@ class DamageTypesMetadata
 	 */
 	sort(damageTypes)
 	{
-		let sorted = damageTypes.slice();
+		const sorted = damageTypes.slice();
 		sorted.sort(this._sort);
 		return sorted;
 	}

@@ -5,12 +5,12 @@ class AttackEffects
 {
 	constructor()
 	{
-		let effectsDataObj = {};
+		const effectsDataObj = {};
 		this.effectReceivers = [];
 
-		for (let filename of Engine.ListDirectoryFiles("simulation/data/attack_effects", "*.json", false))
+		for (const filename of Engine.ListDirectoryFiles("simulation/data/attack_effects", "*.json", false))
 		{
-			let data = Engine.ReadJSONFile(filename);
+			const data = Engine.ReadJSONFile(filename);
 			if (!data)
 				continue;
 
@@ -29,8 +29,8 @@ class AttackEffects
 			});
 		}
 
-		let effDataSort = (a, b) => a.order < b.order ? -1 : a.order > b.order ? 1 : 0;
-		let effSort = (a, b) => effDataSort(
+		const effDataSort = (a, b) => a.order < b.order ? -1 : a.order > b.order ? 1 : 0;
+		const effSort = (a, b) => effDataSort(
 			effectsDataObj[a.type],
 			effectsDataObj[b.type]
 		);

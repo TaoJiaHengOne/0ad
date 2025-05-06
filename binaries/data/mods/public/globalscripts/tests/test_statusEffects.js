@@ -1,4 +1,4 @@
-let statusEffects = {
+const statusEffects = {
 	"test_A": {
 		"code": "test_a",
 		"statusName": "A",
@@ -14,7 +14,7 @@ let statusEffects = {
 Engine.ListDirectoryFiles = () => Object.keys(statusEffects);
 Engine.ReadJSONFile = (file) => statusEffects[file];
 
-let sem = new StatusEffectsMetadata();
+const sem = new StatusEffectsMetadata();
 
 TS_ASSERT_UNEVAL_EQUALS(sem.getData("test_a"), {
 	"applierTooltip": "TTA",

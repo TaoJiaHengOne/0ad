@@ -1,4 +1,4 @@
-let effects = {
+const effects = {
 	"eff_A": {
 		"code": "a",
 		"name": "A",
@@ -18,7 +18,7 @@ let effects = {
 Engine.ListDirectoryFiles = () => Object.keys(effects);
 Engine.ReadJSONFile = (file) => effects[file];
 
-let attackEffects = new AttackEffects();
+const attackEffects = new AttackEffects();
 
 TS_ASSERT_UNEVAL_EQUALS(attackEffects.Receivers(), [{
 	"type": "b",

@@ -9,9 +9,9 @@ function Resources()
 	this.resourceNames = {};
 	this.resourceCodesByProperty = {};
 
-	for (let filename of Engine.ListDirectoryFiles("simulation/data/resources/", "*.json", false))
+	for (const filename of Engine.ListDirectoryFiles("simulation/data/resources/", "*.json", false))
 	{
-		let data = Engine.ReadJSONFile(filename);
+		const data = Engine.ReadJSONFile(filename);
 		if (!data)
 			continue;
 
@@ -22,10 +22,10 @@ function Resources()
 		this.resourceDataObj[data.code] = data;
 		this.resourceCodes.push(data.code);
 		this.resourceNames[data.code] = data.name;
-		for (let subres in data.subtypes)
+		for (const subres in data.subtypes)
 			this.resourceNames[subres] = data.subtypes[subres];
 
-		for (let property in data.properties)
+		for (const property in data.properties)
 		{
 			if (!this.resourceCodesByProperty[data.properties[property]])
 				this.resourceCodesByProperty[data.properties[property]] = [];
@@ -34,15 +34,15 @@ function Resources()
 	}
 
 	// Sort arrays by specified order
-	let resDataSort = (a, b) => a.order < b.order ? -1 : a.order > b.order ? +1 : 0;
-	let resSort = (a, b) => resDataSort(
+	const resDataSort = (a, b) => a.order < b.order ? -1 : a.order > b.order ? +1 : 0;
+	const resSort = (a, b) => resDataSort(
 		this.resourceData.find(resource => resource.code == a),
 		this.resourceData.find(resource => resource.code == b)
 	);
 
 	this.resourceData.sort(resDataSort);
 	this.resourceCodes.sort(resSort);
-	for (let property in this.resourceCodesByProperty)
+	for (const property in this.resourceCodesByProperty)
 		this.resourceCodesByProperty[property].sort(resSort);
 
 	deepfreeze(this.resourceData);

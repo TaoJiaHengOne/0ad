@@ -9,10 +9,10 @@ class StatusEffectsMetadata
 	{
 		this.statusEffectData = {};
 
-		let files = Engine.ListDirectoryFiles("simulation/data/status_effects", "*.json", false);
-		for (let filename of files)
+		const files = Engine.ListDirectoryFiles("simulation/data/status_effects", "*.json", false);
+		for (const filename of files)
 		{
-			let data = Engine.ReadJSONFile(filename);
+			const data = Engine.ReadJSONFile(filename);
 			if (!data)
 				continue;
 

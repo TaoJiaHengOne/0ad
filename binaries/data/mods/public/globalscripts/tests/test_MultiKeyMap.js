@@ -91,12 +91,12 @@ function setup_items(map)
 // Check that items returned are correct.
 function test_items(map)
 {
-	let items = map.GetAllItems("sec_a");
+	const items = map.GetAllItems("sec_a");
 	TS_ASSERT("prim_a" in items);
 	TS_ASSERT("prim_b" in items);
 	TS_ASSERT("prim_c" in items);
 	let sum = 0;
-	for (let key in items)
+	for (const key in items)
 		items[key].forEach(item => { sum += item.value.value * item._count; });
 	TS_ASSERT(sum == 22);
 }

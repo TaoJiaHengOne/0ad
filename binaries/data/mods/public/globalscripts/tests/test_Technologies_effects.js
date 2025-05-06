@@ -3,17 +3,17 @@
 function test_numeric()
 {
 	// Also test "no affects"
-	let add = [{ "add": 10 }];
+	const add = [{ "add": 10 }];
 
-	let add_add = [{ "add": 10, "affects": "Unit" }, { "add": 5, "affects": "Unit" }];
+	const add_add = [{ "add": 10, "affects": "Unit" }, { "add": 5, "affects": "Unit" }];
 
-	let add_mul_add = [{ "add": 10, "affects": "Unit" }, { "multiply": 2, "affects": "Unit" }, { "add": 5, "affects": "Unit" }];
+	const add_mul_add = [{ "add": 10, "affects": "Unit" }, { "multiply": 2, "affects": "Unit" }, { "add": 5, "affects": "Unit" }];
 
-	let add_replace = [{ "add": 10, "affects": "Unit" }, { "replace": 10, "affects": "Unit" }];
+	const add_replace = [{ "add": 10, "affects": "Unit" }, { "replace": 10, "affects": "Unit" }];
 
-	let replace_add = [{ "replace": 10, "affects": "Unit" }, { "add": 10, "affects": "Unit" }];
+	const replace_add = [{ "replace": 10, "affects": "Unit" }, { "add": 10, "affects": "Unit" }];
 
-	let replace_replace = [{ "replace": 10, "affects": "Unit" }, { "replace": 30, "affects": "Unit" }];
+	const replace_replace = [{ "replace": 10, "affects": "Unit" }, { "replace": 30, "affects": "Unit" }];
 
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(add, "Unit", 5), 15);
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(add_add, "Unit", 5), 20);
@@ -31,20 +31,20 @@ test_numeric();
 
 function test_non_numeric()
 {
-	let replace_nonnum = [{ "replace": "alpha", "affects": "Unit" }];
+	const replace_nonnum = [{ "replace": "alpha", "affects": "Unit" }];
 
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_nonnum, "Unit", "beta"), "alpha");
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_nonnum, "Structure", "beta"), "beta");
 
-	let replace_tokens = [{ "tokens": "-beta alpha gamma -delta", "affects": "Unit" }];
+	const replace_tokens = [{ "tokens": "-beta alpha gamma -delta", "affects": "Unit" }];
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_tokens, "Unit", "beta"), "alpha gamma");
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_tokens, "Structure", "beta"), "beta");
 
-	let replace_tokens_2 = [{ "tokens": "beta>gamma -delta", "affects": "Unit" }];
+	const replace_tokens_2 = [{ "tokens": "beta>gamma -delta", "affects": "Unit" }];
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_tokens_2, "Unit", "beta"), "gamma");
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_tokens_2, "Structure", "beta"), "beta");
 
-	let replace_tokens_3 = [
+	const replace_tokens_3 = [
 		{ "tokens": "beta>alpha gamma", "affects": "Unit" },
 		{ "tokens": "alpha>zeta -gamma delta", "affects": "Unit" }
 	];
@@ -52,7 +52,7 @@ function test_non_numeric()
 	TS_ASSERT_EQUALS(GetTechModifiedProperty(replace_tokens_3, "Structure", "beta"), "beta");
 
 	// Ordering matters.
-	let replace_tokens_4 = [
+	const replace_tokens_4 = [
 		{ "tokens": "alpha>zeta -gamma delta", "affects": "Unit" },
 		{ "tokens": "beta>alpha gamma", "affects": "Unit" }
 	];

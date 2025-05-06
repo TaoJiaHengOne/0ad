@@ -6,10 +6,10 @@ function shuffleArray(source)
 	if (!source.length)
 		return [];
 
-	let result = [source[0]];
+	const result = [source[0]];
 	for (let i = 1; i < source.length; ++i)
 	{
-		let j = randIntInclusive(0, i);
+		const j = randIntInclusive(0, i);
 		result[i] = result[j];
 		result[j] = source[i];
 	}
@@ -24,7 +24,7 @@ function shuffleArray(source)
  */
 function heapsPermute(array, cloneFunc, callback)
 {
-	let c = new Array(array.length).fill(0);
+	const c = new Array(array.length).fill(0);
 
 	callback(array.map(cloneFunc));
 
@@ -33,8 +33,8 @@ function heapsPermute(array, cloneFunc, callback)
 	{
 		if (c[i] < i)
 		{
-			let swapIndex = i % 2 ? c[i] : 0;
-			let swapValue = cloneFunc(array[swapIndex]);
+			const swapIndex = i % 2 ? c[i] : 0;
+			const swapValue = cloneFunc(array[swapIndex]);
 			array[swapIndex] = array[i];
 			array[i] = swapValue;
 

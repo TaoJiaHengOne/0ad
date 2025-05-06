@@ -1,4 +1,4 @@
-let damageTypes = {
+const damageTypes = {
 	"test_A": {
 		"code": "test_a",
 		"name": "A",
@@ -14,7 +14,7 @@ let damageTypes = {
 Engine.ListDirectoryFiles = () => Object.keys(damageTypes);
 Engine.ReadJSONFile = (file) => damageTypes[file];
 
-let dtm = new DamageTypesMetadata();
+const dtm = new DamageTypesMetadata();
 
 TS_ASSERT_EQUALS(dtm.getName("test_a"), "A");
 TS_ASSERT_EQUALS(dtm.getName("test_b"), "B");

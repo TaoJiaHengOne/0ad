@@ -67,7 +67,7 @@ Vector2D.prototype.div = function(f)
 
 Vector2D.prototype.normalize = function()
 {
-	let magnitude = this.length();
+	const magnitude = this.length();
 	if (!magnitude)
 		return this;
 
@@ -79,8 +79,8 @@ Vector2D.prototype.normalize = function()
  */
 Vector2D.prototype.rotate = function(angle)
 {
-	let sin = Math.sin(angle);
-	let cos = Math.cos(angle);
+	const sin = Math.sin(angle);
+	const cos = Math.cos(angle);
 
 	return this.set(
 		this.x * cos + this.y * sin,
@@ -239,7 +239,7 @@ Vector2D.average = function(vectorList)
 Vector2D.sum = function(vectorList)
 {
 	// Do not use for...of nor array functions for performance
-	let sum = new Vector2D();
+	const sum = new Vector2D();
 
 	for (let i = 0; i < vectorList.length; ++i)
 		sum.add(vectorList[i]);
@@ -316,7 +316,7 @@ Vector3D.prototype.div = function(f)
 
 Vector3D.prototype.normalize = function()
 {
-	let magnitude = this.length();
+	const magnitude = this.length();
 	if (!magnitude)
 		return this;
 

@@ -30,7 +30,7 @@ function GetTechModifiedProperty(modifications, classes, originalValue)
 
 function GetTechModifiedProperty_generic(modifications, classes, originalValue)
 {
-	for (let modification of modifications)
+	for (const modification of modifications)
 	{
 		if (!DoesModificationApply(modification, classes))
 			continue;
@@ -48,7 +48,7 @@ function GetTechModifiedProperty_numeric(modifications, classes, originalValue)
 	let multiply = 1;
 	let add = 0;
 
-	for (let modification of modifications)
+	for (const modification of modifications)
 	{
 		if (!DoesModificationApply(modification, classes))
 			continue;
@@ -67,7 +67,7 @@ function GetTechModifiedProperty_numeric(modifications, classes, originalValue)
 function GetTechModifiedProperty_string(modifications, classes, originalValue)
 {
 	let value = originalValue;
-	for (let modification of modifications)
+	for (const modification of modifications)
 	{
 		if (!DoesModificationApply(modification, classes))
 			continue;
@@ -103,20 +103,20 @@ function DoesModificationApply(modification, classes)
  */
 function HandleTokens(originalValue, modification)
 {
-	let tokens = originalValue === "" ? [] : originalValue.split(/\s+/);
-	let newTokens = modification === "" ? [] : modification.split(/\s+/);
-	for (let token of newTokens)
+	const tokens = originalValue === "" ? [] : originalValue.split(/\s+/);
+	const newTokens = modification === "" ? [] : modification.split(/\s+/);
+	for (const token of newTokens)
 	{
 		if (token.indexOf(">") !== -1)
 		{
-			let [oldToken, newToken] = token.split(">");
-			let index = tokens.indexOf(oldToken);
+			const [oldToken, newToken] = token.split(">");
+			const index = tokens.indexOf(oldToken);
 			if (index !== -1)
 				tokens[index] = newToken;
 		}
 		else if (token[0] == "-")
 		{
-			let index = tokens.indexOf(token.substr(1));
+			const index = tokens.indexOf(token.substr(1));
 			if (index !== -1)
 				tokens.splice(index, 1);
 		}
@@ -140,8 +140,8 @@ function DeriveTechnologyRequirements(template, civ)
 
 	if (template.requirements)
 	{
-		let op = Object.keys(template.requirements)[0];
-		let val = template.requirements[op];
+		const op = Object.keys(template.requirements)[0];
+		const val = template.requirements[op];
 		requirements = InterpretTechRequirements(civ, op, val);
 	}
 
@@ -150,7 +150,7 @@ function DeriveTechnologyRequirements(template, civ)
 		if (!requirements.length)
 			requirements.push({});
 
-		for (let req of requirements)
+		for (const req of requirements)
 		{
 			if (!req.techs)
 				req.techs = [];
@@ -210,7 +210,7 @@ function InterpretTechRequirements(civ, operator, value)
 
 	case "entity":
 	{
-		let number = value.number || value.numberOfTypes || 0;
+		const number = value.number || value.numberOfTypes || 0;
 		if (number > 0)
 			requirements.push({
 				"entities": [{
@@ -231,11 +231,11 @@ function InterpretTechRequirements(civ, operator, value)
 	case "all":
 	{
 		let civPermitted; // tri-state (undefined, false, or true)
-		for (let subvalue of value)
+		for (const subvalue of value)
 		{
-			let newOper = Object.keys(subvalue)[0];
-			let newValue = subvalue[newOper];
-			let result = InterpretTechRequirements(civ, newOper, newValue);
+			const newOper = Object.keys(subvalue)[0];
+			const newValue = subvalue[newOper];
+			const result = InterpretTechRequirements(civ, newOper, newValue);
 
 			switch (newOper)
 			{
@@ -259,7 +259,7 @@ function InterpretTechRequirements(civ, operator, value)
 			case "all":
 				if (!result)
 				{
-					let nullcivreqs = InterpretTechRequirements(null, newOper, newValue);
+					const nullcivreqs = InterpretTechRequirements(null, newOper, newValue);
 					if (!nullcivreqs || !nullcivreqs.length)
 						civPermitted = false;
 					continue;
@@ -274,15 +274,15 @@ function InterpretTechRequirements(civ, operator, value)
 					if (!requirements.length)
 						requirements.push({});
 
-					let newRequirements = [];
-					for (let currReq of requirements)
-						for (let res of result)
+					const newRequirements = [];
+					for (const currReq of requirements)
+						for (const res of result)
 						{
-							let newReq = {};
-							for (let subtype in currReq)
+							const newReq = {};
+							for (const subtype in currReq)
 								newReq[subtype] = currReq[subtype];
 
-							for (let subtype in res)
+							for (const subtype in res)
 							{
 								if (!newReq[subtype])
 									newReq[subtype] = [];
@@ -305,11 +305,11 @@ function InterpretTechRequirements(civ, operator, value)
 	case "any":
 	{
 		let civPermitted = false;
-		for (let subvalue of value)
+		for (const subvalue of value)
 		{
-			let newOper = Object.keys(subvalue)[0];
-			let newValue = subvalue[newOper];
-			let result = InterpretTechRequirements(civ, newOper, newValue);
+			const newOper = Object.keys(subvalue)[0];
+			const newValue = subvalue[newOper];
+			const result = InterpretTechRequirements(civ, newOper, newValue);
 
 			switch (newOper)
 			{
@@ -328,7 +328,7 @@ function InterpretTechRequirements(civ, operator, value)
 			case "any":
 				if (!result)
 				{
-					let nullcivreqs = InterpretTechRequirements(null, newOper, newValue);
+					const nullcivreqs = InterpretTechRequirements(null, newOper, newValue);
 					if (!nullcivreqs || !nullcivreqs.length)
 						continue;
 					return false;
@@ -343,7 +343,7 @@ function InterpretTechRequirements(civ, operator, value)
 
 			case "tech":
 			case "entity":
-				for (let res of result)
+				for (const res of result)
 					requirements.push(res);
 				break;
 
@@ -369,14 +369,14 @@ function InterpretTechRequirements(civ, operator, value)
  */
 function UnravelPhases(phases)
 {
-	let phaseMap = {};
-	for (let phaseName in phases)
+	const phaseMap = {};
+	for (const phaseName in phases)
 	{
-		let phaseData = phases[phaseName];
+		const phaseData = phases[phaseName];
 		if (!phaseData.reqs.length || !phaseData.reqs[0].techs || !phaseData.replaces)
 			continue;
 
-		let myPhase = phaseData.replaces[0];
+		const myPhase = phaseData.replaces[0];
 		let reqPhase = phaseData.reqs[0].techs[0];
 		if (phases[reqPhase] && phases[reqPhase].replaces)
 			reqPhase = phases[reqPhase].replaces[0];
@@ -386,7 +386,7 @@ function UnravelPhases(phases)
 			phaseMap[reqPhase] = undefined;
 	}
 
-	let phaseList = Object.keys(phaseMap);
+	const phaseList = Object.keys(phaseMap);
 	phaseList.sort((a, b) => phaseList.indexOf(a) - phaseList.indexOf(phaseMap[b]));
 
 	return phaseList;
