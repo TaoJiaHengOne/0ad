@@ -54,7 +54,10 @@ for (let template of cmpTemplateManager.FindAllTemplates(actors))
 	let h = shape.depth;
 
 	if (shape.type == 'circle')
-		w = h = shape.radius * 2;
+	{
+		w = shape.radius * 2;
+		h = w;
+	}
 
 	if (x + w >= stopX)
 	{

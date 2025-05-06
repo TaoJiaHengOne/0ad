@@ -11,7 +11,10 @@ function Vector2D(x, y)
 		this.y = y;
 	}
 	else
-		this.x = this.y = 0;
+	{
+		this.x = 0;
+		this.y = 0;
+	}
 }
 
 Vector2D.prototype.add = function(v)
@@ -30,7 +33,11 @@ function Vector3D(x, y, z)
 		this.z = z;
 	}
 	else
-		this.x = this.y = this.z = 0;
+	{
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+	}
 }
 Vector3D.prototype.add = function(v)
 {
