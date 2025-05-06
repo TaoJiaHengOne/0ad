@@ -41,7 +41,7 @@ function initURLButtons(termsURL, urlButtons)
 		});
 
 	urlButtons.forEach((urlButton, i) => {
-		let button = Engine.GetGUIObjectByName("button[" + i + "]");
+		const button = Engine.GetGUIObjectByName("button[" + i + "]");
 		button.caption = urlButton.caption;
 		button.hidden = false;
 		button.tooltip = sprintf(translate("Open %(url)s in the browser."), {
@@ -55,23 +55,23 @@ function initURLButtons(termsURL, urlButtons)
 
 function initLanguageSelection()
 {
-	let languageLabel = Engine.GetGUIObjectByName("languageLabel");
-	let languageLabelWidth = Engine.GetTextWidth(languageLabel.font, languageLabel.caption);
+	const languageLabel = Engine.GetGUIObjectByName("languageLabel");
+	const languageLabelWidth = Engine.GetTextWidth(languageLabel.font, languageLabel.caption);
 	languageLabel.size = "0 0 " + languageLabelWidth + " 100%";
 
-	let languageDropdown = Engine.GetGUIObjectByName("languageDropdown");
+	const languageDropdown = Engine.GetGUIObjectByName("languageDropdown");
 	languageDropdown.size = (languageLabelWidth + 10) + " 4 100% 100%";
 
 	languageDropdown.list = (() => {
-		let displayNames = Engine.GetSupportedLocaleDisplayNames();
-		let baseNames = Engine.GetSupportedLocaleBaseNames();
+		const displayNames = Engine.GetSupportedLocaleDisplayNames();
+		const baseNames = Engine.GetSupportedLocaleBaseNames();
 
 		// en-US
-		let list = [displayNames[0]];
+		const list = [displayNames[0]];
 
 		// current locale
-		let currentLocaleDict = Engine.GetFallbackToAvailableDictLocale(Engine.GetCurrentLocale());
-		let index = baseNames.indexOf(currentLocaleDict);
+		const currentLocaleDict = Engine.GetFallbackToAvailableDictLocale(Engine.GetCurrentLocale());
+		const index = baseNames.indexOf(currentLocaleDict);
 		if (index == -1)
 			warn("Language '" + currentLocaleDict + "' is not available");
 		else if (currentLocaleDict != baseNames[0])

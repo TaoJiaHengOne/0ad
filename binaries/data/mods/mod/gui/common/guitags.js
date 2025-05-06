@@ -16,7 +16,7 @@ function setStringTags(text, tags)
 {
 	let result = text;
 
-	for (let tag in tags)
+	for (const tag in tags)
 		result = '[' + tag + '="' + tags[tag] + '"]' + result + '[/' + tag + ']';
 
 	return result;

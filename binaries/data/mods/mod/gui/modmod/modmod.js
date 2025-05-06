@@ -133,7 +133,7 @@ function loadEnabledMods()
 
 function validateMods()
 {
-	for (let folder in g_Mods)
+	for (const folder in g_Mods)
 		validateMod(folder, g_Mods[folder], true);
 }
 
@@ -148,7 +148,7 @@ function initGUIFilters()
 function initGUIButtons(data)
 {
 	// Either get back to the previous page or quit if there is no previous page
-	let hasPreviousPage = !data || data.cancelbutton || false;
+	const hasPreviousPage = !data || data.cancelbutton || false;
 	Engine.GetGUIObjectByName("cancelButton").hidden = !hasPreviousPage;
 	Engine.GetGUIObjectByName("quitButton").hidden = hasPreviousPage;
 	// Turn 'save' off, it will be enabled on any change.
@@ -179,11 +179,11 @@ function displayModLists()
 
 function displayModList(listObjectName, folders, enabled)
 {
-	let listObject = Engine.GetGUIObjectByName(listObjectName);
+	const listObject = Engine.GetGUIObjectByName(listObjectName);
 
 	if (listObjectName == "modsDisabledList")
 	{
-		let sortFolder = folder => String(getMod(folder)[listObject.selected_column] || folder);
+		const sortFolder = folder => String(getMod(folder)[listObject.selected_column] || folder);
 		folders.sort((folder1, folder2) =>
 			listObject.selected_column_order *
 			sortFolder(folder1).localeCompare(sortFolder(folder2)));
@@ -193,7 +193,7 @@ function displayModList(listObjectName, folders, enabled)
 	if (!enabled && Engine.GetGUIObjectByName("modCompatibleFilter").checked)
 		folders = folders.filter(folder => g_ModsCompatibility[folder]);
 
-	let selected = listObject.selected !== -1 ? listObject.list_name[listObject.selected] : null;
+	const selected = listObject.selected !== -1 ? listObject.list_name[listObject.selected] : null;
 
 	listObject.list_name = folders.map(folder => colorMod(folder, getMod(folder).name || "", enabled));
 	listObject.list_folder = folders.map(folder => colorMod(folder, folder, enabled));
@@ -219,7 +219,7 @@ function getModColor(folder, enabled)
 
 function colorMod(folder, text, enabled)
 {
-	let color = getModColor(folder, enabled);
+	const color = getModColor(folder, enabled);
 	return color ? coloredText(text, color) : text;
 }
 
@@ -230,7 +230,7 @@ function reloadDisabledMods()
 
 function enableMod()
 {
-	let modsDisabledList = Engine.GetGUIObjectByName("modsDisabledList");
+	const modsDisabledList = Engine.GetGUIObjectByName("modsDisabledList");
 	let pos = modsDisabledList.selected;
 
 	if (pos == -1 || !g_ModsCompatibility[g_ModsDisabledFiltered[pos]])
@@ -252,13 +252,13 @@ function enableMod()
 
 function disableMod()
 {
-	let modsEnabledList = Engine.GetGUIObjectByName("modsEnabledList");
-	let pos = modsEnabledList.selected;
+	const modsEnabledList = Engine.GetGUIObjectByName("modsEnabledList");
+	const pos = modsEnabledList.selected;
 	if (pos == -1)
 		return;
 
 	// Find true position of disabled mod and remove it
-	let disabledMod = g_ModsEnabledFiltered[pos];
+	const disabledMod = g_ModsEnabledFiltered[pos];
 	for (let i = 0; i < g_ModsEnabled.length; ++i)
 		if (g_ModsEnabled[i] == disabledMod)
 		{
@@ -292,10 +292,10 @@ function disableMod()
 
 function filterMod(folder)
 {
-	let mod = getMod(folder);
+	const mod = getMod(folder);
 
-	let negateFilter = Engine.GetGUIObjectByName("negateFilter").checked;
-	let searchText = Engine.GetGUIObjectByName("modGenericFilter").caption;
+	const negateFilter = Engine.GetGUIObjectByName("negateFilter").checked;
+	const searchText = Engine.GetGUIObjectByName("modGenericFilter").caption;
 
 	if (searchText &&
 	    folder.indexOf(searchText) == -1 &&
@@ -326,17 +326,17 @@ function moveCurrItem(objectName, up)
 	if (Engine.GetGUIObjectByName("modGenericFilter").caption)
 		return;
 
-	let obj = Engine.GetGUIObjectByName(objectName);
-	let idx = obj.selected;
+	const obj = Engine.GetGUIObjectByName(objectName);
+	const idx = obj.selected;
 	if (idx == -1)
 		return;
 
-	let num = obj.list.length;
-	let idx2 = idx + (up ? -1 : 1);
+	const num = obj.list.length;
+	const idx2 = idx + (up ? -1 : 1);
 	if (idx2 < 0 || idx2 >= num)
 		return;
 
-	let tmp = g_ModsEnabled[idx];
+	const tmp = g_ModsEnabled[idx];
 	g_ModsEnabled[idx] = g_ModsEnabled[idx2];
 	g_ModsEnabled[idx2] = tmp;
 
@@ -353,7 +353,7 @@ function areDependenciesMet(folder, disabledAction = false)
 	if (!g_Mods[folder])
 		return false;
 
-	for (let dependency of getMod(folder).dependencies)
+	for (const dependency of getMod(folder).dependencies)
 	{
 		if (!isDependencyMet(dependency))
 			return false;
@@ -364,7 +364,7 @@ function areDependenciesMet(folder, disabledAction = false)
 
 function recomputeCompatibility(disabledAction = false)
 {
-	for (let mod in g_Mods)
+	for (const mod in g_Mods)
 		g_ModsCompatibility[mod] = areDependenciesMet(mod, disabledAction);
 }
 
@@ -373,8 +373,8 @@ function recomputeCompatibility(disabledAction = false)
  */
 function isDependencyMet(dependency)
 {
-	let operator = dependency.match(g_RegExpComparisonOperator);
-	let [name, version] = operator ? dependency.split(operator[0]) : [dependency, undefined];
+	const operator = dependency.match(g_RegExpComparisonOperator);
+	const [name, version] = operator ? dependency.split(operator[0]) : [dependency, undefined];
 
 	return g_ModsEnabled.some(folder =>
 		getMod(folder).name == name &&
@@ -388,16 +388,16 @@ function isDependencyMet(dependency)
  */
 function versionSatisfied(version1, operator, version2)
 {
-	let versionList1 = version1.split(/[-_]/)[0].split(/\./g);
-	let versionList2 = version2.split(/[-_]/)[0].split(/\./g);
+	const versionList1 = version1.split(/[-_]/)[0].split(/\./g);
+	const versionList2 = version2.split(/[-_]/)[0].split(/\./g);
 
-	let eq = operator.indexOf("=") != -1;
-	let lt = operator.indexOf("<") != -1;
-	let gt = operator.indexOf(">") != -1;
+	const eq = operator.indexOf("=") != -1;
+	const lt = operator.indexOf("<") != -1;
+	const gt = operator.indexOf(">") != -1;
 
 	for (let i = 0; i < Math.min(versionList1.length, versionList2.length); ++i)
 	{
-		let diff = +versionList1[i] - +versionList2[i];
+		const diff = +versionList1[i] - +versionList2[i];
 
 		if (gt && diff > 0 || lt && diff < 0)
 			return true;
@@ -407,7 +407,7 @@ function versionSatisfied(version1, operator, version2)
 	}
 
 	// common prefix matches
-	let ldiff = versionList1.length - versionList2.length;
+	const ldiff = versionList1.length - versionList2.length;
 	if (!ldiff)
 		return eq;
 
@@ -420,8 +420,8 @@ function versionSatisfied(version1, operator, version2)
 
 function sortEnabledMods()
 {
-	let dependencies = {};
-	for (let folder of g_ModsEnabled)
+	const dependencies = {};
+	for (const folder of g_ModsEnabled)
 		dependencies[folder] = getMod(folder).dependencies.map(d => d.split(g_RegExpComparisonOperator)[0]);
 
 	g_ModsEnabled.sort((folder1, folder2) =>
@@ -433,13 +433,13 @@ function sortEnabledMods()
 
 function selectedMod(listObjectName)
 {
-	let listObject = Engine.GetGUIObjectByName(listObjectName);
-	let isPickedDisabledList = listObjectName == "modsDisabledList";
-	let otherListObject = Engine.GetGUIObjectByName(isPickedDisabledList ?
+	const listObject = Engine.GetGUIObjectByName(listObjectName);
+	const isPickedDisabledList = listObjectName == "modsDisabledList";
+	const otherListObject = Engine.GetGUIObjectByName(isPickedDisabledList ?
 		"modsEnabledList" : "modsDisabledList");
 
-	let toggleModButton = Engine.GetGUIObjectByName("toggleModButton");
-	let isModSelected = listObject.selected != -1;
+	const toggleModButton = Engine.GetGUIObjectByName("toggleModButton");
+	const isModSelected = listObject.selected != -1;
 	if (isModSelected)
 	{
 		otherListObject.selected = -1;
@@ -472,11 +472,11 @@ function selectedMod(listObjectName)
  */
 function getSelectedModUrl()
 {
-	let modsEnabledList = Engine.GetGUIObjectByName("modsEnabledList");
-	let modsDisabledList = Engine.GetGUIObjectByName("modsDisabledList");
+	const modsEnabledList = Engine.GetGUIObjectByName("modsEnabledList");
+	const modsDisabledList = Engine.GetGUIObjectByName("modsDisabledList");
 
-	let list = modsEnabledList.selected == -1 ? modsDisabledList : modsEnabledList;
-	let folder = list.list[list.selected];
+	const list = modsEnabledList.selected == -1 ? modsDisabledList : modsEnabledList;
+	const folder = list.list[list.selected];
 	return folder && getMod(folder) && getMod(folder).url || undefined;
 }
 

@@ -153,9 +153,9 @@ function init(data)
 
 function onTick(closePageCallback)
 {
-	let progressData = Engine.ModIoGetDownloadProgress();
+	const progressData = Engine.ModIoGetDownloadProgress();
 
-	let handler = g_ModIOState[progressData.status];
+	const handler = g_ModIOState[progressData.status];
 	if (!handler)
 	{
 		warn("Unrecognized progress status: " + progressData.status);
@@ -169,16 +169,16 @@ function onTick(closePageCallback)
 
 function displayMods()
 {
-	let modsAvailableList = Engine.GetGUIObjectByName("modsAvailableList");
-	let selectedMod = modsAvailableList.list[modsAvailableList.selected];
+	const modsAvailableList = Engine.GetGUIObjectByName("modsAvailableList");
+	const selectedMod = modsAvailableList.list[modsAvailableList.selected];
 	modsAvailableList.selected = -1;
 
 	let displayedMods = clone(g_ModsAvailableOnline);
 	for (let i = 0; i < displayedMods.length; ++i)
 		displayedMods[i].i = i;
 
-	let filterColumns = ["name", "name_id", "summary"];
-	let filterText = Engine.GetGUIObjectByName("modFilter").caption.toLowerCase();
+	const filterColumns = ["name", "name_id", "summary"];
+	const filterText = Engine.GetGUIObjectByName("modFilter").caption.toLowerCase();
 	if (Engine.GetGUIObjectByName("compatibilityFilter").checked)
 		displayedMods = displayedMods.filter(mod => !mod.invalid);
 	displayedMods = displayedMods.filter(mod => filterColumns.some(column => mod[column].toLowerCase().indexOf(filterText) != -1));
@@ -200,7 +200,7 @@ function displayMods()
 
 function clearModList()
 {
-	let modsAvailableList = Engine.GetGUIObjectByName("modsAvailableList");
+	const modsAvailableList = Engine.GetGUIObjectByName("modsAvailableList");
 	modsAvailableList.selected = -1;
 	modsAvailableList.list_name = [];
 	modsAvailableList.list_name_id = [];
@@ -212,7 +212,7 @@ function clearModList()
 
 function selectedModIndex()
 {
-	let modsAvailableList = Engine.GetGUIObjectByName("modsAvailableList");
+	const modsAvailableList = Engine.GetGUIObjectByName("modsAvailableList");
 
 	if (modsAvailableList.selected == -1)
 		return undefined;
@@ -227,9 +227,9 @@ function isSelectedModInvalid(selected)
 
 function showModDescription()
 {
-	let selected = selectedModIndex();
-	let isSelected = selected !== undefined;
-	let isInvalid = isSelectedModInvalid(selected);
+	const selected = selectedModIndex();
+	const isSelected = selected !== undefined;
+	const isInvalid = isSelectedModInvalid(selected);
 	Engine.GetGUIObjectByName("downloadButton").enabled = isSelected && !isInvalid;
 	Engine.GetGUIObjectByName("modDescription").caption = isSelected && !isInvalid ? g_ModsAvailableOnline[selected].summary : "";
 	Engine.GetGUIObjectByName("modError").caption = isSelected && isInvalid ? sprintf(translate("Invalid mod: %(error)s"), { "error": g_ModsAvailableOnline[selected].error }) : "";
@@ -270,7 +270,7 @@ async function updateModList(closePageCallback)
 
 async function downloadMod()
 {
-	let selected = selectedModIndex();
+	const selected = selectedModIndex();
 
 	if (isSelectedModInvalid(selected))
 		return;
@@ -314,10 +314,10 @@ async function progressDialog(dialogCaption, dialogTitle, showProgressBar, butto
 {
 	Engine.GetGUIObjectByName("downloadDialog_title").caption = dialogTitle;
 
-	let downloadDialog_caption = Engine.GetGUIObjectByName("downloadDialog_caption");
+	const downloadDialog_caption = Engine.GetGUIObjectByName("downloadDialog_caption");
 	downloadDialog_caption.caption = dialogCaption;
 
-	let size = downloadDialog_caption.size;
+	const size = downloadDialog_caption.size;
 	size.rbottom = showProgressBar ? 40 : 80;
 	downloadDialog_caption.size = size;
 
@@ -342,11 +342,11 @@ async function progressDialog(dialogCaption, dialogTitle, showProgressBar, butto
  */
 function updateProgressBar(progress, totalSize)
 {
-	let progressPercent = Math.ceil(progress * 100);
+	const progressPercent = Math.ceil(progress * 100);
 	Engine.GetGUIObjectByName("downloadDialog_progressBar").progress = progressPercent;
 
-	let transferredSize = progress * totalSize;
-	let transferredSizeObj = filesizeToObj(transferredSize);
+	const transferredSize = progress * totalSize;
+	const transferredSizeObj = filesizeToObj(transferredSize);
 	// Translation: Mod file download indicator. Current size over expected final size, with percentage complete.
 	Engine.GetGUIObjectByName("downloadDialog_progressText").caption = sprintf(translate("%(current)s / %(total)s (%(percent)s%%)"), {
 		"current": filesizeToObj(totalSize).unit == transferredSizeObj.unit ? transferredSizeObj.filesize : filesizeToString(transferredSize),
@@ -354,9 +354,9 @@ function updateProgressBar(progress, totalSize)
 		"percent": progressPercent
 	});
 
-	let elapsedTime = Date.now() - g_RequestStartTime;
-	let remainingTime = progressPercent ? (100 - progressPercent) * elapsedTime / progressPercent : 0;
-	let avgSpeed = filesizeToObj(transferredSize / (elapsedTime / 1000));
+	const elapsedTime = Date.now() - g_RequestStartTime;
+	const remainingTime = progressPercent ? (100 - progressPercent) * elapsedTime / progressPercent : 0;
+	const avgSpeed = filesizeToObj(transferredSize / (elapsedTime / 1000));
 	// Translation: Mod file download status message.
 	Engine.GetGUIObjectByName("downloadDialog_status").caption = sprintf(translate("Time Elapsed: %(elapsed)s\nEstimated Time Remaining: %(remaining)s\nAverage Speed: %(avgSpeed)s"), {
 		"elapsed": timeToString(elapsedTime),

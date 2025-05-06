@@ -84,10 +84,10 @@ const g_TestModsInvalid = {
 	}
 };
 
-for (let folder in g_ValidTestMods)
+for (const folder in g_ValidTestMods)
 	if (!validateMod(folder, g_ValidTestMods[folder], false))
 		throw new Error("Valid mod '" + folder + "' should have passed the test.");
 
-for (let folder in g_TestModsInvalid)
+for (const folder in g_TestModsInvalid)
 	if (validateMod(folder, g_TestModsInvalid[folder], false))
 		throw new Error("Invalid mod '" + folder + "' should not have passed the test.");

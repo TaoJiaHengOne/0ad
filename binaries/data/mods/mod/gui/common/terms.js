@@ -31,7 +31,7 @@ async function openTerms(page)
 
 function checkTerms()
 {
-	for (let page in g_Terms)
+	for (const page in g_Terms)
 		if (!g_Terms[page].accepted)
 			return g_Terms[page].instruction || page;
 
@@ -47,6 +47,6 @@ function getTermsHash(page)
 
 function loadTermsAcceptance()
 {
-	for (let page in g_Terms)
+	for (const page in g_Terms)
 		g_Terms[page].accepted = Engine.ConfigDB_GetValue("user", g_Terms[page].config) == getTermsHash(page);
 }

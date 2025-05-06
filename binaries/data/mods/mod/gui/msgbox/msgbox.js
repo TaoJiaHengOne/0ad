@@ -8,22 +8,22 @@ function init(data)
 	Engine.GetGUIObjectByName("mbTitleBar").caption = data.title;
 
 	// Set subject
-	let mbTextObj = Engine.GetGUIObjectByName("mbText");
+	const mbTextObj = Engine.GetGUIObjectByName("mbText");
 	mbTextObj.caption = data.message;
 	if (data.font)
 		mbTextObj.font = data.font;
 
 	// Default behaviour
-	let mbCancelHotkey = Engine.GetGUIObjectByName("mbCancelHotkey");
+	const mbCancelHotkey = Engine.GetGUIObjectByName("mbCancelHotkey");
 
 	// Calculate size
-	let mbLRDiff = data.width / 2;
-	let mbUDDiff = data.height / 2;
+	const mbLRDiff = data.width / 2;
+	const mbUDDiff = data.height / 2;
 	Engine.GetGUIObjectByName("mbMain").size = "50%-" + mbLRDiff + " 50%-" + mbUDDiff + " 50%+" + mbLRDiff + " 50%+" + mbUDDiff;
 
-	let captions = data.buttonCaptions || [translate("OK")];
+	const captions = data.buttonCaptions || [translate("OK")];
 
-	let mbButton = [];
+	const mbButton = [];
 	const closePromise = setButtonCaptionsAndVisibility(mbButton, captions, mbCancelHotkey, "mbButton");
 	distributeButtonsHorizontally(mbButton, captions);
 

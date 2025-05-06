@@ -73,9 +73,9 @@ function validateMod(folder, modData, notify)
 {
 	let valid = true;
 
-	for (let propertyName in g_ModProperties)
+	for (const propertyName in g_ModProperties)
 	{
-		let property = g_ModProperties[propertyName];
+		const property = g_ModProperties[propertyName];
 
 		if (modData[propertyName] === undefined)
 		{
@@ -107,7 +107,7 @@ function validateMod(folder, modData, notify)
 
 function validateName(folder, modData, notify)
 {
-	let valid = modData.name.match(globalRegExp(g_RegExpName));
+	const valid = modData.name.match(globalRegExp(g_RegExpName));
 
 	if (!valid && notify)
 		warn("mod name of " + folder + " may only contain alphanumeric characters, but found '" + modData.name + "'!");
@@ -117,7 +117,7 @@ function validateName(folder, modData, notify)
 
 function validateVersion(folder, modData, notify)
 {
-	let valid = modData.version.match(globalRegExp(g_RegExpVersion));
+	const valid = modData.version.match(globalRegExp(g_RegExpVersion));
 
 	if (!valid && notify)
 		warn("mod version of " + folder + " may only contain numbers and at most 2 periods, but found '" + modData.version + "'!");
@@ -129,7 +129,7 @@ function validateDependencies(folder, modData, notify)
 {
 	let valid = true;
 
-	for (let dependency of modData.dependencies)
+	for (const dependency of modData.dependencies)
 	{
 		valid = valid && (
 			dependency.match(globalRegExp(g_RegExpName)) ||
@@ -144,7 +144,7 @@ function validateDependencies(folder, modData, notify)
 
 function validateLabel(folder, modData, notify)
 {
-	let valid = modData.label.match(g_RegExpLabel);
+	const valid = modData.label.match(g_RegExpLabel);
 
 	if (!valid && notify)
 		warn("mod label of " + folder + " may not be empty!");
