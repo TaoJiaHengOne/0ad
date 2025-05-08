@@ -59,3 +59,19 @@ jobs:
 
       - name: Check for issues with copyright
         run: ./source/tools/lint/copyright/copyright.sh --from ${{ env.BASE_SHA }} --to ${{ env.HEAD_SHA }}
+
+  jenkinsfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm-groovy-lint
+        run: npm install -g npm-groovy-lint
+
+      - name: Check for issues with jenkins files
+        run: ./source/tools/lint/jenkinsfiles/jenkinsfiles.sh --from ${{ env.BASE_SHA }} --to ${{ env.HEAD_SHA }}

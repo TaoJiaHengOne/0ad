@@ -27,3 +27,10 @@ indent_size = 2
 
 [build/premake/premake5/**]
 ignore = true
+
+[*.Jenkinsfile]
+indent_size = 4
+# Jenkins recommends using spaces for indentation. See:
+# https://wiki.jenkins.io/display/JENKINS/Code+Style+Guidelines
+# Additionally, our linter npm-groovy-lint does not support tabs.
+indent_style = space

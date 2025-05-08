@@ -18,56 +18,56 @@
 // This pipeline is used to build the documentation.
 
 pipeline {
-	agent {
-		dockerfile {
-			label 'LinuxAgent'
-			customWorkspace 'workspace/technical-docs'
-			dir 'build/jenkins/dockerfiles'
-			filename 'docs-tools.Dockerfile'
-			// Prevent Jenkins from running commands with the UID of the host's jenkins user
-			// https://stackoverflow.com/a/42822143
-			args '-u root'
-		}
-	}
+    agent {
+        dockerfile {
+            label 'LinuxAgent'
+            customWorkspace 'workspace/technical-docs'
+            dir 'build/jenkins/dockerfiles'
+            filename 'docs-tools.Dockerfile'
+            // Prevent Jenkins from running commands with the UID of the host's jenkins user
+            // https://stackoverflow.com/a/42822143
+            args '-u root'
+        }
+    }
 
-	stages {
-		stage("Pull documentation assets") {
-			steps {
-				sh "git lfs pull -I docs/doxygen"
-			}
-		}
+    stages {
+        stage('Pull documentation assets') {
+            steps {
+                sh 'git lfs pull -I docs/doxygen'
+            }
+        }
 
-		stage("Engine docs") {
-			steps {
-				sh "cd docs/doxygen/ && cmake -S . -B build-docs && cmake --build build-docs"
-			}
-		}
+        stage('Engine docs') {
+            steps {
+                sh 'cd docs/doxygen/ && cmake -S . -B build-docs && cmake --build build-docs'
+            }
+        }
 
-		stage("Entity docs") {
-			steps {
-				sh "cd binaries/system/ && svn export --force https://svn.wildfiregames.com/nightly-build/trunk/binaries/system/entity.rng"
-				sh "cd source/tools/entdocs/ && ./build.sh"
-				sh "cd source/tools/entdocs/ && mv entity-docs.html nightly.html"
-			}
-		}
+        stage('Entity docs') {
+            steps {
+                sh 'cd binaries/system/ && svn export --force https://svn.wildfiregames.com/nightly-build/trunk/binaries/system/entity.rng'
+                sh 'cd source/tools/entdocs/ && ./build.sh'
+                sh 'cd source/tools/entdocs/ && mv entity-docs.html nightly.html'
+            }
+        }
 
-		stage("Template Analyzer") {
-			steps {
-				sh "cd source/tools/templatesanalyzer/ && python3 unit_tables.py"
-				sh "mv source/tools/templatesanalyzer/unit_summary_table.html source/tools/templatesanalyzer/index.html"
-			}
-		}
+        stage('Template Analyzer') {
+            steps {
+                sh 'cd source/tools/templatesanalyzer/ && python3 unit_tables.py'
+                sh 'mv source/tools/templatesanalyzer/unit_summary_table.html source/tools/templatesanalyzer/index.html'
+            }
+        }
 
-		stage("Upload") {
-			steps {
-				sshPublisher alwaysPublishFromMaster: true, failOnError: true, publishers: [
-					sshPublisherDesc(configName: 'docs.wildfiregames.com', transfers: [
-						sshTransfer(sourceFiles: 'docs/doxygen/output/html/**', removePrefix: 'docs/doxygen/output/html/', remoteDirectory: 'pyrogenesis'),
-						sshTransfer(sourceFiles: 'source/tools/entdocs/nightly.html', removePrefix: 'source/tools/entdocs', remoteDirectory: 'entity-docs'),
-						sshTransfer(sourceFiles: 'source/tools/templatesanalyzer/index.html', removePrefix: 'source/tools/templatesanalyzer', remoteDirectory: 'templatesanalyzer'),
-					]
-				)]
-			}
-		}
-	}
+        stage('Upload') {
+            steps {
+                sshPublisher alwaysPublishFromMaster: true, failOnError: true, publishers: [
+                    sshPublisherDesc(configName: 'docs.wildfiregames.com', transfers: [
+                        sshTransfer(sourceFiles: 'docs/doxygen/output/html/**', removePrefix: 'docs/doxygen/output/html/', remoteDirectory: 'pyrogenesis'),
+                        sshTransfer(sourceFiles: 'source/tools/entdocs/nightly.html', removePrefix: 'source/tools/entdocs', remoteDirectory: 'entity-docs'),
+                        sshTransfer(sourceFiles: 'source/tools/templatesanalyzer/index.html', removePrefix: 'source/tools/templatesanalyzer', remoteDirectory: 'templatesanalyzer'),
+                    ]
+                )]
+            }
+        }
+    }
 }

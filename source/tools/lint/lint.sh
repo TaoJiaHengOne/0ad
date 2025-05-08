@@ -23,6 +23,13 @@ done
 
 has_errors=false
 
+if command -v npm-groovy-lint >/dev/null; then
+	# shellcheck disable=SC2086
+	./jenkinsfiles/jenkinsfiles.sh ${args} || has_errors=true
+else
+	echo "npm-groovy-lint not found in path"
+fi
+
 if command -v cppcheck >/dev/null; then
 	# shellcheck disable=SC2086
 	./cppcheck/cppcheck.sh ${args} || has_errors=true
