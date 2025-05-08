@@ -97,6 +97,7 @@ bool CComponentManager::DumpDebugState(std::ostream& stream, bool includeDebugIn
 
 bool CComponentManager::ComputeStateHash(std::string& outHash, bool quick) const
 {
+	PROFILE2("ComputeStateHash");
 	// Hash serialization: this includes the minimal data necessary to detect
 	// differences in the state, and ignores things like counts and names
 
@@ -117,27 +118,17 @@ bool CComponentManager::ComputeStateHash(std::string& outHash, bool quick) const
 			continue;
 
 		// Only emit component types if they have a component that will be serialized
-		bool needsSerialization = false;
+		bool hasEmittedComponent = false;
 		for (std::map<entity_id_t, IComponent*>::const_iterator eit = cit->second.begin(); eit != cit->second.end(); ++eit)
 		{
 			// Don't serialize local entities
 			if (ENTITY_IS_LOCAL(eit->first))
 				continue;
-
-			needsSerialization = true;
-			break;
-		}
-
-		if (!needsSerialization)
-			continue;
-
-		serializer.NumberI32_Unbounded("component type id", cit->first);
-
-		for (std::map<entity_id_t, IComponent*>::const_iterator eit = cit->second.begin(); eit != cit->second.end(); ++eit)
-		{
-			// Don't serialize local entities
-			if (ENTITY_IS_LOCAL(eit->first))
-				continue;
+			if (!hasEmittedComponent)
+			{
+				serializer.NumberI32_Unbounded("component type id", cit->first);
+				hasEmittedComponent = true;
+			}
 
 			serializer.NumberU32_Unbounded("entity id", eit->first);
 			eit->second->Serialize(serializer);
