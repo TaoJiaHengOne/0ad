@@ -135,7 +135,7 @@ template<typename T>
 inline bool GetObjectClassName(const ScriptRequest& rq, JS::HandleObject obj, T& name)
 {
 	JS::RootedValue constructor(rq.cx, JS::ObjectOrNullValue(JS_GetConstructor(rq.cx, obj)));
-	return constructor.isObject() && Script::HasProperty(rq, constructor, "name") && Script::GetProperty(rq, constructor, "name", name);
+	return constructor.isObject() && Script::GetProperty(rq, constructor, "name", name);
 }
 
 /**
