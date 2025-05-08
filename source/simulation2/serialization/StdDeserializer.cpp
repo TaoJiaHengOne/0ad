@@ -174,7 +174,7 @@ JS::Value CStdDeserializer::ReadScriptVal(const char* UNUSED(name), JS::HandleOb
 			JS_GetPrototype(rq.cx, obj, &prototype);
 			SPrototypeSerialization info = GetPrototypeInfo(rq, prototype, m_SerializePropId, m_DeserializePropId);
 
-			if (preexistingObject != nullptr && prototypeName != wstring_from_utf8(info.name))
+			if (preexistingObject != nullptr && prototypeName != info.name)
 				throw PSERROR_Deserialize_ScriptError("Deserializer failed: incorrect pre-existing object");
 
 

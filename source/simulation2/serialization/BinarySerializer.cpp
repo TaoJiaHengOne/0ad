@@ -234,12 +234,12 @@ void CBinarySerializerScriptImpl::HandleScriptVal(const ScriptRequest& rq, JS::H
 
 				SPrototypeSerialization protoInfo = GetPrototypeInfo(rq, proto, m_SerializePropId, m_DeserializePropId);
 
-				if (protoInfo.name == "Object")
+				if (protoInfo.name == L"Object")
 					m_Serializer.NumberU8_Unbounded("type", SCRIPT_TYPE_OBJECT);
 				else
 				{
 					m_Serializer.NumberU8_Unbounded("type", SCRIPT_TYPE_OBJECT_PROTOTYPE);
-					m_Serializer.String("proto", wstring_from_utf8(protoInfo.name), 0, 256);
+					m_Serializer.String("proto", protoInfo.name, 0, 256);
 
 					// Does it have custom Serialize function?
 					// if so, we serialize the data it returns, rather than the object's properties directly
@@ -439,8 +439,8 @@ void CBinarySerializerScriptImpl::ScriptString(const ScriptRequest& rq, const ch
 	size_t length;
 	JS::AutoCheckCannotGC nogc;
 	// Serialize strings directly as UTF-16 or Latin1, to avoid expensive encoding conversions
-	bool isLatin1 = JS::StringHasLatin1Chars(string);
-	m_Serializer.Bool("isLatin1", isLatin1);
+	u8 isLatin1 = JS::StringHasLatin1Chars(string);
+	m_Serializer.NumberU8_Unbounded("isLatin1", isLatin1);
 	if (isLatin1)
 	{
 		const JS::Latin1Char* chars = JS_GetLatin1StringCharsAndLength(rq.cx, nogc, string, &length);
