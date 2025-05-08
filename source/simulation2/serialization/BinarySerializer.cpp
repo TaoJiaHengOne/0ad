@@ -62,6 +62,8 @@ CBinarySerializerScriptImpl::CBinarySerializerScriptImpl(const ScriptInterface& 
 {
 	ScriptRequest rq(m_ScriptInterface);
 	JS_AddExtraGCRootsTracer(rq.cx, Trace, this);
+	m_SerializePropId = JS::PropertyKey::fromPinnedString(JS_AtomizeAndPinString(rq.cx, "Serialize"));
+	m_DeserializePropId = JS::PropertyKey::fromPinnedString(JS_AtomizeAndPinString(rq.cx, "Deserialize"));
 }
 
 CBinarySerializerScriptImpl::~CBinarySerializerScriptImpl()
@@ -227,7 +229,7 @@ void CBinarySerializerScriptImpl::HandleScriptVal(JS::HandleValue val)
 				if (!JS_GetPrototype(rq.cx, obj, &proto))
 					throw PSERROR_Serialize_ScriptError("JS_GetPrototype failed");
 
-				SPrototypeSerialization protoInfo = GetPrototypeInfo(rq, proto);
+				SPrototypeSerialization protoInfo = GetPrototypeInfo(rq, proto, m_SerializePropId, m_DeserializePropId);
 
 				if (protoInfo.name == "Object")
 					m_Serializer.NumberU8_Unbounded("type", SCRIPT_TYPE_OBJECT);

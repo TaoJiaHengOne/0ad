@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -36,6 +36,9 @@ CStdDeserializer::CStdDeserializer(const ScriptInterface& scriptInterface, std::
 	m_ScriptInterface(scriptInterface), m_Stream(stream)
 {
 	JS_AddExtraGCRootsTracer(ScriptRequest(scriptInterface).cx, CStdDeserializer::Trace, this);
+	m_SerializePropId = JS::PropertyKey::fromPinnedString(JS_AtomizeAndPinString(rq.cx, "Serialize"));
+	m_DeserializePropId = JS::PropertyKey::fromPinnedString(JS_AtomizeAndPinString(rq.cx, "Deserialize"));
+
 	// Insert a dummy object in front, as valid tags start at 1.
 	m_ScriptBackrefs.emplace_back(nullptr);
 }
@@ -168,7 +171,7 @@ JS::Value CStdDeserializer::ReadScriptVal(const char* UNUSED(name), JS::HandleOb
 
 			JS::RootedObject prototype(rq.cx);
 			JS_GetPrototype(rq.cx, obj, &prototype);
-			SPrototypeSerialization info = GetPrototypeInfo(rq, prototype);
+			SPrototypeSerialization info = GetPrototypeInfo(rq, prototype, m_SerializePropId, m_DeserializePropId);
 
 			if (preexistingObject != nullptr && prototypeName != wstring_from_utf8(info.name))
 				throw PSERROR_Deserialize_ScriptError("Deserializer failed: incorrect pre-existing object");

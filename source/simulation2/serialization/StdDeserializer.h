@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -52,6 +52,8 @@ private:
 	virtual void AddScriptBackref(JS::HandleObject obj);
 	virtual void GetScriptBackref(size_t tag, JS::MutableHandleObject ret);
 	std::vector<JS::Heap<JSObject*> > m_ScriptBackrefs;
+	JS::PropertyKey m_SerializePropId;
+	JS::PropertyKey m_DeserializePropId;
 
 	const ScriptInterface& m_ScriptInterface;
 
