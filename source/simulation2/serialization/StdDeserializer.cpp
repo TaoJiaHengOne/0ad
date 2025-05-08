@@ -35,7 +35,8 @@
 CStdDeserializer::CStdDeserializer(const ScriptInterface& scriptInterface, std::istream& stream) :
 	m_ScriptInterface(scriptInterface), m_Stream(stream)
 {
-	JS_AddExtraGCRootsTracer(ScriptRequest(scriptInterface).cx, CStdDeserializer::Trace, this);
+	ScriptRequest rq(m_ScriptInterface);
+	JS_AddExtraGCRootsTracer(rq.cx, CStdDeserializer::Trace, this);
 	m_SerializePropId = JS::PropertyKey::fromPinnedString(JS_AtomizeAndPinString(rq.cx, "Serialize"));
 	m_DeserializePropId = JS::PropertyKey::fromPinnedString(JS_AtomizeAndPinString(rq.cx, "Deserialize"));
 

@@ -86,9 +86,10 @@ public:
 	CBinarySerializerScriptImpl(const ScriptInterface& scriptInterface, ISerializer& serializer);
 	~CBinarySerializerScriptImpl();
 
-	void ScriptString(const char* name, JS::HandleString string);
-	void HandleScriptVal(JS::HandleValue val);
+	void PutScriptVal(JS::HandleValue val);
 private:
+	void ScriptString(const ScriptRequest& rq, const char* name, JS::HandleString string);
+	void HandleScriptVal(const ScriptRequest& rq, JS::HandleValue val);
 	static void Trace(JSTracer* trc, void* data);
 
 	const ScriptInterface& m_ScriptInterface;
@@ -97,7 +98,7 @@ private:
 	using ObjectTagMap = JS::GCHashMap<JS::Heap<JSObject*>, u32, js::StableCellHasher<JSObject*>, js::SystemAllocPolicy>;
 	ObjectTagMap m_ScriptBackrefTags;
 	u32 m_ScriptBackrefsNext;
-	u32 GetScriptBackrefTag(JS::HandleObject obj);
+	u32 GetScriptBackrefTag(const ScriptRequest& rq, JS::HandleObject obj);
 
 	JS::PropertyKey m_SerializePropId;
 	JS::PropertyKey m_DeserializePropId;
@@ -205,7 +206,7 @@ protected:
 
 	virtual void PutScriptVal(const char* UNUSED(name), JS::MutableHandleValue value)
 	{
-		m_ScriptImpl->HandleScriptVal(value);
+		m_ScriptImpl->PutScriptVal(value);
 	}
 
 	virtual void PutRaw(const char* name, const u8* data, size_t len)
