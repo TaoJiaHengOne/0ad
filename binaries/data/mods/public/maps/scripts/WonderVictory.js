@@ -29,14 +29,14 @@ Trigger.prototype.WonderVictoryDiplomacyChanged = function(data)
 	if (!Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager).GetAlliedVictory())
 		return;
 
-	for (let ent in this.wonderVictoryMessages)
+	for (const ent in this.wonderVictoryMessages)
 	{
 		if (this.wonderVictoryMessages[ent].playerID != data.player && this.wonderVictoryMessages[ent].playerID != data.otherPlayer)
 			continue;
 
-		let owner = this.wonderVictoryMessages[ent].playerID;
-		let otherPlayer = owner == data.player ? data.otherPlayer : data.player;
-		let newAllies = new Set(QueryPlayerIDInterface(owner, IID_Diplomacy).GetPlayersByDiplomacy("IsExclusiveMutualAlly"));
+		const owner = this.wonderVictoryMessages[ent].playerID;
+		const otherPlayer = owner == data.player ? data.otherPlayer : data.player;
+		const newAllies = new Set(QueryPlayerIDInterface(owner, IID_Diplomacy).GetPlayersByDiplomacy("IsExclusiveMutualAlly"));
 		if (newAllies.has(otherPlayer) && !this.wonderVictoryMessages[ent].allies.has(otherPlayer) ||
 		    !newAllies.has(otherPlayer) && this.wonderVictoryMessages[ent].allies.has(otherPlayer))
 		{
@@ -51,24 +51,24 @@ Trigger.prototype.WonderVictoryDiplomacyChanged = function(data)
  */
 Trigger.prototype.WonderVictoryStartTimer = function(ent, player)
 {
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
-	let allies = cmpEndGameManager.GetAlliedVictory() ?
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const allies = cmpEndGameManager.GetAlliedVictory() ?
 		QueryPlayerIDInterface(player, IID_Diplomacy).GetPlayersByDiplomacy("IsExclusiveMutualAlly") : [];
 
-	let others = [-1];
+	const others = [-1];
 	for (let playerID = 1; playerID < TriggerHelper.GetNumberOfPlayers(); ++playerID)
 	{
-		let cmpPlayer = QueryPlayerIDInterface(playerID);
+		const cmpPlayer = QueryPlayerIDInterface(playerID);
 		if (cmpPlayer.GetState() == "won")
 			return;
 		if (allies.indexOf(playerID) == -1 && playerID != player)
 			others.push(playerID);
 	}
 
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 
-	let wonderDuration = cmpEndGameManager.GetGameSettings().wonderDuration;
+	const wonderDuration = cmpEndGameManager.GetGameSettings().wonderDuration;
 	this.wonderVictoryMessages[ent] = {
 		"playerID": player,
 		"allies": new Set(allies),
@@ -116,10 +116,10 @@ Trigger.prototype.WonderVictoryDeleteTimer = function(ent)
 	if (!this.wonderVictoryMessages[ent])
 		return;
 
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 
-	for (let message of this.wonderVictoryMessages[ent].messages)
+	for (const message of this.wonderVictoryMessages[ent].messages)
 		cmpGuiInterface.DeleteTimeNotification(message);
 	cmpTimer.CancelTimer(this.wonderVictoryMessages[ent].timer);
 	delete this.wonderVictoryMessages[ent];
@@ -127,13 +127,13 @@ Trigger.prototype.WonderVictoryDeleteTimer = function(ent)
 
 Trigger.prototype.WonderVictoryPlayerWon = function(data)
 {
-	for (let ent in this.wonderVictoryMessages)
+	for (const ent in this.wonderVictoryMessages)
 		this.WonderVictoryDeleteTimer(ent);
 };
 
 Trigger.prototype.WonderVictorySetWinner = function(playerID)
 {
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
 	cmpEndGameManager.MarkPlayerAndAlliesAsWon(
 		playerID,
 		n => markForPluralTranslation(
@@ -147,7 +147,7 @@ Trigger.prototype.WonderVictorySetWinner = function(playerID)
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.RegisterTrigger("OnEntityRenamed", "WonderVictoryEntityRenamed", { "enabled": true });
 	cmpTrigger.RegisterTrigger("OnOwnershipChanged", "WonderVictoryOwnershipChanged", { "enabled": true });
 	cmpTrigger.RegisterTrigger("OnDiplomacyChanged", "WonderVictoryDiplomacyChanged", { "enabled": true });

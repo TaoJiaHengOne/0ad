@@ -9,9 +9,9 @@ Trigger.prototype.InitTutorial = function(data)
 	this.RegisterTrigger("OnPlayerCommand", "OnPlayerCommandTrigger", { "enabled": false });
 	this.tutorialEvents.push("OnPlayerCommand");
 
-	for (let goal of this.tutorialGoals)
+	for (const goal of this.tutorialGoals)
 	{
-		for (let key in goal)
+		for (const key in goal)
 		{
 			if (typeof goal[key] != "function" || this.tutorialEvents.indexOf(key) != -1)
 				continue;
@@ -19,7 +19,7 @@ Trigger.prototype.InitTutorial = function(data)
 				continue;
 			if (key == "IsDone")
 				continue;
-			let action = key + "Trigger";
+			const action = key + "Trigger";
 			this.RegisterTrigger(key, action, { "enabled": false });
 			this.tutorialEvents.push(key);
 		}
@@ -32,7 +32,7 @@ Trigger.prototype.NextGoal = function(deserializing = false)
 {
 	if (this.index > this.tutorialGoals.length)
 		return;
-	let goal = this.tutorialGoals[this.index];
+	const goal = this.tutorialGoals[this.index];
 	let needDelay = true;
 	let readyButton = false;
 
@@ -41,11 +41,11 @@ Trigger.prototype.NextGoal = function(deserializing = false)
 		this.Init();
 
 	Trigger.prototype.IsDone = goal.IsDone || (() => false);
-	let goalAlreadyDone = this.IsDone();
+	const goalAlreadyDone = this.IsDone();
 
-	for (let event of this.tutorialEvents)
+	for (const event of this.tutorialEvents)
 	{
-		let action = event + "Trigger";
+		const action = event + "Trigger";
 		if (goal[event])
 		{
 			Trigger.prototype[action] = goal[event];
@@ -81,7 +81,7 @@ Trigger.prototype.NextGoal = function(deserializing = false)
 
 Trigger.prototype.GoalMessage = function(instructions, readyButton=false, leave=false)
 {
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
 		"type": "tutorial",
 		"players": [1],
@@ -93,7 +93,7 @@ Trigger.prototype.GoalMessage = function(instructions, readyButton=false, leave=
 
 Trigger.prototype.WarningMessage = function(warning)
 {
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
 		"type": "tutorial",
 		"players": [1],

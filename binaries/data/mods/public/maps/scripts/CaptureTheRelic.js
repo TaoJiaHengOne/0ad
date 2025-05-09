@@ -1,18 +1,18 @@
 Trigger.prototype.InitCaptureTheRelic = function()
 {
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let catafalqueTemplates = shuffleArray(cmpTemplateManager.FindAllTemplates(false).filter(
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const catafalqueTemplates = shuffleArray(cmpTemplateManager.FindAllTemplates(false).filter(
 		name => GetIdentityClasses(cmpTemplateManager.GetTemplate(name).Identity || {}).indexOf("Relic") != -1));
 
-	let potentialSpawnPoints = TriggerHelper.GetLandSpawnPoints();
+	const potentialSpawnPoints = TriggerHelper.GetLandSpawnPoints();
 	if (!potentialSpawnPoints.length)
 	{
 		error("No gaia entities found on this map that could be used as spawn points!");
 		return;
 	}
 
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
-	let numSpawnedRelics = cmpEndGameManager.GetGameSettings().relicCount;
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const numSpawnedRelics = cmpEndGameManager.GetGameSettings().relicCount;
 	this.playerRelicsCount = new Array(TriggerHelper.GetNumberOfPlayers()).fill(0, 1);
 	this.playerRelicsCount[0] = numSpawnedRelics;
 
@@ -20,14 +20,14 @@ Trigger.prototype.InitCaptureTheRelic = function()
 	{
 		this.relics[i] = TriggerHelper.SpawnUnits(pickRandom(potentialSpawnPoints), catafalqueTemplates[i], 1, 0)[0];
 
-		let cmpPositionRelic = Engine.QueryInterface(this.relics[i], IID_Position);
+		const cmpPositionRelic = Engine.QueryInterface(this.relics[i], IID_Position);
 		cmpPositionRelic.SetYRotation(randomAngle());
 	}
 };
 
 Trigger.prototype.CheckCaptureTheRelicVictory = function(data)
 {
-	let cmpIdentity = Engine.QueryInterface(data.entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(data.entity, IID_Identity);
 	if (!cmpIdentity || !cmpIdentity.HasClass("Relic") || data.from == INVALID_PLAYER)
 		return;
 
@@ -58,15 +58,15 @@ Trigger.prototype.CheckCaptureTheRelicCountdown = function()
 		return;
 	}
 
-	let activePlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers();
-	let relicOwners = activePlayers.filter(playerID => this.playerRelicsCount[playerID]);
+	const activePlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers();
+	const relicOwners = activePlayers.filter(playerID => this.playerRelicsCount[playerID]);
 	if (!relicOwners.length)
 	{
 		this.DeleteCaptureTheRelicVictoryMessages();
 		return;
 	}
 
-	let winningPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager).GetAlliedVictory() ?
+	const winningPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager).GetAlliedVictory() ?
 		activePlayers.filter(playerID => relicOwners.every(owner => QueryPlayerIDInterface(playerID, IID_Diplomacy).IsMutualAlly(owner))) :
 		[relicOwners[0]];
 
@@ -94,7 +94,7 @@ Trigger.prototype.DeleteCaptureTheRelicVictoryMessages = function()
 	Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).CancelTimer(this.relicsVictoryTimer);
 	this.relicsVictoryTimer = undefined;
 
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGuiInterface.DeleteTimeNotification(this.ownRelicsVictoryMessage);
 	cmpGuiInterface.DeleteTimeNotification(this.othersRelicsVictoryMessage);
 	this.relicsVictoryCountdownPlayers = [];
@@ -102,8 +102,8 @@ Trigger.prototype.DeleteCaptureTheRelicVictoryMessages = function()
 
 Trigger.prototype.StartCaptureTheRelicCountdown = function(winningPlayers)
 {
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 
 	if (this.relicsVictoryTimer)
 	{
@@ -115,10 +115,10 @@ Trigger.prototype.StartCaptureTheRelicCountdown = function(winningPlayers)
 	if (!this.relics.length)
 		return;
 
-	let others = [-1];
+	const others = [-1];
 	for (let playerID = 1; playerID < TriggerHelper.GetNumberOfPlayers(); ++playerID)
 	{
-		let cmpPlayer = QueryPlayerIDInterface(playerID);
+		const cmpPlayer = QueryPlayerIDInterface(playerID);
 		if (cmpPlayer.GetState() == "won")
 			return;
 
@@ -126,7 +126,7 @@ Trigger.prototype.StartCaptureTheRelicCountdown = function(winningPlayers)
 			others.push(playerID);
 	}
 
-	let cmpPlayer = QueryOwnerInterface(this.relics[0], IID_Player);
+	const cmpPlayer = QueryOwnerInterface(this.relics[0], IID_Player);
 	if (!cmpPlayer)
 	{
 		warn("Relic entity " + this.relics[0] + " has no owner.");
@@ -135,10 +135,10 @@ Trigger.prototype.StartCaptureTheRelicCountdown = function(winningPlayers)
 		this.CheckCaptureTheRelicCountdown();
 		return;
 	}
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
-	let captureTheRelicDuration = cmpEndGameManager.GetGameSettings().relicDuration;
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const captureTheRelicDuration = cmpEndGameManager.GetGameSettings().relicDuration;
 
-	let isTeam = winningPlayers.length > 1;
+	const isTeam = winningPlayers.length > 1;
 	this.ownRelicsVictoryMessage = cmpGuiInterface.AddTimeNotification({
 		"message": isTeam ?
 			markForTranslation("%(_player_)s and their allies have captured all relics and will win in %(time)s.") :
@@ -165,7 +165,7 @@ Trigger.prototype.StartCaptureTheRelicCountdown = function(winningPlayers)
 
 Trigger.prototype.CaptureTheRelicVictorySetWinner = function(winningPlayers)
 {
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
 	cmpEndGameManager.MarkPlayersAsWon(
 		winningPlayers,
 		n => markForPluralTranslation(
@@ -179,7 +179,7 @@ Trigger.prototype.CaptureTheRelicVictorySetWinner = function(winningPlayers)
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.relics = [];
 	cmpTrigger.playerRelicsCount = [];
 	cmpTrigger.relicsVictoryTimer = undefined;

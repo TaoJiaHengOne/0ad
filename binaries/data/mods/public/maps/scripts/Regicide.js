@@ -1,22 +1,22 @@
 Trigger.prototype.InitRegicideGame = function(msg)
 {
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
-	let regicideGarrison = cmpEndGameManager.GetGameSettings().regicideGarrison;
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const regicideGarrison = cmpEndGameManager.GetGameSettings().regicideGarrison;
 
-	let playersCivs = [];
+	const playersCivs = [];
 	for (let playerID = 1; playerID < TriggerHelper.GetNumberOfPlayers(); ++playerID)
 		playersCivs[playerID] = QueryPlayerIDInterface(playerID, IID_Identity).GetCiv();
 
 	// Get all hero templates of these civs
-	let heroTemplates = {};
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	for (let templateName of cmpTemplateManager.FindAllTemplates(false))
+	const heroTemplates = {};
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	for (const templateName of cmpTemplateManager.FindAllTemplates(false))
 	{
 		if (!templateName.startsWith("units/"))
 			continue;
 
-		let identity = cmpTemplateManager.GetTemplate(templateName).Identity;
-		let classes = GetIdentityClasses(identity);
+		const identity = cmpTemplateManager.GetTemplate(templateName).Identity;
+		const classes = GetIdentityClasses(identity);
 
 		if (classes.indexOf("Hero") == -1 ||
 		    playersCivs.every(civ => civ != identity.Civ))
@@ -33,23 +33,23 @@ Trigger.prototype.InitRegicideGame = function(msg)
 	}
 
 	// Sort available spawn points by preference
-	let spawnPreferences = ["CivilCentre", "Structure", "Ship"];
-	let getSpawnPreference = entity => {
+	const spawnPreferences = ["CivilCentre", "Structure", "Ship"];
+	const getSpawnPreference = entity => {
 
-		let cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
 		if (!cmpIdentity)
 			return -1;
 
-		let classes = cmpIdentity.GetClassesList();
+		const classes = cmpIdentity.GetClassesList();
 
-		for (let i in spawnPreferences)
+		for (const i in spawnPreferences)
 			if (classes.indexOf(spawnPreferences[i]) != -1)
 				return spawnPreferences.length - i;
 		return 0;
 	};
 
 	// Attempt to spawn one hero per player
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	for (let playerID = 1; playerID < TriggerHelper.GetNumberOfPlayers(); ++playerID)
 	{
 		let spawnPoints = cmpRangeManager.GetEntitiesByPlayer(playerID).sort((entity1, entity2) =>
@@ -58,9 +58,9 @@ Trigger.prototype.InitRegicideGame = function(msg)
 		// Spawn the hero on land as close as possible
 		if (!regicideGarrison && TriggerHelper.EntityMatchesClassList(spawnPoints[0], "Ship"))
 		{
-			let shipPosition = Engine.QueryInterface(spawnPoints[0], IID_Position).GetPosition2D();
+			const shipPosition = Engine.QueryInterface(spawnPoints[0], IID_Position).GetPosition2D();
 
-			let distanceToShip = entity =>
+			const distanceToShip = entity =>
 				Engine.QueryInterface(entity, IID_Position).GetPosition2D().distanceToSquared(shipPosition);
 
 			spawnPoints = TriggerHelper.GetLandSpawnPoints().sort((entity1, entity2) =>
@@ -79,18 +79,18 @@ Trigger.prototype.InitRegicideGame = function(msg)
  */
 Trigger.prototype.SpawnRegicideHero = function(playerID, heroTemplates, spawnPoints)
 {
-	for (let heroTemplate of shuffleArray(heroTemplates))
-		for (let spawnPoint of spawnPoints)
+	for (const heroTemplate of shuffleArray(heroTemplates))
+		for (const spawnPoint of spawnPoints)
 		{
-			let cmpPosition = Engine.QueryInterface(spawnPoint, IID_Position);
+			const cmpPosition = Engine.QueryInterface(spawnPoint, IID_Position);
 			if (!cmpPosition || !cmpPosition.IsInWorld())
 				continue;
 
 			// Consider nomad maps where units start on a ship
-			let isShip = TriggerHelper.EntityMatchesClassList(spawnPoint, "Ship");
+			const isShip = TriggerHelper.EntityMatchesClassList(spawnPoint, "Ship");
 			if (isShip)
 			{
-				let cmpGarrisonHolder = Engine.QueryInterface(spawnPoint, IID_GarrisonHolder);
+				const cmpGarrisonHolder = Engine.QueryInterface(spawnPoint, IID_GarrisonHolder);
 				if (cmpGarrisonHolder.IsFull() ||
 				    !MatchesClassList(heroTemplate.classes, cmpGarrisonHolder.GetAllowedClasses()))
 					continue;
@@ -104,7 +104,7 @@ Trigger.prototype.SpawnRegicideHero = function(playerID, heroTemplates, spawnPoi
 
 			if (isShip)
 			{
-				let cmpUnitAI = Engine.QueryInterface(hero, IID_UnitAI);
+				const cmpUnitAI = Engine.QueryInterface(hero, IID_UnitAI);
 				cmpUnitAI.Garrison(spawnPoint);
 			}
 
@@ -117,7 +117,7 @@ Trigger.prototype.SpawnRegicideHero = function(playerID, heroTemplates, spawnPoi
 
 Trigger.prototype.RenameRegicideHero = function(data)
 {
-	let index = this.regicideHeroes.indexOf(data.entity);
+	const index = this.regicideHeroes.indexOf(data.entity);
 	if (index != -1)
 		this.regicideHeroes[index] = data.newentity;
 };
@@ -131,7 +131,7 @@ Trigger.prototype.CheckRegicideDefeat = function(data)
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.regicideHeroes = [];
 	cmpTrigger.DoAfterDelay(0, "InitRegicideGame", {});
 	cmpTrigger.RegisterTrigger("OnOwnershipChanged", "CheckRegicideDefeat", { "enabled": true });

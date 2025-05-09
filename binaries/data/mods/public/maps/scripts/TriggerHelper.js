@@ -5,7 +5,7 @@ var TriggerHelper = {};
 
 TriggerHelper.GetPlayerIDFromEntity = function(ent)
 {
-	let cmpPlayer = Engine.QueryInterface(ent, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(ent, IID_Player);
 	if (cmpPlayer)
 		return cmpPlayer.GetPlayerID();
 
@@ -14,13 +14,13 @@ TriggerHelper.GetPlayerIDFromEntity = function(ent)
 
 TriggerHelper.IsInWorld = function(ent)
 {
-	let cmpPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpPosition = Engine.QueryInterface(ent, IID_Position);
 	return cmpPosition && cmpPosition.IsInWorld();
 };
 
 TriggerHelper.GetEntityPosition2D = function(ent)
 {
-	let cmpPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpPosition = Engine.QueryInterface(ent, IID_Position);
 
 	if (!cmpPosition || !cmpPosition.IsInWorld())
 		return undefined;
@@ -30,7 +30,7 @@ TriggerHelper.GetEntityPosition2D = function(ent)
 
 TriggerHelper.GetOwner = function(ent)
 {
-	let cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
 	if (cmpOwnership)
 		return cmpOwnership.GetOwner();
 
@@ -81,7 +81,7 @@ TriggerHelper.GetAllPlayersEntities = function()
 
 TriggerHelper.SetUnitStance = function(ent, stance)
 {
-	let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 	if (cmpUnitAI)
 		cmpUnitAI.SwitchToStance(stance);
 };
@@ -121,9 +121,9 @@ TriggerHelper.AddUpgradeTemplate = function(owner, template)
  */
 TriggerHelper.SpawnUnits = function(source, template, count, owner)
 {
-	let entities = [];
-	let cmpFootprint = Engine.QueryInterface(source, IID_Footprint);
-	let cmpPosition = Engine.QueryInterface(source, IID_Position);
+	const entities = [];
+	const cmpFootprint = Engine.QueryInterface(source, IID_Footprint);
+	const cmpPosition = Engine.QueryInterface(source, IID_Position);
 
 	if (!cmpPosition || !cmpPosition.IsInWorld())
 	{
@@ -138,7 +138,7 @@ TriggerHelper.SpawnUnits = function(source, template, count, owner)
 	{
 		const ent = this.AddUpgradeTemplate(owner, template);
 
-		let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+		const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 		if (!cmpEntPosition)
 		{
 			Engine.DestroyEntity(ent);
@@ -146,7 +146,7 @@ TriggerHelper.SpawnUnits = function(source, template, count, owner)
 			continue;
 		}
 
-		let cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
+		const cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
 		if (cmpEntOwnership)
 			cmpEntOwnership.SetOwner(owner);
 
@@ -180,9 +180,9 @@ TriggerHelper.SpawnUnits = function(source, template, count, owner)
  */
 TriggerHelper.SpawnGarrisonedUnits = function(entity, template, count, owner)
 {
-	let entities = [];
+	const entities = [];
 
-	let cmpGarrisonHolder = Engine.QueryInterface(entity, IID_GarrisonHolder);
+	const cmpGarrisonHolder = Engine.QueryInterface(entity, IID_GarrisonHolder);
 	if (!cmpGarrisonHolder)
 	{
 		error("tried to create garrisoned entities inside a non-garrisonholder");
@@ -196,11 +196,11 @@ TriggerHelper.SpawnGarrisonedUnits = function(entity, template, count, owner)
 	{
 		const ent = this.AddUpgradeTemplate(owner, template);
 
-		let cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
+		const cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
 		if (cmpOwnership)
 			cmpOwnership.SetOwner(owner);
 
-		let cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
+		const cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
 		if (cmpGarrisonable && cmpGarrisonable.Garrison(entity))
 			entities.push(ent);
 		else
@@ -221,9 +221,9 @@ TriggerHelper.SpawnGarrisonedUnits = function(entity, template, count, owner)
  */
 TriggerHelper.SpawnTurretedUnits = function(entity, template, count, owner)
 {
-	let entities = [];
+	const entities = [];
 
-	let cmpTurretHolder = Engine.QueryInterface(entity, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(entity, IID_TurretHolder);
 	if (!cmpTurretHolder)
 	{
 		error("tried to create turreted entities inside a non-turretholder");
@@ -237,11 +237,11 @@ TriggerHelper.SpawnTurretedUnits = function(entity, template, count, owner)
 	{
 		const ent = this.AddUpgradeTemplate(owner, template);
 
-		let cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
+		const cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
 		if (cmpOwnership)
 			cmpOwnership.SetOwner(owner);
 
-		let cmpTurretable = Engine.QueryInterface(ent, IID_Turretable);
+		const cmpTurretable = Engine.QueryInterface(ent, IID_Turretable);
 		if (cmpTurretable && cmpTurretable.OccupyTurret(entity))
 			entities.push(ent);
 		else
@@ -264,11 +264,11 @@ TriggerHelper.SpawnTurretedUnits = function(entity, template, count, owner)
  */
 TriggerHelper.SpawnUnitsFromTriggerPoints = function(ref, template, count, owner = null)
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
-	let triggerPoints = cmpTrigger.GetTriggerPoints(ref);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const triggerPoints = cmpTrigger.GetTriggerPoints(ref);
 
-	let entities = {};
-	for (let point of triggerPoints)
+	const entities = {};
+	for (const point of triggerPoints)
 		entities[point] = TriggerHelper.SpawnUnits(point, template, count, owner);
 
 	return entities;
@@ -279,7 +279,7 @@ TriggerHelper.SpawnUnitsFromTriggerPoints = function(ref, template, count, owner
  */
 TriggerHelper.GetResourceType = function(entity)
 {
-	let cmpResourceSupply = Engine.QueryInterface(entity, IID_ResourceSupply);
+	const cmpResourceSupply = Engine.QueryInterface(entity, IID_ResourceSupply);
 	if (!cmpResourceSupply)
 		return undefined;
 
@@ -300,7 +300,7 @@ TriggerHelper.GetResourceType = function(entity)
  */
 TriggerHelper.SetPlayerWon = function(playerID, victoryReason, defeatReason)
 {
-	let cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
+	const cmpEndGameManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_EndGameManager);
 	cmpEndGameManager.MarkPlayerAndAlliesAsWon(playerID, victoryReason, defeatReason);
 };
 
@@ -313,7 +313,7 @@ TriggerHelper.SetPlayerWon = function(playerID, victoryReason, defeatReason)
  */
 TriggerHelper.DefeatPlayer = function(playerID, defeatReason)
 {
-	let cmpPlayer = QueryPlayerIDInterface(playerID);
+	const cmpPlayer = QueryPlayerIDInterface(playerID);
 	if (cmpPlayer)
 		cmpPlayer.SetState("defeated", defeatReason);
 };
@@ -335,7 +335,7 @@ TriggerHelper.GetNumberOfPlayers = function()
  */
 TriggerHelper.EntityMatchesClassList = function(entity, classes)
 {
-	let cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
 	return cmpIdentity && MatchesClassList(cmpIdentity.GetClassesList(), classes);
 };
 
@@ -360,30 +360,30 @@ TriggerHelper.GetAllPlayersEntitiesByClass = function(classes)
  */
 TriggerHelper.GetLandSpawnPoints = function()
 {
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let cmpWaterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
-	let cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const cmpWaterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
+	const cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 
-	let neutralSpawnPoints = [];
-	let nonNeutralSpawnPoints = [];
+	const neutralSpawnPoints = [];
+	const nonNeutralSpawnPoints = [];
 
-	for (let ent of cmpRangeManager.GetEntitiesByPlayer(0))
+	for (const ent of cmpRangeManager.GetEntitiesByPlayer(0))
 	{
-		let cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
-		let cmpPosition = Engine.QueryInterface(ent, IID_Position);
+		const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+		const cmpPosition = Engine.QueryInterface(ent, IID_Position);
 		if (!cmpIdentity || !cmpPosition || !cmpPosition.IsInWorld())
 			continue;
 
-		let templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
+		const templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
 		if (!templateName)
 			continue;
 
-		let template = cmpTemplateManager.GetTemplate(templateName);
+		const template = cmpTemplateManager.GetTemplate(templateName);
 		if (!template || template.UnitMotionFlying)
 			continue;
 
-		let pos = cmpPosition.GetPosition();
+		const pos = cmpPosition.GetPosition();
 		if (pos.y <= cmpWaterManager.GetWaterLevel(pos.x, pos.z))
 			continue;
 
@@ -398,9 +398,9 @@ TriggerHelper.GetLandSpawnPoints = function()
 
 TriggerHelper.HasDealtWithTech = function(playerID, techName)
 {
-	let cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
-	let playerEnt = cmpPlayerManager.GetPlayerByID(playerID);
-	let cmpTechnologyManager = Engine.QueryInterface(playerEnt, IID_TechnologyManager);
+	const cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
+	const playerEnt = cmpPlayerManager.GetPlayerByID(playerID);
+	const cmpTechnologyManager = Engine.QueryInterface(playerEnt, IID_TechnologyManager);
 	return cmpTechnologyManager && (cmpTechnologyManager.IsTechnologyQueued(techName) ||
 	                                cmpTechnologyManager.IsTechnologyResearched(techName));
 };
@@ -416,9 +416,9 @@ TriggerHelper.HasDealtWithTech = function(playerID, techName)
  */
 TriggerHelper.GetTemplateNamesByClasses = function(classes, civ, packedState, rank, excludeBarracksVariants)
 {
-	let templateNames = [];
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	for (let templateName of cmpTemplateManager.FindAllTemplates(false))
+	const templateNames = [];
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	for (const templateName of cmpTemplateManager.FindAllTemplates(false))
 	{
 		if (templateName.startsWith("campaigns/army_"))
 			continue;
@@ -426,7 +426,7 @@ TriggerHelper.GetTemplateNamesByClasses = function(classes, civ, packedState, ra
 		if (excludeBarracksVariants && templateName.endsWith("_barracks"))
 			continue;
 
-		let template = cmpTemplateManager.GetTemplate(templateName);
+		const template = cmpTemplateManager.GetTemplate(templateName);
 
 		if (civ && (!template.Identity || template.Identity.Civ != civ))
 			continue;
@@ -455,15 +455,15 @@ TriggerHelper.GetTemplateNamesByClasses = function(classes, civ, packedState, ra
  */
 TriggerHelper.RandomTemplateComposition = function(templateNames, totalCount)
 {
-	let frequencies = templateNames.map(() => randFloat(0, 1));
-	let frequencySum = frequencies.reduce((sum, frequency) => sum + frequency, 0);
+	const frequencies = templateNames.map(() => randFloat(0, 1));
+	const frequencySum = frequencies.reduce((sum, frequency) => sum + frequency, 0);
 
 	let remainder = totalCount;
-	let templateCounts = {};
+	const templateCounts = {};
 
 	for (let i = 0; i < templateNames.length; ++i)
 	{
-		let count = i == templateNames.length - 1 ? remainder : Math.min(remainder, Math.round(frequencies[i] / frequencySum * totalCount));
+		const count = i == templateNames.length - 1 ? remainder : Math.min(remainder, Math.round(frequencies[i] / frequencySum * totalCount));
 		if (!count)
 			continue;
 
@@ -495,11 +495,11 @@ TriggerHelper.RandomTemplateComposition = function(templateNames, totalCount)
 TriggerHelper.BalancedTemplateComposition = function(templateBalancing, totalCount)
 {
 	// Remove all unavailable unique templates (heroes) and empty template arrays
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let templateBalancingFiltered = [];
-	for (let templateBalance of templateBalancing)
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const templateBalancingFiltered = [];
+	for (const templateBalance of templateBalancing)
 	{
-		let templateBalanceNew = clone(templateBalance);
+		const templateBalanceNew = clone(templateBalance);
 
 		if (templateBalanceNew.unique_entities)
 			templateBalanceNew.templates = templateBalanceNew.templates.filter(templateName =>
@@ -511,10 +511,10 @@ TriggerHelper.BalancedTemplateComposition = function(templateBalancing, totalCou
 
 	// Helper function to add randomized templates to the result
 	let remainder = totalCount;
-	let results = {};
-	let addTemplates = (templateNames, count) => {
-		let templateCounts = TriggerHelper.RandomTemplateComposition(templateNames, count);
-		for (let templateName in templateCounts)
+	const results = {};
+	const addTemplates = (templateNames, count) => {
+		const templateCounts = TriggerHelper.RandomTemplateComposition(templateNames, count);
+		for (const templateName in templateCounts)
 		{
 			if (!results[templateName])
 				results[templateName] = 0;
@@ -525,13 +525,13 @@ TriggerHelper.BalancedTemplateComposition = function(templateBalancing, totalCou
 	};
 
 	// Add template groups with fixed counts
-	for (let templateBalance of templateBalancingFiltered)
+	for (const templateBalance of templateBalancingFiltered)
 		if (templateBalance.count)
 			addTemplates(templateBalance.templates, Math.min(remainder, templateBalance.count));
 
 	// Add template groups with frequency weights
-	let templateBalancingFrequencies = templateBalancingFiltered.filter(templateBalance => !!templateBalance.frequency);
-	let templateBalancingFrequencySum = templateBalancingFrequencies.reduce((sum, templateBalance) => sum + templateBalance.frequency, 0);
+	const templateBalancingFrequencies = templateBalancingFiltered.filter(templateBalance => !!templateBalance.frequency);
+	const templateBalancingFrequencySum = templateBalancingFrequencies.reduce((sum, templateBalance) => sum + templateBalance.frequency, 0);
 	for (let i = 0; i < templateBalancingFrequencies.length; ++i)
 		addTemplates(
 			templateBalancingFrequencies[i].templates,
@@ -552,22 +552,22 @@ TriggerHelper.BalancedTemplateComposition = function(templateBalancing, totalCou
  */
 TriggerHelper.SpawnAndGarrisonAtClasses = function(playerID, classes, templates, capacityPercent)
 {
-	let results = {};
+	const results = {};
 
-	for (let entGarrisonHolder of Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetEntitiesByPlayer(playerID))
+	for (const entGarrisonHolder of Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetEntitiesByPlayer(playerID))
 	{
-		let cmpGarrisonHolder = Engine.QueryInterface(entGarrisonHolder, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(entGarrisonHolder, IID_GarrisonHolder);
 		if (!cmpGarrisonHolder)
 			continue;
 
-		let cmpIdentity = Engine.QueryInterface(entGarrisonHolder, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(entGarrisonHolder, IID_Identity);
 		if (!cmpIdentity || !MatchesClassList(cmpIdentity.GetClassesList(), classes))
 			continue;
 
 		// TODO: account for already garrisoned entities and garrison size.
 		results[entGarrisonHolder] = this.RandomTemplateComposition(templates, Math.floor(cmpGarrisonHolder.GetCapacity() * capacityPercent));
 
-		for (let template in results[entGarrisonHolder])
+		for (const template in results[entGarrisonHolder])
 			TriggerHelper.SpawnGarrisonedUnits(entGarrisonHolder, template, results[entGarrisonHolder][template], playerID);
 	}
 
@@ -581,21 +581,21 @@ TriggerHelper.SpawnAndGarrisonAtClasses = function(playerID, classes, templates,
  */
 TriggerHelper.SpawnAndTurretAtClasses = function(playerID, classes, templates, capacityPercent)
 {
-	let results = {};
+	const results = {};
 
-	for (let entTurretHolder of Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetEntitiesByPlayer(playerID))
+	for (const entTurretHolder of Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetEntitiesByPlayer(playerID))
 	{
-		let cmpTurretHolder = Engine.QueryInterface(entTurretHolder, IID_TurretHolder);
+		const cmpTurretHolder = Engine.QueryInterface(entTurretHolder, IID_TurretHolder);
 		if (!cmpTurretHolder)
 			continue;
 
-		let cmpIdentity = Engine.QueryInterface(entTurretHolder, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(entTurretHolder, IID_Identity);
 		if (!cmpIdentity || !MatchesClassList(cmpIdentity.GetClassesList(), classes))
 			continue;
 
 		results[entTurretHolder] = this.RandomTemplateComposition(templates, Math.max(Math.floor(cmpTurretHolder.GetTurretPoints().length * capacityPercent - cmpTurretHolder.GetEntities().length), 0));
 
-		for (let template in results[entTurretHolder])
+		for (const template in results[entTurretHolder])
 			TriggerHelper.SpawnTurretedUnits(entTurretHolder, template, results[entTurretHolder][template], playerID);
 	}
 
