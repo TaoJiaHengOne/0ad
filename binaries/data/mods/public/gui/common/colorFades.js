@@ -154,7 +154,7 @@ function stopColorFade(name, hideOverlay = true)
  */
 function restartColorFade(name)
 {
-	let data = g_ColorFade[name];
+	const data = g_ColorFade[name];
 
 	// If fade can be restarted smoothly, stop it, and restart it.
 	if (!data.fun_smoothRestart)

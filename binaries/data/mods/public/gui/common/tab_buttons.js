@@ -34,9 +34,9 @@ function placeTabButtons(categoriesData, horizontal, buttonSize, spacing, onPres
 	g_TabHorizontal = horizontal;
 	g_OnSelectTab = onSelect;
 
-	for (let category in categoriesData)
+	for (const category in categoriesData)
 	{
-		let button = Engine.GetGUIObjectByName("tabButton[" + category + "]");
+		const button = Engine.GetGUIObjectByName("tabButton[" + category + "]");
 		if (!button)
 		{
 			warn("Too few tab-buttons!");
@@ -46,7 +46,7 @@ function placeTabButtons(categoriesData, horizontal, buttonSize, spacing, onPres
 		button.style = "ModernTabButton" + (horizontal ? "Horizontal" : "Vertical");
 		button.hidden = false;
 
-		let size = button.size;
+		const size = button.size;
 		if (horizontal)
 		{
 			size.left = category * (buttonSize + spacing) + spacing / 2;
@@ -65,7 +65,7 @@ function placeTabButtons(categoriesData, horizontal, buttonSize, spacing, onPres
 				colorizeHotkey(translate("Scroll down or use %(hotkey)s to move a tab right."), "tab.next") + "\n" + colorizeHotkey(translate("Scroll up or use %(hotkey)s to move a tab left."), "tab.prev"):
 				colorizeHotkey(translate("Scroll down or use %(hotkey)s to move a tab down."), "tab.next") + "\n" + colorizeHotkey(translate("Scroll up or use %(hotkey)s to move a tab up."), "tab.prev"));
 
-		let categoryNum = +category;
+		const categoryNum = +category;
 		button.onPress = () => { onPress(categoryNum); };
 
 		Engine.GetGUIObjectByName("tabButtonText[" + category + "]").caption = categoriesData[category].label;

@@ -80,7 +80,7 @@ function loadSettingValuesFile(filename)
 		if (json.TranslationContext)
 		{
 			keyContext = {};
-			for (let key of json.TranslatedKeys)
+			for (const key of json.TranslatedKeys)
 				 keyContext[key] = json.TranslationContext;
 		}
 
@@ -202,7 +202,7 @@ function loadMapTypes()
 function loadBiomes()
 {
 	return listFiles(g_BiomesDirectory, ".json", true).filter(biomeID => biomeID != "defaultbiome").map(biomeID => {
-		let description = Engine.ReadJSONFile(g_BiomesDirectory + biomeID + ".json").Description;
+		const description = Engine.ReadJSONFile(g_BiomesDirectory + biomeID + ".json").Description;
 		return {
 			"Id": biomeID,
 			"Title": translateWithContext("biome definition", description.Title),
@@ -219,10 +219,10 @@ function loadBiomes()
  */
 function loadVictoryConditions()
 {
-	let subdir = "victory_conditions/";
+	const subdir = "victory_conditions/";
 
-	let victoryConditions = listFiles(g_SettingsDirectory + subdir, ".json", false).map(victoryScriptName => {
-		let victoryCondition = loadSettingValuesFile(subdir + victoryScriptName + ".json");
+	const victoryConditions = listFiles(g_SettingsDirectory + subdir, ".json", false).map(victoryScriptName => {
+		const victoryCondition = loadSettingValuesFile(subdir + victoryScriptName + ".json");
 		if (victoryCondition)
 			victoryCondition.Name = victoryScriptName;
 		return victoryCondition;
@@ -264,10 +264,10 @@ function prepareForDropdown(settingValues)
 	if (!settingValues)
 		return undefined;
 
-	let settings = { "Default": 0 };
-	for (let index in settingValues)
+	const settings = { "Default": 0 };
+	for (const index in settingValues)
 	{
-		for (let property in settingValues[index])
+		for (const property in settingValues[index])
 		{
 			if (property == "Default")
 				continue;
@@ -293,7 +293,7 @@ function prepareForDropdown(settingValues)
  */
 function translateAIName(aiName)
 {
-	let description = g_Settings.AIDescriptions.find(ai => ai.id == aiName);
+	const description = g_Settings.AIDescriptions.find(ai => ai.id == aiName);
 	return description ? translate(description.data.name) : translateWithContext("AI name", "Unknown");
 }
 
@@ -304,7 +304,7 @@ function translateAIName(aiName)
  */
 function translateAIDifficulty(index)
 {
-	let difficulty = g_Settings.AIDifficulties[index];
+	const difficulty = g_Settings.AIDifficulties[index];
 	return difficulty ? difficulty.Title : translateWithContext("AI difficulty", "Unknown");
 }
 
@@ -315,7 +315,7 @@ function translateAIDifficulty(index)
  */
 function translateAIBehavior(aiBehavior)
 {
-	let behavior = g_Settings.AIBehaviors.find(b => b.Name == aiBehavior);
+	const behavior = g_Settings.AIBehaviors.find(b => b.Name == aiBehavior);
 	return behavior ? behavior.Title : translateWithContext("AI behavior", "Default");
 }
 
@@ -327,7 +327,7 @@ function translateAIBehavior(aiBehavior)
  */
 function translateMapType(mapType)
 {
-	let type = g_Settings.MapTypes.find(t => t.Name == mapType);
+	const type = g_Settings.MapTypes.find(t => t.Name == mapType);
 	return type ? type.Title : translateWithContext("map type", "Unknown");
 }
 
@@ -339,7 +339,7 @@ function translateMapType(mapType)
  */
 function translateMapSize(tiles)
 {
-	let mapSize = g_Settings.MapSizes.find(size => size.Tiles == +tiles);
+	const mapSize = g_Settings.MapSizes.find(size => size.Tiles == +tiles);
 	return mapSize ? mapSize.Name : translateWithContext("map size", "Default");
 }
 
@@ -372,6 +372,6 @@ function translatePopulationCapacity(popCap, popCapType)
  */
 function translateVictoryCondition(victoryConditionName)
 {
-	let victoryCondition = g_Settings.VictoryConditions.find(condition => condition.Name == victoryConditionName);
+	const victoryCondition = g_Settings.VictoryConditions.find(condition => condition.Name == victoryConditionName);
 	return victoryCondition ? victoryCondition.Title : translate("Unknown Victory Condition");
 }

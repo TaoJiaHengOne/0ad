@@ -41,7 +41,7 @@ var ObservableMixin = (Parent) => class Observable extends (() => Parent || Obje
 	_trigger(dict, key, old)
 	{
 		if (dict[key])
-			for (let watcher of dict[key])
+			for (const watcher of dict[key])
 				watcher(key, old);
 	}
 
@@ -53,8 +53,8 @@ var ObservableMixin = (Parent) => class Observable extends (() => Parent || Obje
 
 	watch(watcher, props, onlyChange = true)
 	{
-		let dic = onlyChange ? this._changeObserver : this._setObserver;
-		for (let prop of props)
+		const dic = onlyChange ? this._changeObserver : this._setObserver;
+		for (const prop of props)
 		{
 			if (!dic[prop])
 				dic[prop] = [];

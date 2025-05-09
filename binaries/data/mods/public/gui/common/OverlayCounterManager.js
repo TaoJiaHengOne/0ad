@@ -15,13 +15,13 @@ class OverlayCounterManager
 		this.resizeHandlers = [];
 		this.lastHeight = undefined;
 
-		for (let name of this.availableCounterNames())
+		for (const name of this.availableCounterNames())
 		{
-			let counterType = OverlayCounterTypes.prototype[name];
+			const counterType = OverlayCounterTypes.prototype[name];
 			if (counterType.IsAvailable && !counterType.IsAvailable())
 				continue;
 
-			let counter = new counterType(this);
+			const counter = new counterType(this);
 			this.counters.push(counter);
 			counter.updateEnabled();
 		}
@@ -39,7 +39,7 @@ class OverlayCounterManager
 
 	deleteCounter(counter)
 	{
-		let filter = count => count != counter;
+		const filter = count => count != counter;
 		this.counters = this.counters.filter(filter);
 		this.enabledCounters = this.enabledCounters.filter(filter);
 	}
@@ -80,7 +80,7 @@ class OverlayCounterManager
 
 		let txt = "";
 
-		for (let counter of this.enabledCounters)
+		for (const counter of this.enabledCounters)
 		{
 			const newTxt = counter.get();
 			if (newTxt)
@@ -102,7 +102,7 @@ class OverlayCounterManager
 		if (this.lastHeight != height)
 		{
 			this.lastHeight = height;
-			for (let handler of this.resizeHandlers)
+			for (const handler of this.resizeHandlers)
 				handler(height);
 		}
 	}

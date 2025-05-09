@@ -60,7 +60,7 @@ function resourceNameWithinSentence(type)
  */
 function getLocalizedResourceAmounts(resources)
 {
-	let amounts = g_ResourceData.GetCodes()
+	const amounts = g_ResourceData.GetCodes()
 		.filter(type => !!resources[type])
 		.map(type => sprintf(translate("%(amount)s %(resourceType)s"), {
 			"amount": resources[type],
@@ -70,7 +70,7 @@ function getLocalizedResourceAmounts(resources)
 	if (amounts.length < 2)
 		return amounts.join();
 
-	let lastAmount = amounts.pop();
+	const lastAmount = amounts.pop();
 	return sprintf(translate("%(previousAmounts)s and %(lastAmount)s"), {
 		// Translation: This comma is used for separating first to penultimate elements in an enumeration.
 		"previousAmounts": amounts.join(translate(", ")),
@@ -204,7 +204,7 @@ function getResistanceTooltip(template)
 	if (!template.resistance)
 		return "";
 
-	let details = [];
+	const details = [];
 	if (template.resistance.Damage)
 		details.push(getDamageResistanceTooltip(template.resistance.Damage));
 
@@ -317,7 +317,7 @@ function attackRateDetails(interval, projectiles)
 	if (projectiles && +projectiles > 1)
 	{
 		header = headerFont(translate("Rate:"));
-		let projectileString = sprintf(translatePlural("%(projectileCount)s %(projectileName)s", "%(projectileCount)s %(projectileName)s", projectiles), {
+		const projectileString = sprintf(translatePlural("%(projectileCount)s %(projectileName)s", "%(projectileCount)s %(projectileName)s", projectiles), {
 			"projectileCount": projectiles,
 			"projectileName": unitFont(translatePlural("arrow", "arrows", projectiles))
 		});
@@ -339,7 +339,7 @@ function rangeDetails(attackTypeTemplate)
 	if (!attackTypeTemplate.maxRange)
 		return "";
 
-	let rangeTooltipString = {
+	const rangeTooltipString = {
 		"relative": {
 			// Translation: For example: Range: 2 to 10 (+2) meters
 			"minRange": translate("%(rangeLabel)s %(minRange)s to %(maxRange)s (%(relativeRange)s) %(rangeUnit)s"),
@@ -354,10 +354,10 @@ function rangeDetails(attackTypeTemplate)
 		}
 	};
 
-	let minRange = Math.round(attackTypeTemplate.minRange);
-	let maxRange = Math.round(attackTypeTemplate.maxRange);
-	let realRange = attackTypeTemplate.elevationAdaptedRange;
-	let relativeRange = realRange ? Math.round(realRange - maxRange) : 0;
+	const minRange = Math.round(attackTypeTemplate.minRange);
+	const maxRange = Math.round(attackTypeTemplate.maxRange);
+	const realRange = attackTypeTemplate.elevationAdaptedRange;
+	const relativeRange = realRange ? Math.round(realRange - maxRange) : 0;
 
 	return sprintf(rangeTooltipString[relativeRange ? "relative" : "non-relative"][minRange ? "minRange" : "no-minRange"], {
 		"rangeLabel": headerFont(translate("Range:")),
@@ -397,7 +397,7 @@ function captureDetails(captureTemplate)
 
 function splashDetails(splashTemplate)
 {
-	let splashLabel = sprintf(headerFont(translate("%(splashShape)s Splash")), {
+	const splashLabel = sprintf(headerFont(translate("%(splashShape)s Splash")), {
 		"splashShape": translate(splashTemplate.shape)
 	});
 	let splashDamageTooltip = sprintf(translate("%(label)s: %(effects)s"), {
@@ -430,7 +430,7 @@ function attackEffectsDetails(attackTypeTemplate)
 	if (!attackTypeTemplate)
 		return "";
 
-	let effects = [
+	const effects = [
 		captureDetails(attackTypeTemplate.Capture || undefined),
 		damageDetails(attackTypeTemplate.Damage || undefined),
 		applyStatusDetails(attackTypeTemplate.ApplyStatus || undefined)
@@ -443,15 +443,15 @@ function getAttackTooltip(template)
 	if (!template.attack)
 		return "";
 
-	let tooltips = [];
-	for (let attackType in template.attack)
+	const tooltips = [];
+	for (const attackType in template.attack)
 	{
 		// Slaughter is used to kill animals, so do not show it.
 		if (attackType == "Slaughter")
 			continue;
 
-		let attackTypeTemplate = template.attack[attackType];
-		let attackLabel = sprintf(headerFont(translate("%(attackType)s")), {
+		const attackTypeTemplate = template.attack[attackType];
+		const attackLabel = sprintf(headerFont(translate("%(attackType)s")), {
 			"attackType": translateWithContext(attackTypeTemplate.attackName.context || "Name of an attack, usually the weapon.", attackTypeTemplate.attackName.name)
 		});
 
@@ -461,12 +461,12 @@ function getAttackTooltip(template)
 		if (template.buildingAI)
 			projectiles = template.buildingAI.arrowCount || template.buildingAI.defaultArrowCount;
 
-		let splashTemplate = attackTypeTemplate.splash;
+		const splashTemplate = attackTypeTemplate.splash;
 
 		// Show the effects of status effects below.
 		let statusEffectsDetails = [];
 		if (attackTypeTemplate.ApplyStatus)
-			for (let status in attackTypeTemplate.ApplyStatus)
+			for (const status in attackTypeTemplate.ApplyStatus)
 				statusEffectsDetails.push("\n" + g_Indent + g_Indent + getStatusEffectsTooltip(status, attackTypeTemplate.ApplyStatus[status], true));
 		statusEffectsDetails = statusEffectsDetails.join("");
 
@@ -491,8 +491,8 @@ function getAttackTooltip(template)
  */
 function getStatusEffectsTooltip(statusCode, template, applier)
 {
-	let tooltipAttributes = [];
-	let statusData = g_StatusEffectsMetadata.getData(statusCode);
+	const tooltipAttributes = [];
+	const statusData = g_StatusEffectsMetadata.getData(statusCode);
 	if (template.Damage || template.Capture)
 		tooltipAttributes.push(attackEffectsDetails(template));
 
@@ -552,7 +552,7 @@ function getStatusEffectStackabilityTooltip(template)
 
 function getGarrisonTooltip(template)
 {
-	let tooltips = [];
+	const tooltips = [];
 	if (template.garrisonHolder)
 	{
 		tooltips.push (
@@ -608,7 +608,7 @@ function getProjectilesTooltip(template)
 	if (!template.garrisonHolder || !template.buildingAI)
 		return "";
 
-	let limit = Math.min(
+	const limit = Math.min(
 		template.buildingAI.maxArrowCount || Infinity,
 		template.buildingAI.defaultArrowCount +
 			Math.round(template.buildingAI.garrisonArrowMultiplier *
@@ -638,7 +638,7 @@ function getProjectilesTooltip(template)
 
 function getRepairTimeTooltip(entState)
 {
-	let result = [];
+	const result = [];
 	result.push(sprintf(translate("%(label)s %(details)s"), {
 		"label": headerFont(translate("Number of repairers:")),
 		"details": entState.repairable.numBuilders
@@ -649,7 +649,7 @@ function getRepairTimeTooltip(entState)
 			"label": headerFont(translate("Remaining repair time:")),
 			"details": getSecondsString(Math.floor(entState.repairable.buildTime.timeRemaining))
 		}));
-		let timeReduction = Math.round(entState.repairable.buildTime.timeRemaining - entState.repairable.buildTime.timeRemainingNew);
+		const timeReduction = Math.round(entState.repairable.buildTime.timeRemaining - entState.repairable.buildTime.timeRemainingNew);
 		result.push(sprintf(translatePlural(
 			"Add another worker to speed up the repairs by %(second)s second.",
 			"Add another worker to speed up the repairs by %(second)s seconds.",
@@ -672,7 +672,7 @@ function getRepairTimeTooltip(entState)
 
 function getBuildTimeTooltip(entState)
 {
-	let result = [];
+	const result = [];
 	result.push(sprintf(translate("%(label)s %(details)s"), {
 		"label": headerFont(translate("Number of builders:")),
 		"details": entState.foundation.numBuilders
@@ -683,7 +683,7 @@ function getBuildTimeTooltip(entState)
 			"label": headerFont(translate("Remaining build time:")),
 			"details": getSecondsString(Math.floor(entState.foundation.buildTime.timeRemaining))
 		}));
-		let timeReduction = Math.round(entState.foundation.buildTime.timeRemaining - entState.foundation.buildTime.timeRemainingNew);
+		const timeReduction = Math.round(entState.foundation.buildTime.timeRemaining - entState.foundation.buildTime.timeRemainingNew);
 		result.push(sprintf(translatePlural(
 			"Add another worker to speed up the construction by %(second)s second.",
 			"Add another worker to speed up the construction by %(second)s seconds.",
@@ -709,8 +709,8 @@ function getBuildTimeTooltip(entState)
  */
 function multiplyEntityCosts(template, trainNum)
 {
-	let totalCosts = {};
-	for (let r of getCostTypes())
+	const totalCosts = {};
+	for (const r of getCostTypes())
 		if (template.cost[r])
 			totalCosts[r] = Math.floor(template.cost[r] * trainNum);
 
@@ -724,15 +724,15 @@ function getEntityCostComponentsTooltipString(template, entity, buildingsCountTo
 {
 	if (!template.cost)
 		return [];
-	let totalCosts = multiplyEntityCosts(template, buildingsCountToTrainFullBatch * fullBatchSize + remainderBatch);
+	const totalCosts = multiplyEntityCosts(template, buildingsCountToTrainFullBatch * fullBatchSize + remainderBatch);
 	if (template.cost.time)
 		totalCosts.time = Math.ceil(template.cost.time * (entity ? Engine.GuiInterfaceCall("GetBatchTime", {
 			"entity": entity,
 			"batchSize": buildingsCountToTrainFullBatch > 0 ? fullBatchSize : remainderBatch
 		}) : 1));
 
-	let costs = [];
-	for (let type of getCostTypes())
+	const costs = [];
+	for (const type of getCostTypes())
 		if (totalCosts[type])
 			costs.push(sprintf(translate("%(component)s %(cost)s"), {
 				"component": resourceIcon(type),
@@ -747,17 +747,17 @@ function getGatherTooltip(template)
 	if (!template.resourceGatherRates)
 		return "";
 
-	let rates = {};
-	for (let resource of g_ResourceData.GetResources())
+	const rates = {};
+	for (const resource of g_ResourceData.GetResources())
 	{
-		let types = [resource.code];
-		for (let subtype in resource.subtypes)
+		const types = [resource.code];
+		for (const subtype in resource.subtypes)
 		{
 			// We ignore ruins as those are not that common
 			if (subtype == "ruins")
 				continue;
 
-			let rate = template.resourceGatherRates[resource.code + "." + subtype];
+			const rate = template.resourceGatherRates[resource.code + "." + subtype];
 			if (rate > 0)
 				rates[resource.code + "_" + subtype] = rate;
 		}
@@ -786,7 +786,7 @@ function getResourceSupplyTooltip(template)
 	if (!template.supply)
 		return "";
 
-	let supply = template.supply;
+	const supply = template.supply;
 	// Translation: Label in tooltip showing the resource type and quantity of a given resource supply.
 	return sprintf(translate("%(label)s %(component)s %(amount)s"), {
 		"label": headerFont(translate("Resource Supply:")),
@@ -805,15 +805,15 @@ function getTreasureTooltip(template)
 	if (!template.treasure)
 		return "";
 
-	let resources = {};
-	for (let resource of g_ResourceData.GetResources())
+	const resources = {};
+	for (const resource of g_ResourceData.GetResources())
 	{
-		let type = resource.code;
+		const type = resource.code;
 		if (template.treasure.resources[type])
 			resources[type] = template.treasure.resources[type];
 	}
 
-	let resourceNames = Object.keys(resources);
+	const resourceNames = Object.keys(resources);
 	if (!resourceNames.length)
 		return "";
 
@@ -834,7 +834,7 @@ function getResourceTrickleTooltip(template)
 	if (!template.resourceTrickle)
 		return "";
 
-	let resCodes = g_ResourceData.GetCodes().filter(res => !!template.resourceTrickle.rates[res]);
+	const resCodes = g_ResourceData.GetCodes().filter(res => !!template.resourceTrickle.rates[res]);
 	if (!resCodes.length)
 		return "";
 
@@ -858,7 +858,7 @@ function getUpkeepTooltip(template)
 	if (!template.upkeep)
 		return "";
 
-	let resCodes = g_ResourceData.GetCodes().filter(res => !!template.upkeep.rates[res]);
+	const resCodes = g_ResourceData.GetCodes().filter(res => !!template.upkeep.rates[res]);
 	if (!resCodes.length)
 		return "";
 
@@ -884,16 +884,16 @@ function getUpkeepTooltip(template)
  */
 function getWallPieceTooltip(wallTypes)
 {
-	let out = [];
-	let resourceCount = {};
-	for (let resource of getCostTypes())
+	const out = [];
+	const resourceCount = {};
+	for (const resource of getCostTypes())
 		if (wallTypes[0].cost[resource])
 			resourceCount[resource] = [wallTypes[0].cost[resource]];
 
 	let sameTypes = true;
 	for (let i = 1; i < wallTypes.length; ++i)
 	{
-		for (let resource in wallTypes[i].cost)
+		for (const resource in wallTypes[i].cost)
 			// Break out of the same-type mode if this wall requires
 			// resource types that the first didn't.
 			if (wallTypes[i].cost[resource] && !resourceCount[resource])
@@ -902,7 +902,7 @@ function getWallPieceTooltip(wallTypes)
 				break;
 			}
 
-		for (let resource in resourceCount)
+		for (const resource in resourceCount)
 			if (wallTypes[i].cost[resource])
 				resourceCount[resource].push(wallTypes[i].cost[resource]);
 			else
@@ -913,7 +913,7 @@ function getWallPieceTooltip(wallTypes)
 	}
 
 	if (sameTypes)
-		for (let resource in resourceCount)
+		for (const resource in resourceCount)
 			// Translation: This string is part of the resources cost string on
 			// the tooltip for wall structures.
 			out.push(sprintf(translate("%(resourceIcon)s %(minimum)s to %(resourceIcon)s %(maximum)s"), {
@@ -937,13 +937,13 @@ function getEntityCostTooltip(template, player, entity, buildingsCountToTrainFul
 	// their own; the individual wall pieces within it do.
 	if (template.wallSet)
 	{
-		let templateLong = GetTemplateData(template.wallSet.templates.long, player);
-		let templateMedium = GetTemplateData(template.wallSet.templates.medium, player);
-		let templateShort = GetTemplateData(template.wallSet.templates.short, player);
-		let templateTower = GetTemplateData(template.wallSet.templates.tower, player);
+		const templateLong = GetTemplateData(template.wallSet.templates.long, player);
+		const templateMedium = GetTemplateData(template.wallSet.templates.medium, player);
+		const templateShort = GetTemplateData(template.wallSet.templates.short, player);
+		const templateTower = GetTemplateData(template.wallSet.templates.tower, player);
 
-		let wallCosts = getWallPieceTooltip([templateShort, templateMedium, templateLong]);
-		let towerCosts = getEntityCostComponentsTooltipString(templateTower);
+		const wallCosts = getWallPieceTooltip([templateShort, templateMedium, templateLong]);
+		const towerCosts = getEntityCostComponentsTooltipString(templateTower);
 
 		return sprintf(translate("Walls:  %(costs)s"), { "costs": wallCosts.join("  ") }) + "\n" +
 		       sprintf(translate("Towers:  %(costs)s"), { "costs": towerCosts.join("  ") });
@@ -951,7 +951,7 @@ function getEntityCostTooltip(template, player, entity, buildingsCountToTrainFul
 
 	if (template.cost)
 	{
-		let costs = getEntityCostComponentsTooltipString(template, entity, buildingsCountToTrainFullBatch, fullBatchSize, remainderBatch).join("  ");
+		const costs = getEntityCostComponentsTooltipString(template, entity, buildingsCountToTrainFullBatch, fullBatchSize, remainderBatch).join("  ");
 		if (costs)
 			// Translation: Label in tooltip showing cost of a unit, structure or technology.
 			return sprintf(translate("%(label)s %(costs)s"), {
@@ -1005,8 +1005,8 @@ function getNeededResourcesTooltip(resources)
 	if (!resources)
 		return "";
 
-	let formatted = [];
-	for (let resource in resources)
+	const formatted = [];
+	for (const resource in resources)
 		formatted.push(sprintf(translate("%(component)s %(cost)s"), {
 			"component": '[font="sans-12"]' + resourceIcon(resource) + '[/font]',
 			"cost": Math.ceil(resources[resource])
@@ -1052,9 +1052,9 @@ function getHealerTooltip(template)
 	if (!template.heal)
 		return "";
 
-	let health = +(template.heal.health.toFixed(1));
-	let range = +(template.heal.range.toFixed(0));
-	let interval = +((template.heal.interval / 1000).toFixed(1));
+	const health = +(template.heal.health.toFixed(1));
+	const range = +(template.heal.range.toFixed(0));
+	const interval = +((template.heal.interval / 1000).toFixed(1));
 
 	return [
 		sprintf(translatePlural("%(label)s %(val)s %(unit)s", "%(label)s %(val)s %(unit)s", health), {
@@ -1077,12 +1077,12 @@ function getHealerTooltip(template)
 
 function getAurasTooltip(template)
 {
-	let auras = template.auras || template.wallSet && GetTemplateData(template.wallSet.templates.long).auras;
+	const auras = template.auras || template.wallSet && GetTemplateData(template.wallSet.templates.long).auras;
 	if (!auras)
 		return "";
 
-	let tooltips = [];
-	for (let auraID in auras)
+	const tooltips = [];
+	for (const auraID in auras)
 	{
 		let tooltip = sprintf(translate("%(auralabel)s %(aurainfo)s"), {
 			"auralabel": headerFont(sprintf(translate("%(auraname)s:"), {
@@ -1090,7 +1090,7 @@ function getAurasTooltip(template)
 			})),
 			"aurainfo": bodyFont(translate(auras[auraID].description))
 		});
-		let radius = +auras[auraID].radius;
+		const radius = +auras[auraID].radius;
 		if (radius)
 			tooltip += " " + sprintf(translatePlural("%(label)s %(val)s %(unit)s", "%(label)s %(val)s %(unit)s", radius), {
 				"label": translateWithContext("aura", "Range:"),
@@ -1110,7 +1110,7 @@ function getEntityNames(template)
 	if (template.name.specific == template.name.generic)
 		return template.name.specific;
 
-	let primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
+	const primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
 	let secondaryName;
 	if (g_ShowSecondaryNames)
 		secondaryName = g_SpecificNamesPrimary ? template.name.generic : template.name.specific;
@@ -1131,7 +1131,7 @@ function getEntityNamesFormatted(template)
 	if (!template.name.specific)
 		return setStringTags(template.name.generic, g_TooltipTextFormats.namePrimaryBig);
 
-	let primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
+	const primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
 	let secondaryName;
 	if (g_ShowSecondaryNames)
 		secondaryName = g_SpecificNamesPrimary ? template.name.generic : template.name.specific;
@@ -1154,7 +1154,7 @@ function getEntityNamesFormatted(template)
 
 function getEntityPrimaryNameFormatted(template)
 {
-	let primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
+	const primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
 	if (!primaryName)
 		return setStringTags(g_SpecificNamesPrimary ? template.name.generic : template.name.specific, g_TooltipTextFormats.namePrimaryBig);
 
@@ -1183,10 +1183,10 @@ function getLootTooltip(template)
 			template.trader && template.trader.goods
 		);
 
-	let lootLabels = [];
-	for (let type of g_ResourceData.GetCodes().concat(["xp"]))
+	const lootLabels = [];
+	for (const type of g_ResourceData.GetCodes().concat(["xp"]))
 	{
-		let loot =
+		const loot =
 			(template.loot && template.loot[type] || 0) +
 			(resourcesCarried[type] || 0);
 

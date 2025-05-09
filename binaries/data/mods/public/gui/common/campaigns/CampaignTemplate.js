@@ -11,11 +11,11 @@ class CampaignTemplate
 		if (g_CachedTemplates)
 			return g_CachedTemplates;
 
-		let campaigns = Engine.ListDirectoryFiles("campaigns/", "*.json", false);
+		const campaigns = Engine.ListDirectoryFiles("campaigns/", "*.json", false);
 
 		g_CachedTemplates = [];
 
-		for (let filename of campaigns)
+		for (const filename of campaigns)
 			// Use file name as identifier to guarantee unicity.
 			g_CachedTemplates.push(new CampaignTemplate(filename.slice("campaigns/".length, -".json".length)));
 
@@ -26,7 +26,7 @@ class CampaignTemplate
 	{
 		if (!g_CachedTemplates)
 			CampaignTemplate.getAvailableTemplates();
-		let temp = g_CachedTemplates.filter(t => t.identifier == identifier);
+		const temp = g_CachedTemplates.filter(t => t.identifier == identifier);
 		if (!temp.length)
 			return null;
 		return temp[0];

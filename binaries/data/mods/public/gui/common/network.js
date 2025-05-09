@@ -200,7 +200,7 @@ function kickObservers(ban)
 		});
 		return;
 	}
-	for (let guid in g_PlayerAssignments)
+	for (const guid in g_PlayerAssignments)
 		if (g_PlayerAssignments[guid].player == -1)
 			Engine.KickPlayer(g_PlayerAssignments[guid].name, ban);
 }
@@ -213,8 +213,8 @@ function sortGUIDsByPlayerID()
 {
 	return Object.keys(g_PlayerAssignments).sort((guidA, guidB) => {
 
-		let playerIdA = g_PlayerAssignments[guidA].player;
-		let playerIdB = g_PlayerAssignments[guidB].player;
+		const playerIdA = g_PlayerAssignments[guidA].player;
+		const playerIdB = g_PlayerAssignments[guidB].player;
 
 		if (playerIdA == -1) return +1;
 		if (playerIdB == -1) return -1;
@@ -231,7 +231,7 @@ function sortGUIDsByPlayerID()
  */
 function getUsernameList()
 {
-	let usernames = sortGUIDsByPlayerID().map(guid => colorizePlayernameByGUID(guid));
+	const usernames = sortGUIDsByPlayerID().map(guid => colorizePlayernameByGUID(guid));
 
 	// Translation: Number of currently connected players/observers and their names
 	return sprintf(translate("Users (%(num)s): %(users)s"), {
@@ -251,8 +251,8 @@ function executeNetworkCommand(input)
 	if (input.indexOf("/") != 0)
 		return false;
 
-	let command = input.split(" ", 1)[0];
-	let argument = input.substr(command.length + 1);
+	const command = input.split(" ", 1)[0];
+	const argument = input.substr(command.length + 1);
 
 	if (g_NetworkCommands[command])
 		g_NetworkCommands[command](argument);
@@ -290,29 +290,29 @@ function addNetworkWarning(msg)
 function getNetworkWarnings()
 {
 	// Remove outdated messages
-	for (let guid in g_NetworkWarnings)
+	for (const guid in g_NetworkWarnings)
 		if (Date.now() > g_NetworkWarnings[guid].added + g_NetworkWarningTimeout ||
 		    guid != "server" && !g_PlayerAssignments[guid])
 			delete g_NetworkWarnings[guid];
 
 	// Show local messages first
-	let guids = Object.keys(g_NetworkWarnings).sort(guid => guid != "server");
+	const guids = Object.keys(g_NetworkWarnings).sort(guid => guid != "server");
 
-	let font = Engine.GetGUIObjectByName("gameStateNotifications").font;
+	const font = Engine.GetGUIObjectByName("gameStateNotifications").font;
 
-	let messages = [];
+	const messages = [];
 	let maxTextWidth = 0;
 
-	for (let guid of guids)
+	for (const guid of guids)
 	{
-		let msg = g_NetworkWarnings[guid].msg;
+		const msg = g_NetworkWarnings[guid].msg;
 
 		// Add formatted text
 		messages.push(g_NetworkWarningTexts[msg.warntype](msg, colorizePlayernameByGUID(guid)));
 
 		// Add width of unformatted text
-		let username = guid != "server" && g_PlayerAssignments[guid].name;
-		let textWidth = Engine.GetTextWidth(font, g_NetworkWarningTexts[msg.warntype](msg, username));
+		const username = guid != "server" && g_PlayerAssignments[guid].name;
+		const textWidth = Engine.GetTextWidth(font, g_NetworkWarningTexts[msg.warntype](msg, username));
 		maxTextWidth = Math.max(textWidth, maxTextWidth);
 	}
 

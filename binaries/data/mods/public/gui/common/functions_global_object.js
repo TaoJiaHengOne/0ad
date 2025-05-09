@@ -9,23 +9,23 @@ function displayGamestateNotifications()
 	// Add network warnings
 	if (Engine.ConfigDB_GetValue("user", "overlay.netwarnings") == "true")
 	{
-		let netwarnings = getNetworkWarnings();
+		const netwarnings = getNetworkWarnings();
 		messages = messages.concat(netwarnings.messages);
 		maxTextWidth = Math.max(maxTextWidth, netwarnings.maxTextWidth);
 	}
 
 	// Resize textbox
-	let width = maxTextWidth + 20;
-	let height = 14 * messages.length;
+	const width = maxTextWidth + 20;
+	const height = 14 * messages.length;
 
 	// Position left of the dataCounter
-	let top = "40";
-	let right = Engine.GetGUIObjectByName("dataCounter").hidden ? "100%-15" : "100%-110";
+	const top = "40";
+	const right = Engine.GetGUIObjectByName("dataCounter").hidden ? "100%-15" : "100%-110";
 
-	let bottom = top + "+" + height;
-	let left = right + "-" + width;
+	const bottom = top + "+" + height;
+	const left = right + "-" + width;
 
-	let gameStateNotifications = Engine.GetGUIObjectByName("gameStateNotifications");
+	const gameStateNotifications = Engine.GetGUIObjectByName("gameStateNotifications");
 	gameStateNotifications.caption = messages.join("\n");
 	gameStateNotifications.hidden = !messages.length;
 	gameStateNotifications.size = left + " " + top + " " + right + " " + bottom;

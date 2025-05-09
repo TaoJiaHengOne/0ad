@@ -33,7 +33,7 @@ function formatHotkeyCombinations(combinations, translateScancodes = true)
 	if (!combinations || !combinations.length)
 		return translateScancodes ? "" : [];
 
-	let combs = combinations.map(x => formatHotkeyCombination(x, translateScancodes));
+	const combs = combinations.map(x => formatHotkeyCombination(x, translateScancodes));
 	combs.sort((a, b) => a.length - b.length || a - b);
 	return translateScancodes ? combs.join(", ") : combs;
 }

@@ -25,7 +25,7 @@ function rgbToGuiColor(color, alpha)
 
 function guiToRgbColor(string)
 {
-	let color = string.split(" ");
+	const color = string.split(" ");
 	if (color.length != 3 && color.length != 4 ||
 	    color.some(num => !Number.isInteger(+num) || num < 0 || num > 255))
 		return undefined;
@@ -88,7 +88,7 @@ function rgbToHsl(r, g, b)
 	r /= 255;
 	g /= 255;
 	b /= 255;
-	let max = Math.max(r, g, b), min = Math.min(r, g, b);
+	const max = Math.max(r, g, b), min = Math.min(r, g, b);
 	let h, s, l = (max + min) / 2;
 
 	if (max == min)
@@ -99,7 +99,7 @@ function rgbToHsl(r, g, b)
 	}
 	else
 	{
-		let d = max - min;
+		const d = max - min;
 		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 		switch (max)
 		{
@@ -160,8 +160,8 @@ function hslToRgb(h, s, l)
 	}
 	else
 	{
-		let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-		let p = 2 * l - q;
+		const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+		const p = 2 * l - q;
 		r = hue2rgb(p, q, h + 1/3);
 		g = hue2rgb(p, q, h);
 		b = hue2rgb(p, q, h - 1/3);

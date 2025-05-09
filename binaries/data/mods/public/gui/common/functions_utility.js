@@ -25,7 +25,7 @@ function registerConfigChangeHandler(handler)
  */
 function fireConfigChangeHandlers(changes)
 {
-	for (let handler of g_ConfigChangeHandlers)
+	for (const handler of g_ConfigChangeHandlers)
 		handler(changes);
 }
 
@@ -34,7 +34,7 @@ function fireConfigChangeHandlers(changes)
  */
 function loadCivData(selectableOnly, gaia)
 {
-	let civData = loadCivFiles(selectableOnly);
+	const civData = loadCivFiles(selectableOnly);
 
 	translateObjectKeys(civData, ["Name", "Description", "History", "Special"]);
 
@@ -47,8 +47,8 @@ function loadCivData(selectableOnly, gaia)
 // A sorting function for arrays of objects with 'name' properties, ignoring case
 function sortNameIgnoreCase(x, y)
 {
-	let lowerX = x.name.toLowerCase();
-	let lowerY = y.name.toLowerCase();
+	const lowerX = x.name.toLowerCase();
+	const lowerY = y.name.toLowerCase();
 
 	if (lowerX < lowerY)
 		return -1;
@@ -83,11 +83,11 @@ function escapeQuotation(text)
  */
 function playerDataToStringifiedTeamList(playerData)
 {
-	let teamList = {};
+	const teamList = {};
 
-	for (let pData of playerData)
+	for (const pData of playerData)
 	{
-		let team = pData.Team === undefined ? -1 : pData.Team;
+		const team = pData.Team === undefined ? -1 : pData.Team;
 		if (!teamList[team])
 			teamList[team] = [];
 		teamList[team].push(pData);
@@ -110,10 +110,10 @@ function stringifiedTeamListToPlayerData(stringifiedTeamList)
 		return [];
 	}
 
-	let playerData = [];
+	const playerData = [];
 
-	for (let team in teamList)
-		for (let pData of teamList[team])
+	for (const team in teamList)
+		for (const pData of teamList[team])
 		{
 			pData.Team = team;
 			playerData.push(pData);
@@ -180,13 +180,13 @@ function tryAutoComplete(text, autoCompleteList)
 
 function autoCompleteText(guiObject, words)
 {
-	let text = guiObject.caption;
+	const text = guiObject.caption;
 	if (!text.length)
 		return;
 
-	let bufferPosition = guiObject.buffer_position;
-	let textTillBufferPosition = text.substring(0, bufferPosition);
-	let newText = tryAutoComplete(textTillBufferPosition, words);
+	const bufferPosition = guiObject.buffer_position;
+	const textTillBufferPosition = text.substring(0, bufferPosition);
+	const newText = tryAutoComplete(textTillBufferPosition, words);
 
 	guiObject.caption = newText + text.substring(bufferPosition);
 	guiObject.buffer_position = bufferPosition + (newText.length - textTillBufferPosition.length);
@@ -202,8 +202,8 @@ function soundNotification(type)
 	if (Engine.ConfigDB_GetValue("user", "sound.notify." + type) != "true")
 		return;
 
-	let notificationType = g_SoundNotifications[type];
-	let timeNow = Date.now();
+	const notificationType = g_SoundNotifications[type];
+	const timeNow = Date.now();
 
 	if (!notificationType.lastInteractionTime || timeNow > notificationType.lastInteractionTime + notificationType.threshold)
 		Engine.PlayUISound(notificationType.soundfile, false);
@@ -218,11 +218,11 @@ function soundNotification(type)
  */
 function horizontallySpaceObjects(parentName, margin = 0)
 {
-	let objects = Engine.GetGUIObjectByName(parentName).children;
+	const objects = Engine.GetGUIObjectByName(parentName).children;
 	for (let i = 0; i < objects.length; ++i)
 	{
-		let size = objects[i].size;
-		let width = size.right - size.left;
+		const size = objects[i].size;
+		const width = size.right - size.left;
 		size.left = i * (width + margin) + margin;
 		size.right = (i + 1) * (width + margin);
 		objects[i].size = size;
@@ -284,7 +284,7 @@ function resizeGUIObjectToCaption(object, align, margin = {})
  */
 function hideRemaining(parentName, start = 0)
 {
-	let objects = Engine.GetGUIObjectByName(parentName).children;
+	const objects = Engine.GetGUIObjectByName(parentName).children;
 
 	for (let i = start; i < objects.length; ++i)
 		objects[i].hidden = true;

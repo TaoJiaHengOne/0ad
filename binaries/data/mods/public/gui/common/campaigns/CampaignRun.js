@@ -24,11 +24,11 @@ class CampaignRun
 
 	static getCurrentRun()
 	{
-		let current = CampaignRun.getCurrentRunFilename();
+		const current = CampaignRun.getCurrentRunFilename();
 		if (g_CurrentCampaignRun && g_CurrentCampaignRun.ID == current)
 			return g_CurrentCampaignRun.run;
 
-		let run = new CampaignRun(current).load();
+		const run = new CampaignRun(current).load();
 		g_CurrentCampaignRun = {
 			"run": run,
 			"ID": current
@@ -122,7 +122,7 @@ class CampaignRun
 	{
 		if (!Engine.FileExists("saves/campaigns/" + this.filename + ".0adcampaign"))
 			throw new Error("Campaign file does not exist");
-		let data = Engine.ReadJSONFile("saves/campaigns/" + this.filename + ".0adcampaign");
+		const data = Engine.ReadJSONFile("saves/campaigns/" + this.filename + ".0adcampaign");
 		this.data = data.data;
 		this.meta = data.meta;
 		this.template = CampaignTemplate.getTemplate(data.template_identifier);
@@ -133,7 +133,7 @@ class CampaignRun
 
 	save()
 	{
-		let data = {
+		const data = {
 			"data": this.data,
 			"meta": this.meta,
 			"template_identifier": this.template.identifier

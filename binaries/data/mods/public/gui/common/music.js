@@ -151,10 +151,10 @@ Music.prototype.storeTracks = function(civMusic)
 	for (const musicType of Object.keys(this.MUSIC))
 		this.tracks[musicType] = [];
 
-	for (let music of civMusic)
+	for (const music of civMusic)
 	{
 		let type;
-		for (let i in this.MUSIC)
+		for (const i in this.MUSIC)
 			if (music.Type == this.MUSIC[i])
 			{
 				type = i;
@@ -176,7 +176,7 @@ Music.prototype.storeTracks = function(civMusic)
 Music.prototype.startPlayList = function(tracks, fadeInPeriod, isLooping)
 {
 	Engine.ClearPlaylist();
-	for (let i in tracks)
+	for (const i in tracks)
 		Engine.AddPlaylistItem(this.RELATIVE_MUSIC_PATH + tracks[i]);
 
 	Engine.StartPlaylist(isLooping);
