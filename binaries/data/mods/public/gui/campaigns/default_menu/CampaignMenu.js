@@ -172,9 +172,9 @@ class CampaignMenu extends AutoWatcher
 	displayLevelsList()
 	{
 		let list = [];
-		for (let key in this.run.template.Levels)
+		for (const key in this.run.template.Levels)
 		{
-			let level = this.run.template.Levels[key];
+			const level = this.run.template.Levels[key];
 
 			if (!this.shouldShowLevel(level))
 				continue;
@@ -212,7 +212,7 @@ class CampaignMenu extends AutoWatcher
 			return;
 		}
 
-		let level = this.getSelectedLevelData();
+		const level = this.getSelectedLevelData();
 
 		Engine.GetGUIObjectByName("scenarioName").caption = this.getLevelName(level);
 		Engine.GetGUIObjectByName("scenarioDesc").caption = this.getLevelDescription(level);

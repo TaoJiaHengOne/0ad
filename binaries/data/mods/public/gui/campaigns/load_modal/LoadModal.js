@@ -62,11 +62,11 @@ class LoadModal extends AutoWatcher
 
 	getRuns()
 	{
-		let out = [];
-		let files = Engine.ListDirectoryFiles("saves/campaigns/", "*.0adcampaign", false);
-		for (let file of files)
+		const out = [];
+		const files = Engine.ListDirectoryFiles("saves/campaigns/", "*.0adcampaign", false);
+		for (const file of files)
 		{
-			let name = file.replace("saves/campaigns/", "").replace(".0adcampaign", "");
+			const name = file.replace("saves/campaigns/", "").replace(".0adcampaign", "");
 			try
 			{
 				out.push(new CampaignRun(name).load());
@@ -82,8 +82,8 @@ class LoadModal extends AutoWatcher
 
 	loadCampaign()
 	{
-		let filename = this.currentRuns[this.selectedRun].filename;
-		let run = new CampaignRun(filename)
+		const filename = this.currentRuns[this.selectedRun].filename;
+		const run = new CampaignRun(filename)
 			.load()
 			.setCurrent();
 
@@ -97,7 +97,7 @@ class LoadModal extends AutoWatcher
 		if (this.selectedRun === -1)
 			return;
 
-		let run = this.currentRuns[this.selectedRun];
+		const run = this.currentRuns[this.selectedRun];
 
 		const buttonIndex = await messageBox(
 			400, 200,

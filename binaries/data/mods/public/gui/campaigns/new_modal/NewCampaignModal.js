@@ -20,8 +20,8 @@ class NewCampaignModal
 
 	createAndStartCampaign()
 	{
-		let filename = this.template.identifier + "_" + Date.now() + "_" + Math.floor(Math.random()*100000);
-		let run = new CampaignRun(filename)
+		const filename = this.template.identifier + "_" + Date.now() + "_" + Math.floor(Math.random()*100000);
+		const run = new CampaignRun(filename)
 			.setTemplate(this.template)
 			.setMeta(Engine.GetGUIObjectByName('runDescription').caption)
 			.save()
