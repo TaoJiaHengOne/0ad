@@ -200,10 +200,10 @@ Trigger.prototype.GarrisonAllGallicBuildings = function()
 {
 	this.debugLog("Garrisoning all gallic buildings");
 
-	for (let buildingGarrison of gallicBuildingGarrison)
-		for (let buildingClass of buildingGarrison.buildingClasses)
+	for (const buildingGarrison of gallicBuildingGarrison)
+		for (const buildingClass of buildingGarrison.buildingClasses)
 		{
-			let unitCounts = TriggerHelper.SpawnAndGarrisonAtClasses(gaulPlayer, buildingClass, buildingGarrison.unitTemplates, 1);
+			const unitCounts = TriggerHelper.SpawnAndGarrisonAtClasses(gaulPlayer, buildingClass, buildingGarrison.unitTemplates, 1);
 			this.debugLog("Garrisoning at " + buildingClass + ": " + uneval(unitCounts));
 		}
 };
@@ -212,10 +212,10 @@ Trigger.prototype.TurretAllGallicBuildings = function()
 {
 	this.debugLog("Turreting all gallic buildings");
 
-	for (let buildingTurret of gallicBuildingTurret)
-		for (let buildingClass of buildingTurret.buildingClasses)
+	for (const buildingTurret of gallicBuildingTurret)
+		for (const buildingClass of buildingTurret.buildingClasses)
 		{
-			let unitCounts = TriggerHelper.SpawnAndTurretAtClasses(gaulPlayer, buildingClass, buildingTurret.unitTemplates, 1);
+			const unitCounts = TriggerHelper.SpawnAndTurretAtClasses(gaulPlayer, buildingClass, buildingTurret.unitTemplates, 1);
 			this.debugLog("Turreting at " + buildingClass + ": " + uneval(unitCounts));
 		}
 };
@@ -227,35 +227,35 @@ Trigger.prototype.SpawnInitialCCDefenders = function()
 {
 	this.debugLog("To defend CCs, spawning " + uneval(ccDefenders));
 
-	for (let ent of this.civicCenters)
-		for (let ccDefender of ccDefenders)
-			for (let spawnedEnt of TriggerHelper.SpawnUnits(ent, pickRandom(ccDefender.templates), ccDefender.count, gaulPlayer))
+	for (const ent of this.civicCenters)
+		for (const ccDefender of ccDefenders)
+			for (const spawnedEnt of TriggerHelper.SpawnUnits(ent, pickRandom(ccDefender.templates), ccDefender.count, gaulPlayer))
 				TriggerHelper.SetUnitStance(spawnedEnt, "defensive");
 };
 
 Trigger.prototype.SpawnCCAttackers = function()
 {
-	let time = TriggerHelper.GetMinutes();
+	const time = TriggerHelper.GetMinutes();
 
-	let [spawnLeft, spawnRight] = this.GetActiveRiversides();
+	const [spawnLeft, spawnRight] = this.GetActiveRiversides();
 
-	for (let gaiaCC of this.civicCenters)
+	for (const gaiaCC of this.civicCenters)
 	{
 		if (!TriggerHelper.IsInWorld(gaiaCC))
 			continue;
 
-		let isLeft = this.IsLeftRiverside(gaiaCC);
+		const isLeft = this.IsLeftRiverside(gaiaCC);
 		if (isLeft && !spawnLeft || !isLeft && !spawnRight)
 			continue;
 
-		let templateCounts = TriggerHelper.BalancedTemplateComposition(this.GetAttackerComposition(time, false), ccAttackerCount(time));
+		const templateCounts = TriggerHelper.BalancedTemplateComposition(this.GetAttackerComposition(time, false), ccAttackerCount(time));
 		this.debugLog("Spawning civic center attackers at " + gaiaCC + ": " + uneval(templateCounts));
 
 		let ccAttackers = [];
 
-		for (let templateName in templateCounts)
+		for (const templateName in templateCounts)
 		{
-			let ents = TriggerHelper.SpawnUnits(gaiaCC, templateName, templateCounts[templateName], gaulPlayer);
+			const ents = TriggerHelper.SpawnUnits(gaiaCC, templateName, templateCounts[templateName], gaulPlayer);
 
 			if (danubiusAttackerTemplates.heroes.indexOf(templateName) != -1 && ents[0])
 				this.heroes.add(ents[0]);
@@ -263,7 +263,7 @@ Trigger.prototype.SpawnCCAttackers = function()
 			ccAttackers = ccAttackers.concat(ents);
 		}
 
-		let patrolPointRef = isLeft ?
+		const patrolPointRef = isLeft ?
 			triggerPointCCAttackerPatrolLeft :
 			triggerPointCCAttackerPatrolRight;
 
@@ -280,7 +280,7 @@ Trigger.prototype.SpawnCCAttackers = function()
  */
 Trigger.prototype.StartCelticRitual = function()
 {
-	for (let ent of TriggerHelper.GetPlayerEntitiesByClass(gaulPlayer, "Human"))
+	for (const ent of TriggerHelper.GetPlayerEntitiesByClass(gaulPlayer, "Human"))
 	{
 		if (randBool(ritualProbability))
 			this.ritualEnts.add(ent);
@@ -296,21 +296,21 @@ Trigger.prototype.StartCelticRitual = function()
  */
 Trigger.prototype.UpdateCelticRitual = function()
 {
-	for (let ent of this.ritualEnts)
+	for (const ent of this.ritualEnts)
 	{
-		let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+		const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 		if (!cmpUnitAI || cmpUnitAI.GetCurrentState() != "INDIVIDUAL.IDLE")
 			continue;
 
-		let cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
 		if (!cmpIdentity)
 			continue;
 
-		let animations = ritualAnimations[
+		const animations = ritualAnimations[
 			cmpIdentity.HasClass("Healer") ? "healer" :
 				cmpIdentity.HasClass("Female") ? "female" : "male"];
 
-		let cmpVisual = Engine.QueryInterface(ent, IID_Visual);
+		const cmpVisual = Engine.QueryInterface(ent, IID_Visual);
 		if (!cmpVisual)
 			continue;
 
@@ -325,9 +325,9 @@ Trigger.prototype.UpdateCelticRitual = function()
  */
 Trigger.prototype.SpawnShips = function()
 {
-	let time = TriggerHelper.GetMinutes();
-	let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers().length;
-	let shipSpawnCount = shipCount(time, numPlayers) - this.ships.size;
+	const time = TriggerHelper.GetMinutes();
+	const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers().length;
+	const shipSpawnCount = shipCount(time, numPlayers) - this.ships.size;
 
 	this.debugLog("Spawning " + shipSpawnCount + " ships");
 
@@ -339,12 +339,12 @@ Trigger.prototype.SpawnShips = function()
 				1,
 				gaulPlayer)[0]);
 
-	for (let ship of this.ships)
+	for (const ship of this.ships)
 		this.AttackAndPatrol([ship], shipTargetClass, triggerPointShipPatrol, "Ship", true);
 
 	this.DoAfterDelay(shipRespawnTime(time) * 60 * 1000, "SpawnShips", {});
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.fillShipsTimer);
 
 	this.FillShips();
@@ -352,7 +352,7 @@ Trigger.prototype.SpawnShips = function()
 
 Trigger.prototype.GetAttackerComposition = function(time, siegeEngines)
 {
-	let champRatio = championRatio(time);
+	const champRatio = championRatio(time);
 	return [
 		{
 			"templates": danubiusAttackerTemplates.heroes,
@@ -380,22 +380,22 @@ Trigger.prototype.GetAttackerComposition = function(time, siegeEngines)
 
 Trigger.prototype.FillShips = function()
 {
-	let time = TriggerHelper.GetMinutes();
-	for (let ship of this.ships)
+	const time = TriggerHelper.GetMinutes();
+	for (const ship of this.ships)
 	{
-		let cmpGarrisonHolder = Engine.QueryInterface(ship, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(ship, IID_GarrisonHolder);
 		if (!cmpGarrisonHolder)
 			continue;
 
-		let templateCounts = TriggerHelper.BalancedTemplateComposition(
+		const templateCounts = TriggerHelper.BalancedTemplateComposition(
 			this.GetAttackerComposition(time, true),
 			Math.max(0, attackersPerShip(time) - cmpGarrisonHolder.GetEntities().length));
 
 		this.debugLog("Filling ship " + ship + " with " + uneval(templateCounts));
 
-		for (let templateName in templateCounts)
+		for (const templateName in templateCounts)
 		{
-			let ents = TriggerHelper.SpawnGarrisonedUnits(ship, templateName, templateCounts[templateName], gaulPlayer);
+			const ents = TriggerHelper.SpawnGarrisonedUnits(ship, templateName, templateCounts[templateName], gaulPlayer);
 			if (danubiusAttackerTemplates.heroes.indexOf(templateName) != -1 && ents[0])
 				this.heroes.add(ents[0]);
 		}
@@ -412,7 +412,7 @@ Trigger.prototype.AttackAndPatrol = function(entities, targetClass, triggerPoint
 	if (!entities.length)
 		return;
 
-	let healers = TriggerHelper.MatchEntitiesByClass(entities, "Healer").filter(TriggerHelper.IsInWorld);
+	const healers = TriggerHelper.MatchEntitiesByClass(entities, "Healer").filter(TriggerHelper.IsInWorld);
 	if (healers.length)
 	{
 		let healerTargets = TriggerHelper.MatchEntitiesByClass(entities, "Hero Champion");
@@ -427,21 +427,21 @@ Trigger.prototype.AttackAndPatrol = function(entities, targetClass, triggerPoint
 		});
 	}
 
-	let attackers = TriggerHelper.MatchEntitiesByClass(entities, "!Healer").filter(TriggerHelper.IsInWorld);
+	const attackers = TriggerHelper.MatchEntitiesByClass(entities, "!Healer").filter(TriggerHelper.IsInWorld);
 	if (!attackers.length)
 		return;
 
-	let isLeft = this.IsLeftRiverside(attackers[0]);
-	let targets = TriggerHelper.MatchEntitiesByClass(TriggerHelper.GetAllPlayersEntities(), targetClass);
+	const isLeft = this.IsLeftRiverside(attackers[0]);
+	const targets = TriggerHelper.MatchEntitiesByClass(TriggerHelper.GetAllPlayersEntities(), targetClass);
 	let closestTarget;
 	let minDistance = Infinity;
 
-	for (let target of targets)
+	for (const target of targets)
 	{
 		if (!TriggerHelper.IsInWorld(target) || this.IsLeftRiverside(target) != isLeft)
 			continue;
 
-		let targetDistance = PositionHelper.DistanceBetweenEntities(attackers[0], target);
+		const targetDistance = PositionHelper.DistanceBetweenEntities(attackers[0], target);
 		if (targetDistance < minDistance)
 		{
 			closestTarget = target;
@@ -460,12 +460,12 @@ Trigger.prototype.AttackAndPatrol = function(entities, targetClass, triggerPoint
 			"allowCapture": false
 		});
 
-	let patrolTargets = shuffleArray(this.GetTriggerPoints(triggerPointRef)).slice(0, patrolCount);
+	const patrolTargets = shuffleArray(this.GetTriggerPoints(triggerPointRef)).slice(0, patrolCount);
 	this.debugLog(debugName + " " + uneval(attackers) + " patrol to " + uneval(patrolTargets));
 
-	for (let patrolTarget of patrolTargets)
+	for (const patrolTarget of patrolTargets)
 	{
-		let targetPos = TriggerHelper.GetEntityPosition2D(patrolTarget);
+		const targetPos = TriggerHelper.GetEntityPosition2D(patrolTarget);
 		ProcessCommand(gaulPlayer, {
 			"type": "patrol",
 			"entities": attackers,
@@ -490,7 +490,7 @@ Trigger.prototype.GetActiveRiversides = function()
 	let left = false;
 	let right = false;
 
-	for (let ent of TriggerHelper.GetAllPlayersEntitiesByClass(siegeTargetClass))
+	for (const ent of TriggerHelper.GetAllPlayersEntitiesByClass(siegeTargetClass))
 	{
 		if (this.IsLeftRiverside(ent))
 			left = true;
@@ -514,12 +514,12 @@ Trigger.prototype.IsLeftRiverside = function(ent)
  */
 Trigger.prototype.UngarrisonShipsOrder = function()
 {
-	let [ungarrisonLeft, ungarrisonRight] = this.GetActiveRiversides();
+	const [ungarrisonLeft, ungarrisonRight] = this.GetActiveRiversides();
 	if (!ungarrisonLeft && !ungarrisonRight)
 		return;
 
 	// Determine which ships should ungarrison on which side of the river
-	let ships = Array.from(this.ships);
+	const ships = Array.from(this.ships);
 	let shipsLeft = [];
 	let shipsRight = [];
 
@@ -534,7 +534,7 @@ Trigger.prototype.UngarrisonShipsOrder = function()
 		shipsRight = ships;
 
 	// Determine which ships should ungarrison and patrol at which trigger point names
-	let sides = [];
+	const sides = [];
 	if (shipsLeft.length)
 		sides.push({
 			"ships": shipsLeft,
@@ -552,11 +552,11 @@ Trigger.prototype.UngarrisonShipsOrder = function()
 	// Order those ships to move to a randomly chosen trigger point on the determined
 	// side of the river. Remember that chosen ungarrison point and the name of the
 	// trigger points where the ungarrisoned units should patrol afterwards.
-	for (let side of sides)
-		for (let ship of side.ships)
+	for (const side of sides)
+		for (const ship of side.ships)
 		{
-			let ungarrisonPoint = pickRandom(this.GetTriggerPoints(side.ungarrisonPointRef));
-			let ungarrisonPos = TriggerHelper.GetEntityPosition2D(ungarrisonPoint);
+			const ungarrisonPoint = pickRandom(this.GetTriggerPoints(side.ungarrisonPointRef));
+			const ungarrisonPos = TriggerHelper.GetEntityPosition2D(ungarrisonPoint);
 
 			this.debugLog("Ship " + ship + " will ungarrison at " + side.ungarrisonPointRef +
 				" (" + ungarrisonPos.x + "," + ungarrisonPos.y + ")");
@@ -573,17 +573,17 @@ Trigger.prototype.UngarrisonShipsOrder = function()
  */
 Trigger.prototype.CheckShipRange = function()
 {
-	for (let ship of this.ships)
+	for (const ship of this.ships)
 	{
 		if (!this.shipTarget[ship] || PositionHelper.DistanceBetweenEntities(ship, this.shipTarget[ship].ungarrisonPoint) > shipUngarrisonDistance)
 			continue;
 
-		let cmpGarrisonHolder = Engine.QueryInterface(ship, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(ship, IID_GarrisonHolder);
 		if (!cmpGarrisonHolder)
 			continue;
 
-		let humans = TriggerHelper.MatchEntitiesByClass(cmpGarrisonHolder.GetEntities(), "Human");
-		let siegeEngines = TriggerHelper.MatchEntitiesByClass(cmpGarrisonHolder.GetEntities(), "Siege");
+		const humans = TriggerHelper.MatchEntitiesByClass(cmpGarrisonHolder.GetEntities(), "Human");
+		const siegeEngines = TriggerHelper.MatchEntitiesByClass(cmpGarrisonHolder.GetEntities(), "Siege");
 
 		this.debugLog("Ungarrisoning ship " + ship + " at " + uneval(this.shipTarget[ship]));
 		cmpGarrisonHolder.UnloadAll();
@@ -638,7 +638,7 @@ Trigger.prototype.InitDanubius = function()
 	this.fillShipsTimer = undefined;
 
 	// Be able to distinguish between the left and right riverside
-	let mapSize = TriggerHelper.GetMapSizeTerrain();
+	const mapSize = TriggerHelper.GetMapSizeTerrain();
 	this.mapCenter = new Vector2D(mapSize / 2, mapSize / 2);
 
 	this.riverDirection = Vector2D.sub(

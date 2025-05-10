@@ -110,7 +110,7 @@ function* GenerateMap(mapSettings)
 
 	for (let m = 0; m < randIntInclusive(40, 90); ++m)
 	{
-		let elevRand = randIntInclusive(6, 12);
+		const elevRand = randIntInclusive(6, 12);
 		createArea(
 			new ChainPlacer(
 				12,

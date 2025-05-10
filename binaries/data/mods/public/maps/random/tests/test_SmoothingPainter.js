@@ -14,18 +14,18 @@ function* GenerateMap()
 {
 	g_MapSettings = { "Size": 512 };
 
-	let min = new Vector2D(5, 5);
-	let center = new Vector2D(6, 6);
-	let max = new Vector2D(7, 7);
+	const min = new Vector2D(5, 5);
+	const center = new Vector2D(6, 6);
+	const max = new Vector2D(7, 7);
 
-	let minHeight = 20;
-	let maxHeight = 25;
+	const minHeight = 20;
+	const maxHeight = 25;
 
 	// Test SmoothingPainter
 	{
 		globalThis.g_Map = new RandomMap(0, "blackness");
 
-		let centerHeight = g_Map.getHeight(center);
+		const centerHeight = g_Map.getHeight(center);
 
 		createArea(
 			new RectPlacer(min, max),

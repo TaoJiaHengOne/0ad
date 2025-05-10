@@ -28,31 +28,31 @@ Trigger.prototype.DisableTechnologies = function()
 
 Trigger.prototype.SpawnWolvesAndAttack = function()
 {
-	let waveSize = Math.round(Math.random() * (maxWaveSize - minWaveSize) + minWaveSize);
-	let attackers = TriggerHelper.SpawnUnitsFromTriggerPoints("A", attackerTemplate, waveSize, 0);
+	const waveSize = Math.round(Math.random() * (maxWaveSize - minWaveSize) + minWaveSize);
+	const attackers = TriggerHelper.SpawnUnitsFromTriggerPoints("A", attackerTemplate, waveSize, 0);
 
 	if (debugLog)
 		print("Spawned " + waveSize + " " + attackerTemplate + " at " + Object.keys(attackers).length + " points\n");
 
 	let allTargets;
 
-	let players = new Array(TriggerHelper.GetNumberOfPlayers()).fill(0).map((v, i) => i + 1);
+	const players = new Array(TriggerHelper.GetNumberOfPlayers()).fill(0).map((v, i) => i + 1);
 
-	for (let spawnPoint in attackers)
+	for (const spawnPoint in attackers)
 	{
 		// TriggerHelper.SpawnUnits is guaranteed to spawn
-		let firstAttacker = attackers[spawnPoint][0];
+		const firstAttacker = attackers[spawnPoint][0];
 		if (!firstAttacker)
 			continue;
 
-		let attackerPos = TriggerHelper.GetEntityPosition2D(firstAttacker);
+		const attackerPos = TriggerHelper.GetEntityPosition2D(firstAttacker);
 		if (!attackerPos)
 			continue;
 
 		// The returned entities are sorted by RangeManager already
 		// Only consider units implementing Health since wolves deal damage.
-		let targets = PositionHelper.EntitiesNearPoint(attackerPos, 200, players, IID_Health).filter(ent => {
-			let cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+		const targets = PositionHelper.EntitiesNearPoint(attackerPos, 200, players, IID_Health).filter(ent => {
+			const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
 			return cmpIdentity && MatchesClassList(cmpIdentity.GetClassesList(), targetClasses);
 		});
 
@@ -63,20 +63,20 @@ Trigger.prototype.SpawnWolvesAndAttack = function()
 		{
 			if (!allTargets)
 				allTargets = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetNonGaiaEntities().filter(ent => {
-					let cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+					const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
 					return cmpIdentity && MatchesClassList(cmpIdentity.GetClassesList(), targetClasses);
 				});
 
-			let getDistance = target => {
-				let targetPos = TriggerHelper.GetEntityPosition2D(target);
+			const getDistance = target => {
+				const targetPos = TriggerHelper.GetEntityPosition2D(target);
 				return targetPos ? attackerPos.distanceToSquared(targetPos) : Infinity;
 			};
 
 			goodTargets = [];
-			let goodDists = [];
-			for (let target of allTargets)
+			const goodDists = [];
+			for (const target of allTargets)
 			{
-				let dist = getDistance(target);
+				const dist = getDistance(target);
 				let i = goodDists.findIndex(element => dist < element);
 				if (i != -1 || goodTargets.length < targetCount)
 				{
@@ -93,7 +93,7 @@ Trigger.prototype.SpawnWolvesAndAttack = function()
 			}
 		}
 
-		for (let target of goodTargets)
+		for (const target of goodTargets)
 			ProcessCommand(0, {
 				"type": "attack",
 				"entities": attackers[spawnPoint],
@@ -106,7 +106,7 @@ Trigger.prototype.SpawnWolvesAndAttack = function()
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.RegisterTrigger("OnInitGame", "DisableTechnologies", { "enabled": true });
 	cmpTrigger.DoAfterDelay(firstWaveTime * 60 * 1000, "SpawnWolvesAndAttack", {});
 }

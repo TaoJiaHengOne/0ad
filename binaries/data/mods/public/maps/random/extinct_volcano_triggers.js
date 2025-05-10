@@ -85,13 +85,13 @@ Trigger.prototype.DebugLog = function(txt)
 
 Trigger.prototype.GarrisonWoodenTowers = function()
 {
-	for (let gaiaEnt of Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetEntitiesByPlayer(0))
+	for (const gaiaEnt of Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager).GetEntitiesByPlayer(0))
 	{
-		let cmpIdentity = Engine.QueryInterface(gaiaEnt, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(gaiaEnt, IID_Identity);
 		if (!cmpIdentity || !cmpIdentity.HasClass("Tower"))
 			continue;
 
-		let cmpGarrisonHolder = Engine.QueryInterface(gaiaEnt, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(gaiaEnt, IID_GarrisonHolder);
 		if (!cmpGarrisonHolder)
 			continue;
 
@@ -101,10 +101,10 @@ Trigger.prototype.GarrisonWoodenTowers = function()
 
 Trigger.prototype.RaiseWaterLevelStep = function()
 {
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-	let time = cmpTimer.GetTime();
-	let cmpWaterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
-	let newLevel = cmpWaterManager.GetWaterLevel() + waterLevelIncreaseHeight;
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const time = cmpTimer.GetTime();
+	const cmpWaterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
+	const newLevel = cmpWaterManager.GetWaterLevel() + waterLevelIncreaseHeight;
 	cmpWaterManager.SetWaterLevel(newLevel);
 	this.DebugLog("Raising water level to " + Math.round(newLevel) + " took " + (cmpTimer.GetTime() - time));
 
@@ -113,30 +113,30 @@ Trigger.prototype.RaiseWaterLevelStep = function()
 	else
 		this.DebugLog("Water reached final level");
 
-	let actorTemplates = {};
-	let killedTemplates = {};
+	const actorTemplates = {};
+	const killedTemplates = {};
 
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 
-	for (let ent of cmpRangeManager.GetGaiaAndNonGaiaEntities())
+	for (const ent of cmpRangeManager.GetGaiaAndNonGaiaEntities())
 	{
-		let cmpPosition = Engine.QueryInterface(ent, IID_Position);
+		const cmpPosition = Engine.QueryInterface(ent, IID_Position);
 		if (!cmpPosition || !cmpPosition.IsInWorld())
 			continue;
 
-		let pos = cmpPosition.GetPosition();
+		const pos = cmpPosition.GetPosition();
 		if (pos.y + drownHeight >= newLevel)
 			continue;
 
-		let cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
 		if (!cmpIdentity)
 			continue;
 
-		let templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
+		const templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
 
 		// Animals and units drown
-		let cmpHealth = Engine.QueryInterface(ent, IID_Health);
+		const cmpHealth = Engine.QueryInterface(ent, IID_Health);
 		if (cmpHealth && cmpIdentity.HasClass(drownClass))
 		{
 			cmpHealth.Kill();
@@ -151,21 +151,21 @@ Trigger.prototype.RaiseWaterLevelStep = function()
 		// Do not use ChangeEntityTemplate for performance and
 		// because we don't need nor want the effects of MT_EntityRenamed
 
-		let cmpVisualActor = Engine.QueryInterface(ent, IID_Visual);
+		const cmpVisualActor = Engine.QueryInterface(ent, IID_Visual);
 		if (!cmpVisualActor)
 			continue;
 
-		let height = cmpPosition.GetHeightOffset();
-		let rot = cmpPosition.GetRotation();
+		const height = cmpPosition.GetHeightOffset();
+		const rot = cmpPosition.GetRotation();
 
-		let actorTemplate = cmpTemplateManager.GetTemplate(templateName).VisualActor.Actor;
-		let seed = cmpVisualActor.GetActorSeed();
+		const actorTemplate = cmpTemplateManager.GetTemplate(templateName).VisualActor.Actor;
+		const seed = cmpVisualActor.GetActorSeed();
 		Engine.DestroyEntity(ent);
 
-		let newEnt = Engine.AddEntity("actor|" + actorTemplate);
+		const newEnt = Engine.AddEntity("actor|" + actorTemplate);
 		Engine.QueryInterface(newEnt, IID_Visual).SetActorSeed(seed);
 
-		let cmpNewPos = Engine.QueryInterface(newEnt, IID_Position);
+		const cmpNewPos = Engine.QueryInterface(newEnt, IID_Position);
 		cmpNewPos.JumpTo(pos.x, pos.z);
 		cmpNewPos.SetHeightOffset(height);
 		cmpNewPos.SetXZRotation(rot.x, rot.z);
@@ -181,8 +181,8 @@ Trigger.prototype.RaiseWaterLevelStep = function()
 };
 
 {
-	let waterRiseTime = debugWaterRise ? 0 : (InitAttributes.settings.SeaLevelRiseTime || 0);
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const waterRiseTime = debugWaterRise ? 0 : (InitAttributes.settings.SeaLevelRiseTime || 0);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.GarrisonWoodenTowers();
 	cmpTrigger.DoAfterDelay((waterRiseTime - waterRiseNotificationDuration) * 60 * 1000, "RaisingWaterNotification", {});
 	cmpTrigger.DoAfterDelay(waterRiseTime * 60 * 1000, "RaiseWaterLevelStep", {});

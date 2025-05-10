@@ -154,7 +154,7 @@ function* GenerateMap(mapSettings)
 
 	for (let m = 0; m < randIntInclusive(20, 34); ++m)
 	{
-		let elevRand = randIntInclusive(4, 12);
+		const elevRand = randIntInclusive(4, 12);
 		createArea(
 			new ChainPlacer(
 				7,
@@ -182,7 +182,7 @@ function* GenerateMap(mapSettings)
 	g_Map.log("Creating Plateau");
 	for (let m = 0; m < randIntInclusive(120, 240); ++m)
 	{
-		let elevRand = randIntInclusive(18, 22);
+		const elevRand = randIntInclusive(18, 22);
 		createArea(
 			new ChainPlacer(
 				24,

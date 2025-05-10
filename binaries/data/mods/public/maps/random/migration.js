@@ -197,7 +197,7 @@ function* GenerateMap(mapSettings)
 		(currentBiome() == "generic/savanna" ? 2 : 1);
 
 	var num = Math.floor(size / types.length);
-	for (let type of types)
+	for (const type of types)
 		createAreas(
 			new ClumpPlacer(forestTrees / num, 0.1, 0.1, Infinity),
 			[
@@ -209,7 +209,7 @@ function* GenerateMap(mapSettings)
 	yield 38;
 
 	g_Map.log("Creating dirt patches");
-	for (let size of [scaleByMapSize(3, 48), scaleByMapSize(5, 84), scaleByMapSize(8, 128)])
+	for (const size of [scaleByMapSize(3, 48), scaleByMapSize(5, 84), scaleByMapSize(8, 128)])
 		createAreas(
 			new ClumpPlacer(size, 0.3, 0.06, 0.5),
 			[
@@ -231,7 +231,7 @@ function* GenerateMap(mapSettings)
 	yield 42;
 
 	g_Map.log("Creating grass patches");
-	for (let size of [scaleByMapSize(2, 32), scaleByMapSize(3, 48), scaleByMapSize(5, 80)])
+	for (const size of [scaleByMapSize(2, 32), scaleByMapSize(3, 48), scaleByMapSize(5, 80)])
 		createAreas(
 			new ClumpPlacer(size, 0.3, 0.06, 0.5),
 			new TerrainPainter(tTier4Terrain),
@@ -273,7 +273,7 @@ function* GenerateMap(mapSettings)
 		(currentBiome() == "generic/savanna" ? 2 : 3);
 
 	var num = Math.floor((size / types.length));
-	for (let type of types)
+	for (const type of types)
 		createAreas(
 			new ClumpPlacer(forestTrees / num, 0.1, 0.1, Infinity),
 			[

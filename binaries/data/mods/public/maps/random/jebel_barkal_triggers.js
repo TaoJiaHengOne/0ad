@@ -367,7 +367,7 @@ Trigger.prototype.debugLog = function(txt)
 
 Trigger.prototype.JebelBarkal_Init = function()
 {
-	let isNomad = !TriggerHelper.GetAllPlayersEntitiesByClass("CivCentre").length;
+	const isNomad = !TriggerHelper.GetAllPlayersEntitiesByClass("CivCentre").length;
 
 	this.JebelBarkal_TrackUnits();
 	this.RegisterTrigger("OnOwnershipChanged", "JebelBarkal_OwnershipChange", { "enabled": true });
@@ -411,7 +411,7 @@ Trigger.prototype.JebelBarkal_TrackUnits = function()
 
 Trigger.prototype.JebelBarkal_SetDefenderStance = function()
 {
-	for (let ent of TriggerHelper.GetPlayerEntitiesByClass(jebelBarkal_playerID, "Human"))
+	for (const ent of TriggerHelper.GetPlayerEntitiesByClass(jebelBarkal_playerID, "Human"))
 		TriggerHelper.SetUnitStance(ent, "defensive");
 };
 
@@ -422,13 +422,13 @@ Trigger.prototype.JebelBarkal_StartRitualAnimations = function()
 
 Trigger.prototype.JebelBarkal_UpdateRitualAnimations = function()
 {
-	for (let ent of this.jebelBarkal_ritualHealers)
+	for (const ent of this.jebelBarkal_ritualHealers)
 	{
-		let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+		const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 		if (!cmpUnitAI || cmpUnitAI.GetCurrentState() != "INDIVIDUAL.IDLE")
 			continue;
 
-		let cmpVisual = Engine.QueryInterface(ent, IID_Visual);
+		const cmpVisual = Engine.QueryInterface(ent, IID_Visual);
 		if (cmpVisual && jebelBarkal_ritualAnimations.indexOf(cmpVisual.GetAnimationName()) == -1)
 			cmpVisual.SelectAnimation(pickRandom(jebelBarkal_ritualAnimations), false, 1, "");
 	}
@@ -436,13 +436,13 @@ Trigger.prototype.JebelBarkal_UpdateRitualAnimations = function()
 
 Trigger.prototype.JebelBarkal_GarrisonBuildings = function()
 {
-	for (let buildingGarrison of jebelBarkal_buildingGarrison(this.GetDifficulty()))
+	for (const buildingGarrison of jebelBarkal_buildingGarrison(this.GetDifficulty()))
 		TriggerHelper.SpawnAndGarrisonAtClasses(jebelBarkal_playerID, buildingGarrison.buildingClasses, buildingGarrison.unitTemplates, buildingGarrison.capacityRatio);
 };
 
 Trigger.prototype.JebelBarkal_TurretBuildings = function()
 {
-	for (let buildingTurret of jebelBarkal_buildingTurret(this.GetDifficulty()))
+	for (const buildingTurret of jebelBarkal_buildingTurret(this.GetDifficulty()))
 		TriggerHelper.SpawnAndTurretAtClasses(jebelBarkal_playerID, buildingTurret.buildingClasses, buildingTurret.unitTemplates, buildingTurret.capacityRatio);
 };
 
@@ -454,33 +454,33 @@ Trigger.prototype.JebelBarkal_SpawnCityPatrolGroups = function()
 	if (!this.jebelBarkal_patrolGroupSpawnPoints.length)
 		return;
 
-	let time = TriggerHelper.GetMinutes();
-	let groupCount = Math.floor(Math.max(0, jebelBarkal_cityPatrolGroup_count(time)) - this.jebelBarkal_patrolingUnits.length);
+	const time = TriggerHelper.GetMinutes();
+	const groupCount = Math.floor(Math.max(0, jebelBarkal_cityPatrolGroup_count(time)) - this.jebelBarkal_patrolingUnits.length);
 
 	this.debugLog("Spawning " + groupCount + " city patrol groups, " + this.jebelBarkal_patrolingUnits.length + " exist");
 
 	for (let i = 0; i < groupCount; ++i)
 	{
-		let spawnEnt = pickRandom(this.jebelBarkal_patrolGroupSpawnPoints);
+		const spawnEnt = pickRandom(this.jebelBarkal_patrolGroupSpawnPoints);
 
-		let templateCounts = TriggerHelper.BalancedTemplateComposition(
+		const templateCounts = TriggerHelper.BalancedTemplateComposition(
 			jebelBarkal_cityPatrolGroup_balancing.unitComposition(time, this.jebelBarkal_heroes),
 			jebelBarkal_cityPatrolGroup_balancing.unitCount(time));
 
 		this.debugLog(uneval(templateCounts));
 
-		let groupEntities = this.JebelBarkal_SpawnTemplates(spawnEnt, templateCounts);
+		const groupEntities = this.JebelBarkal_SpawnTemplates(spawnEnt, templateCounts);
 
 		this.jebelBarkal_patrolingUnits.push(groupEntities);
 
-		for (let ent of groupEntities)
+		for (const ent of groupEntities)
 			TriggerHelper.SetUnitStance(ent, "defensive");
 
 		TriggerHelper.SetUnitFormation(jebelBarkal_playerID, groupEntities, pickRandom(jebelBarkal_formations));
 
-		for (let patrolTarget of shuffleArray(this.GetTriggerPoints(jebelBarkal_cityPatrolGroup_triggerPointPath)))
+		for (const patrolTarget of shuffleArray(this.GetTriggerPoints(jebelBarkal_cityPatrolGroup_triggerPointPath)))
 		{
-			let pos = TriggerHelper.GetEntityPosition2D(patrolTarget);
+			const pos = TriggerHelper.GetEntityPosition2D(patrolTarget);
 			ProcessCommand(jebelBarkal_playerID, {
 				"type": "patrol",
 				"entities": groupEntities,
@@ -502,9 +502,9 @@ Trigger.prototype.JebelBarkal_SpawnTemplates = function(spawnEnt, templateCounts
 {
 	let groupEntities = [];
 
-	for (let templateName in templateCounts)
+	for (const templateName in templateCounts)
 	{
-		let ents = TriggerHelper.SpawnUnits(spawnEnt, templateName, templateCounts[templateName], jebelBarkal_playerID);
+		const ents = TriggerHelper.SpawnUnits(spawnEnt, templateName, templateCounts[templateName], jebelBarkal_playerID);
 
 		groupEntities = groupEntities.concat(ents);
 
@@ -523,32 +523,32 @@ Trigger.prototype.JebelBarkal_SpawnAttackerGroups = function()
 	if (!this.jebelBarkal_attackerGroupSpawnPoints)
 		return;
 
-	let time = TriggerHelper.GetMinutes();
+	const time = TriggerHelper.GetMinutes();
 	this.JebelBarkal_StartAttackTimer(jebelBarkal_attackInterval(time, this.GetDifficulty()));
 
 	this.debugLog("Attacker wave (at most " + (jebelBarkal_maxPopulation - this.jebelBarkal_attackerUnits.length) + " attackers)");
 
-	let activePlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers();
-	let playerEntities = activePlayers.map(playerID =>
+	const activePlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers();
+	const playerEntities = activePlayers.map(playerID =>
 		TriggerHelper.GetEntitiesByPlayer(playerID).filter(TriggerHelper.IsInWorld));
 
-	let patrolPoints = this.GetTriggerPoints(jebelBarkal_attackerGroup_triggerPointPatrol);
+	const patrolPoints = this.GetTriggerPoints(jebelBarkal_attackerGroup_triggerPointPatrol);
 
-	let groupSizeFactor = jebelBarkal_attackerGroup_sizeFactor(
+	const groupSizeFactor = jebelBarkal_attackerGroup_sizeFactor(
 		activePlayers.length,
 		this.numInitialSpawnPoints,
 		this.GetDifficulty());
 
 	let totalSpawnCount = 0;
-	for (let spawnPointBalancing of jebelBarkal_attackerGroup_balancing)
+	for (const spawnPointBalancing of jebelBarkal_attackerGroup_balancing)
 	{
-		let targets = playerEntities.reduce((allTargets, playerEnts) =>
+		const targets = playerEntities.reduce((allTargets, playerEnts) =>
 			allTargets.concat(shuffleArray(TriggerHelper.MatchEntitiesByClass(playerEnts, spawnPointBalancing.targetClasses())).slice(0, 10)), []);
 
 		if (!targets.length)
 			continue;
 
-		for (let spawnEnt of TriggerHelper.MatchEntitiesByClass(this.jebelBarkal_attackerGroupSpawnPoints, spawnPointBalancing.buildingClasses))
+		for (const spawnEnt of TriggerHelper.MatchEntitiesByClass(this.jebelBarkal_attackerGroupSpawnPoints, spawnPointBalancing.buildingClasses))
 		{
 			let unitCount = Math.min(
 				jebelBarkal_maxPopulation - this.jebelBarkal_attackerUnits.length,
@@ -560,7 +560,7 @@ Trigger.prototype.JebelBarkal_SpawnAttackerGroups = function()
 			if (unitCount <= 0)
 				continue;
 
-			let templateCounts = TriggerHelper.BalancedTemplateComposition(spawnPointBalancing.unitComposition(time, this.jebelBarkal_heroes), unitCount);
+			const templateCounts = TriggerHelper.BalancedTemplateComposition(spawnPointBalancing.unitComposition(time, this.jebelBarkal_heroes), unitCount);
 
 			totalSpawnCount += unitCount;
 
@@ -570,19 +570,19 @@ Trigger.prototype.JebelBarkal_SpawnAttackerGroups = function()
 			if (dryRun)
 				continue;
 
-			let spawnedEntities = this.JebelBarkal_SpawnTemplates(spawnEnt, templateCounts);
+			const spawnedEntities = this.JebelBarkal_SpawnTemplates(spawnEnt, templateCounts);
 
 			this.jebelBarkal_attackerUnits = this.jebelBarkal_attackerUnits.concat(spawnedEntities);
 
-			let formation = pickRandom(spawnPointBalancing.formations);
+			const formation = pickRandom(spawnPointBalancing.formations);
 			if (formation)
 				TriggerHelper.SetUnitFormation(jebelBarkal_playerID, spawnedEntities, formation);
 
-			let entityGroups = formation ? [spawnedEntities] : spawnedEntities.reduce((entityGroup, ent) => entityGroup.concat([[ent]]), []);
+			const entityGroups = formation ? [spawnedEntities] : spawnedEntities.reduce((entityGroup, ent) => entityGroup.concat([[ent]]), []);
 			for (let i = 0; i < jebelBarkal_patrolPointCount; ++i)
-				for (let entities of entityGroups)
+				for (const entities of entityGroups)
 				{
-					let pos = TriggerHelper.GetEntityPosition2D(pickRandom(i == 0 ? targets : patrolPoints));
+					const pos = TriggerHelper.GetEntityPosition2D(pickRandom(i == 0 ? targets : patrolPoints));
 					ProcessCommand(jebelBarkal_playerID, {
 						"type": "patrol",
 						"entities": entities,
@@ -609,7 +609,7 @@ Trigger.prototype.JebelBarkal_SpawnAttackerGroups = function()
 
 Trigger.prototype.JebelBarkal_StartAttackTimer = function(delay)
 {
-	let nextAttack = delay * 60 * 1000;
+	const nextAttack = delay * 60 * 1000;
 
 	Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).AddTimeNotification({
 		"message": markForTranslation("Napata will attack in %(time)s!"),
@@ -629,7 +629,7 @@ Trigger.prototype.JebelBarkal_OwnershipChange = function(data)
 	if (data.from != 0)
 		return;
 
-	let trackedEntityArrays = [
+	const trackedEntityArrays = [
 		this.jebelBarkal_heroes,
 		this.jebelBarkal_ritualHealers,
 		this.jebelBarkal_patrolGroupSpawnPoints,
@@ -638,9 +638,9 @@ Trigger.prototype.JebelBarkal_OwnershipChange = function(data)
 		...this.jebelBarkal_patrolingUnits,
 	];
 
-	for (let array of trackedEntityArrays)
+	for (const array of trackedEntityArrays)
 	{
-		let idx = array.indexOf(data.entity);
+		const idx = array.indexOf(data.entity);
 		if (idx != -1)
 			array.splice(idx, 1);
 	}

@@ -15,10 +15,10 @@ function* GenerateMap()
 	g_MapSettings = { "Size": 512 };
 	globalThis.g_Map = new RandomMap(0, "blackness");
 
-	let min = new Vector2D(4, 4);
-	let max = new Vector2D(10, 10);
+	const min = new Vector2D(4, 4);
+	const max = new Vector2D(10, 10);
 
-	let center = Vector2D.average([min, max]);
+	const center = Vector2D.average([min, max]);
 
 	createArea(
 		new RectPlacer(min, max),
