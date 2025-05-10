@@ -120,11 +120,11 @@ g_SelectionPanels.Command = {
 	},
 	"getItems": function(unitEntStates)
 	{
-		let commands = [];
+		const commands = [];
 
-		for (let command in g_EntityCommands)
+		for (const command in g_EntityCommands)
 		{
-			let info = getCommandInfo(command, unitEntStates);
+			const info = getCommandInfo(command, unitEntStates);
 			if (info)
 			{
 				info.name = command;
@@ -150,7 +150,7 @@ g_SelectionPanels.Command = {
 
 		data.icon.sprite = "stretched:session/icons/" + data.item.icon;
 
-		let size = data.button.size;
+		const size = data.button.size;
 		// relative to the center ( = 50%)
 		size.rleft = 50;
 		size.rright = 50;
@@ -174,7 +174,7 @@ g_SelectionPanels.Construction = {
 	},
 	"setupButton": function(data)
 	{
-		let template = GetTemplateData(data.item, data.player);
+		const template = GetTemplateData(data.item, data.player);
 		if (!template)
 			return false;
 
@@ -191,11 +191,11 @@ g_SelectionPanels.Construction = {
 			});
 
 		data.button.onPress = function() { startBuildingPlacement(data.item, data.playerState); };
-		let showTemplateFunc = () => { showTemplateDetails(data.item, data.playerState.civ); };
+		const showTemplateFunc = () => { showTemplateDetails(data.item, data.playerState.civ); };
 		data.button.onPressRight = showTemplateFunc;
 		data.button.onPressRightDisabled = showTemplateFunc;
 
-		let tooltips = [
+		const tooltips = [
 			getEntityNamesFormatted,
 			getVisibleEntityClassesFormatted,
 			getAurasTooltip,
@@ -211,7 +211,7 @@ g_SelectionPanels.Construction = {
 		);
 
 
-		let limits = getEntityLimitAndCount(data.playerState, data.item);
+		const limits = getEntityLimitAndCount(data.playerState, data.item);
 		tooltips.push(
 			formatLimitString(limits.entLimit, limits.entCount, limits.entLimitChangers),
 			formatMatchLimitString(limits.matchLimit, limits.matchCount, limits.type),
@@ -267,9 +267,9 @@ g_SelectionPanels.Formation = {
 		if (!g_FormationsInfo.has(data.item))
 			g_FormationsInfo.set(data.item, Engine.GuiInterfaceCall("GetFormationInfoFromTemplate", { "templateName": data.item }));
 
-		let formationOk = canMoveSelectionIntoFormation(data.item);
-		let unitIds = data.unitEntStates.map(state => state.id);
-		let formationSelected = Engine.GuiInterfaceCall("IsFormationSelected", {
+		const formationOk = canMoveSelectionIntoFormation(data.item);
+		const unitIds = data.unitEntStates.map(state => state.id);
+		const formationSelected = Engine.GuiInterfaceCall("IsFormationSelected", {
 			"ents": unitIds,
 			"formationTemplate": data.item
 		});
@@ -280,12 +280,12 @@ g_SelectionPanels.Formation = {
 
 		data.button.onMouseRightPress = () => g_AutoFormation.setDefault(data.item);
 
-		let formationInfo = g_FormationsInfo.get(data.item);
+		const formationInfo = g_FormationsInfo.get(data.item);
 		let tooltip = translate(formationInfo.name);
 		if (formationInfo.tooltip)
 			tooltip += "\n" + bodyFont(translate(formationInfo.tooltip));
 
-		let isDefaultFormation = g_AutoFormation.isDefault(data.item);
+		const isDefaultFormation = g_AutoFormation.isDefault(data.item);
 		if (data.item === NULL_FORMATION)
 			tooltip += "\n" + (isDefaultFormation ?
 				translate("Default formation is disabled.") :
@@ -300,7 +300,7 @@ g_SelectionPanels.Formation = {
 		data.button.tooltip = tooltip;
 
 		data.button.enabled = formationOk && controlsPlayer(data.player);
-		let grayscale = formationOk ? "" : "grayscale:";
+		const grayscale = formationOk ? "" : "grayscale:";
 		data.guiSelection.hidden = !formationSelected;
 		data.countDisplay.hidden = !isDefaultFormation;
 		data.icon.sprite = "stretched:" + grayscale + "session/icons/" + formationInfo.icon;
@@ -322,9 +322,9 @@ g_SelectionPanels.Garrison = {
 		if (unitEntStates.every(state => !state.garrisonHolder))
 			return [];
 
-		let groups = new EntityGroups();
+		const groups = new EntityGroups();
 
-		for (let state of unitEntStates)
+		for (const state of unitEntStates)
 			if (state.garrisonHolder)
 				groups.add(state.garrisonHolder.entities);
 
@@ -332,9 +332,9 @@ g_SelectionPanels.Garrison = {
 	},
 	"setupButton": function(data)
 	{
-		let entState = GetEntityState(data.item.ents[0]);
+		const entState = GetEntityState(data.item.ents[0]);
 
-		let template = GetTemplateData(entState.template);
+		const template = GetTemplateData(entState.template);
 		if (!template)
 			return false;
 
@@ -344,7 +344,7 @@ g_SelectionPanels.Garrison = {
 
 		data.countDisplay.caption = data.item.ents.length > 1 ? data.item.ents.length : "";
 
-		let canUngarrison = controlsPlayer(data.player) || controlsPlayer(entState.player);
+		const canUngarrison = controlsPlayer(data.player) || controlsPlayer(entState.player);
 
 		data.button.enabled = canUngarrison;
 
@@ -379,8 +379,8 @@ g_SelectionPanels.Gate = {
 	"rowLength": 10,
 	"getItems": function(unitEntStates)
 	{
-		let hideLocked = unitEntStates.every(state => !state.gate || !state.gate.locked);
-		let hideUnlocked = unitEntStates.every(state => !state.gate || state.gate.locked);
+		const hideLocked = unitEntStates.every(state => !state.gate || !state.gate.locked);
+		const hideUnlocked = unitEntStates.every(state => !state.gate || state.gate.locked);
 
 		if (hideLocked && hideUnlocked)
 			return [];
@@ -421,8 +421,8 @@ g_SelectionPanels.Pack = {
 	"rowLength": 10,
 	"getItems": function(unitEntStates)
 	{
-		let checks = {};
-		for (let state of unitEntStates)
+		const checks = {};
+		for (const state of unitEntStates)
 		{
 			if (!state.pack)
 				continue;
@@ -440,7 +440,7 @@ g_SelectionPanels.Pack = {
 				checks.packCancelButton = true;
 		}
 
-		let items = [];
+		const items = [];
 		if (checks.packButton)
 			items.push({
 				"packing": false,
@@ -542,17 +542,17 @@ g_SelectionPanels.Queue = {
 	},
 	"resizePanel": function(numberOfItems, rowLength)
 	{
-		let numRows = Math.ceil(numberOfItems / rowLength);
-		let panel = Engine.GetGUIObjectByName("unitQueuePanel");
-		let size = panel.size;
-		let buttonSize = Engine.GetGUIObjectByName("unitQueueButton[0]").size.bottom;
-		let margin = 4;
+		const numRows = Math.ceil(numberOfItems / rowLength);
+		const panel = Engine.GetGUIObjectByName("unitQueuePanel");
+		const size = panel.size;
+		const buttonSize = Engine.GetGUIObjectByName("unitQueueButton[0]").size.bottom;
+		const margin = 4;
 		size.top = size.bottom - numRows * buttonSize - (numRows + 2) * margin;
 		panel.size = size;
 	},
 	"setupButton": function(data)
 	{
-		let queuedItem = data.item.queuedItem;
+		const queuedItem = data.item.queuedItem;
 
 		// Differentiate between units and techs
 		let template;
@@ -660,12 +660,12 @@ g_SelectionPanels.Research = {
 			}));
 		}
 
-		let sortedEntStates = unitEntStates.sort((a, b) =>
+		const sortedEntStates = unitEntStates.sort((a, b) =>
 			(!b.upgrade || !b.upgrade.isUpgrading) - (!a.upgrade || !a.upgrade.isUpgrading) ||
 		 	(!a.production ? 0 : a.production.queue.length) - (!b.production ? 0 : b.production.queue.length)
 		 );
 
-		for (let state of sortedEntStates)
+		for (const state of sortedEntStates)
 		{
 			if (!state.researcher || !state.researcher.technologies)
 				continue;
@@ -719,17 +719,17 @@ g_SelectionPanels.Research = {
 			Engine.GetGUIObjectByName("unitResearchButton[" + data.i + "]").hidden = true;
 
 		// Set up the tech connector
-		let pair = Engine.GetGUIObjectByName("unitResearchPair[" + data.i + "]");
+		const pair = Engine.GetGUIObjectByName("unitResearchPair[" + data.i + "]");
 		pair.hidden = data.item.tech.pair == null;
 		setPanelObjectPosition(pair, data.i, data.rowLength);
 
 		// Handle one or two techs (tech pair)
-		let player = data.player;
-		let playerState = GetSimState().players[player];
-		for (let tech of data.item.tech.pair ? [data.item.tech.bottom, data.item.tech.top] : [data.item.tech])
+		const player = data.player;
+		const playerState = GetSimState().players[player];
+		for (const tech of data.item.tech.pair ? [data.item.tech.bottom, data.item.tech.top] : [data.item.tech])
 		{
 			// Don't change the object returned by GetTechnologyData
-			let template = clone(GetTechnologyData(tech, playerState.civ));
+			const template = clone(GetTechnologyData(tech, playerState.civ));
 			if (!template)
 				return false;
 
@@ -743,23 +743,23 @@ g_SelectionPanels.Research = {
 				continue;
 			}
 
-			for (let res in template.cost)
+			for (const res in template.cost)
 				template.cost[res] *= data.item.techCostMultiplier[res] !== undefined ? data.item.techCostMultiplier[res] : 1;
 
-			let neededResources = Engine.GuiInterfaceCall("GetNeededResources", {
+			const neededResources = Engine.GuiInterfaceCall("GetNeededResources", {
 				"cost": template.cost,
 				"player": player
 			});
 
-			let requirementsPassed = Engine.GuiInterfaceCall("CheckTechnologyRequirements", {
+			const requirementsPassed = Engine.GuiInterfaceCall("CheckTechnologyRequirements", {
 				"tech": tech,
 				"player": player
 			});
 
-			let button = Engine.GetGUIObjectByName("unitResearchButton[" + position + "]");
-			let icon = Engine.GetGUIObjectByName("unitResearchIcon[" + position + "]");
+			const button = Engine.GetGUIObjectByName("unitResearchButton[" + position + "]");
+			const icon = Engine.GetGUIObjectByName("unitResearchIcon[" + position + "]");
 
-			let tooltips = [
+			const tooltips = [
 				getEntityNamesFormatted,
 				getEntityTooltip,
 				getEntityCostTooltip,
@@ -769,14 +769,14 @@ g_SelectionPanels.Research = {
 			if (!requirementsPassed)
 			{
 				let tip = template.requirementsTooltip;
-				let reqs = template.reqs;
-				for (let req of reqs)
+				const reqs = template.reqs;
+				for (const req of reqs)
 				{
 					if (!req.entities)
 						continue;
 
-					let entityCounts = [];
-					for (let entity of req.entities)
+					const entityCounts = [];
+					for (const entity of req.entities)
 					{
 						let current = 0;
 						switch (entity.check)
@@ -791,7 +791,7 @@ g_SelectionPanels.Research = {
 							break;
 						}
 
-						let remaining = entity.number - current;
+						const remaining = entity.number - current;
 						if (remaining < 1)
 							continue;
 
@@ -814,7 +814,7 @@ g_SelectionPanels.Research = {
 				addResearchToQueue(data.item.researchFacilityId, t);
 			})(tech);
 
-			let showTemplateFunc = (t => function() {
+			const showTemplateFunc = (t => function() {
 				showTemplateDetails(
 					t,
 					GetTemplateData(data.unitEntStates.find(state => state.id == data.item.researchFacilityId).template).nativeCiv);
@@ -826,7 +826,7 @@ g_SelectionPanels.Research = {
 			if (data.item.tech.pair)
 			{
 				// On mouse enter, show a cross over the other icon
-				let unchosenIcon = Engine.GetGUIObjectByName("unitResearchUnchosenIcon[" + (position + data.rowLength) % (2 * data.rowLength) + "]");
+				const unchosenIcon = Engine.GetGUIObjectByName("unitResearchUnchosenIcon[" + (position + data.rowLength) % (2 * data.rowLength) + "]");
 				button.onMouseEnter = function() {
 					unchosenIcon.hidden = false;
 				};
@@ -885,20 +885,20 @@ g_SelectionPanels.Selection = {
 	},
 	"setupButton": function(data)
 	{
-		let entState = GetEntityState(data.item.ents[0]);
-		let template = GetTemplateData(entState.template);
+		const entState = GetEntityState(data.item.ents[0]);
+		const template = GetTemplateData(entState.template);
 		if (!template)
 			return false;
 
-		for (let ent of data.item.ents)
+		for (const ent of data.item.ents)
 		{
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 
 			if (state.resourceCarrying && state.resourceCarrying.length !== 0)
 			{
 				if (!data.carried)
 					data.carried = {};
-				let carrying = state.resourceCarrying[0];
+				const carrying = state.resourceCarrying[0];
 				if (data.carried[carrying.type])
 					data.carried[carrying.type] += carrying.amount;
 				else
@@ -909,8 +909,8 @@ g_SelectionPanels.Selection = {
 			{
 				if (!data.carried)
 					data.carried = {};
-				let amount = state.trader.goods.amount;
-				let type = state.trader.goods.type;
+				const amount = state.trader.goods.amount;
+				const type = state.trader.goods.type;
 				let totalGain = amount.traderGain;
 				if (amount.market1Gain)
 					totalGain += amount.market1Gain;
@@ -923,7 +923,7 @@ g_SelectionPanels.Selection = {
 			}
 		}
 
-		let unitOwner = GetEntityState(data.item.ents[0]).player;
+		const unitOwner = GetEntityState(data.item.ents[0]).player;
 		let tooltip = getEntityNames(template);
 		if (data.carried)
 			tooltip += "\n" + Object.keys(data.carried).map(res =>
@@ -970,7 +970,7 @@ g_SelectionPanels.Stance = {
 	},
 	"setupButton": function(data)
 	{
-		let unitIds = data.unitEntStates.map(state => state.id);
+		const unitIds = data.unitEntStates.map(state => state.id);
 		data.button.onPress = function() { performStance(unitIds, data.item); };
 
 		data.button.tooltip = getStanceDisplayName(data.item) + "\n" + bodyFont(getStanceTooltip(data.item));
@@ -999,7 +999,7 @@ g_SelectionPanels.Training = {
 	},
 	"setupButton": function(data)
 	{
-		let template = GetTemplateData(data.item, data.player);
+		const template = GetTemplateData(data.item, data.player);
 		if (!template)
 			return false;
 
@@ -1008,11 +1008,11 @@ g_SelectionPanels.Training = {
 			"player": data.player
 		});
 
-		let unitIds = data.unitEntStates.map(status => status.id);
-		let [buildingsCountToTrainFullBatch, fullBatchSize, remainderBatch] =
+		const unitIds = data.unitEntStates.map(status => status.id);
+		const [buildingsCountToTrainFullBatch, fullBatchSize, remainderBatch] =
 			getTrainingStatus(unitIds, data.item, data.playerState);
 
-		let trainNum = buildingsCountToTrainFullBatch * fullBatchSize + remainderBatch;
+		const trainNum = buildingsCountToTrainFullBatch * fullBatchSize + remainderBatch;
 
 		let neededResources;
 		if (template.cost)
@@ -1026,7 +1026,7 @@ g_SelectionPanels.Training = {
 				addTrainingToQueue(unitIds, data.item, data.playerState);
 		};
 
-		let showTemplateFunc = () => { showTemplateDetails(data.item, data.playerState.civ); };
+		const showTemplateFunc = () => { showTemplateDetails(data.item, data.playerState.civ); };
 		data.button.onPressRight = showTemplateFunc;
 		data.button.onPressRightDisabled = showTemplateFunc;
 
@@ -1041,7 +1041,7 @@ g_SelectionPanels.Training = {
 			getEntityTooltip(template),
 			getEntityCostTooltip(template, data.player, unitIds[0], buildingsCountToTrainFullBatch, fullBatchSize, remainderBatch)
 		];
-		let limits = getEntityLimitAndCount(data.playerState, data.item);
+		const limits = getEntityLimitAndCount(data.playerState, data.item);
 		tooltips.push(formatLimitString(limits.entLimit, limits.entCount, limits.entLimitChangers),
 			formatMatchLimitString(limits.matchLimit, limits.matchCount, limits.type));
 
@@ -1089,7 +1089,7 @@ g_SelectionPanels.Training = {
 		if (template.icon)
 			data.icon.sprite = modifier + "stretched:session/portraits/" + template.icon;
 
-		let index = data.i + getNumberOfRightPanelButtons();
+		const index = data.i + getNumberOfRightPanelButtons();
 		setPanelObjectPosition(data.button, index, data.rowLength);
 
 		return true;
@@ -1112,11 +1112,11 @@ g_SelectionPanels.Upgrade = {
 	},
 	"setupButton": function(data)
 	{
-		let template = GetTemplateData(data.item.entity);
+		const template = GetTemplateData(data.item.entity);
 		if (!template)
 			return false;
 
-		let progressOverlay = Engine.GetGUIObjectByName("unitUpgradeProgressSlider[" + data.i + "]");
+		const progressOverlay = Engine.GetGUIObjectByName("unitUpgradeProgressSlider[" + data.i + "]");
 		progressOverlay.hidden = true;
 
 		const requirementsMet = !data.item.requirements ||
@@ -1125,14 +1125,14 @@ g_SelectionPanels.Upgrade = {
 				"player": data.player
 			});
 
-		let limits = getEntityLimitAndCount(data.playerState, data.item.entity);
-		let upgradingEntStates = data.unitEntStates.filter(state => state.upgrade.template == data.item.entity);
+		const limits = getEntityLimitAndCount(data.playerState, data.item.entity);
+		const upgradingEntStates = data.unitEntStates.filter(state => state.upgrade.template == data.item.entity);
 
-		let upgradableEntStates = data.unitEntStates.filter(state =>
+		const upgradableEntStates = data.unitEntStates.filter(state =>
 			!state.upgrade.progress &&
 			(!state.production || !state.production.queue || !state.production.queue.length));
 
-		let neededResources = data.item.cost && Engine.GuiInterfaceCall("GetNeededResources", {
+		const neededResources = data.item.cost && Engine.GuiInterfaceCall("GetNeededResources", {
 			"cost": multiplyEntityCosts(data.item, upgradableEntStates.length),
 			"player": data.player
 		});
@@ -1141,12 +1141,12 @@ g_SelectionPanels.Upgrade = {
 		let modifier = "";
 		if (!upgradingEntStates.length && upgradableEntStates.length)
 		{
-			let primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
+			const primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
 			let secondaryName;
 			if (g_ShowSecondaryNames)
 				secondaryName = g_SpecificNamesPrimary ? template.name.generic : template.name.specific;
 
-			let tooltips = [];
+			const tooltips = [];
 			if (g_ShowSecondaryNames)
 			{
 				if (data.item.tooltip)
@@ -1212,9 +1212,9 @@ g_SelectionPanels.Upgrade = {
 			data.countDisplay.caption = upgradingEntStates.length > 1 ? upgradingEntStates.length : "";
 
 			let progress = 0;
-			for (let state of upgradingEntStates)
+			for (const state of upgradingEntStates)
 				progress = Math.max(progress, state.upgrade.progress || 1);
-			let progressOverlaySize = progressOverlay.size;
+			const progressOverlaySize = progressOverlay.size;
 			// TODO This is bad: we assume the progressOverlay is square
 			progressOverlaySize.top = progressOverlaySize.bottom + Math.round((1 - progress) * (progressOverlaySize.left - progressOverlaySize.right));
 			progressOverlay.size = progressOverlaySize;
@@ -1235,7 +1235,7 @@ g_SelectionPanels.Upgrade = {
 		data.button.enabled = controlsPlayer(data.player);
 		data.button.tooltip = tooltip;
 
-		let showTemplateFunc = () => { showTemplateDetails(data.item.entity, data.playerState.civ); };
+		const showTemplateFunc = () => { showTemplateDetails(data.item.entity, data.playerState.civ); };
 		data.button.onPressRight = showTemplateFunc;
 		data.button.onPressRightDisabled = showTemplateFunc;
 
@@ -1250,7 +1250,7 @@ g_SelectionPanels.Upgrade = {
 function initSelectionPanels()
 {
 
-	let unitBarterPanel = Engine.GetGUIObjectByName("unitBarterPanel");
+	const unitBarterPanel = Engine.GetGUIObjectByName("unitBarterPanel");
 	if (BarterButtonManager.IsAvailable(unitBarterPanel))
 		g_SelectionPanelBarterButtonManager = new BarterButtonManager(unitBarterPanel);
 }
@@ -1284,7 +1284,7 @@ async function showTemplateDetails(templateName, civCode)
  *
  * Note that the panel needs to appear in the list to get rendered.
  */
-let g_PanelsOrder = [
+const g_PanelsOrder = [
 	// LEFT PANE
 	"Barter", // Must always be visible on markets
 	"Garrison", // More important than Formation, as you want to see the garrisoned units in ships

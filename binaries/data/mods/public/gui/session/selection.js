@@ -52,7 +52,7 @@ EntityGroups.prototype.reset = function()
 
 EntityGroups.prototype.add = function(ents)
 {
-	for (let ent of ents)
+	for (const ent of ents)
 	{
 		if (this.ents[ent])
 			continue;
@@ -113,7 +113,7 @@ EntityGroups.prototype.getCount = function(key)
 EntityGroups.prototype.getTotalCount = function()
 {
 	let totalCount = 0;
-	for (let key in this.groups)
+	for (const key in this.groups)
 		totalCount += this.groups[key];
 	return totalCount;
 };
@@ -277,11 +277,11 @@ EntitySelection.prototype.checkRenamedEntities = function()
 	if (renamedEntities.length > 0)
 	{
 		var renamedLookup = {};
-		for (let renamedEntity of renamedEntities)
+		for (const renamedEntity of renamedEntities)
 			renamedLookup[renamedEntity.entity] = renamedEntity.newentity;
 
 		// Reconstruct the selection if at least one entity has been renamed.
-		for (let renamedEntity of renamedEntities)
+		for (const renamedEntity of renamedEntities)
 			if (this.selected.has(renamedEntity.entity))
 			{
 				this.rebuildSelection(renamedLookup);
@@ -315,7 +315,7 @@ EntitySelection.prototype.addList = function(ents, quiet, force = false, addForm
 		if (!entState)
 			continue;
 
-		let isUnowned = g_ViewedPlayer != -1 && entState.player != g_ViewedPlayer ||
+		const isUnowned = g_ViewedPlayer != -1 && entState.player != g_ViewedPlayer ||
 		                g_ViewedPlayer == -1 && entState.player == 0;
 
 		if (isUnowned && (ents.length > 1 || this.selected.size) && !force)
@@ -472,7 +472,7 @@ EntitySelection.prototype.onChange = function()
 
 EntitySelection.prototype.selectAndMoveTo = function(entityID)
 {
-	let entState = GetEntityState(entityID);
+	const entState = GetEntityState(entityID);
 	if (!entState || !entState.position)
 		return;
 
@@ -541,8 +541,8 @@ function EntityGroupsContainer()
 EntityGroupsContainer.prototype.addEntities = function(groupName, ents)
 {
 	if (Engine.ConfigDB_GetValue("user", "gui.session.disjointcontrolgroups") == "true")
-		for (let ent of ents)
-			for (let group of this.groups)
+		for (const ent of ents)
+			for (const group of this.groups)
 				if (ent in group.ents)
 					group.removeEnt(ent);
 
@@ -552,7 +552,7 @@ EntityGroupsContainer.prototype.addEntities = function(groupName, ents)
 EntityGroupsContainer.prototype.update = function()
 {
 	this.checkRenamedEntities();
-	for (let group of this.groups)
+	for (const group of this.groups)
 		for (var ent in group.ents)
 		{
 			var entState = GetEntityState(+ent);
@@ -572,11 +572,11 @@ EntityGroupsContainer.prototype.checkRenamedEntities = function()
 	if (renamedEntities.length > 0)
 	{
 		var renamedLookup = {};
-		for (let renamedEntity of renamedEntities)
+		for (const renamedEntity of renamedEntities)
 			renamedLookup[renamedEntity.entity] = renamedEntity.newentity;
 
-		for (let group of this.groups)
-			for (let renamedEntity of renamedEntities)
+		for (const group of this.groups)
+			for (const renamedEntity of renamedEntities)
 				// Reconstruct the group if at least one entity has been renamed.
 				if (renamedEntity.entity in group.ents)
 				{

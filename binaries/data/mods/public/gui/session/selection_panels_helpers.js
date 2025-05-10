@@ -21,8 +21,8 @@ function canMoveSelectionIntoFormation(formationTemplate)
 
 function hasSameRestrictionCategory(templateName1, templateName2)
 {
-	let template1 = GetTemplateData(templateName1);
-	let template2 = GetTemplateData(templateName2);
+	const template1 = GetTemplateData(templateName1);
+	const template2 = GetTemplateData(templateName2);
 
 	if (template1.trainingRestrictions && template2.trainingRestrictions)
 		return template1.trainingRestrictions.category == template2.trainingRestrictions.category;
@@ -39,7 +39,7 @@ function hasSameRestrictionCategory(templateName1, templateName2)
 function resourcesToAlphaMask(neededResources)
 {
 	let totalCost = 0;
-	for (let resource in neededResources)
+	for (const resource in neededResources)
 		totalCost += +neededResources[resource];
 
 	return "color:255 0 0 " + Math.min(125, Math.round(+totalCost / 10) + 50);
@@ -105,7 +105,7 @@ function formatLimitString(trainEntLimit, trainEntCount, trainEntLimitChangers)
 		if (!trainEntLimitChangers[c])
 			continue;
 
-		let string = trainEntLimitChangers[c] > 0 ?
+		const string = trainEntLimitChangers[c] > 0 ?
 			translate("%(changer)s enlarges the limit with %(change)s.") :
 			translate("%(changer)s lessens the limit with %(change)s.");
 
@@ -131,8 +131,8 @@ function formatMatchLimitString(matchEntLimit, matchEntCount, type)
 	if (matchEntLimit == undefined)
 		return "";
 
-	let passedLimit = matchEntCount >= matchEntLimit;
-	let count = matchEntLimit - matchEntCount;
+	const passedLimit = matchEntCount >= matchEntLimit;
+	const count = matchEntLimit - matchEntCount;
 	let text;
 	if (type == "build")
 	{
@@ -242,12 +242,12 @@ var g_JumpCameraLast;
 
 function jumpCamera(index)
 {
-	let position = g_JumpCameraPositions[index];
+	const position = g_JumpCameraPositions[index];
 	if (!position)
 		return;
 
-	let threshold = Engine.ConfigDB_GetValue("user", "gui.session.camerajump.threshold");
-	let cameraPivot = Engine.GetCameraPivot();
+	const threshold = Engine.ConfigDB_GetValue("user", "gui.session.camerajump.threshold");
+	const cameraPivot = Engine.GetCameraPivot();
 	if (g_JumpCameraLast &&
 	    Math.abs(cameraPivot.x - position.x) < threshold &&
 	    Math.abs(cameraPivot.z - position.z) < threshold)
@@ -418,7 +418,7 @@ function unloadTemplate(template, owner)
 		"owner": owner,
 		// Filter out all entities that aren't garrisonable.
 		"garrisonHolders": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return state && !!state.garrisonHolder;
 		})
 	});
@@ -427,17 +427,17 @@ function unloadTemplate(template, owner)
 function unloadAll()
 {
 	const garrisonHolders = g_Selection.filter(e => {
-		let state = GetEntityState(e);
+		const state = GetEntityState(e);
 		return state && !!state.garrisonHolder;
 	});
 
 	if (!garrisonHolders.length)
 		return;
 
-	let ownEnts = [];
-	let otherEnts = [];
+	const ownEnts = [];
+	const otherEnts = [];
 
-	for (let ent of garrisonHolders)
+	for (const ent of garrisonHolders)
 	{
 		if (controlsPlayer(GetEntityState(ent).player))
 			ownEnts.push(ent);
@@ -461,23 +461,23 @@ function unloadAll()
 function unloadAllTurrets()
 {
 	const turretHolders = g_Selection.filter(e => {
-		let state = GetEntityState(e);
+		const state = GetEntityState(e);
 		return state && !!state.turretHolder;
 	});
 
 	if (!turretHolders.length)
 		return;
 
-	let ownedHolders = [];
-	let ejectables = [];
-	for (let ent of turretHolders)
+	const ownedHolders = [];
+	const ejectables = [];
+	for (const ent of turretHolders)
 	{
-		let turretHolderState = GetEntityState(ent);
+		const turretHolderState = GetEntityState(ent);
 		if (controlsPlayer(turretHolderState.player))
 			ownedHolders.push(ent);
 		else
 		{
-			for (let turret of turretHolderState.turretHolder.turretPoints.map(tp => tp.entity))
+			for (const turret of turretHolderState.turretHolder.turretPoints.map(tp => tp.entity))
 				if (turret && controlsPlayer(GetEntityState(turret).player))
 					ejectables.push(turret);
 		}
@@ -499,7 +499,7 @@ function unloadAllTurrets()
 function leaveTurretPoints()
 {
 	const entities = g_Selection.filter(entity => {
-		let entState = GetEntityState(entity);
+		const entState = GetEntityState(entity);
 		return entState && entState.turretable &&
 			entState.turretable.holder != INVALID_ENTITY;
 	});
@@ -516,7 +516,7 @@ function backToWork()
 		"type": "back-to-work",
 		// Filter out all entities that can't go back to work.
 		"entities": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return state && state.unitAI && state.unitAI.hasWorkOrders;
 		})
 	});
@@ -528,7 +528,7 @@ function removeGuard()
 		"type": "remove-guard",
 		// Filter out all entities that are currently guarding/escorting.
 		"entities": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return state && state.unitAI && state.unitAI.isGuarding;
 		})
 	});
@@ -539,7 +539,7 @@ function raiseAlert()
 	Engine.PostNetworkCommand({
 		"type": "alert-raise",
 		"entities": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return state && !!state.alertRaiser;
 		})
 	});
@@ -550,7 +550,7 @@ function endOfAlert()
 	Engine.PostNetworkCommand({
 		"type": "alert-end",
 		"entities": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return state && !!state.alertRaiser;
 		})
 	});
@@ -561,7 +561,7 @@ function turnAutoQueueOn()
 	Engine.PostNetworkCommand({
 		"type": "autoqueue-on",
 		"entities": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return !!state?.trainer?.entities?.length &&
 				!state.production.autoqueue;
 		})
@@ -573,7 +573,7 @@ function turnAutoQueueOff()
 	Engine.PostNetworkCommand({
 		"type": "autoqueue-off",
 		"entities": g_Selection.filter(ent => {
-			let state = GetEntityState(ent);
+			const state = GetEntityState(ent);
 			return !!state?.trainer?.entities?.length &&
 				state.production.autoqueue;
 		})

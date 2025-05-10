@@ -19,25 +19,25 @@ function updateGarrisonHealthBar(entState, selection)
 	// Summing up the Health of every single unit
 	let totalGarrisonHealth = 0;
 	let maxGarrisonHealth = 0;
-	for (let selEnt of selection)
+	for (const selEnt of selection)
 	{
-		let selEntState = GetEntityState(selEnt);
+		const selEntState = GetEntityState(selEnt);
 		if (selEntState.garrisonHolder)
-			for (let ent of selEntState.garrisonHolder.entities)
+			for (const ent of selEntState.garrisonHolder.entities)
 			{
-				let state = GetEntityState(ent);
+				const state = GetEntityState(ent);
 				totalGarrisonHealth += state.hitpoints || 0;
 				maxGarrisonHealth += state.maxHitpoints || 0;
 			}
 	}
 
 	// Configuring the health bar
-	let healthGarrison = Engine.GetGUIObjectByName("healthGarrison");
+	const healthGarrison = Engine.GetGUIObjectByName("healthGarrison");
 	healthGarrison.hidden = totalGarrisonHealth <= 0;
 	if (totalGarrisonHealth > 0)
 	{
-		let healthBarGarrison = Engine.GetGUIObjectByName("healthBarGarrison");
-		let healthSize = healthBarGarrison.size;
+		const healthBarGarrison = Engine.GetGUIObjectByName("healthBarGarrison");
+		const healthSize = healthBarGarrison.size;
 		healthSize.rtop = 100 - 100 * Math.max(0, Math.min(1, totalGarrisonHealth / maxGarrisonHealth));
 		healthBarGarrison.size = healthSize;
 
@@ -51,9 +51,9 @@ function updateGarrisonHealthBar(entState, selection)
 // Fills out information that most entities have
 function displaySingle(entState)
 {
-	let template = GetTemplateData(entState.template);
+	const template = GetTemplateData(entState.template);
 
-	let primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
+	const primaryName = g_SpecificNamesPrimary ? template.name.specific : template.name.generic;
 	let secondaryName;
 	if (g_ShowSecondaryNames)
 		secondaryName = g_SpecificNamesPrimary ? template.name.generic : template.name.specific;
@@ -66,10 +66,10 @@ function displaySingle(entState)
 		else
 			secondaryName = sprintf(translate("Packed"));
 	}
-	let playerState = g_Players[entState.player];
+	const playerState = g_Players[entState.player];
 
-	let civName = g_CivData[playerState.civ].Name;
-	let civEmblem = g_CivData[playerState.civ].Emblem;
+	const civName = g_CivData[playerState.civ].Name;
+	const civEmblem = g_CivData[playerState.civ].Emblem;
 
 	let playerName = playerState.name;
 
@@ -95,17 +95,17 @@ function displaySingle(entState)
 
 	if (entState.statusEffects)
 	{
-		let statusEffectsSection = Engine.GetGUIObjectByName("statusEffectsIcons");
+		const statusEffectsSection = Engine.GetGUIObjectByName("statusEffectsIcons");
 		statusEffectsSection.hidden = false;
-		let statusIcons = statusEffectsSection.children;
+		const statusIcons = statusEffectsSection.children;
 		let i = 0;
-		for (let effectCode in entState.statusEffects)
+		for (const effectCode in entState.statusEffects)
 		{
-			let effect = entState.statusEffects[effectCode];
+			const effect = entState.statusEffects[effectCode];
 			statusIcons[i].hidden = false;
 			statusIcons[i].sprite = "stretched:session/icons/status_effects/" + g_StatusEffectsMetadata.getIcon(effect.baseCode) + ".png";
 			statusIcons[i].tooltip = getStatusEffectsTooltip(effect.baseCode, effect, false);
-			let size = statusIcons[i].size;
+			const size = statusIcons[i].size;
 			size.top = i * 18;
 			size.bottom = i * 18 + 16;
 			statusIcons[i].size = size;
@@ -119,23 +119,23 @@ function displaySingle(entState)
 	else
 		Engine.GetGUIObjectByName("statusEffectsIcons").hidden = true;
 
-	let showHealth = entState.hitpoints;
-	let showResource = entState.resourceSupply;
-	let showCapture = entState.capturePoints;
+	const showHealth = entState.hitpoints;
+	const showResource = entState.resourceSupply;
+	const showCapture = entState.capturePoints;
 
-	let healthSection = Engine.GetGUIObjectByName("healthSection");
-	let captureSection = Engine.GetGUIObjectByName("captureSection");
-	let resourceSection = Engine.GetGUIObjectByName("resourceSection");
-	let sectionPosTop = Engine.GetGUIObjectByName("sectionPosTop");
-	let sectionPosMiddle = Engine.GetGUIObjectByName("sectionPosMiddle");
-	let sectionPosBottom = Engine.GetGUIObjectByName("sectionPosBottom");
+	const healthSection = Engine.GetGUIObjectByName("healthSection");
+	const captureSection = Engine.GetGUIObjectByName("captureSection");
+	const resourceSection = Engine.GetGUIObjectByName("resourceSection");
+	const sectionPosTop = Engine.GetGUIObjectByName("sectionPosTop");
+	const sectionPosMiddle = Engine.GetGUIObjectByName("sectionPosMiddle");
+	const sectionPosBottom = Engine.GetGUIObjectByName("sectionPosBottom");
 
 	// Hitpoints
 	healthSection.hidden = !showHealth;
 	if (showHealth)
 	{
-		let unitHealthBar = Engine.GetGUIObjectByName("healthBar");
-		let healthSize = unitHealthBar.size;
+		const unitHealthBar = Engine.GetGUIObjectByName("healthBar");
+		const healthSize = unitHealthBar.size;
 		healthSize.rright = 100 * Math.max(0, Math.min(1, entState.hitpoints / entState.maxHitpoints));
 		unitHealthBar.size = healthSize;
 		Engine.GetGUIObjectByName("healthStats").caption = sprintf(translate("%(hitpoints)s / %(maxHitpoints)s"), {
@@ -159,12 +159,12 @@ function displaySingle(entState)
 	captureSection.hidden = !entState.capturePoints;
 	if (entState.capturePoints)
 	{
-		let setCaptureBarPart = function(playerID, startSize) {
-			let unitCaptureBar = Engine.GetGUIObjectByName("captureBar[" + playerID + "]");
-			let sizeObj = unitCaptureBar.size;
+		const setCaptureBarPart = function(playerID, startSize) {
+			const unitCaptureBar = Engine.GetGUIObjectByName("captureBar[" + playerID + "]");
+			const sizeObj = unitCaptureBar.size;
 			sizeObj.rleft = startSize;
 
-			let size = 100 * Math.max(0, Math.min(1, entState.capturePoints[playerID] / entState.maxCapturePoints));
+			const size = 100 * Math.max(0, Math.min(1, entState.capturePoints[playerID] / entState.maxCapturePoints));
 			sizeObj.rright = startSize + size;
 			unitCaptureBar.size = sizeObj;
 			unitCaptureBar.sprite = "color:" + g_DiplomacyColors.getPlayerColor(playerID, 128);
@@ -175,16 +175,16 @@ function displaySingle(entState)
 		// first handle the owner's points, to keep those points on the left for clarity
 		let size = setCaptureBarPart(entState.player, 0);
 
-		for (let i in entState.capturePoints)
+		for (const i in entState.capturePoints)
 			if (i != entState.player)
 				size = setCaptureBarPart(i, size);
 
-		let captureText = sprintf(translate("%(capturePoints)s / %(maxCapturePoints)s"), {
+		const captureText = sprintf(translate("%(capturePoints)s / %(maxCapturePoints)s"), {
 			"capturePoints": Math.ceil(entState.capturePoints[entState.player]),
 			"maxCapturePoints": Math.ceil(entState.maxCapturePoints)
 		});
 
-		let showSmallCapture = showResource && showHealth;
+		const showSmallCapture = showResource && showHealth;
 		Engine.GetGUIObjectByName("captureStats").caption = showSmallCapture ? "" : captureText;
 		Engine.GetGUIObjectByName("captureTooltip").tooltip = showSmallCapture ? getCurrentCaptureTooltip(entState) : translate("Capture Points");
 	}
@@ -193,8 +193,8 @@ function displaySingle(entState)
 	Engine.GetGUIObjectByName("experience").hidden = !entState.promotion;
 	if (entState.promotion)
 	{
-		let experienceBar = Engine.GetGUIObjectByName("experienceBar");
-		let experienceSize = experienceBar.size;
+		const experienceBar = Engine.GetGUIObjectByName("experienceBar");
+		const experienceSize = experienceBar.size;
 		experienceSize.rtop = 100 - (100 * Math.max(0, Math.min(1, 1.0 * +entState.promotion.curr / (+entState.promotion.req || 1))));
 		experienceBar.size = experienceSize;
 
@@ -215,14 +215,14 @@ function displaySingle(entState)
 	resourceSection.hidden = !showResource;
 	if (entState.resourceSupply)
 	{
-		let resources = entState.resourceSupply.isInfinite ? translate("∞") :  // Infinity symbol
+		const resources = entState.resourceSupply.isInfinite ? translate("∞") :  // Infinity symbol
 			sprintf(translate("%(amount)s / %(max)s"), {
 				"amount": Math.ceil(+entState.resourceSupply.amount),
 				"max": entState.resourceSupply.max
 			});
 
-		let unitResourceBar = Engine.GetGUIObjectByName("resourceBar");
-		let resourceSize = unitResourceBar.size;
+		const unitResourceBar = Engine.GetGUIObjectByName("resourceBar");
+		const resourceSize = unitResourceBar.size;
 
 		resourceSize.rright = entState.resourceSupply.isInfinite ? 100 :
 			100 * Math.max(0, Math.min(1, +entState.resourceSupply.amount / +entState.resourceSupply.max));
@@ -235,8 +235,8 @@ function displaySingle(entState)
 
 	}
 
-	let resourceCarryingIcon = Engine.GetGUIObjectByName("resourceCarryingIcon");
-	let resourceCarryingText = Engine.GetGUIObjectByName("resourceCarryingText");
+	const resourceCarryingIcon = Engine.GetGUIObjectByName("resourceCarryingIcon");
+	const resourceCarryingText = Engine.GetGUIObjectByName("resourceCarryingText");
 	resourceCarryingIcon.hidden = false;
 	resourceCarryingText.hidden = false;
 
@@ -244,7 +244,7 @@ function displaySingle(entState)
 	if (entState.resourceCarrying && entState.resourceCarrying.length)
 	{
 		// We should only be carrying one resource type at once, so just display the first
-		let carried = entState.resourceCarrying[0];
+		const carried = entState.resourceCarrying[0];
 		resourceCarryingIcon.sprite = "stretched:session/icons/resources/" + carried.type + ".png";
 		resourceCarryingText.caption = sprintf(translate("%(amount)s / %(max)s"), { "amount": carried.amount, "max": carried.max });
 		resourceCarryingIcon.tooltip = "";
@@ -358,7 +358,7 @@ function displaySingle(entState)
 		};
 	}
 
-	let detailedTooltip = [
+	const detailedTooltip = [
 		getAttackTooltip,
 		getHealerTooltip,
 		getResistanceTooltip,
@@ -407,11 +407,11 @@ function displayMultiple(entStates)
 	let maxCapturePoints = 0;
 	let capturePoints = (new Array(g_MaxPlayers + 1)).fill(0);
 	let playerID = 0;
-	let totalCarrying = {};
-	let totalLoot = {};
+	const totalCarrying = {};
+	const totalLoot = {};
 	let garrisonSize = 0;
 
-	for (let entState of entStates)
+	for (const entState of entStates)
 	{
 		playerID = entState.player; // trust that all selected entities have the same owner
 		if (entState.hitpoints)
@@ -425,16 +425,16 @@ function displayMultiple(entStates)
 			capturePoints = entState.capturePoints.map((v, i) => v + capturePoints[i]);
 		}
 
-		let carrying = calculateCarriedResources(
+		const carrying = calculateCarriedResources(
 			entState.resourceCarrying || null,
 			entState.trader && entState.trader.goods
 		);
 
 		if (entState.loot)
-			for (let type in entState.loot)
+			for (const type in entState.loot)
 				totalLoot[type] = (totalLoot[type] || 0) + entState.loot[type];
 
-		for (let type in carrying)
+		for (const type in carrying)
 		{
 			totalCarrying[type] = (totalCarrying[type] || 0) + carrying[type];
 			totalLoot[type] = (totalLoot[type] || 0) + carrying[type];
@@ -450,8 +450,8 @@ function displayMultiple(entStates)
 	Engine.GetGUIObjectByName("healthMultiple").hidden = averageHealth <= 0;
 	if (averageHealth > 0)
 	{
-		let unitHealthBar = Engine.GetGUIObjectByName("healthBarMultiple");
-		let healthSize = unitHealthBar.size;
+		const unitHealthBar = Engine.GetGUIObjectByName("healthBarMultiple");
+		const healthSize = unitHealthBar.size;
 		healthSize.rtop = 100 - 100 * Math.max(0, Math.min(1, averageHealth / maxHealth));
 		unitHealthBar.size = healthSize;
 
@@ -464,13 +464,13 @@ function displayMultiple(entStates)
 	Engine.GetGUIObjectByName("captureMultiple").hidden = maxCapturePoints <= 0;
 	if (maxCapturePoints > 0)
 	{
-		let setCaptureBarPart = function(pID, startSize)
+		const setCaptureBarPart = function(pID, startSize)
 		{
-			let unitCaptureBar = Engine.GetGUIObjectByName("captureBarMultiple[" + pID + "]");
-			let sizeObj = unitCaptureBar.size;
+			const unitCaptureBar = Engine.GetGUIObjectByName("captureBarMultiple[" + pID + "]");
+			const sizeObj = unitCaptureBar.size;
 			sizeObj.rtop = startSize;
 
-			let size = 100 * Math.max(0, Math.min(1, capturePoints[pID] / maxCapturePoints));
+			const size = 100 * Math.max(0, Math.min(1, capturePoints[pID] / maxCapturePoints));
 			sizeObj.rbottom = startSize + size;
 			unitCaptureBar.size = sizeObj;
 			unitCaptureBar.sprite = "color:" + g_DiplomacyColors.getPlayerColor(pID, 128);
@@ -479,7 +479,7 @@ function displayMultiple(entStates)
 		};
 
 		let size = 0;
-		for (let i in capturePoints)
+		for (const i in capturePoints)
 			if (i != playerID)
 				size = setCaptureBarPart(i, size);
 
@@ -494,7 +494,7 @@ function displayMultiple(entStates)
 			translate("Capture Points:"));
 	}
 
-	let numberOfUnits = Engine.GetGUIObjectByName("numberOfUnits");
+	const numberOfUnits = Engine.GetGUIObjectByName("numberOfUnits");
 	numberOfUnits.caption = entStates.length;
 	numberOfUnits.tooltip = "";
 
@@ -530,15 +530,15 @@ function displayMultiple(entStates)
 // Updates middle entity Selection Details Panel and left Unit Commands Panel
 function updateSelectionDetails()
 {
-	let supplementalDetailsPanel = Engine.GetGUIObjectByName("supplementalSelectionDetails");
-	let detailsPanel = Engine.GetGUIObjectByName("selectionDetails");
-	let commandsPanel = Engine.GetGUIObjectByName("unitCommands");
+	const supplementalDetailsPanel = Engine.GetGUIObjectByName("supplementalSelectionDetails");
+	const detailsPanel = Engine.GetGUIObjectByName("selectionDetails");
+	const commandsPanel = Engine.GetGUIObjectByName("unitCommands");
 
-	let entStates = [];
+	const entStates = [];
 
-	for (let sel of g_Selection.toList())
+	for (const sel of g_Selection.toList())
 	{
-		let entState = GetEntityState(sel);
+		const entState = GetEntityState(sel);
 		if (!entState)
 			continue;
 		entStates.push(entState);
@@ -590,21 +590,21 @@ function getTradingTooltip(gain)
 	if (!gain)
 		return "";
 
-	let markets = [
+	const markets = [
 		{ "gain": gain.market1Gain, "owner": gain.market1Owner },
 		{ "gain": gain.market2Gain, "owner": gain.market2Owner }
 	];
 
 	let primaryGain = gain.traderGain;
 
-	for (let market of markets)
+	for (const market of markets)
 		if (market.gain && market.owner == gain.traderOwner)
 			// Translation: Used in the trading gain tooltip to concatenate profits of different players
 			primaryGain += translate("+") + market.gain;
 
 	let tooltip = tradingGainString(primaryGain, gain.traderOwner);
 
-	for (let market of markets)
+	for (const market of markets)
 		if (market.gain && market.owner != gain.traderOwner)
 			tooltip +=
 				translateWithContext("Separation mark in an enumeration", ", ") +
