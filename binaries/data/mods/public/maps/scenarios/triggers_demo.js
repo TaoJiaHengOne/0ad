@@ -112,10 +112,10 @@ Trigger.prototype.RangeAction = function(data)
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 
 	// Activate all possible triggers
-	let data = { "enabled": true };
+	const data = { "enabled": true };
 	cmpTrigger.RegisterTrigger("OnStructureBuilt", "StructureBuiltAction", data);
 	cmpTrigger.RegisterTrigger("OnConstructionStarted", "ConstructionStartedAction", data);
 	cmpTrigger.RegisterTrigger("OnTrainingFinished", "TrainingFinishedAction", data);

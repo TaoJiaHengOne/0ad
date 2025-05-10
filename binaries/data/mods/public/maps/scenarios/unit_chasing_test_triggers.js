@@ -9,13 +9,13 @@ const ATTACKER = 2;
 
 var QuickSpawn = function(x, z, template, owner = 1)
 {
-	let ent = Engine.AddEntity(template);
+	const ent = Engine.AddEntity(template);
 
-	let cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
 	if (cmpEntOwnership)
 		cmpEntOwnership.SetOwner(owner);
 
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.JumpTo(x, z);
 	return ent;
 };
@@ -35,7 +35,7 @@ var WalkTo = function(x, z, queued, ent, owner=1)
 
 var Attack = function(target, ent)
 {
-	let comm = {
+	const comm = {
 		"type": "attack",
 		"entities": Array.isArray(ent) ? ent : [ent],
 		"target": target,
@@ -48,7 +48,7 @@ var Attack = function(target, ent)
 
 var Garrison = function(target, ent)
 {
-	let comm = {
+	const comm = {
 		"type": "garrison",
 		"entities": Array.isArray(ent) ? ent : [ent],
 		"target": target,
@@ -239,9 +239,9 @@ Trigger.prototype.SetupUnits = function()
 {
 	gx = 130;
 	gy = 150;
-	for (let key in experiments)
+	for (const key in experiments)
 	{
-		let ents = experiments[key].spawn();
+		const ents = experiments[key].spawn();
 		onDelete[ents[0]] = ents;
 		onDelete[ents[1]] = ents;
 		gx += 15;

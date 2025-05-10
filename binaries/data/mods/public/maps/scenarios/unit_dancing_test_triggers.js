@@ -9,20 +9,20 @@ const ATTACKER = 2;
 
 var QuickSpawn = function(x, z, template, owner = 1)
 {
-	let ent = Engine.AddEntity(template);
+	const ent = Engine.AddEntity(template);
 
-	let cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
 	if (cmpEntOwnership)
 		cmpEntOwnership.SetOwner(owner);
 
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.JumpTo(x, z);
 	return ent;
 };
 
 var Rotate = function(angle, ent)
 {
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.SetYRotation(angle);
 	return ent;
 };
@@ -69,7 +69,7 @@ var Patrol = function(x, z, queued, ent, owner=1)
 
 var Attack = function(target, ent)
 {
-	let comm = {
+	const comm = {
 		"type": "attack",
 		"entities": Array.isArray(ent) ? ent : [ent],
 		"target": target,
@@ -88,11 +88,11 @@ var experiments = {};
 var manual_dance = function(attacker, target, dance_distance, att_distance = 50, n_attackers = 1)
 {
 	return () => {
-		let dancer = QuickSpawn(gx, gy, target);
+		const dancer = QuickSpawn(gx, gy, target);
 		for (let i = 0; i < 100; ++i)
 			WalkTo(gx, gy + dance_distance * (i % 2), true, dancer);
 
-		let attackers = [];
+		const attackers = [];
 		for (let i = 0; i < n_attackers; ++i)
 			attackers.push(Attack(dancer, WalkTo(gx + att_distance, gy + i * 2, true, QuickSpawn(gx + att_distance + i, gy, attacker, ATTACKER), ATTACKER)));
 
@@ -103,7 +103,7 @@ var manual_dance = function(attacker, target, dance_distance, att_distance = 50,
 var manual_square_dance = function(attacker, target, dance_distance, att_distance = 50, n_attackers = 1)
 {
 	return () => {
-		let dancer = QuickSpawn(gx, gy, target);
+		const dancer = QuickSpawn(gx, gy, target);
 		for (let i = 0; i < 25; ++i)
 		{
 			WalkTo(gx + dance_distance / 2, gy + dance_distance / 2, true, dancer);
@@ -112,7 +112,7 @@ var manual_square_dance = function(attacker, target, dance_distance, att_distanc
 			WalkTo(gx - dance_distance / 2, gy + dance_distance / 2, true, dancer);
 		}
 
-		let attackers = [];
+		const attackers = [];
 		for (let i = 0; i < n_attackers; ++i)
 			attackers.push(Attack(dancer, WalkTo(gx + att_distance, gy + i * 2, true, QuickSpawn(gx + att_distance + i, gy, attacker, ATTACKER), ATTACKER)));
 
@@ -123,7 +123,7 @@ var manual_square_dance = function(attacker, target, dance_distance, att_distanc
 var manual_zigzag_dance = function(attacker, target, dance_distance, att_distance = 50, n_attackers = 1)
 {
 	return () => {
-		let dancer = QuickSpawn(gx, gy, target);
+		const dancer = QuickSpawn(gx, gy, target);
 		for (let i = 0; i < 12; ++i)
 		{
 			WalkTo(gx + dance_distance, gy + dance_distance, true, dancer);
@@ -140,7 +140,7 @@ var manual_zigzag_dance = function(attacker, target, dance_distance, att_distanc
 			WalkTo(gx + dance_distance * 2, gy - dance_distance, true, dancer);
 		}
 
-		let attackers = [];
+		const attackers = [];
 		for (let i = 0; i < n_attackers; ++i)
 			attackers.push(Attack(dancer, WalkTo(gx + att_distance, gy + i * 2, true, QuickSpawn(gx + att_distance + i, gy, attacker, ATTACKER), ATTACKER)));
 
@@ -151,10 +151,10 @@ var manual_zigzag_dance = function(attacker, target, dance_distance, att_distanc
 var patrol_dance = function(attacker, target, dance_distance, att_distance = 50, n_attackers = 1)
 {
 	return () => {
-		let dancer = QuickSpawn(gx, gy, target);
+		const dancer = QuickSpawn(gx, gy, target);
 		Patrol(gx, gy + dance_distance, true, dancer);
 
-		let attackers = [];
+		const attackers = [];
 		for (let i = 0; i < n_attackers; ++i)
 			attackers.push(Attack(dancer, WalkTo(gx + att_distance, gy + i * 2, true, QuickSpawn(gx + att_distance + i, gy, attacker, ATTACKER), ATTACKER)));
 
@@ -165,14 +165,14 @@ var patrol_dance = function(attacker, target, dance_distance, att_distance = 50,
 var manual_formation_dance = function(attacker, target, dance_distance, att_distance = 50, n_attackers = 1)
 {
 	return () => {
-		let dancers = [];
+		const dancers = [];
 		for (let x = 0; x < 4; x++)
 			for (let z = 0; z < 4; z++)
 				dancers.push(QuickSpawn(gx+x, gy+z, target));
 		for (let i = 0; i < 100; ++i)
 			FormationWalkTo(gx, gy + dance_distance * (i % 2), i != 0, dancers);
 
-		let attackers = [];
+		const attackers = [];
 		for (let i = 0; i < n_attackers; ++i)
 			attackers.push(Attack(dancers[0], WalkTo(gx + att_distance, gy + i * 2, true, QuickSpawn(gx + att_distance + i, gy, attacker, ATTACKER), ATTACKER)));
 
@@ -187,7 +187,7 @@ var manual_formation_dance = function(attacker, target, dance_distance, att_dist
 var avoidance = function(attacker, target, att_distance = 10)
 {
 	return () => {
-		let dancer = QuickSpawn(200, 300, target);
+		const dancer = QuickSpawn(200, 300, target);
 		for (let i = 0; i < 5; ++i)
 		{
 			WalkTo(300, 400, true, dancer);
@@ -196,7 +196,7 @@ var avoidance = function(attacker, target, att_distance = 10)
 			WalkTo(200, 300, true, dancer);
 		}
 
-		let attackers = [];
+		const attackers = [];
 		attackers.push(Attack(dancer, QuickSpawn(200, 290, attacker, ATTACKER), ATTACKER));
 		return [[dancer], attackers];
 	};
@@ -311,13 +311,13 @@ var cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 Trigger.prototype.SetupUnits = function()
 {
 	warn("Experiment start");
-	let start = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).GetTime();
+	const start = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).GetTime();
 	gx = 100;
 	gy = 100;
-	for (let key in experiments)
+	for (const key in experiments)
 	{
-		let [dancers, attackers] = experiments[key].spawn();
-		let ReportResults = (killed) => {
+		const [dancers, attackers] = experiments[key].spawn();
+		const ReportResults = (killed) => {
 			warn(`Exp ${key} finished in ${Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).GetTime() - start}, ` +
 				`target was ${killed ? "killed" : "not killed (failure)"}`);
 			ProcessCommand(1, {
@@ -332,8 +332,8 @@ Trigger.prototype.SetupUnits = function()
 			});
 		};
 		// xxtreme hack: hook into UnitAI
-		let uai = Engine.QueryInterface(dancers[0], IID_UnitAI);
-		let odes = uai.OnDestroy;
+		const uai = Engine.QueryInterface(dancers[0], IID_UnitAI);
+		const odes = uai.OnDestroy;
 		uai.OnDestroy = () => ReportResults(true) && odes();
 		uai.FindNewTargets = () => {
 			ReportResults(false);
@@ -354,7 +354,7 @@ Trigger.prototype.SetupUnits = function()
  */
 Trigger.prototype.RemoveSpread = function()
 {
-	let cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
+	const cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
 	cmpModifiersManager.AddModifiers("no_promotion", {
 		"Attack/Ranged/Projectile/Spread": [{ "affects": ["Unit"], "replace": 0 }],
 	}, 4); // player 2 is ent 4

@@ -1,8 +1,8 @@
 Trigger.prototype.DisableBuilding = function()
 {
-	let cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
+	const cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
 
-	let cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
+	const cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
 
 	let playerEnt = cmpPlayerManager.GetPlayerByID(2);
 	cmpModifiersManager.AddModifiers("no_building", {
@@ -16,6 +16,6 @@ Trigger.prototype.DisableBuilding = function()
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.RegisterTrigger("OnInitGame", "DisableBuilding", { "enabled": true });
 }

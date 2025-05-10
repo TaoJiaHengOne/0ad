@@ -21,20 +21,20 @@ const point_coast_2 = 28; // Coast point #2 (W)
 
 var QuickSpawn = function(x, z, template, owner = 1)
 {
-	let ent = Engine.AddEntity(template);
+	const ent = Engine.AddEntity(template);
 
-	let cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
 	if (cmpEntOwnership)
 		cmpEntOwnership.SetOwner(owner);
 
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.JumpTo(x, z);
 	return ent;
 };
 
 var Rotate = function(angle, ent)
 {
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.SetYRotation(angle);
 	return ent;
 };
@@ -54,12 +54,12 @@ var WalkTo = function(x, z, ent, owner = 1)
 
 var Do = function(name, data, ent, owner=1)
 {
-	let comm = {
+	const comm = {
 		"type": name,
 		"entities": Array.isArray(ent) ? ent : [ent],
 		"queued": false
 	};
-	for (let k in data)
+	for (const k in data)
 		comm[k] = data[k];
 	ProcessCommand(owner, comm);
 };
@@ -69,7 +69,7 @@ var cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 Trigger.prototype.UnitsIntoRamClose = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_plaza_nw);
-	let ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
+	const ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
 	for (let i = 0; i < 5; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_plaza_ne);
@@ -81,7 +81,7 @@ Trigger.prototype.UnitsIntoRamClose = function()
 Trigger.prototype.UnitsIntoRamFar = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_road_5);
-	let ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
+	const ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
 	for (let i = 0; i < 5; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_road_1);
@@ -92,8 +92,8 @@ Trigger.prototype.UnitsIntoRamFar = function()
 Trigger.prototype.UnitsIntoRamOppositeDir = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_plaza_sw);
-	let ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
-	let spawnpoints = [
+	const ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
+	const spawnpoints = [
 		TriggerHelper.GetEntityPosition2D(point_plaza_se),
 		TriggerHelper.GetEntityPosition2D(point_road_1)
 	];
@@ -108,7 +108,7 @@ Trigger.prototype.UnitsIntoRamOppositeDir = function()
 Trigger.prototype.UnitsIntoRamImpossible = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_island_1);
-	let ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
+	const ram = QuickSpawn(pos.x, pos.y, RAM_TEMPLATE, 1);
 	for (let i = 0; i < 3; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_plaza_se);
@@ -120,7 +120,7 @@ Trigger.prototype.UnitsIntoRamImpossible = function()
 Trigger.prototype.UnitsIntoShipClose = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_sea_1);
-	let ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
+	const ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
 	for (let i = 0; i < 6; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_plaza_se);
@@ -130,7 +130,7 @@ Trigger.prototype.UnitsIntoShipClose = function()
 Trigger.prototype.UnitsIntoShipFar = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_sea_1);
-	let ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
+	const ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
 	for (let i = 0; i < 50; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_road_4);
@@ -141,7 +141,7 @@ Trigger.prototype.UnitsIntoShipFar = function()
 Trigger.prototype.UnitsIntoShipTwoIslands = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_sea_2);
-	let ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
+	const ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
 	for (let i = 0; i < 3; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_road_2);
@@ -160,16 +160,16 @@ Trigger.prototype.UnitsIntoShipThenAnotherCloseBy = function()
 	// This orders a unit to garrison in the ship, then orders another close by (by land)
 	// but not actually close by (by sea) so that the ship behaves erratically.
 	let pos = TriggerHelper.GetEntityPosition2D(point_sea_1);
-	let ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
+	const ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
 
 	pos = TriggerHelper.GetEntityPosition2D(point_coast_1);
 	Do("garrison", { "target": ship }, QuickSpawn(pos.x, pos.y, UNIT_TEMPLATE));
 
 	// Don't do this at home
-	let holder = Engine.QueryInterface(ship, IID_GarrisonHolder);
-	let og = Object.getPrototypeOf(holder).PerformGarrison;
+	const holder = Engine.QueryInterface(ship, IID_GarrisonHolder);
+	const og = Object.getPrototypeOf(holder).PerformGarrison;
 	holder.PerformGarrison = (...args) => {
-		let res = og.apply(holder, args);
+		const res = og.apply(holder, args);
 		delete holder.PerformGarrison;
 		pos = TriggerHelper.GetEntityPosition2D(point_coast_2);
 		Do("garrison", { "target": ship }, QuickSpawn(pos.x, pos.y, UNIT_TEMPLATE));
@@ -182,7 +182,7 @@ Trigger.prototype.UnitsIntoShipAlreadyInRange = function()
 {
 	// Yay ship on land.
 	let pos = TriggerHelper.GetEntityPosition2D(point_road_3);
-	let ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
+	const ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
 	for (let i = 0; i < 10; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_road_3);
@@ -194,7 +194,7 @@ Trigger.prototype.UnitsIntoShipAlreadyInRange = function()
 Trigger.prototype.IslandUnitsPlayerGivesBadOrder = function()
 {
 	let pos = TriggerHelper.GetEntityPosition2D(point_sea_2);
-	let ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
+	const ship = QuickSpawn(pos.x, pos.y, SHIP_TEMPLATE, 1);
 	for (let i = 0; i < 3; ++i)
 	{
 		pos = TriggerHelper.GetEntityPosition2D(point_island_1);

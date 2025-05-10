@@ -5,20 +5,20 @@ const SMALL_STRUCTURE_TEMPLATE = "structures/athen/house";
 
 var QuickSpawn = function(x, z, template, owner = 1)
 {
-	let ent = Engine.AddEntity(template);
+	const ent = Engine.AddEntity(template);
 
-	let cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
 	if (cmpEntOwnership)
 		cmpEntOwnership.SetOwner(owner);
 
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.JumpTo(x, z);
 	return ent;
 };
 
 var Rotate = function(angle, ent)
 {
-	let cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpEntPosition = Engine.QueryInterface(ent, IID_Position);
 	cmpEntPosition.SetYRotation(angle);
 	return ent;
 };
@@ -48,12 +48,12 @@ var Guard = function(target, ent)
 
 var Do = function(name, data, ent)
 {
-	let comm = {
+	const comm = {
 		"type": name,
 		"entities": Array.isArray(ent) ? ent : [ent],
 		"queued": false
 	};
-	for (let k in data)
+	for (const k in data)
 		comm[k] = data[k];
 	ProcessCommand(1, comm);
 };
@@ -71,7 +71,7 @@ experiments.single_unit = {
 experiments.two_followers = {
 	"spawn": () => {
 		WalkTo(gx, gy + 100, QuickSpawn(gx, gy, UNIT_TEMPLATE));
-		let follow = WalkTo(gx, gy + 102, QuickSpawn(gx, gy + 2, UNIT_TEMPLATE));
+		const follow = WalkTo(gx, gy + 102, QuickSpawn(gx, gy + 2, UNIT_TEMPLATE));
 		Guard(follow, QuickSpawn(gx, gy - 2, UNIT_TEMPLATE));
 	}
 };
@@ -234,7 +234,7 @@ experiments.u_shape_tight_exit = {
 		Rotate(Math.PI / 2, QuickSpawn(gx + 8, gy - 5, "structures/palisades_long"));
 		Rotate(Math.PI / 2, QuickSpawn(gx - 8, gy - 7, "structures/palisades_long"));
 
-		let tree = QuickSpawn(gx, gy + 80, "gaia/tree/acacia");
+		const tree = QuickSpawn(gx, gy + 80, "gaia/tree/acacia");
 
 		for (let i = -3; i <= 3; i += 1)
 		{
@@ -247,7 +247,7 @@ experiments.u_shape_tight_exit = {
 
 experiments.cluttered_around_tree = {
 	"spawn": () => {
-		let tree = QuickSpawn(gx, gy + 50, "gaia/tree/acacia");
+		const tree = QuickSpawn(gx, gy + 50, "gaia/tree/acacia");
 
 		for (let i = -3; i <= 3; i += 1)
 			for (let j = -3; j <= 3; j += 1)
@@ -260,7 +260,7 @@ experiments.cluttered_around_tree = {
 
 experiments.formation_move = {
 	"spawn": () => {
-		let ents = [];
+		const ents = [];
 		for (let i = -3; i <= 3; ++i)
 			for (let j = -3; j <= 3; ++j)
 				ents.push(QuickSpawn(gx + i * 2, gy + j * 2, UNIT_TEMPLATE));
@@ -271,7 +271,7 @@ experiments.formation_move = {
 
 experiments.formation_attack = {
 	"spawn": () => {
-		let ents = [];
+		const ents = [];
 		for (let i = -3; i <= 3; ++i)
 			for (let j = -3; j <= 3; ++j)
 				ents.push(QuickSpawn(gx + i * 2, gy + j * 2, UNIT_TEMPLATE));
@@ -284,7 +284,7 @@ experiments.multiple_resources = {
 	"spawn": () => {
 		QuickSpawn(gx, gy + 80, "structures/athen/civil_centre");
 
-		let chicken = QuickSpawn(gx, gy + 50, "gaia/fauna_chicken");
+		const chicken = QuickSpawn(gx, gy + 50, "gaia/fauna_chicken");
 		QuickSpawn(gx + 3, gy + 50, "gaia/fauna_chicken");
 		QuickSpawn(gx - 3, gy + 50, "gaia/fauna_chicken");
 
@@ -352,8 +352,8 @@ experiments.need_to_backtrack = {
  */
 experiments.small_exit_of_hill = {
 	"spawn": () => {
-		let x = 350;
-		let y = 615;
+		const x = 350;
+		const y = 615;
 		for (let i = -5; i <= 5; i += 1)
 			for (let j = -5; j <= 5; j += 1)
 				WalkTo(350, 500, QuickSpawn(x + i, y + j, UNIT_TEMPLATE));
@@ -364,7 +364,7 @@ var cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 
 Trigger.prototype.SetupUnits = function()
 {
-	for (let key in experiments)
+	for (const key in experiments)
 	{
 		experiments[key].spawn();
 		gx += 40;
