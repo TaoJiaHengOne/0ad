@@ -4,11 +4,11 @@ var g_DebugCommands = false;
 
 function ProcessCommand(player, cmd)
 {
-	let cmpPlayer = QueryPlayerIDInterface(player);
+	const cmpPlayer = QueryPlayerIDInterface(player);
 	if (!cmpPlayer)
 		return;
 
-	let data = {
+	const data = {
 		"cmpPlayer": cmpPlayer,
 		"controlAllUnits": cmpPlayer.CanControlAllUnits()
 	};
@@ -23,7 +23,7 @@ function ProcessCommand(player, cmd)
 		data.formation = cmd.formation || undefined;
 
 	// Allow focusing the camera on recent commands
-	let commandData = {
+	const commandData = {
 		"type": "playercommand",
 		"players": [player],
 		"cmd": cmd
@@ -32,11 +32,11 @@ function ProcessCommand(player, cmd)
 	// Save the position, since the GUI event is received after the unit died
 	if (cmd.type == "delete-entities")
 	{
-		let cmpPosition = cmd.entities[0] && Engine.QueryInterface(cmd.entities[0], IID_Position);
+		const cmpPosition = cmd.entities[0] && Engine.QueryInterface(cmd.entities[0], IID_Position);
 		commandData.position = cmpPosition && cmpPosition.IsInWorld() && cmpPosition.GetPosition2D();
 	}
 
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGuiInterface.PushNotification(commandData);
 
 	// Note: checks of UnitAI targets are not robust enough here, as ownership
@@ -165,7 +165,7 @@ var g_Commands = {
 
 	"walk-custom": function(player, cmd, data)
 	{
-		for (let ent in data.entities)
+		for (const ent in data.entities)
 			GetFormationUnitAIs([data.entities[ent]], player, cmd, data.formation).forEach(cmpUnitAI => {
 				cmpUnitAI.Walk(cmd.targetPositions[ent].x, cmd.targetPositions[ent].y, cmd.queued, cmd.pushFront);
 			});
@@ -174,7 +174,7 @@ var g_Commands = {
 	"walk-to-range": function(player, cmd, data)
 	{
 		// Only used by the AI
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if (cmpUnitAI)
@@ -191,7 +191,7 @@ var g_Commands = {
 
 	"attack-walk-custom": function(player, cmd, data)
 	{
-		for (let ent in data.entities)
+		for (const ent in data.entities)
 			GetFormationUnitAIs([data.entities[ent]], player, cmd, data.formation).forEach(cmpUnitAI => {
 				cmpUnitAI.WalkAndFight(cmd.targetPositions[ent].x, cmd.targetPositions[ent].y, cmd.targetClasses, cmd.allowCapture, cmd.queued, cmd.pushFront);
 			});
@@ -261,7 +261,7 @@ var g_Commands = {
 
 	"back-to-work": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if(!cmpUnitAI || !cmpUnitAI.BackToWork())
@@ -291,7 +291,7 @@ var g_Commands = {
 
 	"remove-guard": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if (cmpUnitAI)
@@ -321,7 +321,7 @@ var g_Commands = {
 			return;
 		}
 
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			if (unitCategory)
 			{
@@ -375,7 +375,7 @@ var g_Commands = {
 
 	"stop-production": function(player, cmd, data)
 	{
-		let cmpProductionQueue = Engine.QueryInterface(cmd.entity, IID_ProductionQueue);
+		const cmpProductionQueue = Engine.QueryInterface(cmd.entity, IID_ProductionQueue);
 		if (cmpProductionQueue)
 			cmpProductionQueue.RemoveItem(cmd.id);
 	},
@@ -392,28 +392,28 @@ var g_Commands = {
 
 	"delete-entities": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			if (!data.controlAllUnits)
 			{
-				let cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+				const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
 				if (cmpIdentity && cmpIdentity.IsUndeletable())
 					continue;
 
-				let cmpCapturable = QueryMiragedInterface(ent, IID_Capturable);
+				const cmpCapturable = QueryMiragedInterface(ent, IID_Capturable);
 				if (cmpCapturable &&
 				    cmpCapturable.GetCapturePoints()[player] < cmpCapturable.GetMaxCapturePoints() / 2)
 					continue;
 
-				let cmpResourceSupply = QueryMiragedInterface(ent, IID_ResourceSupply);
+				const cmpResourceSupply = QueryMiragedInterface(ent, IID_ResourceSupply);
 				if (cmpResourceSupply && cmpResourceSupply.GetKillBeforeGather())
 					continue;
 			}
 
-			let cmpMirage = Engine.QueryInterface(ent, IID_Mirage);
+			const cmpMirage = Engine.QueryInterface(ent, IID_Mirage);
 			if (cmpMirage)
 			{
-				let cmpMiragedHealth = Engine.QueryInterface(cmpMirage.parent, IID_Health);
+				const cmpMiragedHealth = Engine.QueryInterface(cmpMirage.parent, IID_Health);
 				if (cmpMiragedHealth)
 					cmpMiragedHealth.Kill();
 				else
@@ -423,7 +423,7 @@ var g_Commands = {
 				continue;
 			}
 
-			let cmpHealth = Engine.QueryInterface(ent, IID_Health);
+			const cmpHealth = Engine.QueryInterface(ent, IID_Health);
 			if (cmpHealth)
 				cmpHealth.Kill();
 			else
@@ -433,7 +433,7 @@ var g_Commands = {
 
 	"focus-fire": function (player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			Engine.QueryInterface(ent, IID_BuildingAI)?.AddFocusTarget(cmd.target, cmd.queued, cmd.pushFront);
 		}
@@ -441,7 +441,7 @@ var g_Commands = {
 
 	"set-rallypoint": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpRallyPoint = Engine.QueryInterface(ent, IID_RallyPoint);
 			if (cmpRallyPoint)
@@ -457,7 +457,7 @@ var g_Commands = {
 
 	"unset-rallypoint": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpRallyPoint = Engine.QueryInterface(ent, IID_RallyPoint);
 			if (cmpRallyPoint)
@@ -515,9 +515,9 @@ var g_Commands = {
 	"leave-turret": function(player, cmd, data)
 	{
 		let notUnloaded = 0;
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
-			let cmpTurretable = Engine.QueryInterface(ent, IID_Turretable);
+			const cmpTurretable = Engine.QueryInterface(ent, IID_Turretable);
 			if (!cmpTurretable || !cmpTurretable.LeaveTurret())
 				++notUnloaded;
 		}
@@ -529,12 +529,12 @@ var g_Commands = {
 	"unload-turrets": function(player, cmd, data)
 	{
 		let notUnloaded = 0;
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
-			let cmpTurretHolder = Engine.QueryInterface(ent, IID_TurretHolder);
-			for (let turret of cmpTurretHolder.GetEntities())
+			const cmpTurretHolder = Engine.QueryInterface(ent, IID_TurretHolder);
+			for (const turret of cmpTurretHolder.GetEntities())
 			{
-				let cmpTurretable = Engine.QueryInterface(turret, IID_Turretable);
+				const cmpTurretable = Engine.QueryInterface(turret, IID_Turretable);
 				if (!cmpTurretable || !cmpTurretable.LeaveTurret())
 					++notUnloaded;
 			}
@@ -560,7 +560,7 @@ var g_Commands = {
 		if (IsOwnedByPlayer(player, cmd.garrisonHolder))
 			data.entities = cmd.entities;
 
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 			if (!cmpGarrisonHolder || !cmpGarrisonHolder.Unload(ent))
 				++notUngarrisoned;
 
@@ -571,7 +571,7 @@ var g_Commands = {
 	"unload-template": function(player, cmd, data)
 	{
 		var entities = FilterEntityListWithAllies(cmd.garrisonHolders, player, data.controlAllUnits);
-		for (let garrisonHolder of entities)
+		for (const garrisonHolder of entities)
 		{
 			var cmpGarrisonHolder = Engine.QueryInterface(garrisonHolder, IID_GarrisonHolder);
 			if (cmpGarrisonHolder)
@@ -590,7 +590,7 @@ var g_Commands = {
 	"unload-all-by-owner": function(player, cmd, data)
 	{
 		var entities = FilterEntityListWithAllies(cmd.garrisonHolders, player, data.controlAllUnits);
-		for (let garrisonHolder of entities)
+		for (const garrisonHolder of entities)
 		{
 			var cmpGarrisonHolder = Engine.QueryInterface(garrisonHolder, IID_GarrisonHolder);
 			if (!cmpGarrisonHolder || !cmpGarrisonHolder.UnloadAllByOwner(player))
@@ -601,7 +601,7 @@ var g_Commands = {
 	"unload-all": function(player, cmd, data)
 	{
 		var entities = FilterEntityList(cmd.garrisonHolders, player, data.controlAllUnits);
-		for (let garrisonHolder of entities)
+		for (const garrisonHolder of entities)
 		{
 			var cmpGarrisonHolder = Engine.QueryInterface(garrisonHolder, IID_GarrisonHolder);
 			if (!cmpGarrisonHolder || !cmpGarrisonHolder.UnloadAll())
@@ -611,7 +611,7 @@ var g_Commands = {
 
 	"alert-raise": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpAlertRaiser = Engine.QueryInterface(ent, IID_AlertRaiser);
 			if (cmpAlertRaiser)
@@ -621,7 +621,7 @@ var g_Commands = {
 
 	"alert-end": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpAlertRaiser = Engine.QueryInterface(ent, IID_AlertRaiser);
 			if (cmpAlertRaiser)
@@ -649,7 +649,7 @@ var g_Commands = {
 			"translateMessage": true
 		});
 
-		for (let ent of cmd.entities)
+		for (const ent of cmd.entities)
 		{
 			var cmpPromotion = Engine.QueryInterface(ent, IID_Promotion);
 			if (cmpPromotion)
@@ -659,7 +659,7 @@ var g_Commands = {
 
 	"stance": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if (cmpUnitAI && !cmpUnitAI.IsTurret())
@@ -669,7 +669,7 @@ var g_Commands = {
 
 	"lock-gate": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpGate = Engine.QueryInterface(ent, IID_Gate);
 			if (!cmpGate)
@@ -714,7 +714,7 @@ var g_Commands = {
 			return;
 
 		// Debug command to make an entity brightly colored
-		for (let ent of cmd.entities)
+		for (const ent of cmd.entities)
 		{
 			var cmpVisual = Engine.QueryInterface(ent, IID_Visual);
 			if (cmpVisual)
@@ -724,7 +724,7 @@ var g_Commands = {
 
 	"pack": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if (!cmpUnitAI)
@@ -739,7 +739,7 @@ var g_Commands = {
 
 	"cancel-pack": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if (!cmpUnitAI)
@@ -754,7 +754,7 @@ var g_Commands = {
 
 	"upgrade": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
 			var cmpUpgrade = Engine.QueryInterface(ent, IID_Upgrade);
 
@@ -793,9 +793,9 @@ var g_Commands = {
 
 	"cancel-upgrade": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
-			let cmpUpgrade = Engine.QueryInterface(ent, IID_Upgrade);
+			const cmpUpgrade = Engine.QueryInterface(ent, IID_Upgrade);
 			if (cmpUpgrade)
 				cmpUpgrade.CancelUpgrade(player);
 		}
@@ -814,20 +814,20 @@ var g_Commands = {
 		});
 
 		// And send an attackRequest event to the AIs
-		let cmpAIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_AIInterface);
+		const cmpAIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_AIInterface);
 		if (cmpAIInterface)
 			cmpAIInterface.PushEvent("AttackRequest", cmd);
 	},
 
 	"spy-request": function(player, cmd, data)
 	{
-		let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
-		let ent = pickRandom(cmpRangeManager.GetEntitiesByPlayer(cmd.player).filter(ent => {
-			let cmpVisionSharing = Engine.QueryInterface(ent, IID_VisionSharing);
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const ent = pickRandom(cmpRangeManager.GetEntitiesByPlayer(cmd.player).filter(ent => {
+			const cmpVisionSharing = Engine.QueryInterface(ent, IID_VisionSharing);
 			return cmpVisionSharing && cmpVisionSharing.IsBribable() && !cmpVisionSharing.ShareVisionWith(player);
 		}));
 
-		let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+		const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 		cmpGUIInterface.PushNotification({
 			"type": "spy-response",
 			"players": [player],
@@ -838,10 +838,10 @@ var g_Commands = {
 			Engine.QueryInterface(ent, IID_VisionSharing).AddSpy(player);
 		else
 		{
-			let template = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetTemplate("special/spy");
+			const template = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetTemplate("special/spy");
 			IncurBribeCost(template, player, cmd.player, true);
 			// update statistics for failed bribes
-			let cmpBribesStatisticsTracker = QueryPlayerIDInterface(player, IID_StatisticsTracker);
+			const cmpBribesStatisticsTracker = QueryPlayerIDInterface(player, IID_StatisticsTracker);
 			if (cmpBribesStatisticsTracker)
 				cmpBribesStatisticsTracker.IncreaseFailedBribesCounter();
 			cmpGUIInterface.PushNotification({
@@ -855,14 +855,14 @@ var g_Commands = {
 
 	"diplomacy-request": function(player, cmd, data)
 	{
-		let cmpAIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_AIInterface);
+		const cmpAIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_AIInterface);
 		if (cmpAIInterface)
 			cmpAIInterface.PushEvent("DiplomacyRequest", cmd);
 	},
 
 	"tribute-request": function(player, cmd, data)
 	{
-		let cmpAIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_AIInterface);
+		const cmpAIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_AIInterface);
 		if (cmpAIInterface)
 			cmpAIInterface.PushEvent("TributeRequest", cmd);
 	},
@@ -875,9 +875,9 @@ var g_Commands = {
 
 	"set-dropsite-sharing": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
-			let cmpResourceDropsite = Engine.QueryInterface(ent, IID_ResourceDropsite);
+			const cmpResourceDropsite = Engine.QueryInterface(ent, IID_ResourceDropsite);
 			if (cmpResourceDropsite && cmpResourceDropsite.IsSharable())
 				cmpResourceDropsite.SetSharing(cmd.shared);
 		}
@@ -885,9 +885,9 @@ var g_Commands = {
 
 	"autoqueue-on": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
-			let cmpProductionQueue = Engine.QueryInterface(ent, IID_ProductionQueue);
+			const cmpProductionQueue = Engine.QueryInterface(ent, IID_ProductionQueue);
 			if (cmpProductionQueue)
 				cmpProductionQueue.EnableAutoQueue();
 		}
@@ -895,9 +895,9 @@ var g_Commands = {
 
 	"autoqueue-off": function(player, cmd, data)
 	{
-		for (let ent of data.entities)
+		for (const ent of data.entities)
 		{
-			let cmpProductionQueue = Engine.QueryInterface(ent, IID_ProductionQueue);
+			const cmpProductionQueue = Engine.QueryInterface(ent, IID_ProductionQueue);
 			if (cmpProductionQueue)
 				cmpProductionQueue.DisableAutoQueue();
 		}
@@ -910,7 +910,7 @@ var g_Commands = {
  */
 function notifyUnloadFailure(player)
 {
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
 		"type": "text",
 		"players": [player],
@@ -939,11 +939,11 @@ function notifyBackToWorkFailure(player)
  */
 function notifyOrderFailure(entity, player)
 {
-	let cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
 	if (!cmpIdentity)
 		return;
 
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
 		"type": "text",
 		"players": [player],
@@ -959,18 +959,18 @@ function notifyOrderFailure(entity, player)
  */
 function ExtractFormations(ents)
 {
-	let entities = []; // Entities with UnitAI.
-	let members = {}; // { formationentity: [ent, ent, ...], ... }
-	let templates = {};  // { formationentity: template }
-	for (let ent of ents)
+	const entities = []; // Entities with UnitAI.
+	const members = {}; // { formationentity: [ent, ent, ...], ... }
+	const templates = {};  // { formationentity: template }
+	for (const ent of ents)
 	{
-		let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+		const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 		if (!cmpUnitAI)
 			continue;
 
 		entities.push(ent);
 
-		let fid = cmpUnitAI.GetFormationController();
+		const fid = cmpUnitAI.GetFormationController();
 		if (fid == INVALID_ENTITY)
 			continue;
 
@@ -1119,7 +1119,7 @@ function TryConstructBuilding(player, cmpPlayer, controlAllUnits, cmd)
 	var angle = cmd.angle;
 	if (template.BuildRestrictions.PlacementType === "shore")
 	{
-		let angleDock = GetDockAngle(template, cmd.x, cmd.z);
+		const angleDock = GetDockAngle(template, cmd.x, cmd.z);
 		if (angleDock !== undefined)
 			angle = angleDock;
 	}
@@ -1208,8 +1208,8 @@ function TryConstructBuilding(player, cmpPlayer, controlAllUnits, cmd)
 	}
 
 	// We need the cost after tech and aura modifications.
-	let cmpCost = Engine.QueryInterface(ent, IID_Cost);
-	let costs = cmpCost.GetResourceCosts();
+	const cmpCost = Engine.QueryInterface(ent, IID_Cost);
+	const costs = cmpCost.GetResourceCosts();
 
 	if (!cmpPlayer.TrySubtractResources(costs))
 	{
@@ -1495,10 +1495,10 @@ function TryConstructWall(player, cmpPlayer, controlAllUnits, cmd)
  */
 function RemoveFromFormation(ents)
 {
-	let formation = ExtractFormations(ents);
-	for (let fid in formation.members)
+	const formation = ExtractFormations(ents);
+	for (const fid in formation.members)
 	{
-		let cmpFormation = Engine.QueryInterface(+fid, IID_Formation);
+		const cmpFormation = Engine.QueryInterface(+fid, IID_Formation);
 		if (cmpFormation)
 			cmpFormation.RemoveMembers(formation.members[fid]);
 	}
@@ -1514,7 +1514,7 @@ function GetFormationUnitAIs(ents, player, cmd, formationTemplate, forceTemplate
 	// and command it individually.
 	if (ents.length == 1)
 	{
-		let cmpUnitAI = Engine.QueryInterface(ents[0], IID_UnitAI);
+		const cmpUnitAI = Engine.QueryInterface(ents[0], IID_UnitAI);
 		if (!cmpUnitAI)
 			return [];
 
@@ -1529,13 +1529,13 @@ function GetFormationUnitAIs(ents, player, cmd, formationTemplate, forceTemplate
 	// (we want that to reset whatever formations units are in).
 	if (formationTemplate != NULL_FORMATION)
 	{
-		let formation = ExtractFormations(ents);
-		let formationIds = Object.keys(formation.members);
+		const formation = ExtractFormations(ents);
+		const formationIds = Object.keys(formation.members);
 		if (formationIds.length == 1)
 		{
 			// Selected units either belong to this formation or have no formation.
-			let fid = formationIds[0];
-			let cmpFormation = Engine.QueryInterface(+fid, IID_Formation);
+			const fid = formationIds[0];
+			const cmpFormation = Engine.QueryInterface(+fid, IID_Formation);
 			if (cmpFormation && cmpFormation.GetMemberCount() == formation.members[fid].length &&
 			    cmpFormation.GetMemberCount() == formation.entities.length)
 			{
@@ -1572,19 +1572,19 @@ function GetFormationUnitAIs(ents, player, cmd, formationTemplate, forceTemplate
 	}
 
 	// Separate out the units that don't support the chosen formation.
-	let formedUnits = [];
-	let nonformedUnitAIs = [];
-	for (let ent of ents)
+	const formedUnits = [];
+	const nonformedUnitAIs = [];
+	for (const ent of ents)
 	{
-		let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
-		let cmpPosition = Engine.QueryInterface(ent, IID_Position);
+		const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+		const cmpPosition = Engine.QueryInterface(ent, IID_Position);
 		if (!cmpUnitAI || !cmpPosition || !cmpPosition.IsInWorld())
 			continue;
 
 		// TODO: We only check if the formation is usable by some units
 		// if we move them to it. We should check if we can use formations
 		// for the other cases.
-		let nullFormation = (formationTemplate || cmpUnitAI.GetFormationTemplate()) == NULL_FORMATION;
+		const nullFormation = (formationTemplate || cmpUnitAI.GetFormationTemplate()) == NULL_FORMATION;
 		if (nullFormation || !cmpUnitAI.CanUseFormation(formationTemplate || NULL_FORMATION))
 		{
 			if (nullFormation && cmpUnitAI.GetFormationController())
@@ -1605,33 +1605,33 @@ function GetFormationUnitAIs(ents, player, cmd, formationTemplate, forceTemplate
 		// We need to give the selected units a new formation controller.
 
 		// TODO replace the fixed 60 with something sensible, based on vision range f.e.
-		let formationSeparation = 60;
-		let clusters = ClusterEntities(formedUnits, formationSeparation);
-		let formationEnts = [];
-		for (let cluster of clusters)
+		const formationSeparation = 60;
+		const clusters = ClusterEntities(formedUnits, formationSeparation);
+		const formationEnts = [];
+		for (const cluster of clusters)
 		{
 			RemoveFromFormation(cluster);
 
 			if (!formationTemplate || !CanMoveEntsIntoFormation(cluster, formationTemplate))
 			{
-				for (let ent of cluster)
+				for (const ent of cluster)
 					nonformedUnitAIs.push(Engine.QueryInterface(ent, IID_UnitAI));
 
 				continue;
 			}
 
 			// Create the new controller.
-			let formationEnt = Engine.AddEntity(formationTemplate);
-			let cmpFormation = Engine.QueryInterface(formationEnt, IID_Formation);
+			const formationEnt = Engine.AddEntity(formationTemplate);
+			const cmpFormation = Engine.QueryInterface(formationEnt, IID_Formation);
 			formationUnitAIs.push(Engine.QueryInterface(formationEnt, IID_UnitAI));
 			cmpFormation.SetFormationSeparation(formationSeparation);
 			cmpFormation.SetMembers(cluster);
 
-			for (let ent of formationEnts)
+			for (const ent of formationEnts)
 				cmpFormation.RegisterTwinFormation(ent);
 
 			formationEnts.push(formationEnt);
-			let cmpOwnership = Engine.QueryInterface(formationEnt, IID_Ownership);
+			const cmpOwnership = Engine.QueryInterface(formationEnt, IID_Ownership);
 			cmpOwnership.SetOwner(player);
 		}
 	}
@@ -1644,20 +1644,20 @@ function GetFormationUnitAIs(ents, player, cmd, formationTemplate, forceTemplate
  */
 function ClusterEntities(ents, separationDistance)
 {
-	let clusters = [];
+	const clusters = [];
 	if (!ents.length)
 		return clusters;
 
-	let distSq = separationDistance * separationDistance;
-	let positions = [];
+	const distSq = separationDistance * separationDistance;
+	const positions = [];
 	// triangular matrix with the (squared) distances between the different clusters
 	// the other half is not initialised
-	let matrix = [];
+	const matrix = [];
 	for (let i = 0; i < ents.length; ++i)
 	{
 		matrix[i] = [];
 		clusters.push([ents[i]]);
-		let cmpPosition = Engine.QueryInterface(ents[i], IID_Position);
+		const cmpPosition = Engine.QueryInterface(ents[i], IID_Position);
 		positions.push(cmpPosition.GetPosition2D());
 		for (let j = 0; j < i; ++j)
 			matrix[i][j] = positions[i].distanceToSquared(positions[j]);
@@ -1677,19 +1677,19 @@ function ClusterEntities(ents, separationDistance)
 			return clusters;
 
 		// make a new cluster with the entities from the two found clusters
-		let newCluster = clusters[closeClusters[0]].concat(clusters[closeClusters[1]]);
+		const newCluster = clusters[closeClusters[0]].concat(clusters[closeClusters[1]]);
 
 		// calculate the minimum distance between the new cluster and all other remaining
 		// clusters by taking the minimum of the two distances.
-		let distances = [];
+		const distances = [];
 		for (let i = 0; i < clusters.length; ++i)
 		{
-			let a = closeClusters[1];
-			let b = closeClusters[0];
+			const a = closeClusters[1];
+			const b = closeClusters[0];
 			if (i == a || i == b)
 				continue;
-			let dist1 = matrix[a][i] !== undefined ? matrix[a][i] : matrix[i][a];
-			let dist2 = matrix[b][i] !== undefined ? matrix[b][i] : matrix[i][b];
+			const dist1 = matrix[a][i] !== undefined ? matrix[a][i] : matrix[i][a];
+			const dist2 = matrix[b][i] !== undefined ? matrix[b][i] : matrix[i][b];
 			distances.push(Math.min(dist1, dist2));
 		}
 		// remove the rows and columns in the matrix for the merged clusters,
@@ -1746,8 +1746,8 @@ function CanMoveEntsIntoFormation(ents, formationTemplate)
  */
 function CanControlUnit(entity, player, controlAll)
 {
-	let cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
-	let canBeControlled = IsOwnedByPlayer(player, entity) &&
+	const cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
+	const canBeControlled = IsOwnedByPlayer(player, entity) &&
 		(!cmpIdentity || cmpIdentity.IsControllable()) ||
 		controlAll;
 
@@ -1784,7 +1784,7 @@ function CanPlayerOrAllyControlUnit(entity, player, controlAll)
  */
 function CanOwnerControlEntity(entity)
 {
-	let cmpOwner = QueryOwnerInterface(entity);
+	const cmpOwner = QueryOwnerInterface(entity);
 	return cmpOwner && CanControlUnit(entity, cmpOwner.GetPlayerID());
 }
 
@@ -1810,20 +1810,20 @@ function FilterEntityListWithAllies(entities, player, controlAll)
  */
 function IncurBribeCost(template, player, playerBribed, failedBribe)
 {
-	let cmpPlayerBribed = QueryPlayerIDInterface(playerBribed);
+	const cmpPlayerBribed = QueryPlayerIDInterface(playerBribed);
 	if (!cmpPlayerBribed)
 		return false;
 
-	let costs = {};
+	const costs = {};
 	// Additional cost for this owner
 	let multiplier = cmpPlayerBribed.GetSpyCostMultiplier();
 	if (failedBribe)
 		multiplier *= template.VisionSharing.FailureCostRatio;
 
-	for (let res in template.Cost.Resources)
+	for (const res in template.Cost.Resources)
 		costs[res] = Math.floor(multiplier * ApplyValueModificationsToTemplate("Cost/Resources/" + res, +template.Cost.Resources[res], player, template));
 
-	let cmpPlayer = QueryPlayerIDInterface(player);
+	const cmpPlayer = QueryPlayerIDInterface(player);
 	return cmpPlayer && cmpPlayer.TrySubtractResources(costs);
 }
 
