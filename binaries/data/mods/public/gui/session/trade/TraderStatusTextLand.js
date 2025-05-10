@@ -5,13 +5,13 @@ TraderStatusText.prototype.Components.prototype.LandText = class
 {
 	getText(traderNumber, idleTags)
 	{
-		let active = traderNumber.landTrader.trading;
-		let garrisoned = traderNumber.landTrader.garrisoned;
-		let inactive = traderNumber.landTrader.total - active - garrisoned;
+		const active = traderNumber.landTrader.trading;
+		const garrisoned = traderNumber.landTrader.garrisoned;
+		const inactive = traderNumber.landTrader.total - active - garrisoned;
 
-		let message = this.IdleLandTraderText[active ? "active" : "no-active"][garrisoned ? "garrisoned" : "no-garrisoned"][inactive ? "inactive" : "no-inactive"](inactive);
+		const message = this.IdleLandTraderText[active ? "active" : "no-active"][garrisoned ? "garrisoned" : "no-garrisoned"][inactive ? "inactive" : "no-inactive"](inactive);
 
-		let activeString = sprintf(
+		const activeString = sprintf(
 			translatePlural(
 				"There is %(numberTrading)s land trader trading",
 				"There are %(numberTrading)s land traders trading",
@@ -20,7 +20,7 @@ TraderStatusText.prototype.Components.prototype.LandText = class
 			{ "numberTrading": active }
 		);
 
-		let inactiveString = sprintf(
+		const inactiveString = sprintf(
 			active || garrisoned ?
 				translatePlural(
 					"%(numberOfLandTraders)s inactive",
@@ -35,7 +35,7 @@ TraderStatusText.prototype.Components.prototype.LandText = class
 			{ "numberOfLandTraders": inactive }
 		);
 
-		let garrisonedString = sprintf(
+		const garrisonedString = sprintf(
 			active || inactive ?
 				translatePlural(
 					"%(numberGarrisoned)s garrisoned on a trading merchant ship",

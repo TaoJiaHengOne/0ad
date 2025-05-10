@@ -48,12 +48,12 @@ class CivIcon
 
 	rebuild()
 	{
-		let hidden = g_ViewedPlayer <= 0;
+		const hidden = g_ViewedPlayer <= 0;
 		this.civIcon.hidden = hidden;
 		if (hidden)
 			return;
 
-		let civData = g_CivData[g_Players[g_ViewedPlayer].civ];
+		const civData = g_CivData[g_Players[g_ViewedPlayer].civ];
 
 		this.civIcon.sprite = "stretched:" + civData.Emblem;
 		this.civIconOverlay.tooltip = sprintf(translate(this.Tooltip), {

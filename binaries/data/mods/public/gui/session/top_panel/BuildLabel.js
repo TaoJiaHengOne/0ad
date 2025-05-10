@@ -15,7 +15,7 @@ class BuildLabel
 
 	onViewedPlayerChanged()
 	{
-		let isPlayer = g_ViewedPlayer > 0;
+		const isPlayer = g_ViewedPlayer > 0;
 		this.buildLabel.hidden = isPlayer && !this.viewPlayer.hidden;
 		this.buildLabel.size = isPlayer ? this.SizePlayer : this.SizeObserver;
 	}

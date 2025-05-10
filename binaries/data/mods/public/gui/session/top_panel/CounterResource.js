@@ -16,7 +16,7 @@ class CounterResource
 	{
 		this.count.caption = abbreviateLargeNumbers(Math.floor(playerState.resourceCounts[this.resCode]));
 
-		let gatherers = playerState.resourceGatherers[this.resCode];
+		const gatherers = playerState.resourceGatherers[this.resCode];
 		this.stats.caption = coloredText(gatherers, gatherers ? this.DefaultResourceGatherersColor : this.DefaultResourceGatherersColorZero);
 
 

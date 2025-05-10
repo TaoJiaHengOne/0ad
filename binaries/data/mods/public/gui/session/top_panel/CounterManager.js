@@ -14,7 +14,7 @@ class CounterManager
 		this.resourceCounts = Engine.GetGUIObjectByName("resourceCounts");
 
 		// TODO: filter resources depending on JSON file
-		for (let resCode of g_ResourceData.GetCodes())
+		for (const resCode of g_ResourceData.GetCodes())
 			this.addCounter(resCode, CounterResource);
 
 		this.addCounter("population", CounterPopulation);
@@ -27,11 +27,11 @@ class CounterManager
 
 	addCounter(resCode, type)
 	{
-		let panelCount = this.resourceCounts.children.length;
+		const panelCount = this.resourceCounts.children.length;
 		if (this.counters.length + 1 > panelCount)
 			throw "There are " + (this.counters.length + 1) + " resource counters to display, but only " + panelCount + " panel items!";
 
-		let id = "[" + this.counters.length + "]";
+		const id = "[" + this.counters.length + "]";
 		this.counters.push(
 			new type(
 				resCode,
@@ -46,7 +46,7 @@ class CounterManager
 		horizontallySpaceObjects("resourceCounts", this.counters.length);
 		hideRemaining("resourceCounts", this.counters.length);
 
-		for (let counter of this.counters)
+		for (const counter of this.counters)
 		{
 			counter.icon.sprite = "stretched:session/icons/resources/" + counter.resCode + ".png";
 			counter.panel.onPress = this.onPress.bind(this);
@@ -64,14 +64,14 @@ class CounterManager
 
 	rebuild()
 	{
-		let hidden = g_ViewedPlayer <= 0;
+		const hidden = g_ViewedPlayer <= 0;
 		this.resourceCounts.hidden = hidden;
 		if (hidden)
 			return;
 
-		let viewedPlayerState = g_SimState.players[g_ViewedPlayer];
+		const viewedPlayerState = g_SimState.players[g_ViewedPlayer];
 		this.allyPlayerStates = {};
-		for (let player in g_SimState.players)
+		for (const player in g_SimState.players)
 			if (player != 0 &&
 				player != g_ViewedPlayer &&
 				g_Players[player].state != "defeated" &&
@@ -83,9 +83,9 @@ class CounterManager
 		this.selectedOrder = +Engine.ConfigDB_GetValue("user", "gui.session.respoptooltipsort");
 		this.orderTooltip = this.getOrderTooltip();
 
-		for (let counter of this.counters)
+		for (const counter of this.counters)
 		{
-			let hidden = g_ViewedPlayer <= 0;
+			const hidden = g_ViewedPlayer <= 0;
 			counter.panel.hidden = hidden;
 			if (!hidden)
 				counter.rebuild(viewedPlayerState, this.getAllyStatTooltip.bind(this));
@@ -110,11 +110,11 @@ class CounterManager
 
 	getAllyStatTooltip(getTooltipData)
 	{
-		let tooltipData = [];
+		const tooltipData = [];
 
-		for (let playerID in this.allyPlayerStates)
+		for (const playerID in this.allyPlayerStates)
 		{
-			let playername = colorizePlayernameHelper("■", playerID) + " " + g_Players[playerID].name;
+			const playername = colorizePlayernameHelper("■", playerID) + " " + g_Players[playerID].name;
 			tooltipData.push(getTooltipData(this.allyPlayerStates[playerID], playername));
 		}
 

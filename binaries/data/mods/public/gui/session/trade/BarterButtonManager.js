@@ -12,7 +12,7 @@ class BarterButtonManager
 		// The player may be the owner of the selected market
 		this.viewedPlayer = -1;
 
-		let resourceCodes = g_ResourceData.GetBarterableCodes();
+		const resourceCodes = g_ResourceData.GetBarterableCodes();
 		this.selectedResource = resourceCodes[0];
 		this.buttons = resourceCodes.map((resourceCode, i) =>
 			new BarterButton(this, resourceCode, i, panel));
@@ -48,6 +48,6 @@ class BarterButtonManager
 
 BarterButtonManager.IsAvailable = function(panel)
 {
-	let resourceCount = g_ResourceData.GetBarterableCodes().length;
+	const resourceCount = g_ResourceData.GetBarterableCodes().length;
 	return resourceCount && resourceCount <= panel.children.length;
 };

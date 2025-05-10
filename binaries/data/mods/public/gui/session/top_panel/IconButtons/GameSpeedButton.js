@@ -5,7 +5,7 @@ class GameSpeedButton
 {
 	constructor(gameSpeedControl)
 	{
-		let gameSpeedButton = Engine.GetGUIObjectByName("gameSpeedButton");
+		const gameSpeedButton = Engine.GetGUIObjectByName("gameSpeedButton");
 		gameSpeedButton.onPress = gameSpeedControl.toggle.bind(gameSpeedControl);
 		gameSpeedButton.hidden = g_IsNetworked;
 	}

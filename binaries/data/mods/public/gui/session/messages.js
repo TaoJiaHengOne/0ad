@@ -63,7 +63,7 @@ var g_NetMessageTypes = {
 		addNetworkWarning(msg);
 	},
 	"out-of-sync": msg => {
-		for (let handler of g_NetworkOutOfSyncHandlers)
+		for (const handler of g_NetworkOutOfSyncHandlers)
 			handler(msg);
 	},
 	"players": msg => {
@@ -73,7 +73,7 @@ var g_NetMessageTypes = {
 		g_PauseControl.setClientPauseState(msg.guid, msg.pause);
 	},
 	"clients-loading": msg => {
-		for (let handler of g_ClientsLoadingHandlers)
+		for (const handler of g_ClientsLoadingHandlers)
 			handler(msg.guids);
 	},
 	"rejoined": msg => {
@@ -119,7 +119,7 @@ var g_NotificationsTypes =
 {
 	"aichat": function(notification, player)
 	{
-		let message = {
+		const message = {
 			"type": "message",
 			"text": notification.message,
 			"guid": findGuidForPlayerID(player) || -1,
@@ -159,7 +159,7 @@ var g_NotificationsTypes =
 	"ceasefire-ended": function(notification, player)
 	{
 		updatePlayerData();
-		for (let handler of g_CeasefireEndedHandlers)
+		for (const handler of g_CeasefireEndedHandlers)
 			handler();
 	},
 	"tutorial": function(notification, player)
@@ -245,10 +245,10 @@ var g_NotificationsTypes =
 		if (!g_FollowPlayer || player != g_ViewedPlayer)
 			return;
 
-		let cmd = notification.cmd;
+		const cmd = notification.cmd;
 
 		// Ignore rallypoint commands of trained animals
-		let entState = cmd.entities && cmd.entities[0] && GetEntityState(cmd.entities[0]);
+		const entState = cmd.entities && cmd.entities[0] && GetEntityState(cmd.entities[0]);
 		if (g_ViewedPlayer != 0 &&
 		    entState && entState.identity && entState.identity.classes &&
 		    entState.identity.classes.indexOf("Animal") != -1)
@@ -257,7 +257,7 @@ var g_NotificationsTypes =
 		// Focus the structure to build.
 		if (cmd.type == "repair")
 		{
-			let targetState = GetEntityState(cmd.target);
+			const targetState = GetEntityState(cmd.target);
 			if (targetState)
 				Engine.CameraMoveTo(targetState.position.x, targetState.position.z);
 		}
@@ -328,7 +328,7 @@ function findGuidForPlayerID(playerID)
  */
 function handleNotifications()
 {
-	for (let notification of Engine.GuiInterfaceCall("GetNotifications"))
+	for (const notification of Engine.GuiInterfaceCall("GetNotifications"))
 	{
 		if (!notification.players || !notification.type || !g_NotificationsTypes[notification.type])
 		{
@@ -336,7 +336,7 @@ function handleNotifications()
 			continue;
 		}
 
-		for (let player of notification.players)
+		for (const player of notification.players)
 			g_NotificationsTypes[notification.type](notification, player);
 	}
 }
@@ -358,7 +358,7 @@ function focusAttack(attack)
 
 function toggleTutorial()
 {
-	let tutorialPanel = Engine.GetGUIObjectByName("tutorialPanel");
+	const tutorialPanel = Engine.GetGUIObjectByName("tutorialPanel");
 	tutorialPanel.hidden = !tutorialPanel.hidden || !Engine.GetGUIObjectByName("tutorialText").caption;
 }
 
@@ -376,7 +376,7 @@ function updateTutorial(notification)
 		return;
 	}
 
-	let notificationText =
+	const notificationText =
 		notification.instructions.reduce((instructions, item) =>
 			instructions + (typeof item == "string" ? translate(item) : colorizeHotkey(translate(item.text), item.hotkey)),
 		"");
@@ -411,7 +411,7 @@ function handleNetMessages()
 {
 	while (true)
 	{
-		let msg = Engine.PollNetworkClient();
+		const msg = Engine.PollNetworkClient();
 		if (!msg)
 			return;
 
@@ -438,17 +438,17 @@ function handleNetStatusMessage(message)
 		closeOpenDialogs();
 	}
 
-	for (let handler of g_NetworkStatusChangeHandlers)
+	for (const handler of g_NetworkStatusChangeHandlers)
 		handler(message);
 }
 
 function handlePlayerAssignmentsMessage(message)
 {
-	for (let guid in g_PlayerAssignments)
+	for (const guid in g_PlayerAssignments)
 		if (!message.newAssignments[guid])
 			onClientLeave(guid);
 
-	let joins = Object.keys(message.newAssignments).filter(guid => !g_PlayerAssignments[guid]);
+	const joins = Object.keys(message.newAssignments).filter(guid => !g_PlayerAssignments[guid]);
 
 	g_PlayerAssignments = message.newAssignments;
 
@@ -456,7 +456,7 @@ function handlePlayerAssignmentsMessage(message)
 		onClientJoin(guid);
 	});
 
-	for (let handler of g_PlayerAssignmentsChangeHandlers)
+	for (const handler of g_PlayerAssignmentsChangeHandlers)
 		handler();
 
 	// TODO: use subscription instead
@@ -465,7 +465,7 @@ function handlePlayerAssignmentsMessage(message)
 
 function onClientJoin(guid)
 {
-	let playerID = g_PlayerAssignments[guid].player;
+	const playerID = g_PlayerAssignments[guid].player;
 
 	if (g_Players[playerID])
 	{
@@ -484,7 +484,7 @@ function onClientLeave(guid)
 {
 	g_PauseControl.setClientPauseState(guid, false);
 
-	for (let id in g_Players)
+	for (const id in g_Players)
 		if (g_Players[id].guid == guid)
 			g_Players[id].offline = true;
 
@@ -513,7 +513,7 @@ function handleFlare(data)
 	if (!shouldSeeFlare || data.guid == Engine.GetPlayerGUID())
 		return;
 
-	let now = Date.now();
+	const now = Date.now();
 	if (g_FlareRateLimitLastTimes.length)
 	{
 		g_FlareRateLimitLastTimes = g_FlareRateLimitLastTimes.filter(t => now - t < g_FlareRateLimitScope * 1000);
@@ -533,20 +533,20 @@ function handleFlare(data)
  */
 function colorizePlayernameByID(playerID)
 {
-	let username = g_Players[playerID] && escapeText(g_Players[playerID].name);
+	const username = g_Players[playerID] && escapeText(g_Players[playerID].name);
 	return colorizePlayernameHelper(username, playerID);
 }
 
 function colorizePlayernameByGUID(guid)
 {
-	let username = g_PlayerAssignments[guid] ? g_PlayerAssignments[guid].name : "";
-	let playerID = g_PlayerAssignments[guid] ? g_PlayerAssignments[guid].player : -1;
+	const username = g_PlayerAssignments[guid] ? g_PlayerAssignments[guid].name : "";
+	const playerID = g_PlayerAssignments[guid] ? g_PlayerAssignments[guid].player : -1;
 	return colorizePlayernameHelper(username, playerID);
 }
 
 function colorizePlayernameHelper(username, playerID)
 {
-	let playerColor = playerID > -1 ? g_DiplomacyColors.getPlayerColor(playerID) : "white";
+	const playerColor = playerID > -1 ? g_DiplomacyColors.getPlayerColor(playerID) : "white";
 	return coloredText(username || translate("Unknown Player"), playerColor);
 }
 
@@ -555,7 +555,7 @@ function colorizePlayernameHelper(username, playerID)
  */
 function colorizePlayernameParameters(parameters)
 {
-	for (let param in parameters)
+	for (const param in parameters)
 		if (param.startsWith("_player_"))
 			parameters[param] = colorizePlayernameByID(parameters[param]);
 }
@@ -581,7 +581,7 @@ function sendDialogAnswer(guiObject, dialogName)
  */
 function openDialog(dialogName, data, player)
 {
-	let dialog = Engine.GetGUIObjectByName(dialogName + "-dialog");
+	const dialog = Engine.GetGUIObjectByName(dialogName + "-dialog");
 	if (!dialog)
 	{
 		warn("messages.js: Unknown dialog with name " + dialogName);
@@ -589,24 +589,24 @@ function openDialog(dialogName, data, player)
 	}
 	dialog.hidden = false;
 
-	for (let objName in data)
+	for (const objName in data)
 	{
-		let obj = Engine.GetGUIObjectByName(dialogName + "-dialog-" + objName);
+		const obj = Engine.GetGUIObjectByName(dialogName + "-dialog-" + objName);
 		if (!obj)
 		{
 			warn("messages.js: Key '" + objName + "' not found in '" + dialogName + "' dialog.");
 			continue;
 		}
 
-		for (let key in data[objName])
+		for (const key in data[objName])
 		{
-			let n = data[objName][key];
+			const n = data[objName][key];
 			if (typeof n == "object" && n.message)
 			{
 				let message = n.message;
 				if (n.translateMessage)
 					message = translate(message);
-				let parameters = n.parameters || {};
+				const parameters = n.parameters || {};
 				if (n.translateParameters)
 					translateObjectKeys(parameters, n.translateParameters);
 				obj[key] = sprintf(message, parameters);

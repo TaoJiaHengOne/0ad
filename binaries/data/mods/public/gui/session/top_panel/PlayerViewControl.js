@@ -56,7 +56,7 @@ class PlayerViewControl
 	{
 		this.rebuild();
 
-		let playerState = g_Players[Engine.GetPlayerID()];
+		const playerState = g_Players[Engine.GetPlayerID()];
 		this.selectViewPlayer(playerState && playerState.state == "defeated" ? 0 : Engine.GetPlayerID() + 1);
 	}
 
@@ -83,14 +83,14 @@ class PlayerViewControl
 
 	onSelectionChange()
 	{
-		let playerID = this.viewPlayer.selected - 1;
+		const playerID = this.viewPlayer.selected - 1;
 		if (playerID < -1 || playerID > g_Players.length - 1)
 		{
 			error("Can't assume invalid player ID: " + playerID);
 			return;
 		}
 
-		for (let handler of this.preViewedPlayerChangeHandlers)
+		for (const handler of this.preViewedPlayerChangeHandlers)
 			handler();
 
 		// TODO: should set this state variable only once in this scope
@@ -112,10 +112,10 @@ class PlayerViewControl
 
 		// Send events after all states were updated
 		if (this.changePerspective)
-			for (let handler of this.playerIDChangeHandlers)
+			for (const handler of this.playerIDChangeHandlers)
 				handler();
 
-		for (let handler of this.viewedPlayerChangeHandlers)
+		for (const handler of this.viewedPlayerChangeHandlers)
 			handler();
 	}
 }

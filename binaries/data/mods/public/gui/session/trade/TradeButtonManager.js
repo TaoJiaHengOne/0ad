@@ -11,7 +11,7 @@ class TradeButtonManager
 		// For players assume that the simulation state will always follow the GUI of this player.
 		this.tradingGoods = Engine.GuiInterfaceCall("GetTradingGoods");
 
-		let resourceCodes = g_ResourceData.GetTradableCodes();
+		const resourceCodes = g_ResourceData.GetTradableCodes();
 		this.selectedResource = resourceCodes[0];
 		this.buttons = resourceCodes.map((resCode, i) => new TradeButton(this, resCode, i));
 
@@ -29,8 +29,8 @@ class TradeButtonManager
 
 		this.tradeHelp.tooltip = colorizeHotkey(translate(this.TradeSwapTooltip), "session.fulltradeswap");
 
-		let enabled = controlsPlayer(g_ViewedPlayer);
-		for (let button of this.buttons)
+		const enabled = controlsPlayer(g_ViewedPlayer);
+		for (const button of this.buttons)
 			button.update(enabled, this.selectedResource, this.tradingGoods);
 	}
 
@@ -45,7 +45,7 @@ class TradeButtonManager
 
 	fullTradeSwap(resourceCode)
 	{
-		for (let resCode in this.tradingGoods)
+		for (const resCode in this.tradingGoods)
 			this.tradingGoods[resCode] = 0;
 
 		this.tradingGoods[resourceCode] = 100;
@@ -72,7 +72,7 @@ class TradeButtonManager
 
 TradeButtonManager.IsAvailable = function()
 {
-	let resourceCount = g_ResourceData.GetTradableCodes().length;
+	const resourceCount = g_ResourceData.GetTradableCodes().length;
 	return resourceCount && resourceCount <= Engine.GetGUIObjectByName("tradeResources").children.length;
 };
 

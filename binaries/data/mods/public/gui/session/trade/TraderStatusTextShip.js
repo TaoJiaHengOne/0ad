@@ -5,12 +5,12 @@ TraderStatusText.prototype.Components.prototype.ShipText = class
 {
 	getText(traderNumber, idleTags)
 	{
-		let active = traderNumber.shipTrader.trading;
-		let inactive = traderNumber.shipTrader.total - active;
+		const active = traderNumber.shipTrader.trading;
+		const inactive = traderNumber.shipTrader.total - active;
 
-		let message = this.IdleShipTraderText[active ? "active" : "no-active"][inactive ? "inactive" : "no-inactive"](inactive);
+		const message = this.IdleShipTraderText[active ? "active" : "no-active"][inactive ? "inactive" : "no-inactive"](inactive);
 
-		let activeString = sprintf(
+		const activeString = sprintf(
 			translatePlural(
 				"There is %(numberTrading)s merchant ship trading",
 				"There are %(numberTrading)s merchant ships trading",
@@ -19,7 +19,7 @@ TraderStatusText.prototype.Components.prototype.ShipText = class
 			{ "numberTrading": active }
 		);
 
-		let inactiveString = sprintf(
+		const inactiveString = sprintf(
 			active ?
 				translatePlural(
 					"%(numberOfShipTraders)s inactive",

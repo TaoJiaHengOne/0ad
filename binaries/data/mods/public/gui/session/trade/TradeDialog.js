@@ -49,7 +49,7 @@ class TradeDialog
 
 	toggle()
 	{
-		let open = this.isOpen();
+		const open = this.isOpen();
 		closeOpenDialogs();
 
 		if (!open)
@@ -70,9 +70,9 @@ class TradeDialog
 
 	onPlayersInit()
 	{
-		let size = this.tradeDialogPanel.size;
+		const size = this.tradeDialogPanel.size;
 
-		let width = 1/2 * Math.max(
+		const width = 1/2 * Math.max(
 			TradeDialog.prototype.BarterPanel.getWidthOffset(),
 			TradeDialog.prototype.TradePanel.getWidthOffset());
 

@@ -9,7 +9,7 @@ class TradeButton
 		this.tradeButtonManager = tradeButtonManager;
 		this.resourceCode = resourceCode;
 
-		let id = "[" + i + "]";
+		const id = "[" + i + "]";
 
 		this.tradeArrowUp = Engine.GetGUIObjectByName("tradeArrowUp" + id);
 		this.tradeArrowDn = Engine.GetGUIObjectByName("tradeArrowDn" + id);
@@ -36,9 +36,9 @@ class TradeButton
 
 	update(enabled)
 	{
-		let isSelected = this.tradeButtonManager.selectedResource == this.resourceCode;
-		let currentAmount = this.tradeButtonManager.tradingGoods[this.resourceCode];
-		let selectedAmount = this.tradeButtonManager.tradingGoods[this.tradeButtonManager.selectedResource];
+		const isSelected = this.tradeButtonManager.selectedResource == this.resourceCode;
+		const currentAmount = this.tradeButtonManager.tradingGoods[this.resourceCode];
+		const selectedAmount = this.tradeButtonManager.tradingGoods[this.tradeButtonManager.selectedResource];
 
 		this.tradeResourceText.caption = sprintf(translateWithContext("trading good ratio", this.AmountRatioCaption), {
 			"amount": currentAmount
@@ -57,7 +57,7 @@ TradeButton.prototype.AmountRatioCaption = markForTranslationWithContext("tradin
 
 TradeButton.getWidth = function()
 {
-	let size = Engine.GetGUIObjectByName("tradeResource[0]").size;
+	const size = Engine.GetGUIObjectByName("tradeResource[0]").size;
 	return size.right - size.left;
 };
 

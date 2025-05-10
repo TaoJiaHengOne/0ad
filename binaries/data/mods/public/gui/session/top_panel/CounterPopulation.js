@@ -20,7 +20,7 @@ class CounterPopulation
 	{
 		this.count.caption = sprintf(translate(this.CounterCaption), playerState);
 		let total = 0;
-		for (let resCode of g_ResourceData.GetCodes())
+		for (const resCode of g_ResourceData.GetCodes())
 			total += playerState.resourceGatherers[resCode];
 
 		this.stats.caption = coloredText(total, total ? this.DefaultTotalGatherersColor : this.DefaultTotalGatherersColorZero);
@@ -46,7 +46,7 @@ class CounterPopulation
 		if (this.panel.hidden)
 			return;
 
-		let newColor = this.isTrainingBlocked && Date.now() % 1000 < 500 ?
+		const newColor = this.isTrainingBlocked && Date.now() % 1000 < 500 ?
 			this.PopulationAlertColor :
 			this.DefaultPopulationColor;
 

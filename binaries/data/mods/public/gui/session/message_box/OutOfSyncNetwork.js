@@ -11,7 +11,7 @@ class OutOfSyncNetwork extends SessionMessageBox
 	 */
 	onNetworkOutOfSync(msg)
 	{
-		let txt = [
+		const txt = [
 			sprintf(translate("Out-Of-Sync error on turn %(turn)s."), {
 				"turn": msg.turn
 			}),

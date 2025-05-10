@@ -35,7 +35,7 @@ class ObjectivesDialog
 
 	toggle()
 	{
-		let open = this.isOpen();
+		const open = this.isOpen();
 
 		closeOpenDialogs();
 
@@ -45,14 +45,14 @@ class ObjectivesDialog
 
 	rebuild()
 	{
-		let player = g_Players[Engine.GetPlayerID()];
-		let playerState = player && player.state;
-		let isActive = !playerState || playerState == "active";
+		const player = g_Players[Engine.GetPlayerID()];
+		const playerState = player && player.state;
+		const isActive = !playerState || playerState == "active";
 
 		this.objectivesPlayerstate.hidden = isActive;
 		this.objectivesPlayerstate.caption = g_PlayerStateMessages[playerState] || "";
 
-		let size = this.gameDescription.size;
+		const size = this.gameDescription.size;
 		size.top = (isActive ? this.objectivesTitle : this.objectivesPlayerstate).size.bottom;
 		this.gameDescription.size = size;
 	}

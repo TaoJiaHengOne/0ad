@@ -20,7 +20,7 @@ class BarterButton
 		this.buyIcon= this.buyButton.children[0];
 		this.buyAmount = this.buyButton.children[1];
 
-		let resourceName = { "resource": resourceNameWithinSentence(resourceCode) };
+		const resourceName = { "resource": resourceNameWithinSentence(resourceCode) };
 
 		this.sellButton.tooltip = sprintf(translate(this.SellTooltip), resourceName);
 		this.sellButton.onPress = () => { barterButtonManager.setSelectedResource(this.resourceCode); };
@@ -61,22 +61,22 @@ class BarterButton
 		if (Engine.HotkeyIsPressed("session.massbarter"))
 			this.amountToSell *= this.Multiplier;
 
-		let neededResourcesSell = Engine.GuiInterfaceCall("GetNeededResources", {
+		const neededResourcesSell = Engine.GuiInterfaceCall("GetNeededResources", {
 			"cost": {
 				[this.resourceCode]: this.amountToSell
 			},
 			"player": viewedPlayer
 		});
 
-		let neededResourcesBuy = Engine.GuiInterfaceCall("GetNeededResources", {
+		const neededResourcesBuy = Engine.GuiInterfaceCall("GetNeededResources", {
 			"cost": {
 				[this.barterButtonManager.selectedResource]: this.amountToSell
 			},
 			"player": viewedPlayer
 		});
 
-		let isSelected = this.resourceCode == this.barterButtonManager.selectedResource;
-		let icon = "stretched:" + (isSelected ? this.SelectedModifier : "") + this.iconPath;
+		const isSelected = this.resourceCode == this.barterButtonManager.selectedResource;
+		const icon = "stretched:" + (isSelected ? this.SelectedModifier : "") + this.iconPath;
 		this.sellIcon.sprite = (neededResourcesSell ? this.DisabledModifier : "") + icon;
 		this.buyIcon.sprite = (neededResourcesBuy ? this.DisabledModifier : "") + icon;
 
@@ -84,7 +84,7 @@ class BarterButton
 			"amount": this.amountToSell
 		});
 
-		let prices = GetSimState().players[viewedPlayer].barterPrices;
+		const prices = GetSimState().players[viewedPlayer].barterPrices;
 
 		this.buyAmount.caption = sprintf(translateWithContext("buy action", this.BuyCaption), {
 			"amount": Math.round(
@@ -101,7 +101,7 @@ class BarterButton
 
 BarterButton.getWidth = function(panel)
 {
-	let size = panel.children[0].size;
+	const size = panel.children[0].size;
 	return size.right - size.left;
 };
 

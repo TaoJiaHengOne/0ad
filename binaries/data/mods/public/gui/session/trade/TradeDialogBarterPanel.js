@@ -7,7 +7,7 @@ TradeDialog.prototype.BarterPanel = class
 	{
 		this.barterResources = Engine.GetGUIObjectByName("barterResources");
 
-		let isAvailable = BarterButtonManager.IsAvailable(this.barterResources);
+		const isAvailable = BarterButtonManager.IsAvailable(this.barterResources);
 		if (isAvailable)
 			this.barterButtonManager = new BarterButtonManager(this.barterResources);
 
@@ -19,7 +19,7 @@ TradeDialog.prototype.BarterPanel = class
 
 	update()
 	{
-		let playerState = GetSimState().players[g_ViewedPlayer];
+		const playerState = GetSimState().players[g_ViewedPlayer];
 		const canBarter = playerState && playerState.canBarter || false;
 
 		this.barterButtonManager.setViewedPlayer(g_ViewedPlayer);

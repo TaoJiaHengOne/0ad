@@ -13,7 +13,7 @@ class TraderStatusText
 
 	update()
 	{
-		let traderNumber = Engine.GuiInterfaceCall("GetTraderNumber", g_ViewedPlayer);
+		const traderNumber = Engine.GuiInterfaceCall("GetTraderNumber", g_ViewedPlayer);
 		this.traderCountText.caption = this.components.reduce((caption, component) =>
 			caption += component.getText(traderNumber, this.IdleTraderTextTags) + "\n\n", "").trim();
 	}

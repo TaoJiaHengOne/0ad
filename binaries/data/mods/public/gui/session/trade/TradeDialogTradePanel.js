@@ -13,7 +13,7 @@ TradeDialog.prototype.TradePanel = class
 
 	update()
 	{
-		for (let name in this)
+		for (const name in this)
 			this[name].update();
 	}
 };

@@ -69,7 +69,7 @@ class MiniMap
 			return true;
 		}
 
-		let action = determineAction(undefined, undefined, true);
+		const action = determineAction(undefined, undefined, true);
 		if (!action)
 			return false;
 		if (button == SDL_BUTTON_LEFT && !Engine.HotkeyIsPressed("session.queue") && !Engine.HotkeyIsPressed("session.orderone"))
