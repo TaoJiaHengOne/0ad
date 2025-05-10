@@ -30,22 +30,22 @@ ClumpPlacer.prototype.place = function(constraint)
 	if (!g_Map.inMapBounds(this.centerPosition) || !constraint.allows(this.centerPosition))
 		return undefined;
 
-	let points = [];
+	const points = [];
 
-	let size = g_Map.getSize();
-	let gotRet = new Array(size).fill(0).map(p => new Uint8Array(size)); // booleans
-	let radius = Math.sqrt(this.size / Math.PI);
-	let perim = 4 * radius * 2 * Math.PI;
-	let intPerim = Math.ceil(perim);
+	const size = g_Map.getSize();
+	const gotRet = new Array(size).fill(0).map(p => new Uint8Array(size)); // booleans
+	const radius = Math.sqrt(this.size / Math.PI);
+	const perim = 4 * radius * 2 * Math.PI;
+	const intPerim = Math.ceil(perim);
 
 	let ctrlPts = 1 + Math.floor(1.0/Math.max(this.smoothness, 1.0/intPerim));
 
 	if (ctrlPts > radius * 2 * Math.PI)
 		ctrlPts = Math.floor(radius * 2 * Math.PI) + 1;
 
-	let noise = new Float32Array(intPerim);			//float32
-	let ctrlCoords = new Float32Array(ctrlPts+1);	//float32
-	let ctrlVals = new Float32Array(ctrlPts+1);		//float32
+	const noise = new Float32Array(intPerim);			//float32
+	const ctrlCoords = new Float32Array(ctrlPts+1);	//float32
+	const ctrlVals = new Float32Array(ctrlPts+1);		//float32
 
 	// Generate some interpolated noise
 	for (let i=0; i < ctrlPts; i++)

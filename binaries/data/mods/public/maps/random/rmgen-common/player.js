@@ -584,10 +584,10 @@ function partitionPlayers(playerIDs)
 function getTeamsArray()
 {
 	const playerIDs = getPlayerIDs();
-	let numPlayers = getNumPlayers();
+	const numPlayers = getNumPlayers();
 
 	// Group players by team
-	let teams = [];
+	const teams = [];
 	for (let i = 0; i < numPlayers; ++i)
 	{
 		const team = getPlayerTeam(playerIDs[i]);
@@ -766,7 +766,7 @@ function placeLine(teamsArray, distance, groupedDistance, startAngle)
 		if (distance + teamsArray[i].length * groupedDistance > dist)
 			safeDist = dist - teamsArray[i].length * groupedDistance;
 
-		let teamAngle = startAngle + (i + 1) * 2 * Math.PI / teamsArray.length;
+		const teamAngle = startAngle + (i + 1) * 2 * Math.PI / teamsArray.length;
 
 		for (let p = 0; p < teamsArray[i].length; ++p)
 		{
@@ -788,15 +788,15 @@ function placeLine(teamsArray, distance, groupedDistance, startAngle)
  */
 function placeStronghold(teamsArray, distance, groupedDistance, startAngle)
 {
-	let mapCenter = g_Map.getCenter();
+	const mapCenter = g_Map.getCenter();
 
 	const playerIDs = [];
 	const playerPosition = [];
 
 	for (let i = 0; i < teamsArray.length; ++i)
 	{
-		let teamAngle = startAngle + (i + 1) * 2 * Math.PI / teamsArray.length;
-		let teamPosition = Vector2D.add(mapCenter, new Vector2D(distance * 0.8, 0).rotate(-teamAngle));
+		const teamAngle = startAngle + (i + 1) * 2 * Math.PI / teamsArray.length;
+		const teamPosition = Vector2D.add(mapCenter, new Vector2D(distance * 0.8, 0).rotate(-teamAngle));
 		let teamGroupDistance = groupedDistance * 1.2;
 
 		// If we have a team of above average size, make sure they're spread out
@@ -812,7 +812,7 @@ function placeStronghold(teamsArray, distance, groupedDistance, startAngle)
 		// Create player base
 		for (let p = 0; p < teamsArray[i].length; ++p)
 		{
-			let angle = startAngle + (p + 1) * 2 * Math.PI / teamsArray[i].length;
+			const angle = startAngle + (p + 1) * 2 * Math.PI / teamsArray[i].length;
 			playerIDs.push(teamsArray[i][p]);
 			playerPosition.push(Vector2D.add(teamPosition, new Vector2D(teamGroupDistance, 0).rotate(-angle)).round());
 		}

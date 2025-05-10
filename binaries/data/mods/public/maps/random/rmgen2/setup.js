@@ -233,6 +233,6 @@ function initTileClasses(newClasses)
 		classNames = classNames.concat(newClasses);
 
 	g_TileClasses = {};
-	for (let className of classNames)
+	for (const className of classNames)
 		g_TileClasses[className] = g_Map.createTileClass();
 }

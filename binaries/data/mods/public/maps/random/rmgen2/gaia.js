@@ -359,8 +359,8 @@ function addDecoration(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating decoration");
 
-	let offset = getRandomDeviation(size, deviation);
-	let decorations = [
+	const offset = getRandomDeviation(size, deviation);
+	const decorations = [
 		[
 			new SimpleObject(g_Decoratives.rockMedium, offset, 3 * offset, 0, offset)
 		],
@@ -385,7 +385,7 @@ function addDecoration(constraint, size, deviation, fill)
 	if (currentBiome() == "generic/india")
 		baseCount = 8;
 
-	let counts = [
+	const counts = [
 		scaleByMapSize(16, 262),
 		scaleByMapSize(8, 131),
 		baseCount * scaleByMapSize(13, 200),
@@ -395,8 +395,8 @@ function addDecoration(constraint, size, deviation, fill)
 
 	for (let i = 0; i < decorations.length; ++i)
 	{
-		let decorCount = Math.floor(counts[i] * fill);
-		let group = new SimpleGroup(decorations[i], true);
+		const decorCount = Math.floor(counts[i] * fill);
+		const group = new SimpleGroup(decorations[i], true);
 		createObjectGroupsDeprecated(group, 0, constraint, decorCount, 5);
 	}
 }
@@ -423,16 +423,16 @@ function addDecoration(constraint, size, deviation, fill)
 
 function addElevation(constraint, el)
 {
-	let count = el.fill * el.count;
-	let minSize = el.minSize;
-	let maxSize = el.maxSize;
-	let spread = el.spread;
+	const count = el.fill * el.count;
+	const minSize = el.minSize;
+	const maxSize = el.maxSize;
+	const spread = el.spread;
 
 	let elType = ELEVATION_MODIFY;
 	if (el.class == g_TileClasses.water)
 		elType = ELEVATION_SET;
 
-	let widths = [];
+	const widths = [];
 
 	// Allow for shore and cliff rendering
 	for (let s = el.painter.length; s > 2; --s)
@@ -440,13 +440,13 @@ function addElevation(constraint, el)
 
 	for (let i = 0; i < count; ++i)
 	{
-		let elevation = randIntExclusive(el.minElevation, el.maxElevation);
-		let smooth = Math.floor(elevation / el.steepness);
+		const elevation = randIntExclusive(el.minElevation, el.maxElevation);
+		const smooth = Math.floor(elevation / el.steepness);
 
-		let offset = getRandomDeviation(el.size, el.deviation);
+		const offset = getRandomDeviation(el.size, el.deviation);
 		let pMinSize = Math.floor(minSize * offset);
 		let pMaxSize = Math.floor(maxSize * offset);
-		let pSpread = Math.floor(spread * offset);
+		const pSpread = Math.floor(spread * offset);
 		let pSmooth = Math.abs(Math.floor(smooth * offset));
 		let pElevation = Math.floor(elevation * offset);
 
@@ -559,11 +559,11 @@ function addLayeredPatches(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating layered patches");
 
-	let minRadius = 1;
-	let maxRadius = Math.floor(scaleByMapSize(3, 5));
-	let count = fill * scaleByMapSize(15, 45);
+	const minRadius = 1;
+	const maxRadius = Math.floor(scaleByMapSize(3, 5));
+	const count = fill * scaleByMapSize(15, 45);
 
-	let patchSizes = [
+	const patchSizes = [
 		scaleByMapSize(3, 6),
 		scaleByMapSize(5, 10),
 		scaleByMapSize(8, 21)
@@ -571,9 +571,9 @@ function addLayeredPatches(constraint, size, deviation, fill)
 
 	for (const patchSize of patchSizes)
 	{
-		let offset = getRandomDeviation(size, deviation);
-		let patchMinRadius = Math.floor(minRadius * offset);
-		let patchMaxRadius = Math.floor(maxRadius * offset);
+		const offset = getRandomDeviation(size, deviation);
+		const patchMinRadius = Math.floor(minRadius * offset);
+		const patchMaxRadius = Math.floor(maxRadius * offset);
 
 		createAreas(
 			new ChainPlacer(Math.min(patchMinRadius, patchMaxRadius), patchMaxRadius, Math.floor(patchSize * offset), 0.5),
@@ -651,7 +651,7 @@ function addPlateaus(constraint, size, deviation, fill)
 
 	for (let i = 0; i < 40; ++i)
 	{
-		let hillElevation = randIntInclusive(4, 18);
+		const hillElevation = randIntInclusive(4, 18);
 		createAreas(
 			new ChainPlacer(3, 15, 1, 0.5),
 			[
@@ -703,9 +703,9 @@ function addProps(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating rare actors");
 
-	let offset = getRandomDeviation(size, deviation);
+	const offset = getRandomDeviation(size, deviation);
 
-	let props = [
+	const props = [
 		[
 			new SimpleObject(g_Props.skeleton, offset, 5 * offset, 0, 3 * offset + 2),
 		],
@@ -717,9 +717,9 @@ function addProps(constraint, size, deviation, fill)
 		]
 	];
 
-	let baseCount = 1;
+	const baseCount = 1;
 
-	let counts = [
+	const counts = [
 		scaleByMapSize(16, 262),
 		scaleByMapSize(8, 131),
 		baseCount * scaleByMapSize(13, 200),
@@ -730,13 +730,13 @@ function addProps(constraint, size, deviation, fill)
 	// Add small props
 	for (let i = 0; i < props.length; ++i)
 	{
-		let propCount = Math.floor(counts[i] * fill);
-		let group = new SimpleGroup(props[i], true);
+		const propCount = Math.floor(counts[i] * fill);
+		const group = new SimpleGroup(props[i], true);
 		createObjectGroupsDeprecated(group, 0, constraint, propCount, 5);
 	}
 
 	// Add decorative trees
-	let trees = new SimpleObject(g_Decoratives.tree, 5 * offset, 30 * offset, 2, 3 * offset + 10);
+	const trees = new SimpleObject(g_Decoratives.tree, 5 * offset, 30 * offset, 2, 3 * offset + 10);
 	createObjectGroupsDeprecated(new SimpleGroup([trees], true), 0, constraint, counts[0] * 5 * fill, 5);
 }
 
@@ -796,9 +796,9 @@ function addAnimals(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating animals");
 
-	let groupOffset = getRandomDeviation(size, deviation);
+	const groupOffset = getRandomDeviation(size, deviation);
 
-	let animals = [
+	const animals = [
 		[new SimpleObject(g_Gaia.mainHuntableAnimal, 5 * groupOffset, 7 * groupOffset, 0, 4 * groupOffset)],
 		[new SimpleObject(g_Gaia.secondaryHuntableAnimal, 2 * groupOffset, 3 * groupOffset, 0, 2 * groupOffset)]
 	];
@@ -830,9 +830,9 @@ function addFish(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating fish");
 
-	let groupOffset = getRandomDeviation(size, deviation);
+	const groupOffset = getRandomDeviation(size, deviation);
 
-	let fishes = [
+	const fishes = [
 		[new SimpleObject(g_Gaia.fish, groupOffset, 2 * groupOffset, 0, 2 * groupOffset)],
 		[new SimpleObject(g_Gaia.fish, 2 * groupOffset, 4 * groupOffset, 10 * groupOffset, 20 * groupOffset)]
 	];
@@ -901,7 +901,7 @@ function addMetal(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating metal mines");
 
-	let offset = getRandomDeviation(size, deviation);
+	const offset = getRandomDeviation(size, deviation);
 	createObjectGroupsDeprecated(
 		new SimpleGroup([new SimpleObject(g_Gaia.metalLarge, offset, offset, 0, 4 * offset)], true, g_TileClasses.metal),
 		0,
@@ -930,9 +930,9 @@ function addStone(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating stone mines");
 
-	let offset = getRandomDeviation(size, deviation);
+	const offset = getRandomDeviation(size, deviation);
 
-	let mines = [
+	const mines = [
 		[
 			new SimpleObject(g_Gaia.stoneSmall, 0, 2 * offset, 0, 4 * offset),
 			new SimpleObject(g_Gaia.stoneLarge, offset, offset, 0, 4 * offset)
@@ -965,16 +965,16 @@ function addStragglerTrees(constraint, size, deviation, fill)
 		size = Math.max(size, 1);
 	}
 
-	let trees = [g_Gaia.tree1, g_Gaia.tree2, g_Gaia.tree3, g_Gaia.tree4];
+	const trees = [g_Gaia.tree1, g_Gaia.tree2, g_Gaia.tree3, g_Gaia.tree4];
 
-	let treesPerPlayer = 40;
-	let playerBonus = Math.max(1, (getNumPlayers() - 3) / 2);
+	const treesPerPlayer = 40;
+	const playerBonus = Math.max(1, (getNumPlayers() - 3) / 2);
 
-	let offset = getRandomDeviation(size, deviation);
-	let treeCount = treesPerPlayer * playerBonus * fill;
-	let totalTrees = scaleByMapSize(treeCount, treeCount);
+	const offset = getRandomDeviation(size, deviation);
+	const treeCount = treesPerPlayer * playerBonus * fill;
+	const totalTrees = scaleByMapSize(treeCount, treeCount);
 
-	let count = Math.floor(totalTrees / trees.length) * fill;
+	const count = Math.floor(totalTrees / trees.length) * fill;
 	let min = offset;
 	let max = 4 * offset;
 	let minDist = offset;
@@ -999,7 +999,7 @@ function addStragglerTrees(constraint, size, deviation, fill)
 
 		min = Math.min(min, treesMax);
 
-		let group = new SimpleGroup([new SimpleObject(trees[i], min, treesMax, minDist, maxDist)], true, g_TileClasses.forest);
+		const group = new SimpleGroup([new SimpleObject(trees[i], min, treesMax, minDist, maxDist)], true, g_TileClasses.forest);
 		createObjectGroupsDeprecated(group, 0, constraint, count);
 	}
 }
