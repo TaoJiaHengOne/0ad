@@ -13,24 +13,24 @@ class Menu
 		this.lastTick = undefined;
 
 		this.menuButtonPanel = Engine.GetGUIObjectByName("menuButtonPanel");
-		let menuButtons = this.menuButtonPanel.children;
+		const menuButtons = this.menuButtonPanel.children;
 		this.margin = menuButtons[0].size.top;
 		this.buttonHeight = menuButtons[0].size.bottom;
 
-		let handlerNames = this.getHandlerNames();
+		const handlerNames = this.getHandlerNames();
 		if (handlerNames.length > menuButtons.length)
 			throw new Error(
 				"There are " + handlerNames.length + " menu buttons defined, " +
 				"but only " + menuButtons.length + " objects!");
 
 		this.buttons = handlerNames.map((handlerName, i) => {
-			let handler = new MenuButtons.prototype[handlerName](menuButtons[i], pauseControl, playerViewControl, chat);
+			const handler = new MenuButtons.prototype[handlerName](menuButtons[i], pauseControl, playerViewControl, chat);
 			this.initButton(handler, menuButtons[i], i);
 			return handler;
 		});
 
 		this.endPosition = this.margin + this.buttonHeight * (1 + handlerNames.length);
-		let size = this.menuButtonPanel.size;
+		const size = this.menuButtonPanel.size;
 		size.top = -this.endPosition;
 		size.bottom = 0;
 		this.menuButtonPanel.size = size;
@@ -70,7 +70,7 @@ class Menu
 			handler.onPress();
 		};
 
-		let size = button.size;
+		const size = button.size;
 		size.top = this.buttonHeight * (i + 1) + this.margin;
 		size.bottom = this.buttonHeight * (i + 2);
 		button.size = size;
@@ -89,10 +89,10 @@ class Menu
 	 */
 	onTick()
 	{
-		let tickLength = Date.now() - this.lastTick;
+		const tickLength = Date.now() - this.lastTick;
 		this.lastTick = Date.now();
 
-		let maxOffset =
+		const maxOffset =
 			this.endPosition + (
 				this.isOpen ?
 					-this.menuButtonPanel.size.bottom :
@@ -105,8 +105,8 @@ class Menu
 			return;
 		}
 
-		let offset = Math.min(this.Speed * tickLength, maxOffset) * (this.isOpen ? +1 : -1);
-		let size = this.menuButtonPanel.size;
+		const offset = Math.min(this.Speed * tickLength, maxOffset) * (this.isOpen ? +1 : -1);
+		const size = this.menuButtonPanel.size;
 		size.top += offset;
 		size.bottom += offset;
 		this.menuButtonPanel.size = size;

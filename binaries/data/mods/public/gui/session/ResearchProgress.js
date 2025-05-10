@@ -14,7 +14,7 @@ class ResearchProgress
 		 */
 		this.topOffset = g_OverlayCounterManager.lastHeight;
 
-		let updater = this.updateResearchProgress.bind(this);
+		const updater = this.updateResearchProgress.bind(this);
 		registerSimulationUpdateHandler(updater);
 		playerViewControl.registerViewedPlayerChangeHandler(updater);
 		g_OverlayCounterManager.registerResizeHandler(this.setTopOffset.bind(this));
@@ -27,10 +27,10 @@ class ResearchProgress
 
 	updateResearchProgress()
 	{
-		let researchStarted = Engine.GuiInterfaceCall("GetStartedResearch", g_ViewedPlayer);
+		const researchStarted = Engine.GuiInterfaceCall("GetStartedResearch", g_ViewedPlayer);
 
 		let i = 0;
-		for (let techName in researchStarted)
+		for (const techName in researchStarted)
 		{
 			if (i == this.buttons.length)
 				break;
@@ -68,7 +68,7 @@ class ResearchProgressButton
 	{
 		this.researcher = researchStatus.researcher;
 
-		let template = GetTechnologyData(techName, g_Players[g_ViewedPlayer].civ);
+		const template = GetTechnologyData(techName, g_Players[g_ViewedPlayer].civ);
 		let modifier = "stretched:";
 		if (researchStatus.paused)
 			modifier += "color:0 0 0 127:grayscale:";

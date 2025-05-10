@@ -28,7 +28,7 @@ class PauseOverlay
 
 	rebuild()
 	{
-		let hidden = !this.pauseControl.explicitPause && !this.pauseControl.pausingClients.length || g_Disconnected;
+		const hidden = !this.pauseControl.explicitPause && !this.pauseControl.pausingClients.length || g_Disconnected;
 		this.pauseOverlay.hidden = hidden;
 		if (hidden)
 			return;

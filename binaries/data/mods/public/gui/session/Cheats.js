@@ -7,9 +7,9 @@ class Cheats
 	constructor()
 	{
 		this.cheats = {};
-		for (let fileName of Engine.ListDirectoryFiles(this.Directory, "*.json", false))
+		for (const fileName of Engine.ListDirectoryFiles(this.Directory, "*.json", false))
 		{
-			let cheat = Engine.ReadJSONFile(fileName);
+			const cheat = Engine.ReadJSONFile(fileName);
 			if (this.cheats[cheat.Name])
 				warn("Cheat name '" + cheat.Name + "' is already present");
 			else
@@ -29,11 +29,11 @@ class Cheats
 			return false;
 
 		// Find the cheat code that is a prefix of the user input
-		let cheatCode = Object.keys(this.cheats).find(code => text.indexOf(code) == 0);
+		const cheatCode = Object.keys(this.cheats).find(code => text.indexOf(code) == 0);
 		if (!cheatCode)
 			return false;
 
-		let cheat = this.cheats[cheatCode];
+		const cheat = this.cheats[cheatCode];
 
 		let parameter = text.substr(cheatCode.length + 1);
 

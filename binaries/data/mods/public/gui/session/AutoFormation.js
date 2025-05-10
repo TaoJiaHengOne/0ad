@@ -61,7 +61,7 @@ class AutoFormation
 	 */
 	getNull()
 	{
-		let walkOnly = Engine.ConfigDB_GetValue("user", "gui.session.formationwalkonly") === "true";
+		const walkOnly = Engine.ConfigDB_GetValue("user", "gui.session.formationwalkonly") === "true";
 		return walkOnly ? NULL_FORMATION : undefined;
 	}
 }

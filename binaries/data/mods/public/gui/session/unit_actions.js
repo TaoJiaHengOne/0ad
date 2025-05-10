@@ -85,7 +85,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("move", target, selection);
+			const actionInfo = getActionInfo("move", target, selection);
 			return actionInfo.possible && {
 				"type": "move",
 				"firstAbleEntity": actionInfo.entity
@@ -137,7 +137,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("attack-move", target, selection);
+			const actionInfo = getActionInfo("attack-move", target, selection);
 			return actionInfo.possible && {
 				"type": "attack-move",
 				"cursor": "action-attack-move",
@@ -188,7 +188,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("capture", target, selection);
+			const actionInfo = getActionInfo("capture", target, selection);
 			return actionInfo.possible && {
 				"type": "capture",
 				"cursor": "action-capture",
@@ -240,7 +240,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("attack", target, selection);
+			const actionInfo = getActionInfo("attack", target, selection);
 			return actionInfo.possible && {
 				"type": "attack",
 				"cursor": "action-attack",
@@ -341,7 +341,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("patrol", target, selection);
+			const actionInfo = getActionInfo("patrol", target, selection);
 			return actionInfo.possible && {
 				"type": "patrol",
 				"cursor": "action-patrol",
@@ -380,11 +380,11 @@ var g_UnitActions =
 			    entState.id == targetState.id) // Healers can't heal themselves.
 				return false;
 
-			let unhealableClasses = entState.heal.unhealableClasses;
+			const unhealableClasses = entState.heal.unhealableClasses;
 			if (MatchesClassList(targetState.identity.classes, unhealableClasses))
 				return false;
 
-			let healableClasses = entState.heal.healableClasses;
+			const healableClasses = entState.heal.healableClasses;
 			if (!MatchesClassList(targetState.identity.classes, healableClasses))
 				return false;
 
@@ -392,7 +392,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("heal", target, selection);
+			const actionInfo = getActionInfo("heal", target, selection);
 			return actionInfo.possible && {
 				"type": "heal",
 				"cursor": "action-heal",
@@ -409,7 +409,7 @@ var g_UnitActions =
 	{
 		"preSelectedActionCheck": function(target, selection)
 		{
-			let state = GetEntityState(selection[0]);
+			const state = GetEntityState(selection[0]);
 			if (state && state.builder &&
 			        target && target.constructor && target.constructor.name == "PlacementSupport")
 				return { "type": "construct" };
@@ -466,7 +466,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("repair", target, selection);
+			const actionInfo = getActionInfo("repair", target, selection);
 			return actionInfo.possible && {
 				"type": "repair",
 				"cursor": "action-repair",
@@ -519,7 +519,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("gather", target, selection);
+			const actionInfo = getActionInfo("gather", target, selection);
 			return actionInfo.possible && {
 				"type": "gather",
 				"cursor": actionInfo.cursor,
@@ -555,7 +555,7 @@ var g_UnitActions =
 			if (!targetState || !targetState.resourceDropsite)
 				return false;
 
-			let playerState = GetSimState().players[entState.player];
+			const playerState = GetSimState().players[entState.player];
 			if (playerState.hasSharedDropsites && targetState.resourceDropsite.shared)
 			{
 				if (!playerCheck(entState, targetState, ["Player", "MutualAlly"]))
@@ -567,7 +567,7 @@ var g_UnitActions =
 			if (!entState.resourceCarrying || !entState.resourceCarrying.length)
 				return false;
 
-			let carriedType = entState.resourceCarrying[0].type;
+			const carriedType = entState.resourceCarrying[0].type;
 			if (targetState.resourceDropsite.types.indexOf(carriedType) == -1)
 				return false;
 
@@ -578,7 +578,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("returnresource", target, selection);
+			const actionInfo = getActionInfo("returnresource", target, selection);
 			return actionInfo.possible && {
 				"type": "returnresource",
 				"cursor": actionInfo.cursor,
@@ -610,7 +610,7 @@ var g_UnitActions =
 			      targetState.market.naval && hasClass(entState, "Ship")))
 				return false;
 
-			let tradingDetails = Engine.GuiInterfaceCall("GetTradingDetails", {
+			const tradingDetails = Engine.GuiInterfaceCall("GetTradingDetails", {
 				"trader": entState.id,
 				"target": targetState.id
 			});
@@ -627,7 +627,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("cancel-setup-trade-route", target, selection);
+			const actionInfo = getActionInfo("cancel-setup-trade-route", target, selection);
 			return actionInfo.possible && {
 				"type": "cancel-setup-trade-route",
 				"cursor": "action-cancel-setup-trade-route",
@@ -668,7 +668,7 @@ var g_UnitActions =
 			      targetState.market.naval && hasClass(entState, "Ship")))
 				return false;
 
-			let tradingDetails = Engine.GuiInterfaceCall("GetTradingDetails", {
+			const tradingDetails = Engine.GuiInterfaceCall("GetTradingDetails", {
 				"trader": entState.id,
 				"target": targetState.id
 			});
@@ -722,7 +722,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("setup-trade-route", target, selection);
+			const actionInfo = getActionInfo("setup-trade-route", target, selection);
 			if (actionInfo.disabled)
 				return {
 					"type": "none",
@@ -772,7 +772,7 @@ var g_UnitActions =
 				!point.allowedClasses || MatchesClassList(entState.identity.classes, point.allowedClasses)))
 				return false;
 
-			let occupiedTurrets = targetState.turretHolder.turretPoints.filter(point => point.entity != null);
+			const occupiedTurrets = targetState.turretHolder.turretPoints.filter(point => point.entity != null);
 			let tooltip = sprintf(translate("Current turrets: %(occupied)s/%(capacity)s"), {
 				"occupied": occupiedTurrets.length,
 				"capacity": targetState.turretHolder.turretPoints.length
@@ -801,7 +801,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("occupy-turret", target, selection);
+			const actionInfo = getActionInfo("occupy-turret", target, selection);
 			return actionInfo.possible && {
 				"type": "occupy-turret",
 				"cursor": "action-occupy-turret",
@@ -875,7 +875,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("garrison", target, selection);
+			const actionInfo = getActionInfo("garrison", target, selection);
 			return actionInfo.possible && {
 				"type": "garrison",
 				"cursor": "action-garrison",
@@ -931,7 +931,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("guard", target, selection);
+			const actionInfo = getActionInfo("guard", target, selection);
 			return actionInfo.possible && {
 				"type": "guard",
 				"cursor": "action-guard",
@@ -974,7 +974,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("collect-treasure", target, selection);
+			const actionInfo = getActionInfo("collect-treasure", target, selection);
 			return actionInfo.possible && {
 				"type": "collect-treasure",
 				"cursor": actionInfo.cursor,
@@ -1017,7 +1017,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("remove-guard", target, selection);
+			const actionInfo = getActionInfo("remove-guard", target, selection);
 			return actionInfo.possible && {
 				"type": "remove-guard",
 				"cursor": "action-remove-guard",
@@ -1056,7 +1056,7 @@ var g_UnitActions =
 				return false;
 
 			let tooltip;
-			let data = { "command": "walk" };
+			const data = { "command": "walk" };
 			let cursor = "";
 			data.sound = false;
 
@@ -1087,12 +1087,12 @@ var g_UnitActions =
 		{
 			// We want commands to units take precedence.
 			if (selection.some(ent => {
-				let entState = GetEntityState(ent);
+				const entState = GetEntityState(ent);
 				return entState && !!entState.unitAI;
 			}))
 				return false;
 
-			let actionInfo = getActionInfo("focus-fire", target, selection);
+			const actionInfo = getActionInfo("focus-fire", target, selection);
 
 			return actionInfo.possible && {
 				"type": "focus-fire",
@@ -1152,7 +1152,7 @@ var g_UnitActions =
 			let tooltip;
 			let disabled = false;
 			// default to walking there (or attack-walking if hotkey pressed)
-			let data = { "command": "walk" };
+			const data = { "command": "walk" };
 			let cursor = "";
 
 			if (isAttackMovePressed())
@@ -1199,7 +1199,7 @@ var g_UnitActions =
 				data.target = targetState.id;
 				cursor = "action-garrison";
 
-				let occupiedTurrets = targetState.turretHolder.turretPoints.filter(point => point.entity != null);
+				const occupiedTurrets = targetState.turretHolder.turretPoints.filter(point => point.entity != null);
 				tooltip = sprintf(translate("Current turrets: %(occupied)s/%(capacity)s"), {
 					"occupied": occupiedTurrets.length,
 					"capacity": targetState.turretHolder.turretPoints.length
@@ -1210,7 +1210,7 @@ var g_UnitActions =
 			}
 			else if (targetState && targetState.resourceSupply)
 			{
-				let resourceType = targetState.resourceSupply.type;
+				const resourceType = targetState.resourceSupply.type;
 				cursor = "action-gather-" + resourceType.specific;
 
 				data.command = "gather-near-position";
@@ -1244,13 +1244,13 @@ var g_UnitActions =
 						if ((trader = GetTemplateData(entState.trainer.entities[i]).trader))
 							break;
 
-				let traderData = {
+				const traderData = {
 					"firstMarket": entState.id,
 					"secondMarket": targetState.id,
 					"template": trader
 				};
 
-				let gain = Engine.GuiInterfaceCall("GetTradingRouteGain", traderData);
+				const gain = Engine.GuiInterfaceCall("GetTradingRouteGain", traderData);
 				if (gain)
 				{
 					data.command = "trade";
@@ -1313,12 +1313,12 @@ var g_UnitActions =
 		{
 			// We want commands to units take precedence.
 			if (selection.some(ent => {
-				let entState = GetEntityState(ent);
+				const entState = GetEntityState(ent);
 				return entState && !!entState.unitAI;
 			}))
 				return false;
 
-			let actionInfo = getActionInfo("set-rallypoint", target, selection);
+			const actionInfo = getActionInfo("set-rallypoint", target, selection);
 			if (actionInfo.disabled)
 				return {
 					"type": "none",
@@ -1366,7 +1366,7 @@ var g_UnitActions =
 		},
 		"actionCheck": function(target, selection)
 		{
-			let actionInfo = getActionInfo("unset-rallypoint", target, selection);
+			const actionInfo = getActionInfo("unset-rallypoint", target, selection);
 			return actionInfo.possible && {
 				"type": "unset-rallypoint",
 				"cursor": "action-unset-rally",
@@ -1387,9 +1387,9 @@ var g_UnitActions =
 		"actionCheck": function(target, selection)
 		{
 			// Only show this action if all entities are marked uncontrollable.
-			let playerState = g_SimState.players[g_ViewedPlayer];
+			const playerState = g_SimState.players[g_ViewedPlayer];
 			if (playerState && playerState.controlsAll || selection.some(ent => {
-				let entState = GetEntityState(ent);
+				const entState = GetEntityState(ent);
 				return entState && entState.identity && entState.identity.controllable;
 			}))
 				return false;
@@ -1425,7 +1425,7 @@ var g_EntityCommands =
 		"getInfo": function(entStates)
 		{
 			let count = 0;
-			for (let entState of entStates)
+			for (const entState of entStates)
 			{
 				if (!entState.garrisonHolder)
 					continue;
@@ -1433,7 +1433,7 @@ var g_EntityCommands =
 				if (allowedPlayersCheck([entState], ["Player"]))
 					count += entState.garrisonHolder.entities.length;
 				else
-					for (let entity of entState.garrisonHolder.entities)
+					for (const entity of entState.garrisonHolder.entities)
 						if (allowedPlayersCheck([GetEntityState(entity)], ["Player"]))
 							++count;
 			}
@@ -1461,7 +1461,7 @@ var g_EntityCommands =
 		"getInfo": function(entStates)
 		{
 			let count = 0;
-			for (let entState of entStates)
+			for (const entState of entStates)
 			{
 				if (!entState.turretHolder)
 					continue;
@@ -1469,7 +1469,7 @@ var g_EntityCommands =
 				if (allowedPlayersCheck([entState], ["Player"]))
 					count += entState.turretHolder.turretPoints.filter(turretPoint => turretPoint.entity && turretPoint.ejectable).length;
 				else
-					for (let turretPoint of entState.turretHolder.turretPoints)
+					for (const turretPoint of entState.turretHolder.turretPoints)
 						if (turretPoint.entity && allowedPlayersCheck([GetEntityState(turretPoint.entity)], ["Player"]))
 							++count;
 			}
@@ -1522,7 +1522,7 @@ var g_EntityCommands =
 		},
 		"execute": function(entStates)
 		{
-			let entityIDs = entStates.reduce(
+			const entityIDs = entStates.reduce(
 				(ids, entState) => {
 					if (!isUndeletable(entState))
 						ids.push(entState.id);
@@ -1533,7 +1533,7 @@ var g_EntityCommands =
 			if (!entityIDs.length)
 				return;
 
-			let deleteSelection = () => Engine.PostNetworkCommand({
+			const deleteSelection = () => Engine.PostNetworkCommand({
 				"type": "delete-entities",
 				"entities": entityIDs
 			});
@@ -1698,14 +1698,14 @@ var g_EntityCommands =
 		{
 			// TODO: Would be nicer to cycle between the rallypoints of multiple entities instead of just using the first
 			let focusTarget;
-			for (let entState of entStates)
+			for (const entState of entStates)
 				if (entState.rallyPoint && entState.rallyPoint.position)
 				{
 					focusTarget = entState.rallyPoint.position;
 					break;
 				}
 			if (!focusTarget)
-				for (let entState of entStates)
+				for (const entState of entStates)
 					if (entState.position)
 					{
 						focusTarget = entState.position;
@@ -1828,7 +1828,7 @@ var g_EntityCommands =
 	"share-dropsite": {
 		"getInfo": function(entStates)
 		{
-			let sharableEntities = entStates.filter(
+			const sharableEntities = entStates.filter(
 				entState => entState.resourceDropsite && entState.resourceDropsite.sharable);
 			if (!sharableEntities.length)
 				return false;
@@ -1854,7 +1854,7 @@ var g_EntityCommands =
 		},
 		"execute": function(entStates)
 		{
-			let sharableEntities = entStates.filter(
+			const sharableEntities = entStates.filter(
 				entState => entState.resourceDropsite && entState.resourceDropsite.sharable);
 			if (sharableEntities)
 				Engine.PostNetworkCommand({
@@ -1869,13 +1869,13 @@ var g_EntityCommands =
 	"is-dropsite-shared": {
 		"getInfo": function(entStates)
 		{
-			let shareableEntities = entStates.filter(
+			const shareableEntities = entStates.filter(
 				entState => entState.resourceDropsite && entState.resourceDropsite.sharable);
 			if (!shareableEntities.length)
 				return false;
 
-			let player = Engine.GetPlayerID();
-			let simState = GetSimState();
+			const player = Engine.GetPlayerID();
+			const simState = GetSimState();
 			if (!g_IsObserver && !simState.players[player].hasSharedDropsites ||
 				shareableEntities.every(entState => controlsPlayer(entState.player)))
 				return false;
@@ -1948,8 +1948,8 @@ var g_EntityCommands =
 
 function playerCheck(entState, targetState, validPlayers)
 {
-	let playerState = GetSimState().players[entState.player];
-	for (let player of validPlayers)
+	const playerState = GetSimState().players[entState.player];
+	for (const player of validPlayers)
 		if (player == "Gaia" && targetState.player == 0 ||
 		    player == "Player" && targetState.player == entState.player ||
 		    playerState["is" + player] && playerState["is" + player][targetState.player])
@@ -1972,8 +1972,8 @@ function allowedPlayersCheck(entStates, validPlayers)
 {
 	// Assume we can only select entities from one player,
 	// or it does not matter (e.g. observer).
-	let targetState = entStates[0];
-	let playerState = GetSimState().players[Engine.GetPlayerID()];
+	const targetState = entStates[0];
+	const playerState = GetSimState().players[Engine.GetPlayerID()];
 
 	return validPlayers.some(player =>
 		player == "Observer" && g_IsObserver ||
@@ -1992,7 +1992,7 @@ function hasClass(entState, className)
  */
 function isUndeletable(entState)
 {
-	let playerState = g_SimState.players[entState.player];
+	const playerState = g_SimState.players[entState.player];
 	if (playerState && playerState.controlsAll)
 		return false;
 
@@ -2051,15 +2051,15 @@ function getActionInfo(action, target, selection)
 	// Look at the first targeted entity
 	// (TODO: maybe we eventually want to look at more, and be more context-sensitive?
 	// e.g. prefer to attack an enemy unit, even if some friendly units are closer to the mouse)
-	let targetState = GetEntityState(target);
+	const targetState = GetEntityState(target);
 
-	let simState = GetSimState();
-	let playerState = g_SimState.players[g_ViewedPlayer];
+	const simState = GetSimState();
+	const playerState = g_SimState.players[g_ViewedPlayer];
 
 	// Check if any entities in the selection can do some of the available actions.
-	for (let entityID of selection)
+	for (const entityID of selection)
 	{
-		let entState = GetEntityState(entityID);
+		const entState = GetEntityState(entityID);
 		if (!entState)
 			continue;
 
@@ -2068,7 +2068,7 @@ function getActionInfo(action, target, selection)
 
 		if (g_UnitActions[action] && g_UnitActions[action].getActionInfo)
 		{
-			let r = g_UnitActions[action].getActionInfo(entState, targetState, simState);
+			const r = g_UnitActions[action].getActionInfo(entState, targetState, simState);
 			if (r && r.possible)
 			{
 				r.entity = entityID;

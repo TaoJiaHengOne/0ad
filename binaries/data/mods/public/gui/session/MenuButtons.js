@@ -102,7 +102,7 @@ MenuButtons.prototype.Summary = class
 		this.pauseControl.implicitPause();
 		 // Allows players to see their own summary.
 		// If they have shared ally vision researched, they are able to see the summary of there allies too.
-		let simState = Engine.GuiInterfaceCall("GetExtendedSimulationState");
+		const simState = Engine.GuiInterfaceCall("GetExtendedSimulationState");
 		const data = await Engine.OpenChildPage(
 			"page_summary.xml",
 			{
@@ -258,9 +258,9 @@ MenuButtons.prototype.Exit = class
 
 	onPress()
 	{
-		for (let name in QuitConfirmationMenu.prototype)
+		for (const name in QuitConfirmationMenu.prototype)
 		{
-			let quitConfirmation = new QuitConfirmationMenu.prototype[name]();
+			const quitConfirmation = new QuitConfirmationMenu.prototype[name]();
 			if (quitConfirmation.enabled())
 				quitConfirmation.display();
 		}

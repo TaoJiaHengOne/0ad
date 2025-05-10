@@ -19,7 +19,7 @@ class NetworkDelayOverlay
 	CheckDelay()
 	{
 		setTimeout(() => this.CheckDelay(), 1000);
-		let delay = +(Engine.HasNetClient() && Engine.GetPendingTurns());
+		const delay = +(Engine.HasNetClient() && Engine.GetPendingTurns());
 
 		if (g_IsObserver && Engine.ConfigDB_GetValue("user", "network.autocatchup"))
 		{

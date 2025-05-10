@@ -54,20 +54,20 @@ function setupUnitPanel(guiName, unitEntStates, playerState)
 		return;
 	}
 
-	let items = g_SelectionPanels[guiName].getItems(unitEntStates);
+	const items = g_SelectionPanels[guiName].getItems(unitEntStates);
 
 	if (!items || !items.length)
 		return;
 
-	let numberOfItems = Math.min(items.length, g_SelectionPanels[guiName].getMaxNumberOfItems());
-	let rowLength = g_SelectionPanels[guiName].rowLength || 8;
+	const numberOfItems = Math.min(items.length, g_SelectionPanels[guiName].getMaxNumberOfItems());
+	const rowLength = g_SelectionPanels[guiName].rowLength || 8;
 
 	if (g_SelectionPanels[guiName].resizePanel)
 		g_SelectionPanels[guiName].resizePanel(numberOfItems, rowLength);
 
 	for (let i = 0; i < numberOfItems; ++i)
 	{
-		let data = {
+		const data = {
 			"i": i,
 			"item": items[i],
 			"playerState": playerState,
@@ -124,13 +124,13 @@ function setupUnitPanel(guiName, unitEntStates, playerState)
  */
 function updateUnitCommands(entStates, supplementalDetailsPanel, commandsPanel)
 {
-	for (let panel in g_SelectionPanels)
+	for (const panel in g_SelectionPanels)
 		g_SelectionPanels[panel].used = false;
 
 	// Get player state to check some constraints
 	// e.g. presence of a hero or build limits.
-	let playerStates = GetSimState().players;
-	let playerState = playerStates[Engine.GetPlayerID()];
+	const playerStates = GetSimState().players;
+	const playerState = playerStates[Engine.GetPlayerID()];
 
 	setupUnitPanel("Selection", entStates, playerStates[entStates[0].player]);
 
@@ -143,7 +143,7 @@ function updateUnitCommands(entStates, supplementalDetailsPanel, commandsPanel)
 		(!entState.identity || entState.identity.controllable)) ||
 		playerState.controlsAll)
 	{
-		for (let guiName of g_PanelsOrder)
+		for (const guiName of g_PanelsOrder)
 		{
 			if (g_SelectionPanels[guiName].conflictsWith &&
 			    g_SelectionPanels[guiName].conflictsWith.some(p => g_SelectionPanels[p].used))
@@ -172,7 +172,7 @@ function updateUnitCommands(entStates, supplementalDetailsPanel, commandsPanel)
 	}
 
 	// Hides / unhides Unit Panels (panels should be grouped by type, not by order, but we will leave that for another time)
-	for (let panelName in g_SelectionPanels)
+	for (const panelName in g_SelectionPanels)
 		Engine.GetGUIObjectByName("unit" + panelName + "Panel").hidden = !g_SelectionPanels[panelName].used;
 }
 
@@ -188,9 +188,9 @@ function getAllTrainableEntities(selection)
 {
 	let trainableEnts = [];
 	// Get all buildable and trainable entities
-	for (let ent of selection)
+	for (const ent of selection)
 	{
-		let state = GetEntityState(ent);
+		const state = GetEntityState(ent);
 		if (state?.trainer?.entities?.length)
 		{
 			if (!state.production)
@@ -230,7 +230,7 @@ function getNumberOfRightPanelButtons()
 {
 	var sum = 0;
 
-	for (let prop of ["Construction", "Training", "Pack", "Gate", "Upgrade"])
+	for (const prop of ["Construction", "Training", "Pack", "Gate", "Upgrade"])
 		if (g_SelectionPanels[prop].used)
 			sum += g_unitPanelButtons[prop];
 

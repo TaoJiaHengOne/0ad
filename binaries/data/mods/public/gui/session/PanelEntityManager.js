@@ -15,7 +15,7 @@ class PanelEntityManager
 		// One handler per panelEntity owned, sorted according to given order, limited to buttoncount
 		this.handlers = [];
 
-		let updater = this.update.bind(this);
+		const updater = this.update.bind(this);
 		registerSimulationUpdateHandler(updater);
 		playerViewControl.registerViewedPlayerChangeHandler(updater);
 	}
@@ -23,7 +23,7 @@ class PanelEntityManager
 	update()
 	{
 		// Obtain entity IDs to display
-		let entityIDs =
+		const entityIDs =
 			g_ViewedPlayer == -1 ?
 				g_SimState.players.reduce((ents, pState) => ents.concat(pState.panelEntities), []) :
 				g_SimState.players[g_ViewedPlayer].panelEntities;
@@ -42,7 +42,7 @@ class PanelEntityManager
 				++i;
 
 		// Construct new handlers
-		for (let entityID of entityIDs)
+		for (const entityID of entityIDs)
 			if (this.handlers.every(handler => entityID != handler.entityID))
 				if (this.insertIfRelevant(entityID))
 					reposition = true;
@@ -53,13 +53,13 @@ class PanelEntityManager
 
 	insertIfRelevant(entityID)
 	{
-		let entityState = GetEntityState(entityID);
+		const entityState = GetEntityState(entityID);
 
-		let orderKey = this.entityOrder.findIndex(entClass =>
+		const orderKey = this.entityOrder.findIndex(entClass =>
 			entityState.identity.classes.indexOf(entClass) != -1);
 
 		// Sort depending on given order
-		let insertPos = this.handlers.reduce(
+		const insertPos = this.handlers.reduce(
 			(pos, handler) => {
 				if (handler.orderKey <= orderKey)
 					++pos;

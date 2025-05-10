@@ -17,9 +17,9 @@ OverlayCounterTypes.prototype.ElapsedTime = class extends OverlayCounter
 		if (!g_SimState)
 			return "";
 
-		let time = timeToString(g_SimState.timeElapsed);
+		const time = timeToString(g_SimState.timeElapsed);
 
-		let speed = Engine.GetSimRate();
+		const speed = Engine.GetSimRate();
 		if (speed == 1)
 			return time;
 

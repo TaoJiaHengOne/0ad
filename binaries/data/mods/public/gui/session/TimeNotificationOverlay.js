@@ -14,16 +14,16 @@ class TimeNotificationOverlay
 
 	rebuild()
 	{
-		let notifications = Engine.GuiInterfaceCall("GetTimeNotifications", g_ViewedPlayer);
+		const notifications = Engine.GuiInterfaceCall("GetTimeNotifications", g_ViewedPlayer);
 
 		let notificationText = "";
-		for (let notification of notifications)
+		for (const notification of notifications)
 		{
 			let message = notification.message;
 			if (notification.translateMessage)
 				message = translate(message);
 
-			let parameters = notification.parameters || {};
+			const parameters = notification.parameters || {};
 			if (notification.translateParameters)
 				translateObjectKeys(parameters, notification.translateParameters);
 

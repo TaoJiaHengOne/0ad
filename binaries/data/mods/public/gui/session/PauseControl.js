@@ -43,7 +43,7 @@ class PauseControl
 
 	callPauseHandlers()
 	{
-		for (let handler of this.pauseHandlers)
+		for (const handler of this.pauseHandlers)
 			handler();
 	}
 
@@ -93,7 +93,7 @@ class PauseControl
 	setClientPauseState(guid, paused)
 	{
 		// Update the list of pausing clients.
-		let index = this.pausingClients.indexOf(guid);
+		const index = this.pausingClients.indexOf(guid);
 		if (paused && index == -1)
 			this.pausingClients.push(guid);
 		else if (!paused && index != -1)

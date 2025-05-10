@@ -9,7 +9,7 @@ class RangeOverlayManager
 	{
 		this.selection = selection;
 
-		for (let type of this.Types)
+		for (const type of this.Types)
 		{
 			this.setEnabled(type, this.isEnabled(type));
 			Engine.SetGlobalHotkey(type.hotkey, "Press", this.toggle.bind(this, type));
@@ -20,7 +20,7 @@ class RangeOverlayManager
 
 	onConfigChange(changes)
 	{
-		for (let type of this.Types)
+		for (const type of this.Types)
 			if (changes.has(type.config))
 				this.setEnabled(type, this.isEnabled(type));
 	}
@@ -37,8 +37,8 @@ class RangeOverlayManager
 			"enabled": enabled
 		});
 
-		let selected = this.selection.toList();
-		for (let ent in this.selection.highlighted)
+		const selected = this.selection.toList();
+		for (const ent in this.selection.highlighted)
 			selected.push(this.selection.highlighted[ent]);
 
 		Engine.GuiInterfaceCall("SetRangeOverlays", {
@@ -49,7 +49,7 @@ class RangeOverlayManager
 
 	toggle(type)
 	{
-		let enabled = !this.isEnabled(type);
+		const enabled = !this.isEnabled(type);
 
 		Engine.ConfigDB_CreateAndSaveValue(
 			"user",
