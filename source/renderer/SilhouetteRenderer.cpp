@@ -181,8 +181,8 @@ static void ComputeScreenBounds(Occluder& occluder, const CBoundingBoxAligned& b
 			{
 				CVector4D svec = proj.Transform(CVector4D(bounds[ix].X, bounds[iy].Y, bounds[iz].Z, 1.0f));
 				// Avoid overflows
-				u16 svx = g_HalfMaxCoord + static_cast<u16>(Clamp(g_HalfMaxCoord * svec.X / svec.W, 0.f, static_cast<float>(g_MaxCoord - 1)));
-				u16 svy = g_HalfMaxCoord + static_cast<u16>(Clamp(g_HalfMaxCoord * svec.Y / svec.W, 0.f, static_cast<float>(g_MaxCoord - 1)));
+				u16 svx = static_cast<u16>(Clamp(g_HalfMaxCoord + g_HalfMaxCoord * (svec.X / svec.W), 0.f, static_cast<float>(g_MaxCoord - 1)));
+				u16 svy = static_cast<u16>(Clamp(g_HalfMaxCoord + g_HalfMaxCoord * (svec.Y / svec.W), 0.f, static_cast<float>(g_MaxCoord - 1)));
 				x0 = std::min(x0, svx);
 				y0 = std::min(y0, svy);
 				x1 = std::max(x1, svx);
@@ -204,10 +204,8 @@ static void ComputeScreenBounds(Occluder& occluder, const CBoundingBoxAligned& b
 static void ComputeScreenPos(Caster& caster, const CVector3D& pos, CMatrix3D& proj)
 {
 	CVector4D svec = proj.Transform(CVector4D(pos.X, pos.Y, pos.Z, 1.0f));
-	u16 x = g_HalfMaxCoord + static_cast<int>(g_HalfMaxCoord * svec.X / svec.W);
-	u16 y = g_HalfMaxCoord + static_cast<int>(g_HalfMaxCoord * svec.Y / svec.W);
-	caster.x = Clamp(x, std::numeric_limits<u16>::min(), static_cast<u16>(g_MaxCoord - 1));
-	caster.y = Clamp(y, std::numeric_limits<u16>::min(), static_cast<u16>(g_MaxCoord - 1));
+	caster.x = static_cast<u16>(Clamp(g_HalfMaxCoord + g_HalfMaxCoord * (svec.X / svec.W), 0.f, static_cast<float>(g_MaxCoord - 1)));
+	caster.y = static_cast<u16>(Clamp(g_HalfMaxCoord + g_HalfMaxCoord * (svec.Y / svec.W), 0.f, static_cast<float>(g_MaxCoord - 1)));
 	caster.z = svec.Z / svec.W;
 }
 
