@@ -191,8 +191,8 @@ function GetMultipleEntityStates(ents)
 {
 	if (!ents.length)
 		return null;
-	let entityStates = Engine.GuiInterfaceCall("GetMultipleEntityStates", ents);
-	for (let item of entityStates)
+	const entityStates = Engine.GuiInterfaceCall("GetMultipleEntityStates", ents);
+	for (const item of entityStates)
 		g_EntityStates[item.entId] = item.state && deepfreeze(item.state);
 	return entityStates;
 }
@@ -201,7 +201,7 @@ function GetEntityState(entId)
 {
 	if (!g_EntityStates[entId])
 	{
-		let entityState = Engine.GuiInterfaceCall("GetEntityState", entId);
+		const entityState = Engine.GuiInterfaceCall("GetEntityState", entId);
 		g_EntityStates[entId] = entityState && deepfreeze(entityState);
 	}
 
@@ -219,7 +219,7 @@ function GetTemplateData(templateName, player)
 {
 	if (!(templateName in g_TemplateData))
 	{
-		let template = Engine.GuiInterfaceCall("GetTemplateData", { "templateName": templateName, "player": player });
+		const template = Engine.GuiInterfaceCall("GetTemplateData", { "templateName": templateName, "player": player });
 		translateObjectKeys(template, ["specific", "generic", "tooltip"]);
 		g_TemplateData[templateName] = deepfreeze(template);
 	}
@@ -236,7 +236,7 @@ function GetTechnologyData(technologyName, civ)
 		const tech = TechnologyTemplates.Get(technologyName);
 		if (!tech)
 			return;
-		let template = GetTechnologyDataHelper(tech, civ, g_ResourceData);
+		const template = GetTechnologyDataHelper(tech, civ, g_ResourceData);
 		translateObjectKeys(template, ["specific", "generic", "description", "tooltip", "requirementsTooltip"]);
 		g_TechnologyData[civ][technologyName] = deepfreeze(template);
 	}
@@ -274,7 +274,7 @@ function init(initData, hotloadData)
 			g_CampaignSession = new CampaignSession(g_InitAttributes.campaignData, closePageCallback);
 	});
 
-	let mapCache = new MapCache();
+	const mapCache = new MapCache();
 	g_Cheats = new Cheats();
 	g_DiplomacyColors = new DiplomacyColors();
 	g_PlayerViewControl = new PlayerViewControl();
@@ -316,10 +316,10 @@ function init(initData, hotloadData)
 	initializeMusic(); // before changing the perspective
 	Engine.SetBoundingBoxDebugOverlay(false);
 
-	for (let handler of g_PlayersInitHandlers)
+	for (const handler of g_PlayersInitHandlers)
 		handler();
 
-	for (let handler of g_HotkeyChangeHandlers)
+	for (const handler of g_HotkeyChangeHandlers)
 		handler();
 
 	if (hotloadData)
@@ -374,15 +374,15 @@ function registerHotkeyChangeHandler(handler)
 
 function updatePlayerData()
 {
-	let simState = GetSimState();
+	const simState = GetSimState();
 	if (!simState)
 		return;
 
-	let playerData = [];
+	const playerData = [];
 
 	for (let i = 0; i < simState.players.length; ++i)
 	{
-		let playerState = simState.players[i];
+		const playerState = simState.players[i];
 
 		playerData.push({
 			"name": playerState.name,
@@ -406,9 +406,9 @@ function updatePlayerData()
 		});
 	}
 
-	for (let guid in g_PlayerAssignments)
+	for (const guid in g_PlayerAssignments)
 	{
-		let playerID = g_PlayerAssignments[guid].player;
+		const playerID = g_PlayerAssignments[guid].player;
 
 		if (!playerData[playerID])
 			continue;
@@ -426,7 +426,7 @@ function updatePlayerData()
  */
 function getEntityOrHolder(ent)
 {
-	let entState = GetEntityState(ent);
+	const entState = GetEntityState(ent);
 	if (entState && !entState.position && entState.garrisonable && entState.garrisonable.holder != INVALID_ENTITY)
 		return getEntityOrHolder(entState.garrisonable.holder);
 
@@ -456,7 +456,7 @@ function resetTemplates()
  */
 function isPlayerObserver(playerID)
 {
-	let playerStates = GetSimState().players;
+	const playerStates = GetSimState().players;
 	return !playerStates[playerID] || playerStates[playerID].state != "active";
 }
 
@@ -465,7 +465,7 @@ function isPlayerObserver(playerID)
  */
 function controlsPlayer(playerID)
 {
-	let playerStates = GetSimState().players;
+	const playerStates = GetSimState().players;
 
 	return !!playerStates[Engine.GetPlayerID()] &&
 		playerStates[Engine.GetPlayerID()].controlsAll ||
@@ -492,7 +492,7 @@ function playersFinished(players, victoryString, won)
 	updatePlayerData();
 
 	// TODO: The other calls in this function should move too
-	for (let handler of g_PlayerFinishedHandlers)
+	for (const handler of g_PlayerFinishedHandlers)
 		handler(players, won);
 
 	if (players.indexOf(Engine.GetPlayerID()) == -1 || Engine.IsAtlasRunning())
@@ -522,9 +522,9 @@ function closeOpenDialogs()
 function endGame(showSummary)
 {
 	// Before ending the game
-	let replayDirectory = Engine.GetCurrentReplayDirectory();
-	let simData = Engine.GuiInterfaceCall("GetReplayMetadata");
-	let playerID = Engine.GetPlayerID();
+	const replayDirectory = Engine.GetCurrentReplayDirectory();
+	const simData = Engine.GuiInterfaceCall("GetReplayMetadata");
+	const playerID = Engine.GetPlayerID();
 
 	Engine.EndGame();
 
@@ -536,7 +536,7 @@ function endGame(showSummary)
 	if (g_IsController && Engine.HasXmppClient())
 		Engine.SendUnregisterGame();
 
-	let summaryData = {
+	const summaryData = {
 		"sim": simData,
 		"gui": {
 			"dialog": false,
@@ -550,7 +550,7 @@ function endGame(showSummary)
 
 	if (g_InitAttributes.campaignData)
 	{
-		let menu = g_CampaignSession.getMenu();
+		const menu = g_CampaignSession.getMenu();
 		if (g_InitAttributes.campaignData.skipSummary)
 		{
 			Engine.SwitchGuiPage(menu);
@@ -600,7 +600,7 @@ function restoreSavedGameData(data)
 	g_Selection.reset();
 
 	// Restore control groups
-	for (let groupNumber in data.groups)
+	for (const groupNumber in data.groups)
 	{
 		g_Groups.groups[groupNumber].groups = data.groups[groupNumber].groups;
 		g_Groups.groups[groupNumber].ents = data.groups[groupNumber].ents;
@@ -616,8 +616,8 @@ function onTick()
 	if (!g_Settings)
 		return;
 
-	let now = Date.now();
-	let tickLength = now - g_LastTickTime;
+	const now = Date.now();
+	const tickLength = now - g_LastTickTime;
 	g_LastTickTime = now;
 
 	handleNetMessages();
@@ -630,7 +630,7 @@ function onTick()
 		// When selection changed, get the entityStates of new entities
 		GetMultipleEntityStates(g_Selection.filter(entId => !g_EntityStates[entId]));
 
-		for (let handler of g_EntitySelectionChangeHandlers)
+		for (const handler of g_EntitySelectionChangeHandlers)
 			handler();
 
 		updateGUIObjects();
@@ -645,7 +645,7 @@ function onTick()
 	updateTimers();
 	Engine.GuiInterfaceCall("ClearRenamedEntities");
 
-	let isPlayingCinemaPath = GetSimState().cinemaPlaying && !g_Disconnected;
+	const isPlayingCinemaPath = GetSimState().cinemaPlaying && !g_Disconnected;
 	if (isPlayingCinemaPath)
 		updateCinemaOverlay();
 }
@@ -674,7 +674,7 @@ function onSimulationUpdate()
 
 	GetMultipleEntityStates(g_Selection.toList());
 
-	for (let handler of g_SimulationUpdateHandlers)
+	for (const handler of g_SimulationUpdateHandlers)
 		handler();
 
 	// TODO: Move to handlers
@@ -692,7 +692,7 @@ function toggleGUI()
 var g_HasHiddenSilhouettes = false;
 function updateCinemaPath()
 {
-	let isPlayingCinemaPath = GetSimState().cinemaPlaying && !g_Disconnected;
+	const isPlayingCinemaPath = GetSimState().cinemaPlaying && !g_Disconnected;
 
 	Engine.GetGUIObjectByName("session").hidden = !g_ShowGUI || isPlayingCinemaPath;
 	Engine.GetGUIObjectByName("cinemaOverlay").hidden = !isPlayingCinemaPath;
@@ -713,20 +713,20 @@ function updateCinemaPath()
 
 function updateCinemaOverlay()
 {
-	let cinemaOverlay = Engine.GetGUIObjectByName("cinemaOverlay");
-	let width = cinemaOverlay.getComputedSize().right;
-	let height = cinemaOverlay.getComputedSize().bottom;
+	const cinemaOverlay = Engine.GetGUIObjectByName("cinemaOverlay");
+	const width = cinemaOverlay.getComputedSize().right;
+	const height = cinemaOverlay.getComputedSize().bottom;
 	let barHeight = (height - width / 2.39) / 2;
 	if (barHeight < 0)
 		barHeight = 0;
 
-	let cinemaBarTop = Engine.GetGUIObjectByName("cinemaBarTop");
-	let cinemaBarTopSize = cinemaBarTop.size;
+	const cinemaBarTop = Engine.GetGUIObjectByName("cinemaBarTop");
+	const cinemaBarTopSize = cinemaBarTop.size;
 	cinemaBarTopSize.bottom = barHeight;
 	cinemaBarTop.size = cinemaBarTopSize;
 
-	let cinemaBarBottom = Engine.GetGUIObjectByName("cinemaBarBottom");
-	let cinemaBarBottomSize = cinemaBarBottom.size;
+	const cinemaBarBottom = Engine.GetGUIObjectByName("cinemaBarBottom");
+	const cinemaBarBottomSize = cinemaBarBottom.size;
 	cinemaBarBottomSize.top = -barHeight;
 	cinemaBarBottom.size = cinemaBarBottomSize;
 }
@@ -749,7 +749,7 @@ function updateGUIObjects()
 	if (!g_IsObserver)
 	{
 		// Update music state on basis of battle state.
-		let battleState = Engine.GuiInterfaceCall("GetBattleState", g_ViewedPlayer);
+		const battleState = Engine.GuiInterfaceCall("GetBattleState", g_ViewedPlayer);
 		if (battleState)
 			global.music.setState(global.music.states[battleState]);
 	}
@@ -760,16 +760,16 @@ function updateGroups()
 	g_Groups.update();
 
 	// Determine the sum of the costs of a given template
-	let getCostSum = (ent) => {
-		let cost = GetTemplateData(GetEntityState(ent).template).cost;
+	const getCostSum = (ent) => {
+		const cost = GetTemplateData(GetEntityState(ent).template).cost;
 		return cost ? Object.keys(cost).map(key => cost[key]).reduce((sum, cur) => sum + cur) : 0;
 	};
 
-	for (let i in Engine.GetGUIObjectByName("unitGroupPanel").children)
+	for (const i in Engine.GetGUIObjectByName("unitGroupPanel").children)
 	{
 		Engine.GetGUIObjectByName("unitGroupLabel[" + i + "]").caption = +i + 1;
 
-		let button = Engine.GetGUIObjectByName("unitGroupButton[" + i + "]");
+		const button = Engine.GetGUIObjectByName("unitGroupButton[" + i + "]");
 		button.hidden = g_Groups.groups[i].getTotalCount() == 0;
 		button.onPress = (function(i) { return function() { performGroup((Engine.HotkeyIsPressed("selection.add") ? "add" : "select"), i); }; })(i);
 		button.onDoublePress = (function(i) { return function() { performGroup("snap", i); }; })(i);
@@ -778,7 +778,7 @@ function updateGroups()
 		// Choose the icon of the most common template (or the most costly if it's not unique)
 		if (g_Groups.groups[i].getTotalCount() > 0)
 		{
-			let icon = GetTemplateData(GetEntityState(g_Groups.groups[i].getEntsGrouped().reduce((pre, cur) => {
+			const icon = GetTemplateData(GetEntityState(g_Groups.groups[i].getEntsGrouped().reduce((pre, cur) => {
 				if (pre.ents.length == cur.ents.length)
 					return getCostSum(pre.ents[0]) > getCostSum(cur.ents[0]) ? pre : cur;
 				return pre.ents.length > cur.ents.length ? pre : cur;
@@ -806,7 +806,7 @@ function recalculateStatusBarDisplay(remove = false)
 			Engine.PickPlayerEntitiesOnScreen(g_ViewedPlayer);
 	else
 	{
-		let selected = g_Selection.toList();
+		const selected = g_Selection.toList();
 		for (const ent of g_Selection.highlighted)
 			selected.push(ent);
 
@@ -847,7 +847,7 @@ function updateDisplayedNames()
  */
 function toggleConfigBool(configName)
 {
-	let enabled = Engine.ConfigDB_GetValue("user", configName) != "true";
+	const enabled = Engine.ConfigDB_GetValue("user", configName) != "true";
 	Engine.ConfigDB_CreateAndSaveValue("user", configName, String(enabled));
 	return enabled;
 }
@@ -855,9 +855,9 @@ function toggleConfigBool(configName)
 // Update the additional list of entities to be highlighted.
 function updateAdditionalHighlight()
 {
-	let entsAdd = []; // list of entities units to be highlighted
-	let entsRemove = [];
-	let highlighted = g_Selection.toList();
+	const entsAdd = []; // list of entities units to be highlighted
+	const entsRemove = [];
+	const highlighted = g_Selection.toList();
 	for (const ent of g_Selection.highlighted)
 		highlighted.push(ent);
 
@@ -869,7 +869,7 @@ function updateAdditionalHighlight()
 			if (!state.guard || !state.guard.entities.length)
 				continue;
 
-			for (let ent of state.guard.entities)
+			for (const ent of state.guard.entities)
 				if (highlighted.indexOf(ent) == -1 && entsAdd.indexOf(ent) == -1)
 					entsAdd.push(ent);
 		}
@@ -881,13 +881,13 @@ function updateAdditionalHighlight()
 			const state = GetEntityState(sel);
 			if (!state.unitAI || !state.unitAI.isGuarding)
 				continue;
-			let ent = state.unitAI.isGuarding;
+			const ent = state.unitAI.isGuarding;
 			if (highlighted.indexOf(ent) == -1 && entsAdd.indexOf(ent) == -1)
 				entsAdd.push(ent);
 		}
 
 	// flag the entities to remove (from the previously added) from this additional highlight
-	for (let ent of g_AdditionalHighlight)
+	for (const ent of g_AdditionalHighlight)
 		if (highlighted.indexOf(ent) == -1 && entsAdd.indexOf(ent) == -1 && entsRemove.indexOf(ent) == -1)
 			entsRemove.push(ent);
 
