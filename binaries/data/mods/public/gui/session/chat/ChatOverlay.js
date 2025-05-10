@@ -34,12 +34,12 @@ class ChatOverlay
 	{
 		for (let i = 0; i < this.chatLinesNumber; ++i)
 		{
-			let chatMessage = this.chatMessages[i];
+			const chatMessage = this.chatMessages[i];
 			if (chatMessage && chatMessage.text)
 			{
 				// First scale line width to maximum size.
-				let lineSize = this.chatLines[i].size;
-				let height = lineSize.bottom - lineSize.top;
+				const lineSize = this.chatLines[i].size;
+				const height = lineSize.bottom - lineSize.top;
 				lineSize.top = i * height;
 				lineSize.bottom = lineSize.top + height;
 				lineSize.rright = 100;
@@ -85,7 +85,7 @@ class ChatOverlay
 		this.chatMessages = [];
 		this.displayChatMessages();
 
-		for (let timer of this.chatTimers)
+		for (const timer of this.chatTimers)
 			clearTimeout(timer);
 
 		this.chatTimers = [];

@@ -25,7 +25,7 @@ DeveloperOverlayControlCheckboxes.prototype.ControlAll = class
 
 	checked()
 	{
-		let playerState = g_SimState.players[g_ViewedPlayer];
+		const playerState = g_SimState.players[g_ViewedPlayer];
 		return playerState ? playerState.controlsAll : false;
 	}
 };
@@ -216,10 +216,10 @@ DeveloperOverlayControlCheckboxes.prototype.ActivateRejoinTest = class
 
 	onPress(checked)
 	{
-		let box = new SessionMessageBox();
+		const box = new SessionMessageBox();
 		box.Title = "Rejoin Test";
 		box.Caption = "Warning: the rejoin test can't be de-activated and is quite slow. Its only purpose is to check for OOS.";
-		let self = this;
+		const self = this;
 		box.Buttons = [
 			{ "caption": "Cancel" }, { "caption": "OK", "onPress": () => {
 				Engine.ActivateRejoinTest();

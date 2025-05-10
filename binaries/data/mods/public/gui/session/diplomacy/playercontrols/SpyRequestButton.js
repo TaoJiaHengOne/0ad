@@ -11,7 +11,7 @@ DiplomacyDialogPlayerControl.prototype.SpyRequestButton = class
 		// Players who requested a spy against this playerID.
 		this.spyRequests = new Set();
 
-		let id = "[" + (playerID - 1) + "]";
+		const id = "[" + (playerID - 1) + "]";
 		this.diplomacySpyRequest = Engine.GetGUIObjectByName("diplomacySpyRequest" + id);
 		this.diplomacySpyRequestImage = Engine.GetGUIObjectByName("diplomacySpyRequestImage" + id);
 
@@ -48,9 +48,9 @@ DiplomacyDialogPlayerControl.prototype.SpyRequestButton = class
 
 	update(playerInactive)
 	{
-		let template = GetTemplateData(this.TemplateName);
+		const template = GetTemplateData(this.TemplateName);
 
-		let hidden =
+		const hidden =
 			playerInactive ||
 			!template ||
 			!!GetSimState().players[g_ViewedPlayer].disabledTemplates[this.TemplateName] ||
@@ -83,15 +83,15 @@ DiplomacyDialogPlayerControl.prototype.SpyRequestButton = class
 
 		if (template.cost)
 		{
-			let modifiedTemplate = clone(template);
+			const modifiedTemplate = clone(template);
 
-			for (let res in template.cost)
+			for (const res in template.cost)
 				modifiedTemplate.cost[res] =
 					Math.floor(GetSimState().players[this.playerID].spyCostMultiplier * template.cost[res]);
 
 			tooltip += "\n" + getEntityCostTooltip(modifiedTemplate);
 
-			let neededResources = Engine.GuiInterfaceCall("GetNeededResources", {
+			const neededResources = Engine.GuiInterfaceCall("GetNeededResources", {
 				"cost": modifiedTemplate.cost,
 				"player": g_ViewedPlayer
 			});
@@ -106,10 +106,10 @@ DiplomacyDialogPlayerControl.prototype.SpyRequestButton = class
 				return;
 			}
 
-			let costRatio = Engine.GetTemplate(this.TemplateName).VisionSharing.FailureCostRatio;
+			const costRatio = Engine.GetTemplate(this.TemplateName).VisionSharing.FailureCostRatio;
 			if (costRatio)
 			{
-				for (let res in modifiedTemplate.cost)
+				for (const res in modifiedTemplate.cost)
 					modifiedTemplate.cost[res] = Math.floor(costRatio * modifiedTemplate.cost[res]);
 
 				tooltip +=
@@ -118,7 +118,7 @@ DiplomacyDialogPlayerControl.prototype.SpyRequestButton = class
 			}
 		}
 
-		let enabled = !this.spyRequests.has(g_ViewedPlayer);
+		const enabled = !this.spyRequests.has(g_ViewedPlayer);
 		this.diplomacySpyRequest.enabled = enabled && controlsPlayer(g_ViewedPlayer);
 		this.diplomacySpyRequest.tooltip = tooltip;
 		this.diplomacySpyRequestImage.sprite = (enabled ? "" : this.SpriteModifierDisabled) + this.Sprite;

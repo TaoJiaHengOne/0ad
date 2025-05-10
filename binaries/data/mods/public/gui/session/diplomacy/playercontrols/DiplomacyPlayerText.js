@@ -7,7 +7,7 @@ DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText = class
 	{
 		this.playerID = playerID;
 
-		let id = "[" + (playerID - 1) + "]";
+		const id = "[" + (playerID - 1) + "]";
 
 		this.diplomacyPlayer = Engine.GetGUIObjectByName("diplomacyPlayer" + id);
 		this.diplomacyPlayerCiv = Engine.GetGUIObjectByName("diplomacyPlayerCiv" + id);
@@ -29,8 +29,8 @@ DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText = class
 		this.diplomacyPlayerName.tooltip = translateAISettings(g_InitAttributes.settings.PlayerData[this.playerID]);
 
 		// Apply offset
-		let rowSize = DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getRowHeight();
-		let size = this.diplomacyPlayer.size;
+		const rowSize = DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getRowHeight();
+		const size = this.diplomacyPlayer.size;
 		size.top = rowSize * (this.playerID - 1);
 		size.bottom = rowSize * this.playerID;
 		this.diplomacyPlayer.size = size;
@@ -62,7 +62,7 @@ DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText = class
 
 DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getRowHeight = function()
 {
-	let diplomacyPlayer = Engine.GetGUIObjectByName("diplomacyPlayer[0]").size;
+	const diplomacyPlayer = Engine.GetGUIObjectByName("diplomacyPlayer[0]").size;
 	return diplomacyPlayer.bottom - diplomacyPlayer.top;
 };
 

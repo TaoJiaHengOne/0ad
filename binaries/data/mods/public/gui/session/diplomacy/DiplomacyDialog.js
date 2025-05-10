@@ -72,7 +72,7 @@ class DiplomacyDialog
 
 	toggle()
 	{
-		let open = this.isOpen();
+		const open = this.isOpen();
 
 		closeOpenDialogs();
 
@@ -82,10 +82,10 @@ class DiplomacyDialog
 
 	resize()
 	{
-		let widthOffset = DiplomacyDialogPlayerControl.prototype.TributeButtonManager.getWidthOffset() / 2;
-		let heightOffset = DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getHeightOffset() / 2;
+		const widthOffset = DiplomacyDialogPlayerControl.prototype.TributeButtonManager.getWidthOffset() / 2;
+		const heightOffset = DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getHeightOffset() / 2;
 
-		let size = this.diplomacyDialogPanel.size;
+		const size = this.diplomacyDialogPanel.size;
 		size.left -= widthOffset;
 		size.right += widthOffset;
 		size.top -= heightOffset;

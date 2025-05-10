@@ -17,7 +17,7 @@ class ChatHistory
 		resizeGUIObjectToCaption(this.chatHistoryFilterCaption, { "horizontal": "right" });
 
 		this.chatHistoryFilter = Engine.GetGUIObjectByName("chatHistoryFilter");
-		let filters = prepareForDropdown(this.Filters.filter(chatFilter => !chatFilter.hidden));
+		const filters = prepareForDropdown(this.Filters.filter(chatFilter => !chatFilter.hidden));
 		this.chatHistoryFilter.list = filters.text.map(text => translateWithContext("chat history filter", text));
 		this.chatHistoryFilter.list_data = filters.key;
 		this.chatHistoryFilter.selected = 0;
@@ -42,13 +42,13 @@ class ChatHistory
 	{
 		this.displayChatHistory();
 
-		for (let handler of this.selectionChangeHandlers)
+		for (const handler of this.selectionChangeHandlers)
 			handler();
 	}
 
 	displayChatHistory()
 	{
-		let selected = this.chatHistoryFilter.list_data[this.chatHistoryFilter.selected];
+		const selected = this.chatHistoryFilter.list_data[this.chatHistoryFilter.selected];
 
 		this.chatHistoryText.caption =
 			this.chatMessages.filter(msg => msg.filter[selected]).map(msg =>
@@ -63,7 +63,7 @@ class ChatHistory
 	onChatMessage(msg, formatted)
 	{
 		// Save to chat history
-		let historical = {
+		const historical = {
 			"txt": formatted.text,
 			"timePrefix": sprintf(translate("\\[%(time)s]"), {
 				"time": Engine.FormatMillisecondsIntoDateStringLocal(Date.now(), translate("HH:mm"))
@@ -72,8 +72,8 @@ class ChatHistory
 		};
 
 		// Apply the filters now before diplomacies or playerstates change
-		let senderID = msg.guid && g_PlayerAssignments[msg.guid] ? g_PlayerAssignments[msg.guid].player : 0;
-		for (let filter of this.Filters)
+		const senderID = msg.guid && g_PlayerAssignments[msg.guid] ? g_PlayerAssignments[msg.guid].player : 0;
+		for (const filter of this.Filters)
 			historical.filter[filter.key] = filter.filter(msg, senderID);
 
 		this.chatMessages.push(historical);

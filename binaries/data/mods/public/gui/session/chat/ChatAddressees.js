@@ -23,8 +23,8 @@ class ChatAddressees
 
 	onSelectionChange()
 	{
-		let selection = this.getSelection();
-		for (let handler of this.selectionChangeHandlers)
+		const selection = this.getSelection();
+		for (const handler of this.selectionChangeHandlers)
 			handler(selection);
 	}
 
@@ -44,7 +44,7 @@ class ChatAddressees
 		let selectedName = this.getSelection();
 		selectedName = selectedName.startsWith("/msg ") && selectedName.substr("/msg ".length);
 
-		let addressees = this.AddresseeTypes.filter(
+		const addressees = this.AddresseeTypes.filter(
 			addresseeType => addresseeType.isSelectable()).map(
 			addresseeType => ({
 				"label": translateWithContext("chat addressee", addresseeType.label),
@@ -52,19 +52,19 @@ class ChatAddressees
 			}));
 
 		// Add playernames for private messages
-		let guids = sortGUIDsByPlayerID();
-		for (let guid of guids)
+		const guids = sortGUIDsByPlayerID();
+		for (const guid of guids)
 		{
 			if (guid == Engine.GetPlayerGUID())
 				continue;
 
-			let playerID = g_PlayerAssignments[guid].player;
+			const playerID = g_PlayerAssignments[guid].player;
 
 			// Don't provide option for PM from observer to player
 			if (g_IsObserver && !isPlayerObserver(playerID))
 				continue;
 
-			let colorBox = isPlayerObserver(playerID) ? "" : colorizePlayernameHelper("■", playerID) + " ";
+			const colorBox = isPlayerObserver(playerID) ? "" : colorizePlayernameHelper("■", playerID) + " ";
 
 			addressees.push({
 				"cmd": "/msg " + g_PlayerAssignments[guid].name,
@@ -79,7 +79,7 @@ class ChatAddressees
 				"label": sprintf(translate("\\[OFFLINE] %(player)s"), { "player": selectedName })
 			});
 
-		let oldChatAddressee = this.getSelection();
+		const oldChatAddressee = this.getSelection();
 		this.chatAddressee.list = addressees.map(adressee => adressee.label);
 		this.chatAddressee.list_data = addressees.map(adressee => adressee.cmd);
 		this.chatAddressee.selected = Math.max(0, this.chatAddressee.list_data.indexOf(oldChatAddressee));

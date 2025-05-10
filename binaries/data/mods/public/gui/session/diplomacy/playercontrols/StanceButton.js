@@ -11,9 +11,9 @@ DiplomacyDialogPlayerControl.prototype.StanceButtonManager = class
 
 	update(playerInactive)
 	{
-		let hidden = playerInactive || GetSimState().ceasefireActive || g_Players[g_ViewedPlayer].teamLocked;
+		const hidden = playerInactive || GetSimState().ceasefireActive || g_Players[g_ViewedPlayer].teamLocked;
 
-		for (let button of this.buttons)
+		for (const button of this.buttons)
 			button.update(hidden);
 	}
 };
@@ -39,7 +39,7 @@ DiplomacyDialogPlayerControl.prototype.StanceButtonManager.prototype.StanceButto
 		if (hidden)
 			return;
 
-		let isCurrentStance = g_Players[g_ViewedPlayer]["is" + this.stance][this.playerID];
+		const isCurrentStance = g_Players[g_ViewedPlayer]["is" + this.stance][this.playerID];
 		this.button.enabled = !isCurrentStance && controlsPlayer(g_ViewedPlayer);
 		this.button.caption = isCurrentStance ?
 			translateWithContext("diplomatic stance selection", this.StanceSelection) :

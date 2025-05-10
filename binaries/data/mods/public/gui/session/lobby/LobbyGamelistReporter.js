@@ -12,7 +12,7 @@ class LobbyGamelistReporter
 		if (!LobbyGamelistReporter.Available())
 			throw new Error("Lobby gamelist service not available");
 
-		let updater = this.sendGamelistUpdate.bind(this);
+		const updater = this.sendGamelistUpdate.bind(this);
 		registerPlayersInitHandler(updater);
 		registerPlayersFinishedHandler(updater);
 		registerPlayerAssignmentsChangeHandler(updater);
@@ -27,14 +27,14 @@ class LobbyGamelistReporter
 
 	getPlayers()
 	{
-		let players = [];
+		const players = [];
 
 		// Skip gaia
 		for (let playerID = 1; playerID < g_InitAttributes.settings.PlayerData.length; ++playerID)
 		{
-			let pData = g_InitAttributes.settings.PlayerData[playerID];
+			const pData = g_InitAttributes.settings.PlayerData[playerID];
 
-			let player = {
+			const player = {
 				"Name": pData.Name,
 				"Civ": pData.Civ
 			};
@@ -53,7 +53,7 @@ class LobbyGamelistReporter
 				player.Offline = true;
 
 			// Whether the player has won or was defeated
-			let state = g_Players[playerID].state;
+			const state = g_Players[playerID].state;
 			if (state != "active")
 				player.State = state;
 
@@ -64,8 +64,8 @@ class LobbyGamelistReporter
 
 	getObservers()
 	{
-		let observers = [];
-		for (let guid in g_PlayerAssignments)
+		const observers = [];
+		for (const guid in g_PlayerAssignments)
 			if (g_PlayerAssignments[guid].player == -1)
 				observers.push({
 					"Name": g_PlayerAssignments[guid].name,
@@ -77,7 +77,7 @@ class LobbyGamelistReporter
 	countConnectedPlayers()
 	{
 		let connectedPlayers = 0;
-		for (let guid in g_PlayerAssignments)
+		for (const guid in g_PlayerAssignments)
 			if (g_PlayerAssignments[guid].player != -1)
 				++connectedPlayers;
 		return connectedPlayers;

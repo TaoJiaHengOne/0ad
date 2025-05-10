@@ -39,7 +39,7 @@ class ChatMessageHandler
 	 */
 	registerMessageFormatClass(formatClass)
 	{
-		for (let type in formatClass)
+		for (const type in formatClass)
 			this.registerMessageFormat(type, new formatClass[type]());
 	}
 
@@ -50,11 +50,11 @@ class ChatMessageHandler
 
 	handleMessage(msg)
 	{
-		let formatted = this.parseMessage(msg);
+		const formatted = this.parseMessage(msg);
 		if (!formatted)
 			return;
 
-		for (let handler of this.messageHandlers)
+		for (const handler of this.messageHandlers)
 			handler(msg, formatted);
 	}
 
@@ -66,9 +66,9 @@ class ChatMessageHandler
 			return undefined;
 		}
 
-		for (let messageFormat of this.messageFormats[msg.type])
+		for (const messageFormat of this.messageFormats[msg.type])
 		{
-			let formatted = messageFormat.parse(msg);
+			const formatted = messageFormat.parse(msg);
 			if (formatted && formatted.text)
 				return formatted;
 		}

@@ -10,7 +10,7 @@ class DiplomacyDialogPlayerControlManager
 	constructor()
 	{
 		this.controls = {};
-		for (let name in DiplomacyDialogPlayerControl.prototype)
+		for (const name in DiplomacyDialogPlayerControl.prototype)
 		{
 			this.controls[name] = [];
 
@@ -31,15 +31,15 @@ class DiplomacyDialogPlayerControlManager
 	{
 		for (let playerID = 1; playerID < g_Players.length; ++playerID)
 		{
-			let isInactive = this.isInactive(playerID);
-			for (let name in this.controls)
+			const isInactive = this.isInactive(playerID);
+			for (const name in this.controls)
 				this.controls[name][playerID].update(isInactive);
 		}
 	}
 
 	onSpyResponse(notification, player)
 	{
-		for (let name in this.controls)
+		for (const name in this.controls)
 			for (let playerID = 1; playerID < g_Players.length; ++playerID)
 			{
 				if (!this.controls[name][playerID].onSpyResponse)

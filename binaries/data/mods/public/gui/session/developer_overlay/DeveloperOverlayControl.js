@@ -24,8 +24,8 @@ class DeveloperOverlayControl
 
 	resize(i)
 	{
-		let size = this.body.size;
-		let height = size.bottom;
+		const size = this.body.size;
+		const height = size.bottom;
 		size.top = height * i;
 		size.bottom = height * (i + 1);
 		this.body.size = size;

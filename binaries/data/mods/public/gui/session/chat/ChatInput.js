@@ -26,7 +26,7 @@ class ChatInput
 
 	onHotkeyChange()
 	{
-		let tooltip = this.getInputHotkeyTooltip() + this.getOpenHotkeyTooltip();
+		const tooltip = this.getInputHotkeyTooltip() + this.getOpenHotkeyTooltip();
 		this.chatInput.tooltip = tooltip;
 		this.sendChat.tooltip = tooltip;
 	}
@@ -75,19 +75,19 @@ class ChatInput
 
 	autoComplete()
 	{
-		let playernames = [];
-		for (let player in g_PlayerAssignments)
+		const playernames = [];
+		for (const player in g_PlayerAssignments)
 			playernames.push(g_PlayerAssignments[player].name);
 		autoCompleteText(this.chatInput, playernames);
 	}
 
 	submitChatInput()
 	{
-		let text = this.chatInput.caption;
+		const text = this.chatInput.caption;
 		if (text)
 			this.chatSubmitHandlers.some(handler => handler(text, this.selectedCommand));
 
-		for (let handler of this.chatSubmittedHandlers)
+		for (const handler of this.chatSubmittedHandlers)
 			handler();
 	}
 }

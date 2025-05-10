@@ -25,9 +25,9 @@ class LobbyRatingReporter
 		if (players.indexOf(Engine.GetPlayerID()) != -1)
 			return;
 
-		let extendedSimState = Engine.GuiInterfaceCall("GetExtendedSimulationState");
+		const extendedSimState = Engine.GuiInterfaceCall("GetExtendedSimulationState");
 
-		let report = {
+		const report = {
 			"playerID": Engine.GetPlayerID(),
 			"matchID": g_InitAttributes.matchID,
 			"mapName": g_InitAttributes.settings.mapName,
@@ -35,9 +35,9 @@ class LobbyRatingReporter
 		};
 
 		// Remove gaia
-		let playerStates = clone(extendedSimState.players).slice(1);
+		const playerStates = clone(extendedSimState.players).slice(1);
 
-		for (let name in LobbyRatingReport.prototype)
+		for (const name in LobbyRatingReport.prototype)
 			new LobbyRatingReport.prototype[name]().insertValues(report, playerStates);
 
 		Engine.SendGameReport(report);

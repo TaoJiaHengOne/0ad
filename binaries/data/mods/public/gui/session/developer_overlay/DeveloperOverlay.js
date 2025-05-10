@@ -51,7 +51,7 @@ class DeveloperOverlay
 
 	sendNotification()
 	{
-		let message = this.devCommandsOverlay.hidden ? this.CloseNotification : this.OpenNotification;
+		const message = this.devCommandsOverlay.hidden ? this.CloseNotification : this.OpenNotification;
 
 		// Only players can send the simulation chat command
 		if (Engine.GetPlayerID() == -1)
@@ -68,7 +68,7 @@ class DeveloperOverlay
 
 	resize()
 	{
-		let size = this.devCommandsOverlay.size;
+		const size = this.devCommandsOverlay.size;
 		size.bottom =
 			size.top +
 			this.checkBoxes.reduce((height, checkbox) => height + checkbox.getHeight(), 0) +

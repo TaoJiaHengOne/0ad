@@ -81,10 +81,10 @@ class ChatWindow
 		{
 			this.chatDialogPanel.size = this.chatDialogPanelLargeSize;
 
-			let chatHistoryTextSize = this.chatHistoryText.getComputedSize();
-			let width = this.aspectRatio * (chatHistoryTextSize.bottom - chatHistoryTextSize.top);
+			const chatHistoryTextSize = this.chatHistoryText.getComputedSize();
+			const width = this.aspectRatio * (chatHistoryTextSize.bottom - chatHistoryTextSize.top);
 
-			let size = this.chatDialogPanel.size;
+			const size = this.chatDialogPanel.size;
 			size.left = -width / 2 - this.chatHistoryText.size.left;
 			size.right = width / 2 + this.chatHistoryText.size.left;
 			this.chatDialogPanel.size = size;

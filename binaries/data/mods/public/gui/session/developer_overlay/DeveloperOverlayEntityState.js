@@ -28,19 +28,19 @@ class DeveloperOverlayEntityState
 
 	update()
 	{
-		let simState = clone(g_SimState);
+		const simState = clone(g_SimState);
 		simState.players = "<<<omitted>>>";
 		let text = "simulation: " + uneval(simState);
 
-		let selection = this.selection.toList();
+		const selection = this.selection.toList();
 		if (selection.length)
 		{
-			let entState = GetEntityState(selection[0]);
+			const entState = GetEntityState(selection[0]);
 			if (entState)
 			{
-				let template = GetTemplateData(entState.template);
+				const template = GetTemplateData(entState.template);
 				text += "\n\nentity: {\n";
-				for (let k in entState)
+				for (const k in entState)
 					text += "  " + k + ":" + uneval(entState[k]) + "\n";
 				text += "}\n\ntemplate: " + uneval(template);
 			}

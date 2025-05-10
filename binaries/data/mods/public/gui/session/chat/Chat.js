@@ -37,7 +37,7 @@ class Chat
 				this.ChatHistory.displayChatHistory();
 		});
 
-		let updater = this.onUpdatePlayers.bind(this);
+		const updater = this.onUpdatePlayers.bind(this);
 		registerPlayersFinishedHandler(updater);
 		registerPlayerAssignmentsChangeHandler(updater);
 		playerViewControl.registerViewedPlayerChangeHandler(updater);
@@ -85,7 +85,7 @@ class Chat
 		if (command.startsWith("/msg "))
 			Engine.SetGlobalHotkey("privatechat", "Press", () => { this.openPage(command); });
 
-		let msg = command ? command + " " + text : text;
+		const msg = command ? command + " " + text : text;
 
 		if (Engine.HasNetClient())
 			Engine.SendNetworkChat(msg, this.getReceiverGUIDs(text, command));

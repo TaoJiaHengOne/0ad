@@ -5,10 +5,10 @@ LobbyRatingReport.prototype.Resources = class
 {
 	insertValues(report, playerStates)
 	{
-		let time = playerStates[0].sequences.time.length - 1;
+		const time = playerStates[0].sequences.time.length - 1;
 
-		for (let action of this.Actions)
-			for (let resCode of g_ResourceData.GetCodes())
+		for (const action of this.Actions)
+			for (const resCode of g_ResourceData.GetCodes())
 				report[resCode + action] = playerStates.map(playerState =>
 					playerState.sequences["resources" + action][resCode][time]).join(",") + ",";
 

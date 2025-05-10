@@ -5,8 +5,8 @@ DiplomacyDialogPlayerControl.prototype.TributeButtonManager = class
 {
 	constructor(playerID)
 	{
-		let resCodes = g_ResourceData.GetTributableCodes();
-		let buttonCount = Engine.GetGUIObjectByName("diplomacyPlayer[0]_tribute").children.length;
+		const resCodes = g_ResourceData.GetTributableCodes();
+		const buttonCount = Engine.GetGUIObjectByName("diplomacyPlayer[0]_tribute").children.length;
 
 		Engine.GetGUIObjectByName("diplomacyHeaderTribute").hidden = !resCodes.length;
 
@@ -21,14 +21,14 @@ DiplomacyDialogPlayerControl.prototype.TributeButtonManager = class
 
 	update(playerInactive)
 	{
-		for (let button of this.buttons)
+		for (const button of this.buttons)
 			button.update(playerInactive);
 	}
 };
 
 DiplomacyDialogPlayerControl.prototype.TributeButtonManager.getWidthOffset = function()
 {
-	let tributeButtonSize = Engine.GetGUIObjectByName("diplomacyPlayer[0]_tribute[0]").size;
+	const tributeButtonSize = Engine.GetGUIObjectByName("diplomacyPlayer[0]_tribute[0]").size;
 	return g_ResourceData.GetTributableCodes().length * (tributeButtonSize.right - tributeButtonSize.left);
 };
 
@@ -44,7 +44,7 @@ DiplomacyDialogPlayerControl.prototype.TributeButtonManager.prototype.TributeBut
 		this.resCode = resCode;
 		this.amount = undefined;
 
-		let name = "diplomacyPlayer[" + (playerID - 1) + "]_tribute[" + resIndex + "]";
+		const name = "diplomacyPlayer[" + (playerID - 1) + "]_tribute[" + resIndex + "]";
 
 		this.button = Engine.GetGUIObjectByName(name);
 		this.button.onPress = this.onPress.bind(this);

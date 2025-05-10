@@ -13,7 +13,7 @@ class CampaignSession
 
 	onFinish(closePageCallback, players, won)
 	{
-		let playerID = Engine.GetPlayerID();
+		const playerID = Engine.GetPlayerID();
 		if (players.indexOf(playerID) === -1)
 			return;
 

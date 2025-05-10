@@ -10,7 +10,7 @@ class DiplomacyDialogCeasefireCounter
 
 	update()
 	{
-		let active = GetSimState().ceasefireActive;
+		const active = GetSimState().ceasefireActive;
 
 		this.diplomacyCeasefireCounter.hidden = !active;
 		if (!active)

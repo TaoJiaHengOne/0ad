@@ -18,10 +18,10 @@ LobbyRatingReport.prototype.Score = class
 	economyScore(playerState)
 	{
 		let total = 0;
-		let time = playerState.sequences.time.length - 1;
+		const time = playerState.sequences.time.length - 1;
 
 		// Notice that this avoids the vegetarianFood property of resourcesGathered
-		for (let resCode of g_ResourceData.GetCodes())
+		for (const resCode of g_ResourceData.GetCodes())
 			total += playerState.sequences.resourcesGathered[resCode][time];
 
 		total += playerState.sequences.tradeIncome[time];
@@ -31,9 +31,9 @@ LobbyRatingReport.prototype.Score = class
 
 	militaryScore(playerState)
 	{
-		let time = playerState.sequences.time.length - 1;
+		const time = playerState.sequences.time.length - 1;
 
-		let totalDestruction =
+		const totalDestruction =
 			playerState.sequences.enemyUnitsKilledValue[time] +
 			playerState.sequences.enemyBuildingsDestroyedValue[time] +
 			playerState.sequences.unitsCapturedValue[time] +
@@ -44,7 +44,7 @@ LobbyRatingReport.prototype.Score = class
 
 	explorationScore(playerState)
 	{
-		let time = playerState.sequences.time.length - 1;
+		const time = playerState.sequences.time.length - 1;
 		return playerState.sequences.percentMapExplored[time] * 10;
 	}
 
