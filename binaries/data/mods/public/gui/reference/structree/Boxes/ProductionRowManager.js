@@ -7,7 +7,7 @@ class ProductionRowManager
 		this.sortProductionsByPhase = sortByPhase;
 
 		this.productionRows = [];
-		for (let row of Engine.GetGUIObjectByName(guiName).children)
+		for (const row of Engine.GetGUIObjectByName(guiName).children)
 			this.productionRows.push(new ProductionRow(this.page, row, this.productionRows.length));
 	}
 
@@ -22,7 +22,7 @@ class ProductionRowManager
 			this.productionRows[0].startDraw(1);
 
 		// (Want to draw Units before Techs)
-		for (let prodType of Object.keys(template.production).reverse())
+		for (const prodType of Object.keys(template.production).reverse())
 			for (let prod of template.production[prodType])
 			{
 				let pIdx = 0;
@@ -37,7 +37,7 @@ class ProductionRowManager
 				case "techs":
 					pIdx = this.page.TemplateParser.phaseList.indexOf(this.page.TemplateParser.getPhaseOfTechnology(prod, civCode));
 					prod = clone(this.page.TemplateParser.getTechnology(prod, civCode));
-					for (let res in template.techCostMultiplier)
+					for (const res in template.techCostMultiplier)
 						if (prod.cost[res])
 							prod.cost[res] *= template.techCostMultiplier[res];
 					break;
@@ -46,17 +46,17 @@ class ProductionRowManager
 					continue;
 				}
 
-				let rowIdx = this.sortProductionsByPhase ? Math.max(0, pIdx - phaseIdx) : 0;
+				const rowIdx = this.sortProductionsByPhase ? Math.max(0, pIdx - phaseIdx) : 0;
 				this.productionRows[rowIdx].drawIcon(prod, civCode);
 			}
 
 		if (template.upgrades)
-			for (let upgrade of template.upgrades)
+			for (const upgrade of template.upgrades)
 			{
 				let pIdx = 0;
 				if (this.sortProductionsByPhase)
 					pIdx = this.page.TemplateParser.phaseList.indexOf(upgrade.phase);
-				let rowIdx = Math.max(0, pIdx - phaseIdx);
+				const rowIdx = Math.max(0, pIdx - phaseIdx);
 				this.productionRows[rowIdx].drawIcon(upgrade, civCode);
 			}
 

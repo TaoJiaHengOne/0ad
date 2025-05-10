@@ -8,7 +8,7 @@ class TechnologiesSubsection extends Subsection
 
 	update(civCode)
 	{
-		let techs = this.getTechnologyCaptions(
+		const techs = this.getTechnologyCaptions(
 			this.page.TemplateLister.getTemplateLists(civCode).techs.keys(),
 			civCode
 		);

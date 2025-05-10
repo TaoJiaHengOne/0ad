@@ -22,7 +22,7 @@ class TemplateLister
 
 		let templatesToParse = civData[civCode].StartEntities.map(entity => entity.Template);
 
-		let templateLists = {
+		const templateLists = {
 			"units": new Map(),
 			"structures": new Map(),
 			"techs": new Map(),
@@ -34,16 +34,16 @@ class TemplateLister
 			const templatesThisIteration = templatesToParse;
 			templatesToParse = [];
 
-			for (let templateBeingParsed of templatesThisIteration)
+			for (const templateBeingParsed of templatesThisIteration)
 			{
-				let baseOfTemplateBeingParsed = this.TemplateLoader.getVariantBaseAndType(templateBeingParsed, civCode)[0];
-				let list = this.deriveTemplateListsFromTemplate(templateBeingParsed, civCode);
-				for (let type in list)
+				const baseOfTemplateBeingParsed = this.TemplateLoader.getVariantBaseAndType(templateBeingParsed, civCode)[0];
+				const list = this.deriveTemplateListsFromTemplate(templateBeingParsed, civCode);
+				for (const type in list)
 					for (let templateName of list[type])
 					{
 						if (type != "techs")
 						{
-							let templateVariance = this.TemplateLoader.getVariantBaseAndType(templateName, civCode);
+							const templateVariance = this.TemplateLoader.getVariantBaseAndType(templateName, civCode);
 							if (templateVariance[1].passthru)
 								templateName = templateVariance[0];
 						}
@@ -61,16 +61,16 @@ class TemplateLister
 		} while (templatesToParse.length);
 
 		// Expand/filter tech pairs
-		for (let [techCode, researcherList] of templateLists.techs)
+		for (const [techCode, researcherList] of templateLists.techs)
 		{
 			if (!this.TemplateLoader.isPairTech(techCode))
 				continue;
 
-			for (let subTech of this.TemplateLoader.loadTechnologyPairTemplate(techCode, civCode).techs)
+			for (const subTech of this.TemplateLoader.loadTechnologyPairTemplate(techCode, civCode).techs)
 				if (!templateLists.techs.has(subTech))
 					templateLists.techs.set(subTech, researcherList);
 				else
-					for (let researcher of researcherList)
+					for (const researcher of researcherList)
 						if (templateLists.techs.get(subTech).indexOf(researcher) == -1)
 							templateLists.techs.get(subTech).push(researcher);
 
@@ -121,7 +121,7 @@ class TemplateLister
 		if (!templateName || !Engine.TemplateExists(templateName))
 			return {};
 
-		let template = this.TemplateLoader.loadEntityTemplate(templateName, civCode);
+		const template = this.TemplateLoader.loadEntityTemplate(templateName, civCode);
 
 		const templateLists = this.TemplateLoader.deriveProduction(template, civCode);
 		templateLists.structures = this.TemplateLoader.deriveBuildQueue(template, civCode);

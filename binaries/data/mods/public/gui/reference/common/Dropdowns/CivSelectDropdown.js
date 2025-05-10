@@ -4,7 +4,7 @@ class CivSelectDropdown
 	{
 		this.handlers = new Set();
 
-		let civList = Object.keys(civData).map(civ => ({
+		const civList = Object.keys(civData).map(civ => ({
 			"name": civData[civ].Name,
 			"code": civ,
 		})).sort(sortNameIgnoreCase);
@@ -20,9 +20,9 @@ class CivSelectDropdown
 
 	onSelectionChange()
 	{
-		let civCode = this.civSelection.list_data[this.civSelection.selected];
+		const civCode = this.civSelection.list_data[this.civSelection.selected];
 
-		for (let handler of this.handlers)
+		for (const handler of this.handlers)
 			handler(civCode);
 	}
 
@@ -46,7 +46,7 @@ class CivSelectDropdown
 		if (!civCode)
 			return;
 
-		let index = this.civSelection.list_data.indexOf(civCode);
+		const index = this.civSelection.list_data.indexOf(civCode);
 		if (index == -1)
 			return;
 

@@ -10,7 +10,7 @@ class EntityBox
 
 	static setViewerOnPress(guiObject, templateName, civCode)
 	{
-		let viewerFunc = Engine.OpenChildPage.bind(null, "page_viewer.xml", {
+		const viewerFunc = Engine.OpenChildPage.bind(null, "page_viewer.xml", {
 			"templateName": templateName,
 			"civ": civCode
 		});
@@ -23,12 +23,12 @@ class EntityBox
 		this.template = this.page.TemplateParser.getEntity(templateName, civCode);
 		this.gui.hidden = false;
 
-		let caption = this.gui.children[0];
+		const caption = this.gui.children[0];
 		caption.caption = g_SpecificNamesPrimary ?
 			translate(this.template.name.specific) :
 			translate(this.template.name.generic);
 
-		let icon = this.gui.children[1];
+		const icon = this.gui.children[1];
 		icon.sprite = "stretched:" + this.page.IconPath + this.template.icon;
 		icon.tooltip = this.constructor.compileTooltip(this.template);
 		this.constructor.setViewerOnPress(icon, this.template.name.internal, civCode);
@@ -37,7 +37,7 @@ class EntityBox
 	captionWidth()
 	{
 		// We make the assumption that the caption's padding is equal on both sides
-		let caption = this.gui.children[0];
+		const caption = this.gui.children[0];
 		return Engine.GetTextWidth(caption.font, caption.caption) + (caption.size.left + caption.buffer_zone) * 2;
 	}
 
@@ -54,7 +54,7 @@ class EntityBox
 	 */
 	static IconAndCaptionHeight()
 	{
-		let height = Engine.GetGUIObjectByName("structure[0]_icon").size.bottom + this.prototype.IconPadding;
+		const height = Engine.GetGUIObjectByName("structure[0]_icon").size.bottom + this.prototype.IconPadding;
 
 		// Replace function so the above is only run once.
 		this.IconAndCaptionHeight = () => height;

@@ -17,8 +17,8 @@ class ProductionIcon
 	 */
 	static Size()
 	{
-		let baseObject = Engine.GetGUIObjectByName("phase[0]_bar[0]_icon").size;
-		let size = {};
+		const baseObject = Engine.GetGUIObjectByName("phase[0]_bar[0]_icon").size;
+		const size = {};
 
 		// Icon dimensions
 		size.width = baseObject.right - baseObject.left;

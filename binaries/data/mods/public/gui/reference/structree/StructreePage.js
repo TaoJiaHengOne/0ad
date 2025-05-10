@@ -29,8 +29,8 @@ class StructreePage extends ReferencePage
 		}
 		this.civSelection.registerHandler(this.selectCiv.bind(this));
 
-		let civInfoButton = new CivInfoButton(this);
-		let closeButton = new CloseButton(this);
+		const civInfoButton = new CivInfoButton(this);
+		const closeButton = new CloseButton(this);
 		Engine.SetGlobalHotkey("structree", "Press", this.closePage.bind(this));
 	}
 
@@ -52,7 +52,7 @@ class StructreePage extends ReferencePage
 		this.CivName.caption = this.civData[this.activeCiv].Name;
 		this.CivHistory.caption = this.civData[this.activeCiv].History || "";
 
-		let templateLists = this.TemplateLister.getTemplateLists(this.activeCiv);
+		const templateLists = this.TemplateLister.getTemplateLists(this.activeCiv);
 		this.TreeSection.draw(templateLists.structures, this.activeCiv);
 		this.TrainerSection.draw(templateLists.units, this.activeCiv);
 	}

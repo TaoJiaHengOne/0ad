@@ -11,7 +11,7 @@ class BonusesSubsection extends Subsection
 		const player = this.page.TemplateParser.getPlayer(civCode);
 
 		// Civilization bonuses can be represented by a single auto-researched technology...
-		let civBonuses = this.getTechnologyCaptions(
+		const civBonuses = this.getTechnologyCaptions(
 			this.page.TemplateLoader.autoResearchTechList,
 			civCode
 		);
@@ -20,7 +20,7 @@ class BonusesSubsection extends Subsection
 		// ...however some fit into neither of the two above categories (e.g. Athenian "Silver
 		// Owls", Roman "Testudo Formation"). Thus we also display descriptions of civ bonuses
 		// as written in the {civ}.json files.
-		for (let bonus of civInfo.CivBonuses)
+		for (const bonus of civInfo.CivBonuses)
 			civBonuses.push(this.page.formatEntry(
 				bonus.Name,
 				bonus.History || false,
@@ -33,7 +33,7 @@ class BonusesSubsection extends Subsection
 			)
 		);
 
-		let teamBonuses = this.getAuraCaptions(
+		const teamBonuses = this.getAuraCaptions(
 			player.teambonuses,
 			civCode
 		);

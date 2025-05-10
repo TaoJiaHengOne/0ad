@@ -11,7 +11,7 @@ class ProductionRow
 		horizontallySpaceObjects(this.productionRow.name, ProductionIcon.Size().hMargin);
 
 		this.productionIcons = [];
-		for (let icon of guiObject.children)
+		for (const icon of guiObject.children)
 			this.productionIcons.push(new ProductionIcon(this.page, icon));
 	}
 
@@ -39,10 +39,10 @@ class ProductionRow
 		hideRemaining(this.productionRow.name, this.productionIconsDrawn);
 
 		const IconSize = ProductionIcon.Size();
-		let rowOffset = IconSize.rowHeight * (this.phaseOffset - this.rowIndex);
-		let rowWidth = this.productionIconsDrawn * IconSize.rowWidth + IconSize.hMargin;
+		const rowOffset = IconSize.rowHeight * (this.phaseOffset - this.rowIndex);
+		const rowWidth = this.productionIconsDrawn * IconSize.rowWidth + IconSize.hMargin;
 
-		let size = this.productionRow.size;
+		const size = this.productionRow.size;
 		size.left = -rowWidth / 2;
 		size.top = -rowOffset;
 		this.productionRow.size = size;

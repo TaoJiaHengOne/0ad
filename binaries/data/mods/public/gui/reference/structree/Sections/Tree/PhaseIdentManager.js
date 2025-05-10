@@ -7,7 +7,7 @@ class PhaseIdentManager
 
 		this.PhaseIdents = Engine.GetGUIObjectByName("phaseIdents");
 		this.Idents = [];
-		for (let identIdx in this.PhaseIdents.children)
+		for (const identIdx in this.PhaseIdents.children)
 			this.Idents.push(new PhaseIdent(this.page, identIdx));
 	}
 

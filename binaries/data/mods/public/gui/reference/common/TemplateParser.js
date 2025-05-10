@@ -28,13 +28,13 @@ class TemplateParser
 		if (!AuraTemplateExists(auraName))
 			return null;
 
-		let template = this.TemplateLoader.loadAuraTemplate(auraName);
-		let parsed = GetAuraDataHelper(template);
+		const template = this.TemplateLoader.loadAuraTemplate(auraName);
+		const parsed = GetAuraDataHelper(template);
 
 		if (template.civ)
 			parsed.civ = template.civ;
 
-		let affectedPlayers = template.affectedPlayers || this.AuraAffectedPlayerDefault;
+		const affectedPlayers = template.affectedPlayers || this.AuraAffectedPlayerDefault;
 		parsed.affectsTeam = this.AuraTeamIndicators.some(indicator => affectedPlayers.includes(indicator));
 		parsed.affectsSelf = this.AuraSelfIndicators.some(indicator => affectedPlayers.includes(indicator));
 
@@ -59,7 +59,7 @@ class TemplateParser
 		if (!Engine.TemplateExists(templateName))
 			return null;
 
-		let template = this.TemplateLoader.loadEntityTemplate(templateName, civCode);
+		const template = this.TemplateLoader.loadEntityTemplate(templateName, civCode);
 		const parsed = GetTemplateDataHelper(template, null, this.TemplateLoader.auraData, g_ResourceData, this.modifiers[civCode] || {});
 		parsed.name.internal = templateName;
 
@@ -124,15 +124,15 @@ class TemplateParser
 
 			let health;
 
-			for (let wSegm in parsed.wallSet.templates)
+			for (const wSegm in parsed.wallSet.templates)
 			{
 				if (wSegm == "fort" || wSegm == "curves")
 					continue;
 
-				let wPart = this.getEntity(parsed.wallSet.templates[wSegm], civCode);
+				const wPart = this.getEntity(parsed.wallSet.templates[wSegm], civCode);
 				parsed.wallset[wSegm] = wPart;
 
-				for (let research of wPart.production.techs)
+				for (const research of wPart.production.techs)
 					parsed.production.techs.push(research);
 
 				if (wPart.upgrades)
@@ -152,9 +152,9 @@ class TemplateParser
 			}
 
 			if (parsed.wallSet.templates.curves)
-				for (let curve of parsed.wallSet.templates.curves)
+				for (const curve of parsed.wallSet.templates.curves)
 				{
-					let wPart = this.getEntity(curve, civCode);
+					const wPart = this.getEntity(curve, civCode);
 					health.min = Math.min(health.min, wPart.health);
 					health.max = Math.max(health.max, wPart.health);
 				}
@@ -192,7 +192,7 @@ class TemplateParser
 		else if (technologyName in this.techs[civCode])
 			return this.techs[civCode][technologyName];
 
-		let template = this.TemplateLoader.loadTechnologyTemplate(technologyName);
+		const template = this.TemplateLoader.loadTechnologyTemplate(technologyName);
 		const tech = GetTechnologyDataHelper(template, civCode, g_ResourceData, this.modifiers[civCode] || {});
 		tech.name.internal = technologyName;
 
@@ -232,14 +232,14 @@ class TemplateParser
 		if (civCode in this.players)
 			return this.players[civCode];
 
-		let template = this.TemplateLoader.loadPlayerTemplate(civCode);
-		let parsed = {
+		const template = this.TemplateLoader.loadPlayerTemplate(civCode);
+		const parsed = {
 			"civbonuses": [],
 			"teambonuses": [],
 		};
 
 		if (template.Auras)
-			for (let auraTemplateName of template.Auras._string.split(/\s+/))
+			for (const auraTemplateName of template.Auras._string.split(/\s+/))
 				if (AuraTemplateExists(auraTemplateName))
 					if (this.getAura(auraTemplateName).affectsTeam)
 						parsed.teambonuses.push(auraTemplateName);
@@ -259,8 +259,8 @@ class TemplateParser
 	 */
 	getActualUpgradeData(upgradesInfo, civCode)
 	{
-		let newUpgrades = [];
-		for (let upgrade of upgradesInfo)
+		const newUpgrades = [];
+		for (const upgrade of upgradesInfo)
 		{
 			upgrade.entity = upgrade.entity.replace(/\{(civ|native)\}/g, civCode);
 
@@ -319,13 +319,13 @@ class TemplateParser
 				return this.phaseList[phaseIdx - 1];
 		}
 
-		let techReqs = this.getTechnology(techName, civCode).reqs;
+		const techReqs = this.getTechnology(techName, civCode).reqs;
 		if (!techReqs)
 			return false;
 
-		for (let option of techReqs)
+		for (const option of techReqs)
 			if (option.techs)
-				for (let tech of option.techs)
+				for (const tech of option.techs)
 				{
 					if (basename(tech).startsWith("phase"))
 						return tech;
@@ -375,14 +375,14 @@ class TemplateParser
 		this.phases = {};
 
 		// Load all of a civ's specific phase technologies
-		for (let techcode of technologyList)
+		for (const techcode of technologyList)
 			if (this.TemplateLoader.isPhaseTech(techcode))
 				this.getTechnology(techcode, civCode);
 
 		this.phaseList = UnravelPhases(this.phases);
 
 		// Make sure all required generic phases are loaded and parsed
-		for (let phasecode of this.phaseList)
+		for (const phasecode of this.phaseList)
 			this.getTechnology(phasecode, civCode);
 	}
 
@@ -391,11 +391,11 @@ class TemplateParser
 		if (!reqsA || !reqsB)
 			return false;
 
-		let finalReqs = clone(reqsA);
+		const finalReqs = clone(reqsA);
 
-		for (let option of reqsB)
-			for (let type in option)
-				for (let opt in finalReqs)
+		for (const option of reqsB)
+			for (const type in option)
+				for (const opt in finalReqs)
 				{
 					if (!finalReqs[opt][type])
 						finalReqs[opt][type] = [];

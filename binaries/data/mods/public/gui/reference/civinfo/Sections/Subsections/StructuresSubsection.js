@@ -8,7 +8,7 @@ class StructuresSubsection extends Subsection
 
 	update(civCode)
 	{
-		let structures = this.getEntityCaptions(
+		const structures = this.getEntityCaptions(
 			this.page.TemplateLister.getTemplateLists(civCode).structures.keys(),
 			this.IdentifyingClassList,
 			civCode

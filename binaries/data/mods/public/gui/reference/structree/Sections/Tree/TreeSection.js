@@ -13,7 +13,7 @@ class TreeSection
 		this.vMargin = this.TreeSection.size.top + -this.TreeSection.size.bottom;
 
 		this.structureBoxes = [];
-		for (let boxIdx in this.Structures.children)
+		for (const boxIdx in this.Structures.children)
 			this.structureBoxes.push(new StructureBox(this.page, boxIdx));
 
 		page.TrainerSection.registerWidthChangedHandler(this.onTrainerSectionWidthChange.bind(this));
@@ -27,10 +27,10 @@ class TreeSection
 		this.Structures.resetScrollPosition();
 
 		// Draw structures
-		let phaseList = this.page.TemplateParser.phaseList;
-		let count = Math.min(structures.size, this.structureBoxes.length);
-		let runningWidths = Array(phaseList.length).fill(0);
-		let structureIterator = structures.keys();
+		const phaseList = this.page.TemplateParser.phaseList;
+		const count = Math.min(structures.size, this.structureBoxes.length);
+		const runningWidths = Array(phaseList.length).fill(0);
+		const structureIterator = structures.keys();
 		for (let idx = 0; idx < count; ++idx)
 			this.structureBoxes[idx].draw(structureIterator.next().value, civCode, runningWidths);
 		hideRemaining(this.Structures.name, count);
@@ -41,8 +41,8 @@ class TreeSection
 
 	drawPhaseIcon(phaseIcon, phaseIndex, civCode)
 	{
-		let phaseName = this.page.TemplateParser.phaseList[phaseIndex];
-		let prodPhaseTemplate = this.page.TemplateParser.getTechnology(phaseName + "_" + civCode, civCode) || this.page.TemplateParser.getTechnology(phaseName, civCode);
+		const phaseName = this.page.TemplateParser.phaseList[phaseIndex];
+		const prodPhaseTemplate = this.page.TemplateParser.getTechnology(phaseName + "_" + civCode, civCode) || this.page.TemplateParser.getTechnology(phaseName, civCode);
 
 		phaseIcon.sprite = "stretched:" + this.page.IconPath + prodPhaseTemplate.icon;
 		phaseIcon.tooltip = getEntityNamesFormatted(prodPhaseTemplate);
@@ -50,7 +50,7 @@ class TreeSection
 
 	onTrainerSectionWidthChange(trainerSectionWidth, trainerSectionVisible)
 	{
-		let size = this.TreeSection.size;
+		const size = this.TreeSection.size;
 		size.right = this.rightMargin;
 		if (trainerSectionVisible)
 			size.right -= trainerSectionWidth + this.page.SectionGap;
@@ -67,8 +67,8 @@ class TreeSection
 	 */
 	static getPositionOffset(idx, TemplateParser)
 	{
-		let phases = TemplateParser.phaseList.length;
-		let rowHeight = ProductionIcon.Size().rowHeight;
+		const phases = TemplateParser.phaseList.length;
+		const rowHeight = ProductionIcon.Size().rowHeight;
 
 		let size = EntityBox.IconAndCaptionHeight() * idx; // text, image and offset
 		size += EntityBox.prototype.VMargin * (idx + 1); // Margin above StructureBoxes

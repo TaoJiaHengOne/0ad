@@ -8,7 +8,7 @@ class HeroesSubsection extends Subsection
 
 	update(civCode)
 	{
-		let heroes = this.getEntityCaptions(
+		const heroes = this.getEntityCaptions(
 			this.page.TemplateLister.getTemplateLists(civCode).units.keys(),
 			this.IdentifyingClassList,
 			civCode

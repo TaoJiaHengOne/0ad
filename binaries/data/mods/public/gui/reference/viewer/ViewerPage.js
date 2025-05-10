@@ -17,7 +17,7 @@ class ViewerPage extends ReferencePage
 			"entityRankGlyph": Engine.GetGUIObjectByName("entityRankGlyph"),
 		};
 
-		let closeButton = new CloseButton(this);
+		const closeButton = new CloseButton(this);
 	}
 
 	selectTemplate(data)
@@ -29,8 +29,8 @@ class ViewerPage extends ReferencePage
 			return;
 		}
 
-		let templateName = removeFiltersFromTemplateName(data.templateName);
-		let isTech = TechnologyTemplateExists(templateName);
+		const templateName = removeFiltersFromTemplateName(data.templateName);
+		const isTech = TechnologyTemplateExists(templateName);
 
 		// Attempt to get the civ code from the template, or, if
 		// it's a technology, from the researcher's template.
@@ -59,22 +59,22 @@ class ViewerPage extends ReferencePage
 				// If template is a non-promotion, non-upgrade variant of another (e.g.
 				// units/{civ}/support_female_citizen_house), we wish to use the name of the base template,
 				// not that of the variant template, when interacting with the compiled Template Lists.
-				let templateVariance = this.TemplateLoader.getVariantBaseAndType(this.currentTemplate.name.internal, this.TemplateLoader.DefaultCiv);
+				const templateVariance = this.TemplateLoader.getVariantBaseAndType(this.currentTemplate.name.internal, this.TemplateLoader.DefaultCiv);
 				if (templateVariance[1].passthru)
 					currentTemplateName = templateVariance[0];
 			}
 
-			let templateLists = this.TemplateLister.getTemplateLists(this.activeCiv);
+			const templateLists = this.TemplateLister.getTemplateLists(this.activeCiv);
 
-			let builders = templateLists.structures.get(currentTemplateName);
+			const builders = templateLists.structures.get(currentTemplateName);
 			if (builders && builders.length)
 				this.currentTemplate.builtByListOfNames = builders.map(builder => getEntityNames(this.TemplateParser.getEntity(builder, this.activeCiv)));
 
-			let trainers = templateLists.units.get(currentTemplateName);
+			const trainers = templateLists.units.get(currentTemplateName);
 			if (trainers && trainers.length)
 				this.currentTemplate.trainedByListOfNames = trainers.map(trainer => getEntityNames(this.TemplateParser.getEntity(trainer, this.activeCiv)));
 
-			let researchers = templateLists.techs.get(currentTemplateName);
+			const researchers = templateLists.techs.get(currentTemplateName);
 			if (researchers && researchers.length)
 			{
 				this.currentTemplate.researchedByListOfNames = researchers.map(researcher => getEntityNames(this.TemplateParser.getEntity(researcher, this.activeCiv)));
@@ -96,9 +96,9 @@ class ViewerPage extends ReferencePage
 			if (this.currentTemplate.production.techs && this.currentTemplate.production.techs.length)
 			{
 				this.currentTemplate.researchListOfNames = [];
-				for (let tech of this.currentTemplate.production.techs)
+				for (const tech of this.currentTemplate.production.techs)
 				{
-					let techTemplate = this.TemplateParser.getTechnology(tech, this.activeCiv);
+					const techTemplate = this.TemplateParser.getTechnology(tech, this.activeCiv);
 					if (techTemplate.reqs)
 						this.currentTemplate.researchListOfNames.push(getEntityNames(techTemplate));
 				}
@@ -120,13 +120,13 @@ class ViewerPage extends ReferencePage
 	{
 		this.guiElements.entityName.caption = getEntityNamesFormatted(this.currentTemplate);
 
-		let entityIcon = this.guiElements.entityIcon;
+		const entityIcon = this.guiElements.entityIcon;
 		entityIcon.sprite = "stretched:" + this.IconPath + this.currentTemplate.icon;
 
-		let entityStats = this.guiElements.entityStats;
+		const entityStats = this.guiElements.entityStats;
 		entityStats.caption = this.constructor.buildText(this.currentTemplate, this.StatsFunctions);
 
-		let infoSize = this.guiElements.entityInfo.size;
+		const infoSize = this.guiElements.entityInfo.size;
 		const infoTopMargin = 8;
 		infoSize.top = Math.max(entityIcon.size.bottom + infoTopMargin, entityStats.size.top + entityStats.getTextSize().height + infoTopMargin);
 		this.guiElements.entityInfo.size = infoSize;

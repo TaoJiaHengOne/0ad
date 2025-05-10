@@ -13,7 +13,7 @@ class TrainerSection
 		this.TrainerSectionHeading.caption = this.Caption;
 
 		this.trainerBoxes = [];
-		for (let boxIdx in this.Trainers.children)
+		for (const boxIdx in this.Trainers.children)
 			this.trainerBoxes.push(new TrainerBox(this.page, boxIdx));
 	}
 
@@ -24,13 +24,13 @@ class TrainerSection
 
 	draw(units, civCode)
 	{
-		let caption = this.TrainerSectionHeading;
+		const caption = this.TrainerSectionHeading;
 		this.width = Engine.GetTextWidth(caption.font, caption.caption) + (caption.size.left + caption.buffer_zone) * 2;
 		let count = 0;
 
-		for (let unitCode of units.keys())
+		for (const unitCode of units.keys())
 		{
-			let unitTemplate = this.page.TemplateParser.getEntity(unitCode, civCode);
+			const unitTemplate = this.page.TemplateParser.getEntity(unitCode, civCode);
 			if (!unitTemplate.production.units.length && !unitTemplate.production.techs.length && !unitTemplate.upgrades)
 				continue;
 
@@ -50,13 +50,13 @@ class TrainerSection
 		hideRemaining(this.Trainers.name, count);
 
 		// Update width and visibility of section
-		let size = this.TrainerSection.size;
+		const size = this.TrainerSection.size;
 		this.width += EntityBox.prototype.HMargin;
 		size.left = -this.width + size.right;
 		this.TrainerSection.size = size;
 		this.TrainerSection.hidden = count == 0;
 
-		for (let handler of this.widthChangedHandlers)
+		for (const handler of this.widthChangedHandlers)
 			handler(this.width, !this.TrainerSection.hidden);
 	}
 

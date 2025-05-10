@@ -12,14 +12,14 @@ class TrainerBox extends EntityBox
 		this.gui = Engine.GetGUIObjectByName("trainer[" + trainerIdx + "]");
 		this.ProductionRows = new ProductionRowManager(this.page, "trainer[" + trainerIdx + "]_productionRows", false);
 
-		let rowHeight = ProductionIcon.Size().rowHeight;
-		let size = this.gui.size;
+		const rowHeight = ProductionIcon.Size().rowHeight;
+		const size = this.gui.size;
 
 		// Adjust height to accommodate production row
 		size.bottom += rowHeight;
 
 		// We make the assumuption that all trainer boxes have the same height
-		let boxHeight = (this.VMargin / 2 + (size.bottom - size.top + this.VMargin)) * trainerIdx;
+		const boxHeight = (this.VMargin / 2 + (size.bottom - size.top + this.VMargin)) * trainerIdx;
 		size.top += boxHeight;
 		size.bottom += boxHeight;
 

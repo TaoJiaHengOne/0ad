@@ -18,8 +18,8 @@ class CivInfoPage extends ReferencePage
 
 		this.gameplaySection = new GameplaySection(this);
 
-		let structreeButton = new StructreeButton(this);
-		let closeButton = new CloseButton(this);
+		const structreeButton = new StructreeButton(this);
+		const closeButton = new CloseButton(this);
 		Engine.SetGlobalHotkey("civinfo", "Press", this.closePage.bind(this));
 	}
 
@@ -56,7 +56,7 @@ class CivInfoPage extends ReferencePage
 		this.CivName.caption = this.civData[this.activeCiv].Name;
 		this.CivHistory.caption = this.civData[this.activeCiv].History || "";
 
-		let civInfo = this.civData[civCode];
+		const civInfo = this.civData[civCode];
 
 		if(!civInfo)
 			error(sprintf("Error loading civ data for \"%(code)s\"", { "code": civCode }));
@@ -81,11 +81,11 @@ class CivInfoPage extends ReferencePage
 	 */
 	formatHeading(text, size)
 	{
-		let textArray = [];
+		const textArray = [];
 
 		for (let word of text.split(" "))
 		{
-			let wordCaps = word.toUpperCase();
+			const wordCaps = word.toUpperCase();
 
 			// Usually we wish a big first letter, however this isn't always desirable. Check if
 			// `.toLowerCase()` changes the character to avoid false positives from special characters.
