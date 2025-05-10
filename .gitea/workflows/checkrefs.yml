@@ -3,7 +3,22 @@ name: checkrefs
 on:
   - push
   - pull_request
+env:
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
 jobs:
+  lfscheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch the base branch
+        run: git fetch origin ${{ env.BASE_SHA }}
+
+      - name: Check that LFS files are correctly stored as pointers
+        run: git-lfs fsck --pointers ${{ env.BASE_SHA }}..${{ env.HEAD_SHA }}
+
   checkrefs:
     runs-on: ubuntu-latest
     env:
