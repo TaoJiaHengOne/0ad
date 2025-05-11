@@ -100,7 +100,7 @@ AddMock(33, IID_Identity, {
 	"GetSelectionGroupName": () => "spart_infantry_archer_a"
 });
 
-let testGarrisonAllowed = function()
+const testGarrisonAllowed = function()
 {
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.HasEnoughHealth(), true);
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.Garrison(enemyUnitId), false);
@@ -110,7 +110,7 @@ let testGarrisonAllowed = function()
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.Unload(largeUnitId), true);
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.Unload(unitToGarrisonId), true);
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.Garrison(unitToGarrisonId), true);
-	for (let entity of garrisonedEntitiesList)
+	for (const entity of garrisonedEntitiesList)
 		TS_ASSERT_EQUALS(cmpGarrisonHolder.Garrison(entity), true);
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.Garrison(largeUnitId), false);
 	TS_ASSERT_EQUALS(cmpGarrisonHolder.IsFull(), true);
@@ -185,16 +185,16 @@ cmpGarrisonHolder = ConstructComponent(garrisonHolderId, "GarrisonHolder", {
 testGarrisonAllowed();
 
 // Test entity renaming.
-let siegeEngineId = 44;
+const siegeEngineId = 44;
 AddMock(siegeEngineId, IID_Identity, {
 	"GetClassesList": () => ["Siege"]
 });
-let archerId = 45;
+const archerId = 45;
 AddMock(archerId, IID_Identity, {
 	"GetClassesList": () => ["Infantry", "Ranged"]
 });
 
-let originalClassList = "Infantry+Ranged Siege Cavalry";
+const originalClassList = "Infantry+Ranged Siege Cavalry";
 
 cmpGarrisonHolder = ConstructComponent(garrisonHolderId, "GarrisonHolder", {
 	"Max": 10,
@@ -206,7 +206,7 @@ cmpGarrisonHolder = ConstructComponent(garrisonHolderId, "GarrisonHolder", {
 	"Pickup": false
 });
 
-let traderId = 32;
+const traderId = 32;
 AddMock(traderId, IID_Identity, {
 	"GetClassesList": () => ["Trader"]
 });
@@ -219,7 +219,7 @@ AddMock(siegeEngineId, IID_Position, {
 	"MoveOutOfWorld": () => {},
 	"SetHeightOffset": height => {}
 });
-let currentSiegePlayer = player;
+const currentSiegePlayer = player;
 AddMock(siegeEngineId, IID_Ownership, {
 	"GetOwner": () => currentSiegePlayer
 });
@@ -229,7 +229,7 @@ AddMock(siegeEngineId, IID_Garrisonable, {
 	"Garrison": (entity, renamed) => cmpGarrisonHolder.Garrison(siegeEngineId, renamed),
 	"UnGarrison": () => true
 });
-let cavalryId = 46;
+const cavalryId = 46;
 AddMock(cavalryId, IID_Identity, {
 	"GetClassesList": () => ["Infantry", "Ranged"]
 });
@@ -263,7 +263,7 @@ cmpGarrisonHolder.OnGlobalOwnershipChanged({
 });
 TS_ASSERT_EQUALS(cmpGarrisonHolder.GetGarrisonedEntitiesCount(), 0);
 
-let oldApplyValueModificationsToEntity = ApplyValueModificationsToEntity;
+const oldApplyValueModificationsToEntity = ApplyValueModificationsToEntity;
 
 TS_ASSERT(cmpGarrisonHolder.Garrison(siegeEngineId));
 TS_ASSERT_UNEVAL_EQUALS(cmpGarrisonHolder.GetEntities(), [siegeEngineId]);

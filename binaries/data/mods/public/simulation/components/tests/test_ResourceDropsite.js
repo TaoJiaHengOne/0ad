@@ -1,9 +1,9 @@
 Resources = {
 	"BuildChoicesSchema": () => {
 		let schema = "";
-		for (let res of ["food", "metal"])
+		for (const res of ["food", "metal"])
 		{
-			for (let subtype in ["meat", "grain"])
+			for (const subtype in ["meat", "grain"])
 				schema += "<value>" + res + "." + subtype + "</value>";
 			schema += "<value> treasure." + res + "</value>";
 		}
@@ -19,14 +19,14 @@ Engine.RegisterGlobal("ApplyValueModificationsToEntity", (prop, oVal, ent) => oV
 
 const owner = 1;
 const entity = 11;
-let dropper = 12;
+const dropper = 12;
 
-let template = {
+const template = {
 	"Sharable": "true",
 	"Types": "food"
 };
 
-let cmpResourceDropsite = ConstructComponent(entity, "ResourceDropsite", template);
+const cmpResourceDropsite = ConstructComponent(entity, "ResourceDropsite", template);
 TS_ASSERT(cmpResourceDropsite.IsSharable());
 
 AddMock(dropper, IID_Ownership, {

@@ -17,7 +17,7 @@ const friendlyPlayer = 3;
 const garrison = 10;
 const holder = 11;
 
-let createGarrisonCmp = entity => {
+const createGarrisonCmp = entity => {
 	AddMock(entity, IID_Identity, {
 		"GetClassesList": () => ["Ranged"],
 		"GetSelectionGroupName": () => "mace_infantry_archer_a"
@@ -88,11 +88,11 @@ AddMock(garrison, IID_Position, {
 	"SetYRotation": angle => {}
 });
 
-let cmpGarrisonable = ConstructComponent(garrison, "Garrisonable", {
+const cmpGarrisonable = ConstructComponent(garrison, "Garrisonable", {
 	"Size": "1"
 });
 
-let cmpGarrisonHolder = ConstructComponent(holder, "GarrisonHolder", {
+const cmpGarrisonHolder = ConstructComponent(holder, "GarrisonHolder", {
 	"Max": "10",
 	"List": { "_string": "Ranged" },
 	"EjectHealth": "0.1",
@@ -122,8 +122,8 @@ TS_ASSERT(cmpGarrisonHolder.Unload(garrison));
 TS_ASSERT_EQUALS(cmpGarrisonHolder.GetGarrisonedEntitiesCount(), 0);
 
 // Test initGarrison.
-let entities = [21, 22, 23, 24];
-for (let entity of entities)
+const entities = [21, 22, 23, 24];
+for (const entity of entities)
 	createGarrisonCmp(entity);
 cmpGarrisonHolder.SetInitGarrison(entities);
 cmpGarrisonHolder.OnGlobalInitGame();

@@ -18,7 +18,7 @@ var template = { "Identity": { "Classes": { "_string": "CorrectClass OtherClass"
 
 global.AuraTemplates = {
 	"Get": name => {
-		let template = {
+		const template = {
 			"type": name,
 			"affectedPlayers": ["Ally"],
 			"affects": ["CorrectClass"],
@@ -96,10 +96,10 @@ function testAuras(name, test_function)
 			"GetOwner": () => playerID[1]
 		});
 
-	let cmpModifiersManager = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager", {});
+	const cmpModifiersManager = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager", {});
 	cmpModifiersManager.OnGlobalPlayerEntityChanged({ "player": playerID[1], "from": -1, "to": playerEnt[1] });
 	cmpModifiersManager.OnGlobalPlayerEntityChanged({ "player": playerID[2], "from": -1, "to": playerEnt[2] });
-	let cmpAuras = ConstructComponent(sourceEnt, "Auras", { "_string": name });
+	const cmpAuras = ConstructComponent(sourceEnt, "Auras", { "_string": name });
 	test_function(name, cmpAuras);
 }
 

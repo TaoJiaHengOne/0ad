@@ -26,7 +26,7 @@ var corpse_entity;
 
 function setEntityUp()
 {
-	let cmpHealth = ConstructComponent(entity_id, "Health", health_template);
+	const cmpHealth = ConstructComponent(entity_id, "Health", health_template);
 
 	AddMock(entity_id, IID_DeathDamage, {
 		"CauseDeathDamage": () => {}

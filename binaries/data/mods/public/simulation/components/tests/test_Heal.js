@@ -19,7 +19,7 @@ AddMock(SYSTEM_ENTITY, IID_ObstructionManager, {
 	"IsInTargetRange": () => true
 });
 
-let template = {
+const template = {
 	"Range": "20",
 	"RangeOverlay": {
 		"LineTexture": "heal_overlay_range.png",
@@ -65,7 +65,7 @@ ApplyValueModificationsToEntity = function(value, stat, ent)
 	}
 };
 
-let cmpHeal = ConstructComponent(60, "Heal", template);
+const cmpHeal = ConstructComponent(60, "Heal", template);
 
 // Test Getters
 TS_ASSERT_EQUALS(cmpHeal.GetInterval(), 2000 + 200);
@@ -88,7 +88,7 @@ TS_ASSERT_UNEVAL_EQUALS(cmpHeal.GetRangeOverlays(), [{
 }]);
 
 // Test healing.
-let target = 70;
+const target = 70;
 AddMock(target, IID_Ownership, {
 	"GetOwner": () => player
 });
@@ -98,7 +98,7 @@ AddMock(target, IID_Identity, {
 	"GetClassesList": () => targetClasses
 });
 
-let cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer");
+const cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer");
 let increased;
 let unhealable = false;
 AddMock(target, IID_Health, {
@@ -180,7 +180,7 @@ TS_ASSERT_UNEVAL_EQUALS(cmpHeal.CanHeal(target), true);
 unhealable = true;
 TS_ASSERT_UNEVAL_EQUALS(cmpHeal.CanHeal(target), false);
 
-let otherTarget = 71;
+const otherTarget = 71;
 AddMock(otherTarget, IID_Ownership, {
 	"GetOwner": () => otherPlayer
 });

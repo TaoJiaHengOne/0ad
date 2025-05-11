@@ -14,22 +14,22 @@ function testBasicBehaviour()
 	}));
 	Engine.RegisterGlobal("PlaySound", () => {});
 
-	let cmpRangeMgr = AddMock(SYSTEM_ENTITY, IID_RangeManager, {
+	const cmpRangeMgr = AddMock(SYSTEM_ENTITY, IID_RangeManager, {
 		"GetEntityFlagMask": () => {},
 		"CreateActiveQuery": () => {},
 		"EnableActiveQuery": () => {},
 	});
-	let querySpy = new Spy(cmpRangeMgr, "CreateActiveQuery");
+	const querySpy = new Spy(cmpRangeMgr, "CreateActiveQuery");
 
-	let ownUnitAI = AddMock(own, IID_UnitAI, {
+	const ownUnitAI = AddMock(own, IID_UnitAI, {
 		"AbleToMove": () => true
 	});
 
-	let cmpGate = ConstructComponent(gate, "Gate", {
+	const cmpGate = ConstructComponent(gate, "Gate", {
 		"PassRange": passRange
 	});
-	let setupSpy = new Spy(cmpGate, "SetupRangeQuery");
-	let cmpGateObst = AddMock(gate, IID_Obstruction, {
+	const setupSpy = new Spy(cmpGate, "SetupRangeQuery");
+	const cmpGateObst = AddMock(gate, IID_Obstruction, {
 		"SetDisableBlockMovementPathfinding": () => {},
 		"GetEntitiesBlockingConstruction": () => [],
 		"GetBlockMovementFlag": () => false,
@@ -85,7 +85,7 @@ function testBasicBehaviour()
 
 function testShouldOpen()
 {
-	let cmpGate = ConstructComponent(5, "Gate", {});
+	const cmpGate = ConstructComponent(5, "Gate", {});
 	cmpGate.allies = [1, 2, 3, 4];
 	cmpGate.ignoreList = [];
 	TS_ASSERT_EQUALS(cmpGate.ShouldOpen(), true);

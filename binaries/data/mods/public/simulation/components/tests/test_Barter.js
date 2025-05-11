@@ -24,7 +24,7 @@ AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 let timerActivated = false;
 let bought = 0;
 let sold = 0;
-let multiplier = {
+const multiplier = {
 	"buy": {
 		"wood": 1.0,
 		"stone": 1.0,
@@ -36,7 +36,7 @@ let multiplier = {
 		"metal": 1.0
 	}
 };
-let cmpBarter = ConstructComponent(SYSTEM_ENTITY, "Barter");
+const cmpBarter = ConstructComponent(SYSTEM_ENTITY, "Barter");
 
 AddMock(SYSTEM_ENTITY, IID_Timer, {
 	"CancelTimer": id => { timerActivated = false; },
@@ -52,7 +52,7 @@ AddMock(SYSTEM_ENTITY, IID_Timer, {
 TS_ASSERT_EQUALS(cmpBarter.restoreTimer, undefined);
 TS_ASSERT_UNEVAL_EQUALS(cmpBarter.priceDifferences, { "wood": 0, "stone": 0, "metal": 0 });
 
-let cmpPlayer = AddMock(playerEnt, IID_Player, {
+const cmpPlayer = AddMock(playerEnt, IID_Player, {
 	"TrySubtractResources": amounts => {
 		sold = amounts[Object.keys(amounts)[0]];
 		return true;

@@ -1,10 +1,10 @@
 Engine.LoadComponentScript("interfaces/EndGameManager.js");
 Engine.LoadComponentScript("EndGameManager.js");
 
-let cmpEndGameManager = ConstructComponent(SYSTEM_ENTITY, "EndGameManager");
+const cmpEndGameManager = ConstructComponent(SYSTEM_ENTITY, "EndGameManager");
 
-let playerEnt1 = 1;
-let wonderDuration = 2 * 60 * 1000;
+const playerEnt1 = 1;
+const wonderDuration = 2 * 60 * 1000;
 
 AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 	"GetNumPlayers": () => 4

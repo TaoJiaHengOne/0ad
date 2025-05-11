@@ -6,7 +6,7 @@ Engine.LoadComponentScript("Population.js");
 
 const player = 1;
 const entity = 11;
-let entPopBonus = 5;
+const entPopBonus = 5;
 
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
 	(valueName, currentValue, entity) => currentValue
@@ -16,7 +16,7 @@ AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 	"GetPlayerByID": () => player
 });
 
-let cmpPopulation = ConstructComponent(entity, "Population", {
+const cmpPopulation = ConstructComponent(entity, "Population", {
 	"Bonus": entPopBonus
 });
 

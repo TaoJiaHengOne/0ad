@@ -1,9 +1,9 @@
 Resources = {
 	"BuildChoicesSchema": () => {
 		let schema = "";
-		for (let res of ["food", "metal"])
+		for (const res of ["food", "metal"])
 		{
-			for (let subtype in ["meat", "grain"])
+			for (const subtype in ["meat", "grain"])
 				schema += "<value>" + res + "." + subtype + "</value>";
 			schema += "<value> treasure." + res + "</value>";
 		}
@@ -19,7 +19,7 @@ Engine.LoadComponentScript("interfaces/Timer.js");
 Engine.LoadComponentScript("ResourceSupply.js");
 Engine.LoadComponentScript("Timer.js");
 
-let entity = 60;
+const entity = 60;
 
 AddMock(entity, IID_Fogging, {
 	"Activate": () => {}

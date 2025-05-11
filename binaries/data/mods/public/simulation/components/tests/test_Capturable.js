@@ -75,7 +75,7 @@ function testCapturable(testData, test_function)
 		"CapturedBuilding": () => {}
 	});
 
-	let cmpCapturable = ConstructComponent(testData.structure, "Capturable", {
+	const cmpCapturable = ConstructComponent(testData.structure, "Capturable", {
 		"CapturePoints": testData.maxCapturePoints,
 		"RegenRate": testData.regenRate,
 		"GarrisonRegenRate": testData.garrisonRegenRate

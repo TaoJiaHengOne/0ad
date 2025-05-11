@@ -9,20 +9,20 @@ let cmpPromotion;
 const entity = 60;
 let modifier = 0;
 
-let ApplyValueModificationsToEntity = (_, val) => val + modifier;
+const ApplyValueModificationsToEntity = (_, val) => val + modifier;
 Engine.RegisterGlobal("ApplyValueModificationsToEntity", ApplyValueModificationsToEntity);
 Engine.RegisterGlobal("ApplyValueModificationsToTemplate", ApplyValueModificationsToEntity);
 
-let QueryOwnerInterface = () => ({ "GetPlayerID": () => 1 });
+const QueryOwnerInterface = () => ({ "GetPlayerID": () => 1 });
 Engine.RegisterGlobal("QueryOwnerInterface", QueryOwnerInterface);
 
-let entTemplates = {
+const entTemplates = {
 	"60": "template_b",
 	"61": "template_f",
 	"62": "end"
 };
 
-let promote = {
+const promote = {
 	"template_b": "template_c",
 	"template_c": "template_d",
 	"template_d": "template_e",
@@ -38,10 +38,10 @@ AddMock(SYSTEM_ENTITY, IID_TemplateManager, {
 	}),
 });
 
-let ChangeEntityTemplate = function(ent, template)
+const ChangeEntityTemplate = function(ent, template)
 {
-	let newEnt = ent + 1;
-	let cmpNewPromotion = ConstructComponent(newEnt, "Promotion", {
+	const newEnt = ent + 1;
+	const cmpNewPromotion = ConstructComponent(newEnt, "Promotion", {
 		"Entity": entTemplates[newEnt],
 		"RequiredXp": 1000
 	});
@@ -89,7 +89,7 @@ cmpPromotion = ConstructComponent(entity, "Promotion", {
 	"RequiredXp": 1000
 });
 
-let cmpHealth = AddMock(entity, IID_Health, {
+const cmpHealth = AddMock(entity, IID_Health, {
 	"GetHitpoints": () => 0,
 });
 
@@ -99,7 +99,7 @@ TS_ASSERT_EQUALS(cmpPromotion.GetCurrentXp(), 0);
 DeleteMock(entity, IID_Health);
 
 // Test XP trickle.
-let cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer", {});
+const cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer", {});
 cmpPromotion = ConstructComponent(entity, "Promotion", {
 	"Entity": "template_b",
 	"RequiredXp": "100",

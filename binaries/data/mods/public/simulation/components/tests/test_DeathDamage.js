@@ -8,8 +8,8 @@ Engine.LoadComponentScript("interfaces/DeathDamage.js");
 Engine.LoadComponentScript("interfaces/ModifiersManager.js");
 Engine.LoadComponentScript("DeathDamage.js");
 
-let deadEnt = 60;
-let player = 1;
+const deadEnt = 60;
+const player = 1;
 
 ApplyValueModificationsToEntity = function(value, stat, ent)
 {
@@ -18,7 +18,7 @@ ApplyValueModificationsToEntity = function(value, stat, ent)
 	return stat;
 };
 
-let template = {
+const template = {
 	"Shape": "Circular",
 	"Range": 10.7,
 	"FriendlyFire": "false",
@@ -29,7 +29,7 @@ let template = {
 	}
 };
 
-let effects = {
+const effects = {
 	"Damage": {
 		"Hack": 0.0,
 		"Pierce": 215.0,
@@ -39,10 +39,10 @@ let effects = {
 
 let cmpDeathDamage = ConstructComponent(deadEnt, "DeathDamage", template);
 
-let playersToDamage = [2, 3, 7];
-let pos = new Vector2D(3, 4.2);
+const playersToDamage = [2, 3, 7];
+const pos = new Vector2D(3, 4.2);
 
-let result = {
+const result = {
 	"type": "Death",
 	"attackData": effects,
 	"attacker": deadEnt,

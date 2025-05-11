@@ -4,9 +4,9 @@ Resources = {
 	"GetBarterableCodes": () => ["food", "metal", "stone", "wood"],
 	"BuildSchema": () => {
 		let schema = "";
-		for (let res of ["food", "metal"])
+		for (const res of ["food", "metal"])
 		{
-			for (let subtype in ["meat", "grain"])
+			for (const subtype in ["meat", "grain"])
 				schema += "<value>" + res + "." + subtype + "</value>";
 			schema += "<value> treasure." + res + "</value>";
 		}
@@ -14,9 +14,9 @@ Resources = {
 	},
 	"BuildChoicesSchema": () => {
 		let schema = "";
-		for (let res of ["food", "metal"])
+		for (const res of ["food", "metal"])
 		{
-			for (let subtype in ["meat", "grain"])
+			for (const subtype in ["meat", "grain"])
 				schema += "<value>" + res + "." + subtype + "</value>";
 			schema += "<value> treasure." + res + "</value>";
 		}
@@ -47,7 +47,7 @@ Engine.LoadComponentScript("ResourceSupply.js");
 Engine.LoadComponentScript("Timer.js");
 
 Engine.RegisterGlobal("ApplyValueModificationsToEntity", (prop, oVal, ent) => oVal);
-let cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer", null);
+const cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer", null);
 
 AddMock(SYSTEM_ENTITY, IID_ObstructionManager, {
 	"IsInTargetRange": () => true
@@ -70,7 +70,7 @@ AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 	"GetPlayerByID": (id) => owner
 });
 
-let cmpPlayer = ConstructComponent(owner, "Player", {
+const cmpPlayer = ConstructComponent(owner, "Player", {
 	"SpyCostMultiplier": "1",
 	"BarterMultiplier": {
 		"Buy": {},
@@ -78,9 +78,9 @@ let cmpPlayer = ConstructComponent(owner, "Player", {
 	},
 	"Formations": { "_string": "" }
 });
-let playerSpy = new Spy(cmpPlayer, "AddResources");
+const playerSpy = new Spy(cmpPlayer, "AddResources");
 
-let cmpResourceGatherer = ConstructComponent(gatherer, "ResourceGatherer", {
+const cmpResourceGatherer = ConstructComponent(gatherer, "ResourceGatherer", {
 	"MaxDistance": "10",
 	"BaseSpeed": "1",
 	"Rates": {
@@ -91,14 +91,14 @@ let cmpResourceGatherer = ConstructComponent(gatherer, "ResourceGatherer", {
 	}
 });
 cmpResourceGatherer.OnGlobalInitGame();
-let cmpResourceSupply = ConstructComponent(supply, "ResourceSupply", {
+const cmpResourceSupply = ConstructComponent(supply, "ResourceSupply", {
 	"Max": 1000,
 	"Type": "food.meat",
 	"KillBeforeGather": false,
 	"MaxGatherers": 2
 });
 cmpResourceSupply.RecalculateValues();
-let cmpResourceDropsite = ConstructComponent(dropsite, "ResourceDropsite", {
+const cmpResourceDropsite = ConstructComponent(dropsite, "ResourceDropsite", {
 	"Sharable": "true",
 	"Types": "food"
 });

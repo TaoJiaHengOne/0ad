@@ -20,15 +20,15 @@ AddMock(garrisonHolderID, IID_Footprint, {
 	"PickSpawnPoint": entity => new Vector3D(4, 3, 30)
 });
 
-let size = 1;
-let cmpGarrisonable = ConstructComponent(garrisonableID, "Garrisonable", {
+const size = 1;
+const cmpGarrisonable = ConstructComponent(garrisonableID, "Garrisonable", {
 	"Size": size
 });
 
 TS_ASSERT_EQUALS(cmpGarrisonable.UnitSize(), size);
 TS_ASSERT_EQUALS(cmpGarrisonable.TotalSize(), size);
 
-let extraSize = 2;
+const extraSize = 2;
 AddMock(garrisonableID, IID_GarrisonHolder, {
 	"OccupiedSlots": () => extraSize
 });
@@ -49,7 +49,7 @@ TS_ASSERT_UNEVAL_EQUALS(cmpGarrisonable.HolderID(), INVALID_ENTITY);
 
 // Test renaming.
 const newGarrisonableID = 3;
-let cmpGarrisonableNew = ConstructComponent(newGarrisonableID, "Garrisonable", {
+const cmpGarrisonableNew = ConstructComponent(newGarrisonableID, "Garrisonable", {
 	"Size": 1
 });
 TS_ASSERT(cmpGarrisonable.Garrison(garrisonHolderID));

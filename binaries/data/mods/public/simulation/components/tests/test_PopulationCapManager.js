@@ -48,7 +48,7 @@ const playerData = [
 	}
 ];
 
-let currentPopCaps = [];
+const currentPopCaps = [];
 
 AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 	"GetNonGaiaPlayers": () => { return Object.keys(playerData).slice(1); },

@@ -23,21 +23,21 @@ Engine.LoadComponentScript("AutoBuildable.js");
 Engine.LoadComponentScript("Foundation.js");
 Engine.LoadComponentScript("Timer.js");
 
-let player = 1;
-let playerEnt = 3;
-let foundationEnt = 20;
-let previewEnt = 21;
-let newEnt = 22;
-let finalTemplate = "structures/athen/civil_centre.xml";
+const player = 1;
+const playerEnt = 3;
+const foundationEnt = 20;
+const previewEnt = 21;
+const newEnt = 22;
+const finalTemplate = "structures/athen/civil_centre.xml";
 
 function testFoundation(...mocks)
 {
 	ResetState();
 
 	let foundationHP = 1;
-	let maxHP = 100;
-	let rot = new Vector3D(1, 2, 3);
-	let pos = new Vector2D(4, 5);
+	const maxHP = 100;
+	const rot = new Vector3D(1, 2, 3);
+	const pos = new Vector2D(4, 5);
 	let cmpFoundation;
 
 	AddMock(SYSTEM_ENTITY, IID_Trigger, {
@@ -131,7 +131,7 @@ function testFoundation(...mocks)
 		"SetHeightOffset": () => {}
 	});
 
-	for (let mock of mocks)
+	for (const mock of mocks)
 		AddMock(...mock);
 
 	// INITIALISE
@@ -151,8 +151,8 @@ function testFoundation(...mocks)
 	// BUILDER COUNT, BUILD RATE, TIME REMAINING
 	AddMock(10, IID_Builder, { "GetRate": () => 1.0 });
 	AddMock(11, IID_Builder, { "GetRate": () => 1.0 });
-	let twoBuilderMultiplier = Math.pow(2, cmpFoundation.buildTimeModifier) / 2;
-	let threeBuilderMultiplier = Math.pow(3, cmpFoundation.buildTimeModifier) / 3;
+	const twoBuilderMultiplier = Math.pow(2, cmpFoundation.buildTimeModifier) / 2;
+	const threeBuilderMultiplier = Math.pow(3, cmpFoundation.buildTimeModifier) / 3;
 
 	TS_ASSERT_EQUALS(cmpFoundation.CalculateBuildMultiplier(1), 1);
 	TS_ASSERT_EQUALS(cmpFoundation.CalculateBuildMultiplier(2), twoBuilderMultiplier);
@@ -191,7 +191,7 @@ function testFoundation(...mocks)
 
 	// COMMIT FOUNDATION
 	TS_ASSERT_EQUALS(cmpFoundation.committed, false);
-	let work = 5;
+	const work = 5;
 	cmpFoundation.Build(10, work);
 	TS_ASSERT_EQUALS(cmpFoundation.committed, true);
 	TS_ASSERT_EQUALS(foundationHP, 1 + work * cmpFoundation.GetBuildRate() * cmpFoundation.buildMultiplier);
@@ -231,9 +231,9 @@ testFoundation([playerEnt, IID_StatisticsTracker, {
 
 // Test autobuild feature.
 const foundationEnt2 = 42;
-let turnLength = 0.2;
+const turnLength = 0.2;
 let currentFoundationHP = 1;
-let cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer");
+const cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer");
 
 AddMock(foundationEnt2, IID_Cost, {
 	"GetBuildTime": () => 50,
@@ -269,9 +269,9 @@ for (let i = 0; i < 10; ++i)
 		TS_ASSERT_EQUALS(cmpAutoBuildingFoundation.GetNumBuilders(), 0);
 	}
 
-	let currentPercentage = cmpAutoBuildingFoundation.GetBuildPercentage();
+	const currentPercentage = cmpAutoBuildingFoundation.GetBuildPercentage();
 	cmpTimer.OnUpdate({ "turnLength": turnLength * 5 });
-	let newPercentage = cmpAutoBuildingFoundation.GetBuildPercentage();
+	const newPercentage = cmpAutoBuildingFoundation.GetBuildPercentage();
 
 	if (i >= 8)
 		TS_ASSERT_EQUALS(currentPercentage, newPercentage);

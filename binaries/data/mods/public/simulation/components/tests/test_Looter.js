@@ -5,7 +5,7 @@ Resources = {
 	"GetResource": () => ({}),
 	"BuildSchema": (type) => {
 		let schema = "";
-		for (let res of Resources.GetCodes())
+		for (const res of Resources.GetCodes())
 			schema +=
 				"<optional>" +
 					"<element name='" + res + "'>" +
@@ -47,10 +47,10 @@ AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 	"GetPlayerByID": () => playerEntity
 });
 
-let resourceCount = {};
+const resourceCount = {};
 AddMock(playerEntity, IID_Player, {
 	"AddResources": (amounts) => {
-		for (let type in amounts)
+		for (const type in amounts)
 			resourceCount[type] = (resourceCount[type] ?? 0) +amounts[type];
 	}
 });

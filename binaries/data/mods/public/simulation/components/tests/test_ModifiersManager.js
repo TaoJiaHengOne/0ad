@@ -23,8 +23,8 @@ AddMock(PLAYER_ENTITY_ID, IID_Player, {
 	"GetPlayerID": () => PLAYER_ID_FOR_TEST
 });
 
-let entitiesToTest = [STRUCTURE_ENTITY_ID, 6, 7, 8];
-for (let ent of entitiesToTest)
+const entitiesToTest = [STRUCTURE_ENTITY_ID, 6, 7, 8];
+for (const ent of entitiesToTest)
 	AddMock(ent, IID_Ownership, {
 		"GetOwner": () => PLAYER_ID_FOR_TEST
 	});
@@ -48,7 +48,7 @@ AddMock(8, IID_Identity, {
 // Sprinkle random serialisation cycles.
 function SerializationCycle()
 {
-	let data = cmpModifiersManager.Serialize();
+	const data = cmpModifiersManager.Serialize();
 	cmpModifiersManager = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager", {});
 	cmpModifiersManager.Deserialize(data);
 }
