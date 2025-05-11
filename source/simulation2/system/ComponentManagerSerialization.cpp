@@ -31,6 +31,7 @@
 #include "simulation2/components/ICmpTemplateManager.h"
 
 #include "ps/CLogger.h"
+#include "ps/Profiler2.h"
 
 std::string SerializeRNG(const boost::random::rand48& rng)
 {

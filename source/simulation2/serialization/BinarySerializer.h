@@ -23,6 +23,7 @@
 #include "lib/byte_order.h"
 
 #include "scriptinterface/ScriptExtraHeaders.h"
+#include "scriptinterface/ScriptForward.h"
 
 #include <ostream>
 #include <streambuf>
