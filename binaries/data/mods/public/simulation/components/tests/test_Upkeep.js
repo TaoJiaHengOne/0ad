@@ -5,7 +5,7 @@ Resources = {
 	"GetResource": () => ({}),
 	"BuildSchema": (type) => {
 		let schema = "";
-		for (let res of Resources.GetCodes())
+		for (const res of Resources.GetCodes())
 			schema +=
 				"<optional>" +
 					"<element name='" + res + "'>" +
@@ -27,12 +27,12 @@ Engine.LoadComponentScript("Upkeep.js");
 // Upkeep requires this function to be defined before the component is built.
 let ApplyValueModificationsToEntity = (valueName, currentValue, entity) => currentValue;
 Engine.RegisterGlobal("ApplyValueModificationsToEntity", ApplyValueModificationsToEntity);
-let testedEnt = 10;
-let turnLength = 0.2;
-let playerEnt = 1;
-let cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer", {});
+const testedEnt = 10;
+const turnLength = 0.2;
+const playerEnt = 1;
+const cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer", {});
 
-let cmpUpkeep = ConstructComponent(testedEnt, "Upkeep", {
+const cmpUpkeep = ConstructComponent(testedEnt, "Upkeep", {
 	"Interval": "200",
 	"Rates": {
 		"food": "0",
@@ -40,7 +40,7 @@ let cmpUpkeep = ConstructComponent(testedEnt, "Upkeep", {
 	}
 });
 
-let cmpPlayer = ConstructComponent(playerEnt, "Player", {
+const cmpPlayer = ConstructComponent(playerEnt, "Player", {
 	"SpyCostMultiplier": "1",
 	"BarterMultiplier": {
 		"Buy": {
@@ -55,7 +55,7 @@ let cmpPlayer = ConstructComponent(playerEnt, "Player", {
 	"Formations": { "_string": "" },
 });
 
-let QueryOwnerInterface = () => cmpPlayer;
+const QueryOwnerInterface = () => cmpPlayer;
 Engine.RegisterGlobal("QueryOwnerInterface", QueryOwnerInterface);
 Engine.RegisterGlobal("QueryPlayerIDInterface", () => null);
 TS_ASSERT_UNEVAL_EQUALS(cmpPlayer.GetResourceCounts(), { "food": 300, "metal": 300 });
@@ -199,10 +199,10 @@ cmpTimer.OnUpdate({ "turnLength": turnLength });
 TS_ASSERT_UNEVAL_EQUALS(cmpPlayer.GetResourceCounts(), { "food": 285, "metal": 294 });
 
 // Test we don't go into negative resources.
-let cmpGUI = AddMock(SYSTEM_ENTITY, IID_GuiInterface, {
+const cmpGUI = AddMock(SYSTEM_ENTITY, IID_GuiInterface, {
 	"PushNotification": () => {}
 });
-let notificationSpy = new Spy(cmpGUI, "PushNotification");
+const notificationSpy = new Spy(cmpGUI, "PushNotification");
 ApplyValueModificationsToEntity = (valueName, currentValue, entity) => {
 	if (valueName == "Upkeep/Rates/food")
 		return currentValue + 1;

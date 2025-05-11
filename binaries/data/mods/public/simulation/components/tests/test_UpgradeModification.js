@@ -4,7 +4,7 @@ Engine.LoadHelperScript("ValueModification.js");
 Resources = {
 	"BuildSchema": type => {
 		let schema = "";
-		for (let res of ["food", "metal", "stone", "wood"])
+		for (const res of ["food", "metal", "stone", "wood"])
 			schema +=
 				"<optional>" +
 					"<element name='" + res + "'>" +
@@ -23,7 +23,7 @@ Engine.LoadComponentScript("interfaces/Upgrade.js");
 Engine.LoadComponentScript("Upgrade.js");
 
 // Input (bare minimum needed for tests):
-let techs = {
+const techs = {
 	"alter_tower_upgrade_cost": {
 		"modifications": [
 			{ "value": "Upgrade/Cost/stone", "add": 60.0 },
@@ -33,7 +33,7 @@ let techs = {
 		"affects": ["Tower"]
 	}
 };
-let template = {
+const template = {
 	"Identity": {
 		"Classes": { '@datatype': "tokens", "_string": "Tower" },
 		"VisibleClasses": { '@datatype': "tokens", "_string": "" }
@@ -46,15 +46,15 @@ let template = {
 		}
 	}
 };
-let civCode = "pony";
-let playerID = 1;
+const civCode = "pony";
+const playerID = 1;
 
 // Usually, the tech modifications would be worked out by the TechnologyManager
 // with assistance from globalscripts. This test is not about testing the
 // TechnologyManager, so the modifications (both with and without the technology
 // researched) are worked out before hand and placed here.
 let isResearched = false;
-let templateTechModifications = {
+const templateTechModifications = {
 	"without": {},
 	"with": {
 		"Upgrade/Cost/stone": [{ "affects": [["Tower"]], "add": 60 }],
@@ -62,7 +62,7 @@ let templateTechModifications = {
 		"Upgrade/Time": [{ "affects": [["Tower"]], "replace": 90 }]
 	}
 };
-let entityTechModifications = {
+const entityTechModifications = {
 	"without": {
 		'Upgrade/Cost/stone': { "20": { "origValue": 100, "newValue": 100 } },
 		'Upgrade/Cost/wood': { "20": { "origValue": 50, "newValue": 50 } },
@@ -95,7 +95,7 @@ AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
 	"ApplyTemplateModifiers": (valueName, curValue, template, player) => {
 		// Called in helpers/ValueModification.js::ApplyValueModificationsToTemplate()
 		// as part of Tests T2 and T5 below.
-		let mods = isResearched ? templateTechModifications.with : templateTechModifications.without;
+		const mods = isResearched ? templateTechModifications.with : templateTechModifications.without;
 
 		if (mods[valueName])
 			return GetTechModifiedProperty(mods[valueName], GetIdentityClasses(template.Identity), curValue);
@@ -104,7 +104,7 @@ AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
 	"ApplyModifiers": (valueName, curValue, ent) => {
 		// Called in helpers/ValueModification.js::ApplyValueModificationsToEntity()
 		// as part of Tests T3, T6 and T7 below.
-		let mods = isResearched ? entityTechModifications.with : entityTechModifications.without;
+		const mods = isResearched ? entityTechModifications.with : entityTechModifications.without;
 		return mods[valueName][ent].newValue;
 	}
 });
@@ -129,7 +129,7 @@ AddMock(20, IID_Identity, {
 AddMock(20, IID_ProductionQueue, {
 	"HasQueuedProduction": () => false
 });
-let cmpUpgrade = ConstructComponent(20, "Upgrade", template.Upgrade);
+const cmpUpgrade = ConstructComponent(20, "Upgrade", template.Upgrade);
 cmpUpgrade.owner = playerID;
 cmpUpgrade.OnOwnershipChanged({ "to": playerID });
 

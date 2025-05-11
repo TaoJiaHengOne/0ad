@@ -25,7 +25,7 @@ AddMock(turretHolderID, IID_Position, {
 	"IsInWorld": () => true
 });
 
-for (let entity of entitiesToTest)
+for (const entity of entitiesToTest)
 {
 	AddMock(entity, IID_Position, {
 		"GetPosition": () => new Vector3D(4, 3, 25),
@@ -71,22 +71,22 @@ let cmpTurretHolder = ConstructComponent(turretHolderID, "TurretHolder", {
 	}
 });
 
-let siegeEngineID = entitiesToTest[0];
+const siegeEngineID = entitiesToTest[0];
 AddMock(siegeEngineID, IID_Identity, {
 	"GetClassesList": () => ["Siege"]
 });
 
-let archerID = entitiesToTest[1];
+const archerID = entitiesToTest[1];
 AddMock(archerID, IID_Identity, {
 	"GetClassesList": () => ["Infantry", "Ranged"]
 });
 
-let cavID = entitiesToTest[2];
+const cavID = entitiesToTest[2];
 AddMock(cavID, IID_Identity, {
 	"GetClassesList": () => ["Infantry", "Cavalry"]
 });
 
-let infID = entitiesToTest[3];
+const infID = entitiesToTest[3];
 AddMock(infID, IID_Identity, {
 	"GetClassesList": () => ["Infantry"]
 });

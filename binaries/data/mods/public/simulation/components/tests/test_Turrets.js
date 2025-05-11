@@ -15,7 +15,7 @@ const friendlyPlayer = 3;
 const turret = 10;
 const holder = 11;
 
-let createTurretCmp = entity => {
+const createTurretCmp = entity => {
 	AddMock(entity, IID_Identity, {
 		"GetClassesList": () => ["Ranged"],
 		"GetSelectionGroupName": () => "mace_infantry_archer_a"
@@ -67,9 +67,9 @@ AddMock(holder, IID_Position, {
 	"GetRotation": () => new Vector3D(4, 0, 6)
 });
 
-let cmpTurretable = createTurretCmp(turret);
+const cmpTurretable = createTurretCmp(turret);
 
-let cmpTurretHolder = ConstructComponent(holder, "TurretHolder", {
+const cmpTurretHolder = ConstructComponent(holder, "TurretHolder", {
 	"TurretPoints": {
 		"archer1": {
 			"X": "12.0",
@@ -93,16 +93,16 @@ TS_ASSERT_UNEVAL_EQUALS(cmpTurretHolder.GetEntities(), []);
 // Test renaming on a turret.
 // Ensure we test renaming from the second spot, not the first.
 const newTurret = 31;
-let cmpTurretableNew = createTurretCmp(newTurret);
+const cmpTurretableNew = createTurretCmp(newTurret);
 TS_ASSERT(cmpTurretableNew.OccupyTurret(holder));
 TS_ASSERT(cmpTurretable.OccupyTurret(holder));
 TS_ASSERT(cmpTurretableNew.LeaveTurret());
-let previousTurret = cmpTurretHolder.GetOccupiedTurretPointName(turret);
+const previousTurret = cmpTurretHolder.GetOccupiedTurretPointName(turret);
 cmpTurretable.OnEntityRenamed({
 	"entity": turret,
 	"newentity": newTurret
 });
-let newTurretPos = cmpTurretHolder.GetOccupiedTurretPointName(newTurret);
+const newTurretPos = cmpTurretHolder.GetOccupiedTurretPointName(newTurret);
 TS_ASSERT_UNEVAL_EQUALS(newTurretPos, previousTurret);
 TS_ASSERT(cmpTurretableNew.LeaveTurret());
 

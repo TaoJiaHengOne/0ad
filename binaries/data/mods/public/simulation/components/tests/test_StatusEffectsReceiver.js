@@ -9,17 +9,17 @@ Engine.LoadComponentScript("ModifiersManager.js");
 Engine.LoadComponentScript("StatusEffectsReceiver.js");
 Engine.LoadComponentScript("Timer.js");
 
-let target = 42;
-let cmpStatusReceiver = ConstructComponent(target, "StatusEffectsReceiver");
-let cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer");
+const target = 42;
+const cmpStatusReceiver = ConstructComponent(target, "StatusEffectsReceiver");
+const cmpTimer = ConstructComponent(SYSTEM_ENTITY, "Timer");
 let dealtDamage = 0;
-let enemyEntity = 4;
-let enemy = 2;
+const enemyEntity = 4;
+const enemy = 2;
 let statusName;
 
-let AttackHelper = {
+const AttackHelper = {
 	"HandleAttackEffects": (_, data) => {
-		for (let type in data.attackData.Damage)
+		for (const type in data.attackData.Damage)
 			dealtDamage += data.attackData.Damage[type];
 	}
 };
@@ -27,7 +27,7 @@ Engine.RegisterGlobal("AttackHelper", AttackHelper);
 
 function reset()
 {
-	for (let status in cmpStatusReceiver.GetActiveStatuses())
+	for (const status in cmpStatusReceiver.GetActiveStatuses())
 		cmpStatusReceiver.RemoveStatus(status);
 	dealtDamage = 0;
 }
@@ -128,15 +128,15 @@ reset();
 AddMock(target, IID_Identity, {
 	"GetClassesList": () => ["AffectedClass"]
 });
-let cmpModifiersManager = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager");
+const cmpModifiersManager = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager");
 
-let maxHealth = 100;
+const maxHealth = 100;
 AddMock(target, IID_Health, {
 	"GetMaxHitpoints": () => ApplyValueModificationsToEntity("Health/Max", maxHealth, target)
 });
 
 statusName = "Haste";
-let factor = 0.5;
+const factor = 0.5;
 cmpStatusReceiver.AddStatus(statusName, {
 	"Duration": 5000,
 	"Modifiers": {
@@ -155,7 +155,7 @@ enemyEntity,
 enemy
 );
 
-let cmpHealth = Engine.QueryInterface(target, IID_Health);
+const cmpHealth = Engine.QueryInterface(target, IID_Health);
 // Test that the modification is applied.
 TS_ASSERT_EQUALS(cmpHealth.GetMaxHitpoints(), maxHealth * factor);
 cmpTimer.OnUpdate({ "turnLength": 1 });
@@ -167,7 +167,7 @@ TS_ASSERT_EQUALS(cmpHealth.GetMaxHitpoints(), maxHealth);
 
 
 // Test addition.
-let addition = 50;
+const addition = 50;
 cmpStatusReceiver.AddStatus(statusName, {
 	"Duration": 5000,
 	"Modifiers": {
@@ -197,7 +197,7 @@ TS_ASSERT_EQUALS(cmpHealth.GetMaxHitpoints(), maxHealth);
 
 
 // Test replacement.
-let newValue = 50;
+const newValue = 50;
 cmpStatusReceiver.AddStatus(statusName, {
 	"Duration": 5000,
 	"Modifiers": {

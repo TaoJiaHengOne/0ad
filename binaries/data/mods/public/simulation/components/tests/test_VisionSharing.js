@@ -10,7 +10,7 @@ Engine.LoadComponentScript("interfaces/StatisticsTracker.js");
 Engine.LoadComponentScript("VisionSharing.js");
 
 const ent = 170;
-let template = {
+const template = {
 	"Bribable": "true"
 };
 
@@ -32,7 +32,7 @@ AddMock(ent, IID_Ownership, {
 	"GetOwner": () => 1
 });
 
-let cmpVisionSharing = ConstructComponent(ent, "VisionSharing", template);
+const cmpVisionSharing = ConstructComponent(ent, "VisionSharing", template);
 
 // Add some entities
 AddMock(180, IID_Ownership, {

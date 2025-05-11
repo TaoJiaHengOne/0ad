@@ -10,12 +10,12 @@ Resources = {
 	"GetCodes": () => ["food", "metal", "stone", "wood"]
 };
 
-let cmpStatisticsTracker = ConstructComponent(SYSTEM_ENTITY, "StatisticsTracker", {
+const cmpStatisticsTracker = ConstructComponent(SYSTEM_ENTITY, "StatisticsTracker", {
 	"UnitClasses": { "_string": "Infantry FishingBoat" },
 	"StructureClasses": { "_string": "House Wonder" }
 });
 
-let fromData = {
+const fromData = {
 	"successfulBribes": 3,
 	"unitsTrained": {
 		"Infantry": 5,
@@ -23,7 +23,7 @@ let fromData = {
 	}
 };
 
-let toData = {
+const toData = {
 	"successfulBribes": [11, 13, 17],
 	"unitsTrained": {
 		"Infantry": [19, 23],

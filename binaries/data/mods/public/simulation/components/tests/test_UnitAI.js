@@ -38,7 +38,7 @@ function TestTargetEntityRenaming(init_state, post_state, setup)
 		"IsInTargetRange": () => false
 	});
 
-	let unitAI = ConstructComponent(player_ent, "UnitAI", {
+	const unitAI = ConstructComponent(player_ent, "UnitAI", {
 		"FormationController": "false",
 		"DefaultStance": "aggressive",
 		"FleeDistance": 10
@@ -219,7 +219,7 @@ function TestFormationExiting(mode)
 			"GetHitpoints": function() { return 0; },
 		});
 
-	let controllerFormation = ConstructComponent(controller, "Formation", {
+	const controllerFormation = ConstructComponent(controller, "Formation", {
 		"FormationShape": "square",
 		"ShiftRows": "false",
 		"SortingClasses": "",
@@ -229,7 +229,7 @@ function TestFormationExiting(mode)
 		"SpeedMultiplier": 1,
 		"Sloppiness": 0
 	});
-	let controllerAI = ConstructComponent(controller, "UnitAI", {
+	const controllerAI = ConstructComponent(controller, "UnitAI", {
 		"FormationController": "true",
 		"DefaultStance": "aggressive"
 	});
@@ -401,7 +401,7 @@ function TestMoveIntoFormationWhileAttacking()
 		"GetHitpoints": function() { return 40; },
 	});
 
-	let controllerFormation = ConstructComponent(controller, "Formation", {
+	const controllerFormation = ConstructComponent(controller, "Formation", {
 		"FormationShape": "square",
 		"ShiftRows": "false",
 		"SortingClasses": "",
@@ -411,7 +411,7 @@ function TestMoveIntoFormationWhileAttacking()
 		"SpeedMultiplier": 1,
 		"Sloppiness": 0
 	});
-	let controllerAI = ConstructComponent(controller, "UnitAI", {
+	const controllerAI = ConstructComponent(controller, "UnitAI", {
 		"FormationController": "true",
 		"DefaultStance": "aggressive"
 	});
@@ -455,16 +455,16 @@ function TestMoveIntoFormationWhileAttacking()
 
 	controllerAI.Attack(enemy, []);
 
-	for (let ent of unitAIs)
+	for (const ent of unitAIs)
 		TS_ASSERT_EQUALS(unitAI.fsmStateName, "INDIVIDUAL.COMBAT.ATTACKING");
 
 	controllerAI.MoveIntoFormation({ "name": "Circle" });
 
 	// let all units be in position
-	for (let ent of unitAIs)
+	for (const ent of unitAIs)
 		controllerFormation.SetFinishedEntity(ent);
 
-	for (let ent of unitAIs)
+	for (const ent of unitAIs)
 		TS_ASSERT_EQUALS(unitAI.fsmStateName, "INDIVIDUAL.COMBAT.ATTACKING");
 
 	controllerFormation.Disband();
@@ -480,7 +480,7 @@ TestMoveIntoFormationWhileAttacking();
 function TestWalkAndFightTargets()
 {
 	const ent = 10;
-	let unitAI = ConstructComponent(ent, "UnitAI", {
+	const unitAI = ConstructComponent(ent, "UnitAI", {
 		"FormationController": "false",
 		"DefaultStance": "aggressive",
 		"FleeDistance": 10
@@ -519,7 +519,7 @@ function TestWalkAndFightTargets()
 		}?.[target])
 	});
 
-	let runTest = function(ents, res)
+	const runTest = function(ents, res)
 	{
 		result = undefined;
 		AddMock(SYSTEM_ENTITY, IID_RangeManager, {

@@ -4,7 +4,7 @@ function TestSetup() {}
 TestSetup.prototype.Init = function() {};
 
 Engine.RegisterSystemComponentType(IID_TestSetup, "TestSetup", TestSetup);
-let cmpTestSetup = ConstructComponent(SYSTEM_ENTITY, "TestSetup", { "property": "value" });
+const cmpTestSetup = ConstructComponent(SYSTEM_ENTITY, "TestSetup", { "property": "value" });
 
 TS_ASSERT_EXCEPTION(() => { cmpTestSetup.template = "replacement forbidden"; });
 TS_ASSERT_EXCEPTION(() => { cmpTestSetup.template.property = "modification forbidden"; });

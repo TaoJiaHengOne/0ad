@@ -2,8 +2,8 @@ Engine.LoadComponentScript("UnitMotionFlying.js");
 Engine.LoadComponentScript("interfaces/Health.js");
 Engine.LoadComponentScript("interfaces/GarrisonHolder.js");
 
-let entity = 1;
-let target = 2;
+const entity = 1;
+const target = 2;
 
 let height = 5;
 
@@ -11,7 +11,7 @@ AddMock(SYSTEM_ENTITY, IID_Pathfinder, {
 	"GetPassabilityClass": (name) => 1 << 8
 });
 
-let cmpUnitMotionFlying = ConstructComponent(entity, "UnitMotionFlying", {
+const cmpUnitMotionFlying = ConstructComponent(entity, "UnitMotionFlying", {
 	"MaxSpeed": 1.0,
 	"TakeoffSpeed": 0.5,
 	"LandingSpeed": 0.5,

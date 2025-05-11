@@ -1,9 +1,9 @@
 Resources = {
 	"BuildSchema": () => {
 		let schema = "";
-		for (let res of ["food", "metal"])
+		for (const res of ["food", "metal"])
 		{
-			for (let subtype in ["meat", "grain"])
+			for (const subtype in ["meat", "grain"])
 				schema += "<value>" + res + "." + subtype + "</value>";
 			schema += "<value> treasure." + res + "</value>";
 		}
@@ -22,10 +22,10 @@ Engine.RegisterGlobal("ApplyValueModificationsToEntity", (prop, oVal, ent) => oV
 ConstructComponent(SYSTEM_ENTITY, "Trigger", {});
 
 const entity = 11;
-let treasurer = 12;
-let treasurerOwner = 1;
+const treasurer = 12;
+const treasurerOwner = 1;
 
-let cmpTreasure = ConstructComponent(entity, "Treasure", {
+const cmpTreasure = ConstructComponent(entity, "Treasure", {
 	"CollectTime": "1000",
 	"Resources": {
 		"Food": "10"
@@ -43,11 +43,11 @@ AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
 	"GetPlayerByID": (id) => treasurerOwner
 });
 
-let cmpPlayer = AddMock(treasurerOwner, IID_Player, {
+const cmpPlayer = AddMock(treasurerOwner, IID_Player, {
 	"AddResources": (type, amount) => {},
 	"GetPlayerID": () => treasurerOwner
 });
-let spy = new Spy(cmpPlayer, "AddResources");
+const spy = new Spy(cmpPlayer, "AddResources");
 TS_ASSERT(cmpTreasure.Reward(treasurer));
 TS_ASSERT_EQUALS(spy._called, 1);
 

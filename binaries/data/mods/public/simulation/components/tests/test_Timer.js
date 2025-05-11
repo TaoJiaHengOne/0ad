@@ -80,7 +80,7 @@ cmpTimer.OnUpdate({ "turnLength": 3.0 });
 TS_ASSERT_UNEVAL_EQUALS(fired, [["s", 2500]]);
 
 fired = [];
-let f = cmpTimer.SetInterval(10, IID_Test, "Callback", 1000, 1000, "f");
+const f = cmpTimer.SetInterval(10, IID_Test, "Callback", 1000, 1000, "f");
 
 cmpTimer.OnUpdate({ "turnLength": 1 });
 TS_ASSERT_UNEVAL_EQUALS(fired, [["f", 0]]);

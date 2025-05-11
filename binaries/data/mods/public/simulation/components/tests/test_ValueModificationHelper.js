@@ -3,11 +3,11 @@ Engine.LoadHelperScript("ValueModification.js");
 Engine.LoadComponentScript("interfaces/Player.js");
 Engine.LoadComponentScript("interfaces/ModifiersManager.js");
 
-let player = 1;
-let playerEnt = 10;
-let ownedEnt = 60;
-let techKey = "Attack/BigAttack";
-let otherKey = "Other/Key";
+const player = 1;
+const playerEnt = 10;
+const ownedEnt = 60;
+const techKey = "Attack/BigAttack";
+const otherKey = "Other/Key";
 
 AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
 	"ApplyModifiers": (key, val, ent) => {

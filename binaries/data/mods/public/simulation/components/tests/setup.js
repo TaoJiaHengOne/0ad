@@ -41,9 +41,9 @@ Engine.RegisterGlobal = function(name, value)
 
 Engine.DestroyEntity = function(ent)
 {
-	for (let cid in g_Components[ent])
+	for (const cid in g_Components[ent])
 	{
-		let cmp = g_Components[ent][cid];
+		const cmp = g_Components[ent][cid];
 		if (cmp && cmp.Deinit)
 			cmp.Deinit();
 	}
@@ -86,7 +86,7 @@ global.DeleteMock = function(ent, iid)
 
 global.ConstructComponent = function(ent, name, template)
 {
-	let cmp = new g_ComponentTypes[name].ctor();
+	const cmp = new g_ComponentTypes[name].ctor();
 
 	Object.defineProperties(cmp, {
 		"entity": {
@@ -126,8 +126,8 @@ global.Spy = function(obj, func)
 {
 	this._called = 0;
 	this._callargs = [];
-	let og_func = obj[func];
-	let spy = (...args) => {
+	const og_func = obj[func];
+	const spy = (...args) => {
 		++this._called;
 		this._callargs.push(args);
 		return og_func.apply(obj, args);
