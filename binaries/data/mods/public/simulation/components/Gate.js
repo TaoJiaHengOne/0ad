@@ -33,7 +33,7 @@ Gate.prototype.OnOwnershipChanged = function(msg)
 
 Gate.prototype.OnDiplomacyChanged = function(msg)
 {
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (cmpOwnership && cmpOwnership.GetOwner() == msg.player)
 	{
 		this.allies = [];
@@ -92,19 +92,19 @@ Gate.prototype.OnRangeUpdate = function(msg)
 		return;
 
 	if (msg.added.length > 0)
-		for (let entity of msg.added)
+		for (const entity of msg.added)
 		{
 			// Ignore entities that cannot move as those won't be able to go through the gate.
-			let unitAI = Engine.QueryInterface(entity, IID_UnitAI);
+			const unitAI = Engine.QueryInterface(entity, IID_UnitAI);
 			if (!unitAI || !unitAI.AbleToMove())
 				this.ignoreList.push(entity);
 			this.allies.push(entity);
 		}
 
 	if (msg.removed.length > 0)
-		for (let entity of msg.removed)
+		for (const entity of msg.removed)
 		{
-			let index = this.ignoreList.indexOf(entity);
+			const index = this.ignoreList.indexOf(entity);
 			if (index !== -1)
 				this.ignoreList.splice(index, 1);
 			this.allies.splice(this.allies.indexOf(entity), 1);
@@ -118,7 +118,7 @@ Gate.prototype.OnGlobalUnitAbleToMoveChanged = function(msg)
 	if (this.allies.indexOf(msg.entity) === -1)
 		return;
 
-	let index = this.ignoreList.indexOf(msg.entity);
+	const index = this.ignoreList.indexOf(msg.entity);
 	if (msg.ableToMove && index !== -1)
 		this.ignoreList.splice(index, 1);
 	else if (!msg.ableToMove && index === -1)
@@ -173,9 +173,9 @@ Gate.prototype.LockGate = function()
 	this.locked = true;
 
 	// Delete animal corpses to prevent units trying to gather the unreachable entity
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	if (cmpObstruction && cmpObstruction.GetBlockMovementFlag(true))
-		for (let ent of cmpObstruction.GetEntitiesDeletedUponConstruction())
+		for (const ent of cmpObstruction.GetEntitiesDeletedUponConstruction())
 			Engine.DestroyEntity(ent);
 
 	// If the door is closed, enable 'block pathfinding'
@@ -246,7 +246,7 @@ Gate.prototype.OpenGate = function()
  */
 Gate.prototype.CloseGate = function()
 {
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	if (!cmpObstruction)
 		return;
 
@@ -256,13 +256,13 @@ Gate.prototype.CloseGate = function()
 	// do not appear in this check even if they have different control groups from the gate.
 	// This no longer works if gates are made to check for entities blocking movement.
 	// Fixing that would let us change this code, but it sounds decidedly non-trivial.
-	let collisions = cmpObstruction.GetEntitiesBlockingConstruction();
+	const collisions = cmpObstruction.GetEntitiesBlockingConstruction();
 	if (collisions.length)
 	{
 		if (!this.timer)
 		{
 			// Set an "instant" timer which will run on the next simulation turn.
-			let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+			const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 			this.timer = cmpTimer.SetTimeout(this.entity, IID_Gate, "OperateGate", 0);
 		}
 		return;
@@ -277,7 +277,7 @@ Gate.prototype.CloseGate = function()
 	this.opened = false;
 
 	PlaySound("gate_closing", this.entity);
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("gate_closing", true, 1.0);
 };

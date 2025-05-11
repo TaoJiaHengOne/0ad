@@ -11,10 +11,10 @@ Guard.prototype.Init = function()
 Guard.prototype.GetRange = function(entity)
 {
 	let range = 8;
-	let cmpFootprint = Engine.QueryInterface(entity, IID_Footprint);
+	const cmpFootprint = Engine.QueryInterface(entity, IID_Footprint);
 	if (cmpFootprint)
 	{
-		let shape = cmpFootprint.GetShape();
+		const shape = cmpFootprint.GetShape();
 		if (shape.type == "square")
 			range += Math.sqrt(shape.depth*shape.depth + shape.width*shape.width)*2/3;
 		else if (shape.type == "circle")
@@ -42,21 +42,21 @@ Guard.prototype.AddGuard = function(ent)
 
 Guard.prototype.RemoveGuard = function(ent)
 {
-	let index = this.entities.indexOf(ent);
+	const index = this.entities.indexOf(ent);
 	if (index != -1)
 		this.entities.splice(index, 1);
 };
 
 Guard.prototype.RenameGuard = function(oldent, newent)
 {
-	let index = this.entities.indexOf(oldent);
+	const index = this.entities.indexOf(oldent);
 	if (index != -1)
 		this.entities[index] = newent;
 };
 
 Guard.prototype.OnAttacked = function(msg)
 {
-	for (let ent of this.entities)
+	for (const ent of this.entities)
 		Engine.PostMessage(ent, MT_GuardedAttacked, { "guarded": this.entity, "data": msg });
 };
 
@@ -80,12 +80,12 @@ Guard.prototype.OnDiplomacyChanged = function(msg)
 
 Guard.prototype.CheckGuards = function(force = false)
 {
-	let entities = this.GetEntities();
-	for (let ent of entities)
+	const entities = this.GetEntities();
+	for (const ent of entities)
 	{
 		if (force || !IsOwnedByMutualAllyOfEntity(this.entity, ent))
 		{
-			let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+			const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 			if (cmpUnitAI && cmpUnitAI.IsGuardOf() && cmpUnitAI.IsGuardOf() == this.entity)
 				cmpUnitAI.RemoveGuard();
 			else

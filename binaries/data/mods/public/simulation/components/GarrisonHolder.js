@@ -70,7 +70,7 @@ GarrisonHolder.prototype.CanPickup = function(ent)
 {
 	if (!this.template.Pickup || this.IsFull())
 		return false;
-	let cmpOwner = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwner = Engine.QueryInterface(this.entity, IID_Ownership);
 	return !!cmpOwner && IsOwnedByPlayer(cmpOwner.GetOwner(), ent);
 };
 
@@ -133,9 +133,9 @@ GarrisonHolder.prototype.IsGarrisoningAllowed = function()
 GarrisonHolder.prototype.GetGarrisonedEntitiesCount = function()
 {
 	let count = this.entities.length;
-	for (let ent of this.entities)
+	for (const ent of this.entities)
 	{
-		let cmpGarrisonHolder = Engine.QueryInterface(ent, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(ent, IID_GarrisonHolder);
 		if (cmpGarrisonHolder)
 			count += cmpGarrisonHolder.GetGarrisonedEntitiesCount();
 	}
@@ -145,9 +145,9 @@ GarrisonHolder.prototype.GetGarrisonedEntitiesCount = function()
 GarrisonHolder.prototype.OccupiedSlots = function()
 {
 	let count = 0;
-	for (let ent of this.entities)
+	for (const ent of this.entities)
 	{
-		let cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
+		const cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
 		if (cmpGarrisonable)
 			count += cmpGarrisonable.TotalSize();
 	}
@@ -159,7 +159,7 @@ GarrisonHolder.prototype.IsAllowedToGarrison = function(entity)
 	if (!this.IsGarrisoningAllowed())
 		return false;
 
-	let cmpGarrisonable = Engine.QueryInterface(entity, IID_Garrisonable);
+	const cmpGarrisonable = Engine.QueryInterface(entity, IID_Garrisonable);
 	if (!cmpGarrisonable || this.OccupiedSlots() + cmpGarrisonable.TotalSize() > this.GetCapacity())
 		return false;
 
@@ -171,7 +171,7 @@ GarrisonHolder.prototype.IsAllowedToBeGarrisoned = function(entity)
 	if (!IsOwnedByMutualAllyOfEntity(entity, this.entity))
 		return false;
 
-	let cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
 	return cmpIdentity && MatchesClassList(cmpIdentity.GetClassesList(), this.allowedClasses);
 };
 
@@ -211,7 +211,7 @@ GarrisonHolder.prototype.Eject = function(entity, forced)
 	if (!this.IsGarrisoningAllowed() && !forced)
 		return false;
 
-	let entityIndex = this.entities.indexOf(entity);
+	const entityIndex = this.entities.indexOf(entity);
 	// Error: invalid entity ID, usually it's already been ejected, assume success.
 	if (entityIndex == -1)
 		return true;
@@ -233,7 +233,7 @@ GarrisonHolder.prototype.Eject = function(entity, forced)
  */
 GarrisonHolder.prototype.Unload = function(entity)
 {
-	let cmpGarrisonable = Engine.QueryInterface(entity, IID_Garrisonable);
+	const cmpGarrisonable = Engine.QueryInterface(entity, IID_Garrisonable);
 	return cmpGarrisonable && cmpGarrisonable.UnGarrison();
 };
 
@@ -245,7 +245,7 @@ GarrisonHolder.prototype.Unload = function(entity)
 GarrisonHolder.prototype.UnloadEntities = function(entities)
 {
 	let success = true;
-	for (let entity of entities)
+	for (const entity of entities)
 		if (!this.Unload(entity))
 			success = false;
 	return success;
@@ -260,14 +260,14 @@ GarrisonHolder.prototype.UnloadEntities = function(entities)
  */
 GarrisonHolder.prototype.UnloadTemplate = function(template, owner, all)
 {
-	let entities = [];
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	for (let entity of this.entities)
+	const entities = [];
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	for (const entity of this.entities)
 	{
-		let cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(entity, IID_Identity);
 
 		// Units with multiple ranks are grouped together.
-		let name = cmpIdentity.GetSelectionGroupName() || cmpTemplateManager.GetCurrentTemplateName(entity);
+		const name = cmpIdentity.GetSelectionGroupName() || cmpTemplateManager.GetCurrentTemplateName(entity);
 		if (name != template || owner != Engine.QueryInterface(entity, IID_Ownership).GetOwner())
 			continue;
 
@@ -289,8 +289,8 @@ GarrisonHolder.prototype.UnloadTemplate = function(template, owner, all)
  */
 GarrisonHolder.prototype.UnloadAllByOwner = function(owner)
 {
-	let entities = this.entities.filter(ent => {
-		let cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const entities = this.entities.filter(ent => {
+		const cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
 		return cmpOwnership && cmpOwnership.GetOwner() == owner;
 	});
 	return this.UnloadEntities(entities);
@@ -321,7 +321,7 @@ GarrisonHolder.prototype.HasEnoughHealth = function()
 	if (this.template.EjectHealth === undefined)
 		return true;
 
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
 	return !cmpHealth || cmpHealth.GetHitpoints() > Math.floor(+this.template.EjectHealth * cmpHealth.GetMaxHitpoints());
 };
 
@@ -329,7 +329,7 @@ GarrisonHolder.prototype.StartTimer = function()
 {
 	if (this.timer)
 		return;
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_GarrisonHolder, "HealTimeout", this.HEAL_TIMEOUT, this.HEAL_TIMEOUT, null);
 };
 
@@ -337,7 +337,7 @@ GarrisonHolder.prototype.StopTimer = function()
 {
 	if (!this.timer)
 		return;
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timer);
 	delete this.timer;
 };
@@ -347,16 +347,16 @@ GarrisonHolder.prototype.StopTimer = function()
  */
 GarrisonHolder.prototype.HealTimeout = function(data, lateness)
 {
-	let healRate = this.GetHealRate();
+	const healRate = this.GetHealRate();
 	if (!this.entities.length || !healRate)
 	{
 		this.StopTimer();
 		return;
 	}
 
-	for (let entity of this.entities)
+	for (const entity of this.entities)
 	{
-		let cmpHealth = Engine.QueryInterface(entity, IID_Health);
+		const cmpHealth = Engine.QueryInterface(entity, IID_Health);
 		if (cmpHealth && !cmpHealth.IsUnhealable())
 			cmpHealth.Increase(healRate);
 	}
@@ -367,7 +367,7 @@ GarrisonHolder.prototype.HealTimeout = function(data, lateness)
  */
 GarrisonHolder.prototype.UpdateGarrisonFlag = function()
 {
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (!cmpVisual)
 		return;
 
@@ -381,7 +381,7 @@ GarrisonHolder.prototype.OnDestroy = function()
 {
 	if (this.timer)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 	}
 };
@@ -395,7 +395,7 @@ GarrisonHolder.prototype.OnGlobalOwnershipChanged = function(msg)
 	// The ownership change may be on the garrisonholder
 	if (this.entity == msg.entity)
 	{
-		let entities = this.entities.filter(ent => msg.to == INVALID_PLAYER || !IsOwnedByMutualAllyOfEntity(this.entity, ent));
+		const entities = this.entities.filter(ent => msg.to == INVALID_PLAYER || !IsOwnedByMutualAllyOfEntity(this.entity, ent));
 
 		if (entities.length)
 			this.EjectOrKill(entities);
@@ -404,7 +404,7 @@ GarrisonHolder.prototype.OnGlobalOwnershipChanged = function(msg)
 	}
 
 	// or on some of its garrisoned units
-	let entityIndex = this.entities.indexOf(msg.entity);
+	const entityIndex = this.entities.indexOf(msg.entity);
 	if (entityIndex != -1 && (msg.to == INVALID_PLAYER || !IsOwnedByMutualAllyOfEntity(this.entity, msg.entity)))
 		this.EjectOrKill([msg.entity]);
 };
@@ -419,13 +419,13 @@ GarrisonHolder.prototype.OnGlobalSkirmishReplacerReplaced = function(msg)
 
 	if (msg.entity == this.entity)
 	{
-		let cmpGarrisonHolder = Engine.QueryInterface(msg.newentity, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(msg.newentity, IID_GarrisonHolder);
 		if (cmpGarrisonHolder)
 			cmpGarrisonHolder.initGarrison = this.initGarrison;
 	}
 	else
 	{
-		let entityIndex = this.initGarrison.indexOf(msg.entity);
+		const entityIndex = this.initGarrison.indexOf(msg.entity);
 		if (entityIndex != -1)
 			this.initGarrison[entityIndex] = msg.newentity;
 	}
@@ -445,24 +445,24 @@ GarrisonHolder.prototype.OnDiplomacyChanged = function()
  */
 GarrisonHolder.prototype.EjectOrKill = function(entities)
 {
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	// Eject the units which can be ejected (if not in world, it generally means this holder
 	// is inside a holder which kills its entities, so do not eject)
 	if (cmpPosition && cmpPosition.IsInWorld())
 	{
-		let ejectables = entities.filter(ent => this.IsEjectable(ent));
+		const ejectables = entities.filter(ent => this.IsEjectable(ent));
 		if (ejectables.length)
 			this.UnloadEntities(ejectables);
 	}
 
 	// And destroy all remaining entities
-	let killedEntities = [];
-	for (let entity of entities)
+	const killedEntities = [];
+	for (const entity of entities)
 	{
-		let entityIndex = this.entities.indexOf(entity);
+		const entityIndex = this.entities.indexOf(entity);
 		if (entityIndex == -1)
 			continue;
-		let cmpHealth = Engine.QueryInterface(entity, IID_Health);
+		const cmpHealth = Engine.QueryInterface(entity, IID_Health);
 		if (cmpHealth)
 			cmpHealth.Kill();
 		else
@@ -491,8 +491,8 @@ GarrisonHolder.prototype.IsEjectable = function(entity)
 	if (!this.entities.find(ent => ent == entity))
 		return false;
 
-	let ejectableClasses = this.template.EjectClassesOnDestroy._string;
-	let entityClasses = Engine.QueryInterface(entity, IID_Identity).GetClassesList();
+	const ejectableClasses = this.template.EjectClassesOnDestroy._string;
+	const entityClasses = Engine.QueryInterface(entity, IID_Identity).GetClassesList();
 
 	return MatchesClassList(entityClasses, ejectableClasses);
 };
@@ -515,9 +515,9 @@ GarrisonHolder.prototype.OnGlobalInitGame = function(msg)
 	if (!this.initGarrison)
 		return;
 
-	for (let ent of this.initGarrison)
+	for (const ent of this.initGarrison)
 	{
-		let cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
+		const cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
 		if (cmpGarrisonable)
 			cmpGarrisonable.Garrison(this.entity);
 	}
