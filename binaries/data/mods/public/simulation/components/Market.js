@@ -58,9 +58,9 @@ Market.prototype.GetTraders = function()
 
 Market.prototype.UpdateTraders = function(onDestruction)
 {
-	for (let trader of this.traders)
+	for (const trader of this.traders)
 	{
-		let cmpTrader = Engine.QueryInterface(trader, IID_Trader);
+		const cmpTrader = Engine.QueryInterface(trader, IID_Trader);
 		if (!cmpTrader)
 		{
 			this.RemoveTrader(trader);
@@ -76,28 +76,28 @@ Market.prototype.UpdateTraders = function(onDestruction)
 
 Market.prototype.CalculateTraderGain = function(secondMarket, traderTemplate, trader)
 {
-	let cmpMarket2 = QueryMiragedInterface(secondMarket, IID_Market);
+	const cmpMarket2 = QueryMiragedInterface(secondMarket, IID_Market);
 	if (!cmpMarket2)
 		return null;
 
-	let cmpMarket1Player = QueryOwnerInterface(this.entity);
-	let cmpMarket2Player = QueryOwnerInterface(secondMarket);
+	const cmpMarket1Player = QueryOwnerInterface(this.entity);
+	const cmpMarket2Player = QueryOwnerInterface(secondMarket);
 	if (!cmpMarket1Player || !cmpMarket2Player)
 		return null;
 
-	let cmpFirstMarketPosition = Engine.QueryInterface(this.entity, IID_Position);
-	let cmpSecondMarketPosition = Engine.QueryInterface(secondMarket, IID_Position);
+	const cmpFirstMarketPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpSecondMarketPosition = Engine.QueryInterface(secondMarket, IID_Position);
 	if (!cmpFirstMarketPosition || !cmpFirstMarketPosition.IsInWorld() ||
 	   !cmpSecondMarketPosition || !cmpSecondMarketPosition.IsInWorld())
 		return null;
-	let firstMarketPosition = cmpFirstMarketPosition.GetPosition2D();
-	let secondMarketPosition = cmpSecondMarketPosition.GetPosition2D();
+	const firstMarketPosition = cmpFirstMarketPosition.GetPosition2D();
+	const secondMarketPosition = cmpSecondMarketPosition.GetPosition2D();
 
-	let mapSize = Engine.QueryInterface(SYSTEM_ENTITY, IID_Terrain).GetMapSize();
+	const mapSize = Engine.QueryInterface(SYSTEM_ENTITY, IID_Terrain).GetMapSize();
 	let gainMultiplier = TradeGainNormalization(mapSize);
 	if (trader)
 	{
-		let cmpTrader = Engine.QueryInterface(trader, IID_Trader);
+		const cmpTrader = Engine.QueryInterface(trader, IID_Trader);
 		if (!cmpTrader)
 			return null;
 		gainMultiplier *= cmpTrader.GetTraderGainMultiplier();
@@ -110,11 +110,11 @@ Market.prototype.CalculateTraderGain = function(secondMarket, traderTemplate, tr
 		gainMultiplier *= traderTemplate.GainMultiplier;
 	}
 
-	let gain = {};
+	const gain = {};
 
 	// Calculate ordinary Euclidean distance between markets.
 	// We don't use pathfinder, because ordinary distance looks more fair.
-	let distanceSq = firstMarketPosition.distanceToSquared(secondMarketPosition);
+	const distanceSq = firstMarketPosition.distanceToSquared(secondMarketPosition);
 	// We calculate gain as square of distance to encourage trading between remote markets
 	// and gainMultiplier corresponds to the gain for a 100m distance
 	gain.traderGain = Math.round(gainMultiplier * TradeGain(distanceSq, mapSize));
@@ -122,15 +122,15 @@ Market.prototype.CalculateTraderGain = function(secondMarket, traderTemplate, tr
 	gain.market1Owner = cmpMarket1Player.GetPlayerID();
 	gain.market2Owner = cmpMarket2Player.GetPlayerID();
 	// If trader undefined, the trader owner is supposed to be the same as the first market.
-	let cmpPlayer = trader ? QueryOwnerInterface(trader) : cmpMarket1Player;
+	const cmpPlayer = trader ? QueryOwnerInterface(trader) : cmpMarket1Player;
 	if (!cmpPlayer)
 		return null;
 	gain.traderOwner = cmpPlayer.GetPlayerID();
 
 	if (gain.market1Owner != gain.market2Owner)
 	{
-		let internationalBonus1 = this.GetInternationalBonus();
-		let internationalBonus2 = cmpMarket2.GetInternationalBonus();
+		const internationalBonus1 = this.GetInternationalBonus();
+		const internationalBonus2 = cmpMarket2.GetInternationalBonus();
 		gain.market1Gain = Math.round(gain.traderGain * internationalBonus1);
 		gain.market2Gain = Math.round(gain.traderGain * internationalBonus2);
 	}
@@ -156,10 +156,10 @@ MarketMirage.prototype.Init = function(cmpMarket, entity, parent, player)
 	this.player = player;
 
 	this.traders = new Set();
-	for (let trader of cmpMarket.GetTraders())
+	for (const trader of cmpMarket.GetTraders())
 	{
-		let cmpTrader = Engine.QueryInterface(trader, IID_Trader);
-		let cmpOwnership = Engine.QueryInterface(trader, IID_Ownership);
+		const cmpTrader = Engine.QueryInterface(trader, IID_Trader);
+		const cmpOwnership = Engine.QueryInterface(trader, IID_Ownership);
 		if (!cmpTrader || !cmpOwnership)
 		{
 			cmpMarket.RemoveTrader(trader);
@@ -182,12 +182,12 @@ MarketMirage.prototype.RemoveTrader = function(trader) { this.traders.delete(tra
 
 MarketMirage.prototype.UpdateTraders = function(msg)
 {
-	let cmpMarket = Engine.QueryInterface(this.parent, IID_Market);
+	const cmpMarket = Engine.QueryInterface(this.parent, IID_Market);
 	if (!cmpMarket)	// The parent market does not exist anymore
 	{
-		for (let trader of this.traders)
+		for (const trader of this.traders)
 		{
-			let cmpTrader = Engine.QueryInterface(trader, IID_Trader);
+			const cmpTrader = Engine.QueryInterface(trader, IID_Trader);
 			if (cmpTrader)
 				cmpTrader.RemoveMarket(this.entity);
 		}
@@ -195,9 +195,9 @@ MarketMirage.prototype.UpdateTraders = function(msg)
 	}
 
 	// The market becomes visible, switch all traders from the mirage to the market
-	for (let trader of this.traders)
+	for (const trader of this.traders)
 	{
-		let cmpTrader = Engine.QueryInterface(trader, IID_Trader);
+		const cmpTrader = Engine.QueryInterface(trader, IID_Trader);
 		if (!cmpTrader)
 			continue;
 		cmpTrader.SwitchMarket(this.entity, cmpMarket.entity);
@@ -212,7 +212,7 @@ Engine.RegisterGlobal("MarketMirage", MarketMirage);
 
 Market.prototype.Mirage = function(mirageID, miragePlayer)
 {
-	let mirage = new MarketMirage();
+	const mirage = new MarketMirage();
 	mirage.Init(this, mirageID, this.entity, miragePlayer);
 	return mirage;
 };

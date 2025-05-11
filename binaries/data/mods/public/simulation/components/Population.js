@@ -31,14 +31,14 @@ Population.prototype.OnOwnershipChanged = function(msg)
 {
 	if (msg.from != INVALID_PLAYER)
 	{
-		let cmpPlayer = QueryPlayerIDInterface(msg.from);
+		const cmpPlayer = QueryPlayerIDInterface(msg.from);
 		if (cmpPlayer)
 			cmpPlayer.AddPopulationBonuses(-this.bonus);
 	}
 	if (msg.to != INVALID_PLAYER)
 	{
 		this.RecalculateValues();
-		let cmpPlayer = QueryPlayerIDInterface(msg.to);
+		const cmpPlayer = QueryPlayerIDInterface(msg.to);
 		if (cmpPlayer)
 			cmpPlayer.AddPopulationBonuses(this.bonus);
 	}
@@ -53,13 +53,13 @@ Population.prototype.OnValueModification = function(msg)
 	if (Engine.QueryInterface(this.entity, IID_Foundation))
 		return;
 
-	let oldPopBonus = this.bonus;
+	const oldPopBonus = this.bonus;
 	this.RecalculateValues();
-	let popDifference = this.bonus - oldPopBonus;
+	const popDifference = this.bonus - oldPopBonus;
 
 	if (!popDifference)
 		return;
-	let cmpPlayer = QueryOwnerInterface(this.entity);
+	const cmpPlayer = QueryOwnerInterface(this.entity);
 	if (cmpPlayer)
 		cmpPlayer.AddPopulationBonuses(popDifference);
 };

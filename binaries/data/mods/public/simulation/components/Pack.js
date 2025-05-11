@@ -37,7 +37,7 @@ Pack.prototype.CancelTimer = function()
 {
 	if (this.timer)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 		this.timer = undefined;
 	}
@@ -70,10 +70,10 @@ Pack.prototype.Pack = function()
 
 	this.packing = true;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_Pack, "PackProgress", 0, this.PACKING_INTERVAL, null);
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("packing", true, 1.0);
 };
@@ -85,10 +85,10 @@ Pack.prototype.Unpack = function()
 
 	this.packing = true;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_Pack, "PackProgress", 0, this.PACKING_INTERVAL, null);
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("unpacking", true, 1.0);
 };
@@ -103,7 +103,7 @@ Pack.prototype.CancelPack = function()
 	this.SetElapsedTime(0);
 
 	// Clear animation
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("idle", false, 1.0);
 };
@@ -143,7 +143,7 @@ Pack.prototype.PackProgress = function(data, lateness)
 
 	Engine.PostMessage(this.entity, MT_PackFinished, { "packed": this.packed });
 
-	let newEntity = ChangeEntityTemplate(this.entity, this.template.Entity);
+	const newEntity = ChangeEntityTemplate(this.entity, this.template.Entity);
 
 	if (newEntity)
 		PlaySound(this.packed ? "packed" : "unpacked", newEntity);

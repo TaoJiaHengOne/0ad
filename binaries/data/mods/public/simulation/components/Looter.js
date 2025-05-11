@@ -18,15 +18,15 @@ Looter.prototype.Collect = function(targetEntity)
 	var cmpResourceGatherer = Engine.QueryInterface(targetEntity, IID_ResourceGatherer);
 	var cmpTrader = Engine.QueryInterface(targetEntity, IID_Trader);
 
-	let resourcesCarried = calculateCarriedResources(
+	const resourcesCarried = calculateCarriedResources(
 		cmpResourceGatherer && cmpResourceGatherer.GetCarryingStatus(),
 		cmpTrader && cmpTrader.GetGoods()
 	);
 
 	// Loot resources as defined in the templates
-	let lootTemplate = cmpLoot.GetResources();
-	let resources = {};
-	for (let type of Resources.GetCodes())
+	const lootTemplate = cmpLoot.GetResources();
+	const resources = {};
+	for (const type of Resources.GetCodes())
 		resources[type] =
 			ApplyValueModificationsToEntity(
 				"Looter/Resource/"+type, lootTemplate[type] || 0, this.entity) +

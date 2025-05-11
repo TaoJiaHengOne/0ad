@@ -28,8 +28,8 @@ Player.prototype.STATE_WON = "won";
 
 Player.prototype.Serialize = function()
 {
-	let state = {};
-	for (let key in this)
+	const state = {};
+	for (const key in this)
 		if (this.hasOwnProperty(key))
 			state[key] = this[key];
 
@@ -40,7 +40,7 @@ Player.prototype.Serialize = function()
 
 Player.prototype.Deserialize = function(state)
 {
-	for (let prop in state)
+	for (const prop in state)
 		this[prop] = state[prop];
 };
 
@@ -78,18 +78,18 @@ Player.prototype.Init = function()
 	};
 
 	// Initial resources.
-	let resCodes = Resources.GetCodes();
-	for (let res of resCodes)
+	const resCodes = Resources.GetCodes();
+	for (const res of resCodes)
 	{
 		this.resourceCount[res] = 300;
 		this.resourceNames[res] = Resources.GetResource(res).name;
 		this.resourceGatherers[res] = 0;
 	}
 	// Trading goods probability in steps of 5.
-	let resTradeCodes = Resources.GetTradableCodes();
-	let quotient = Math.floor(20 / resTradeCodes.length);
-	let remainder = 20 % resTradeCodes.length;
-	for (let i in resTradeCodes)
+	const resTradeCodes = Resources.GetTradableCodes();
+	const quotient = Math.floor(20 / resTradeCodes.length);
+	const remainder = 20 % resTradeCodes.length;
+	for (const i in resTradeCodes)
 		this.tradingGoods.push({
 			"goods": resTradeCodes[i],
 			"proba": 5 * (quotient + (+i < remainder ? 1 : 0))
@@ -108,7 +108,7 @@ Player.prototype.GetPlayerID = function()
 
 Player.prototype.SetColor = function(r, g, b)
 {
-	let colorInitialized = !!this.color;
+	const colorInitialized = !!this.color;
 
 	this.color = { "r": r / 255, "g": g / 255, "b": b / 255, "a": 1 };
 
@@ -221,7 +221,7 @@ Player.prototype.UnBlockTraining = function()
 
 Player.prototype.SetResourceCounts = function(resources)
 {
-	for (let res in resources)
+	for (const res in resources)
 		this.resourceCount[res] = resources[res];
 };
 
@@ -266,15 +266,15 @@ Player.prototype.AddResource = function(type, amount)
  */
 Player.prototype.AddResources = function(amounts)
 {
-	for (let type in amounts)
+	for (const type in amounts)
 		this.resourceCount[type] += +amounts[type];
 };
 
 Player.prototype.GetNeededResources = function(amounts)
 {
 	// Check if we can afford it all.
-	let amountsNeeded = {};
-	for (let type in amounts)
+	const amountsNeeded = {};
+	for (const type in amounts)
 		if (this.resourceCount[type] != undefined && amounts[type] > this.resourceCount[type])
 			amountsNeeded[type] = amounts[type] - Math.floor(this.resourceCount[type]);
 
@@ -285,14 +285,14 @@ Player.prototype.GetNeededResources = function(amounts)
 
 Player.prototype.SubtractResourcesOrNotify = function(amounts)
 {
-	let amountsNeeded = this.GetNeededResources(amounts);
+	const amountsNeeded = this.GetNeededResources(amounts);
 
 	// If we don't have enough resources, send a notification to the player.
 	if (amountsNeeded)
 	{
-		let parameters = {};
+		const parameters = {};
 		let i = 0;
-		for (let type in amountsNeeded)
+		for (const type in amountsNeeded)
 		{
 			++i;
 			parameters["resourceType" + i] = this.resourceNames[type];
@@ -316,7 +316,7 @@ Player.prototype.SubtractResourcesOrNotify = function(amounts)
 			warn("Localization: Strings are not localized for more than 4 resources");
 
 		// Send as time-notification.
-		let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+		const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 		cmpGUIInterface.PushNotification({
 			"players": [this.playerID],
 			"message": msg,
@@ -332,7 +332,7 @@ Player.prototype.SubtractResourcesOrNotify = function(amounts)
 		return false;
 	}
 
-	for (let type in amounts)
+	for (const type in amounts)
 		this.resourceCount[type] -= amounts[type];
 
 	return true;
@@ -343,9 +343,9 @@ Player.prototype.TrySubtractResources = function(amounts)
 	if (!this.SubtractResourcesOrNotify(amounts))
 		return false;
 
-	let cmpStatisticsTracker = QueryPlayerIDInterface(this.playerID, IID_StatisticsTracker);
+	const cmpStatisticsTracker = QueryPlayerIDInterface(this.playerID, IID_StatisticsTracker);
 	if (cmpStatisticsTracker)
-		for (let type in amounts)
+		for (const type in amounts)
 			cmpStatisticsTracker.IncreaseResourceUsedCounter(type, amounts[type]);
 
 	return true;
@@ -363,8 +363,8 @@ Player.prototype.RefundResources = function(amounts)
 
 Player.prototype.GetNextTradingGoods = function()
 {
-	let value = randFloat(0, 100);
-	let last = this.tradingGoods.length - 1;
+	const value = randFloat(0, 100);
+	const last = this.tradingGoods.length - 1;
 	let sumProba = 0;
 	for (let i = 0; i < last; ++i)
 	{
@@ -377,8 +377,8 @@ Player.prototype.GetNextTradingGoods = function()
 
 Player.prototype.GetTradingGoods = function()
 {
-	let tradingGoods = {};
-	for (let resource of this.tradingGoods)
+	const tradingGoods = {};
+	for (const resource of this.tradingGoods)
 		tradingGoods[resource.goods] = resource.proba;
 
 	return tradingGoods;
@@ -386,9 +386,9 @@ Player.prototype.GetTradingGoods = function()
 
 Player.prototype.SetTradingGoods = function(tradingGoods)
 {
-	let resTradeCodes = Resources.GetTradableCodes();
+	const resTradeCodes = Resources.GetTradableCodes();
 	let sumProba = 0;
-	for (let resource in tradingGoods)
+	for (const resource in tradingGoods)
 	{
 		if (resTradeCodes.indexOf(resource) == -1 || tradingGoods[resource] < 0)
 		{
@@ -405,7 +405,7 @@ Player.prototype.SetTradingGoods = function(tradingGoods)
 	}
 
 	this.tradingGoods = [];
-	for (let resource in tradingGoods)
+	for (const resource in tradingGoods)
 		this.tradingGoods.push({
 			"goods": resource,
 			"proba": tradingGoods[resource]
@@ -486,25 +486,25 @@ Player.prototype.SetState = function(newState, message)
 	this.state = newState;
 
 	const won = this.HasWon();
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	if (won)
 		cmpRangeManager.SetLosRevealAll(this.playerID, true);
 	else
 	{
 		// Reassign all player's entities to Gaia.
-		let entities = cmpRangeManager.GetEntitiesByPlayer(this.playerID);
+		const entities = cmpRangeManager.GetEntitiesByPlayer(this.playerID);
 
 		// The ownership change is done in two steps so that entities don't hit idle
 		// (and thus possibly look for "enemies" to attack) before nearby allies get
 		// converted to Gaia as well.
-		for (let entity of entities)
+		for (const entity of entities)
 		{
-			let cmpOwnership = Engine.QueryInterface(entity, IID_Ownership);
+			const cmpOwnership = Engine.QueryInterface(entity, IID_Ownership);
 			cmpOwnership.SetOwnerQuiet(0);
 		}
 
 		// With the real ownership change complete, send OwnershipChanged messages.
-		for (let entity of entities)
+		for (const entity of entities)
 			Engine.PostMessage(entity, MT_OwnershipChanged, {
 				"entity": entity,
 				"from": this.playerID,
@@ -582,10 +582,10 @@ Player.prototype.IsAI = function()
 Player.prototype.OnGlobalInitGame = function(msg)
 {
 	// Replace the "{civ}" code with this civ ID.
-	let disabledTemplates = this.disabledTemplates;
+	const disabledTemplates = this.disabledTemplates;
 	this.disabledTemplates = {};
 	const civ = Engine.QueryInterface(this.entity, IID_Identity).GetCiv();
-	for (let template in disabledTemplates)
+	for (const template in disabledTemplates)
 		if (disabledTemplates[template])
 			this.disabledTemplates[template.replace(/\{civ\}/g, civ)] = true;
 };
@@ -599,18 +599,18 @@ Player.prototype.OnGlobalOwnershipChanged = function(msg)
 	if (msg.from != this.playerID && msg.to != this.playerID)
 		return;
 
-	let cmpCost = Engine.QueryInterface(msg.entity, IID_Cost);
+	const cmpCost = Engine.QueryInterface(msg.entity, IID_Cost);
 
 	if (msg.from == this.playerID)
 	{
 		if (cmpCost)
 			this.popUsed -= cmpCost.GetPopCost();
 
-		let panelIndex = this.panelEntities.indexOf(msg.entity);
+		const panelIndex = this.panelEntities.indexOf(msg.entity);
 		if (panelIndex >= 0)
 			this.panelEntities.splice(panelIndex, 1);
 
-		let barterIndex = this.barterEntities.indexOf(msg.entity);
+		const barterIndex = this.barterEntities.indexOf(msg.entity);
 		if (barterIndex >= 0)
 			this.barterEntities.splice(barterIndex, 1);
 	}
@@ -619,7 +619,7 @@ Player.prototype.OnGlobalOwnershipChanged = function(msg)
 		if (cmpCost)
 			this.popUsed += cmpCost.GetPopCost();
 
-		let cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
 		if (!cmpIdentity)
 			return;
 
@@ -640,7 +640,7 @@ Player.prototype.OnValueModification = function(msg)
 		this.spyCostMultiplier = ApplyValueModificationsToEntity("Player/SpyCostMultiplier", +this.template.SpyCostMultiplier, this.entity);
 
 	if (msg.valueNames.some(mod => mod.startsWith("Player/BarterMultiplier/")))
-		for (let res in this.template.BarterMultiplier.Buy)
+		for (const res in this.template.BarterMultiplier.Buy)
 		{
 			this.barterMultiplier.buy[res] = ApplyValueModificationsToEntity("Player/BarterMultiplier/Buy/"+res, +this.template.BarterMultiplier.Buy[res], this.entity);
 			this.barterMultiplier.sell[res] = ApplyValueModificationsToEntity("Player/BarterMultiplier/Sell/"+res, +this.template.BarterMultiplier.Sell[res], this.entity);
@@ -659,15 +659,15 @@ Player.prototype.GetCheatsEnabled = function()
 
 Player.prototype.TributeResource = function(player, amounts)
 {
-	let cmpPlayer = QueryPlayerIDInterface(player);
+	const cmpPlayer = QueryPlayerIDInterface(player);
 	if (!cmpPlayer)
 		return;
 
 	if (!this.IsActive() || !cmpPlayer.IsActive())
 		return;
 
-	let resTribCodes = Resources.GetTributableCodes();
-	for (let resCode in amounts)
+	const resTribCodes = Resources.GetTributableCodes();
+	for (const resCode in amounts)
 		if (resTribCodes.indexOf(resCode) == -1 ||
 		    !Number.isInteger(amounts[resCode]) ||
 		    amounts[resCode] < 0)
@@ -680,15 +680,15 @@ Player.prototype.TributeResource = function(player, amounts)
 		return;
 	cmpPlayer.AddResources(amounts);
 
-	let total = Object.keys(amounts).reduce((sum, type) => sum + amounts[type], 0);
-	let cmpOurStatisticsTracker = QueryPlayerIDInterface(this.playerID, IID_StatisticsTracker);
+	const total = Object.keys(amounts).reduce((sum, type) => sum + amounts[type], 0);
+	const cmpOurStatisticsTracker = QueryPlayerIDInterface(this.playerID, IID_StatisticsTracker);
 	if (cmpOurStatisticsTracker)
 		cmpOurStatisticsTracker.IncreaseTributesSentCounter(total);
-	let cmpTheirStatisticsTracker = QueryPlayerIDInterface(player, IID_StatisticsTracker);
+	const cmpTheirStatisticsTracker = QueryPlayerIDInterface(player, IID_StatisticsTracker);
 	if (cmpTheirStatisticsTracker)
 		cmpTheirStatisticsTracker.IncreaseTributesReceivedCounter(total);
 
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	if (cmpGUIInterface)
 		cmpGUIInterface.PushNotification({
 			"type": "tribute",
@@ -719,7 +719,7 @@ Player.prototype.RemoveDisabledTemplate = function(template)
 Player.prototype.SetDisabledTemplates = function(templates)
 {
 	this.disabledTemplates = {};
-	for (let template of templates)
+	for (const template of templates)
 		this.disabledTemplates[template] = true;
 	Engine.BroadcastMessage(MT_DisabledTemplatesChanged, { "player": this.playerID });
 };
@@ -744,7 +744,7 @@ Player.prototype.RemoveDisabledTechnology = function(tech)
 Player.prototype.SetDisabledTechnologies = function(techs)
 {
 	this.disabledTechnologies = {};
-	for (let tech of techs)
+	for (const tech of techs)
 		this.disabledTechnologies[tech] = true;
 	Engine.BroadcastMessage(MT_DisabledTechnologiesChanged, { "player": this.playerID });
 };
@@ -756,7 +756,7 @@ Player.prototype.GetDisabledTechnologies = function()
 
 Player.prototype.OnGlobalPlayerDefeated = function(msg)
 {
-	let cmpSound = Engine.QueryInterface(this.entity, IID_Sound);
+	const cmpSound = Engine.QueryInterface(this.entity, IID_Sound);
 	if (!cmpSound)
 		return;
 

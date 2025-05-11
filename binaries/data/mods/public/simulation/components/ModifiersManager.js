@@ -28,7 +28,7 @@ ModifiersManager.prototype.Serialize = function()
 	// The value cache will be affected by property reads from the GUI and other places so we shouldn't serialize it.
 	// Furthermore it is cyclically self-referencing.
 	// We need to store the player for the Player-Entities cache.
-	let players = [];
+	const players = [];
 	this.playerEntitiesCached.forEach((_, player) => players.push(player));
 	return {
 		"modifiersStorage": this.modifiersStorage.Serialize(),
@@ -50,12 +50,12 @@ ModifiersManager.prototype.Deserialize = function(data)
  */
 ModifiersManager.prototype.ModifiersChanged = function(propertyName, entity)
 {
-	let playerCache = this.playerEntitiesCached.get(entity);
+	const playerCache = this.playerEntitiesCached.get(entity);
 	this.InvalidateCache(propertyName, entity, playerCache);
 
 	if (playerCache)
 	{
-		let cmpPlayer = Engine.QueryInterface(entity, IID_Player);
+		const cmpPlayer = Engine.QueryInterface(entity, IID_Player);
 		if (cmpPlayer)
 			this.SendPlayerModifierMessages(propertyName, cmpPlayer.GetPlayerID());
 	}
@@ -69,8 +69,8 @@ ModifiersManager.prototype.SendPlayerModifierMessages = function(propertyName, p
 	Engine.PostMessage(SYSTEM_ENTITY, MT_TemplateModification, { "player": player, "component": propertyName.split("/")[0], "valueNames": [propertyName] });
 	// AIInterface wants the entities potentially affected.
 	// TODO: improve on this
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
-	let ents = cmpRangeManager.GetEntitiesByPlayer(player);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const ents = cmpRangeManager.GetEntitiesByPlayer(player);
 	Engine.BroadcastMessage(MT_ValueModification, { "entities": ents, "component": propertyName.split("/")[0], "valueNames": [propertyName] });
 };
 
@@ -87,7 +87,7 @@ ModifiersManager.prototype.InvalidatePlayerEntCache = function(valueCache, prope
 
 ModifiersManager.prototype.InvalidateCache = function(propertyName, entity, playerCache)
 {
-	let valueCache = this.cachedValues.get(propertyName);
+	const valueCache = this.cachedValues.get(propertyName);
 	if (!valueCache)
 		return;
 
@@ -101,11 +101,11 @@ ModifiersManager.prototype.InvalidateCache = function(propertyName, entity, play
  */
 ModifiersManager.prototype.FetchModifiedProperty = function(classesList, propertyName, originalValue, target)
 {
-	let modifs = this.modifiersStorage.GetItems(propertyName, target);
+	const modifs = this.modifiersStorage.GetItems(propertyName, target);
 	if (!modifs.length)
 		return originalValue;
 	// Flatten the list of modifications
-	let modifications = [];
+	const modifications = [];
 	modifs.forEach(item => { modifications.push(item.value); });
 	return GetTechModifiedProperty(modifications.flat(), classesList, originalValue);
 };
@@ -150,14 +150,14 @@ ModifiersManager.prototype.ApplyModifiers = function(propertyName, originalValue
 
 	newValue = originalValue;
 
-	let cmpIdentity = QueryMiragedInterface(entity, IID_Identity);
+	const cmpIdentity = QueryMiragedInterface(entity, IID_Identity);
 	if (!cmpIdentity)
 		return originalValue;
-	let classesList = cmpIdentity.GetClassesList();
+	const classesList = cmpIdentity.GetClassesList();
 
 	// Get the entity ID of the player / owner of the entity, since we use that to store per-player modifiers
 	// (this prevents conflicts between player ID and entity ID).
-	let ownerPlayer = Engine.QueryInterface(entity, IID_Ownership)?.GetOwner();
+	const ownerPlayer = Engine.QueryInterface(entity, IID_Ownership)?.GetOwner();
 
 	// Apply player-wide modifiers before entity-local modifiers.
 	if (ownerPlayer !== undefined && ownerPlayer !== INVALID_PLAYER)
@@ -184,7 +184,7 @@ ModifiersManager.prototype.ApplyTemplateModifiers = function(propertyName, origi
 	if (!template || !template.Identity)
 		return originalValue;
 
-	let cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
+	const cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
 	return this.FetchModifiedProperty(GetIdentityClasses(template.Identity), propertyName, originalValue, cmpPlayerManager.GetPlayerByID(player));
 };
 
@@ -213,27 +213,27 @@ ModifiersManager.prototype.OnGlobalOwnershipChanged = function(msg)
 		return;
 
 	// Invalidate all caches.
-	for (let propName of this.cachedValues.keys())
+	for (const propName of this.cachedValues.keys())
 		this.InvalidateCache(propName, msg.entity);
 
-	let owner = QueryOwnerEntityID(msg.entity);
+	const owner = QueryOwnerEntityID(msg.entity);
 	if (!owner)
 		return;
 
-	let cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
 	if (!cmpIdentity)
 		return;
 
-	let classes = cmpIdentity.GetClassesList();
+	const classes = cmpIdentity.GetClassesList();
 
 	// Warn entities that our values have changed.
 	// Local modifiers will be added by the relevant components, so no need to check for them here.
-	let modifiedComponents = {};
-	let playerModifs = this.modifiersStorage.GetAllItems(owner);
-	for (let propertyName in playerModifs)
+	const modifiedComponents = {};
+	const playerModifs = this.modifiersStorage.GetAllItems(owner);
+	for (const propertyName in playerModifs)
 	{
 		// We only need to find one one tech per component for a match.
-		let component = propertyName.split("/")[0];
+		const component = propertyName.split("/")[0];
 		// Only inform if the modifier actually applies to the entity as an optimisation.
 		// TODO: would it be better to call FetchModifiedProperty here and compare values?
 		playerModifs[propertyName].forEach(item => item.value.forEach(modif => {
@@ -245,7 +245,7 @@ ModifiersManager.prototype.OnGlobalOwnershipChanged = function(msg)
 		}));
 	}
 
-	for (let component in modifiedComponents)
+	for (const component in modifiedComponents)
 		Engine.PostMessage(msg.entity, MT_ValueModification, { "entities": [msg.entity], "component": component, "valueNames": modifiedComponents[component] });
 };
 

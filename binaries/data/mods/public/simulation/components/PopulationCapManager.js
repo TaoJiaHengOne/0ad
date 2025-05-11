@@ -98,7 +98,7 @@ PopulationCapManager.prototype.InitializePlayerPopCaps = function()
 PopulationCapManager.prototype.InitializeTeamPopCaps = function()
 {
 	const players = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers();
-	let processedTeams = [];
+	const processedTeams = [];
 	for (const player of players)
 	{
 		const team = QueryPlayerIDInterface(player, IID_Diplomacy).GetTeam();

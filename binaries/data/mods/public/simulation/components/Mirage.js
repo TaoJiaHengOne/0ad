@@ -54,7 +54,7 @@ Mirage.prototype.Get = function(iid)
  */
 Mirage.prototype.CopyComponent = function(iid)
 {
-	let cmp = Engine.QueryInterface(this.parent, iid);
+	const cmp = Engine.QueryInterface(this.parent, iid);
 	if (cmp)
 		this.miragedIids.set(iid, cmp.Mirage(this.entity, this.player));
 };

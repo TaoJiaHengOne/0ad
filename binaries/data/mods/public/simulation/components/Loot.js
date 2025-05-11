@@ -17,8 +17,8 @@ Loot.prototype.GetXp = function()
 
 Loot.prototype.GetResources = function()
 {
-	let ret = {};
-	for (let res of Resources.GetCodes())
+	const ret = {};
+	for (const res of Resources.GetCodes())
 		ret[res] = Math.floor(ApplyValueModificationsToEntity("Loot/" + res, +(this.template[res] || 0), this.entity));
 	return ret;
 };

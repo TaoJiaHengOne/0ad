@@ -93,14 +93,14 @@ Health.prototype.SetHitpoints = function(value)
 		return;
 
 	// Before changing the value, activate Fogging if necessary to hide changes
-	let cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
+	const cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
 	if (cmpFogging)
 		cmpFogging.Activate();
 
-	let old = this.hitpoints;
+	const old = this.hitpoints;
 	this.hitpoints = Math.max(1, Math.min(this.GetMaxHitpoints(), value));
 
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	if (cmpRangeManager)
 		cmpRangeManager.SetEntityFlag(this.entity, "injured", this.IsInjured());
 
@@ -109,7 +109,7 @@ Health.prototype.SetHitpoints = function(value)
 
 Health.prototype.IsRepairable = function()
 {
-	let cmpRepairable = Engine.QueryInterface(this.entity, IID_Repairable);
+	const cmpRepairable = Engine.QueryInterface(this.entity, IID_Repairable);
 	return cmpRepairable && cmpRepairable.IsRepairable();
 };
 
@@ -134,7 +134,7 @@ Health.prototype.ExecuteRegeneration = function()
 	let regen = this.GetRegenRate();
 	if (this.GetIdleRegenRate() != 0)
 	{
-		let cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
+		const cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
 		if (cmpUnitAI && cmpUnitAI.IsIdle())
 			regen += this.GetIdleRegenRate();
 	}
@@ -158,7 +158,7 @@ Health.prototype.CheckRegenTimer = function()
 		// we don't need a timer, disable if one exists
 		if (this.regenTimer)
 		{
-			let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+			const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 			cmpTimer.CancelTimer(this.regenTimer);
 			this.regenTimer = undefined;
 		}
@@ -169,7 +169,7 @@ Health.prototype.CheckRegenTimer = function()
 	if (this.regenTimer)
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.regenTimer = cmpTimer.SetInterval(this.entity, IID_Health, "ExecuteRegeneration", 1000, 1000, null);
 };
 
@@ -190,9 +190,9 @@ Health.prototype.TakeDamage = function(amount, attacker, attackerOwner)
 	if (!amount || !this.hitpoints)
 		return { "healthChange": 0 };
 
-	let change = this.Reduce(amount);
+	const change = this.Reduce(amount);
 
-	let cmpLoot = Engine.QueryInterface(this.entity, IID_Loot);
+	const cmpLoot = Engine.QueryInterface(this.entity, IID_Loot);
 	if (cmpLoot && cmpLoot.GetXp() > 0 && change.healthChange < 0)
 		change.xp = cmpLoot.GetXp() * -change.healthChange / this.GetMaxHitpoints();
 
@@ -209,25 +209,25 @@ Health.prototype.TakeDamage = function(amount, attacker, attackerOwner)
  */
 Health.prototype.KilledBy = function(attacker, attackerOwner)
 {
-	let cmpAttackerOwnership = Engine.QueryInterface(attacker, IID_Ownership);
+	const cmpAttackerOwnership = Engine.QueryInterface(attacker, IID_Ownership);
 	if (cmpAttackerOwnership)
 	{
-		let currentAttackerOwner = cmpAttackerOwnership.GetOwner();
+		const currentAttackerOwner = cmpAttackerOwnership.GetOwner();
 		if (currentAttackerOwner != INVALID_PLAYER)
 			attackerOwner = currentAttackerOwner;
 	}
 
 	// Add to killer statistics.
-	let cmpKillerPlayerStatisticsTracker = QueryPlayerIDInterface(attackerOwner, IID_StatisticsTracker);
+	const cmpKillerPlayerStatisticsTracker = QueryPlayerIDInterface(attackerOwner, IID_StatisticsTracker);
 	if (cmpKillerPlayerStatisticsTracker)
 		cmpKillerPlayerStatisticsTracker.KilledEntity(this.entity);
 
 	// Add to loser statistics.
-	let cmpTargetPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
+	const cmpTargetPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
 	if (cmpTargetPlayerStatisticsTracker)
 		cmpTargetPlayerStatisticsTracker.LostEntity(this.entity);
 
-	let cmpLooter = Engine.QueryInterface(attacker, IID_Looter);
+	const cmpLooter = Engine.QueryInterface(attacker, IID_Looter);
 	if (cmpLooter)
 		cmpLooter.Collect(this.entity);
 };
@@ -246,11 +246,11 @@ Health.prototype.Reduce = function(amount)
 		return { "healthChange": 0 };
 
 	// Before changing the value, activate Fogging if necessary to hide changes
-	let cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
+	const cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
 	if (cmpFogging)
 		cmpFogging.Activate();
 
-	let oldHitpoints = this.hitpoints;
+	const oldHitpoints = this.hitpoints;
 	// If we reached 0, then die.
 	if (amount >= this.hitpoints)
 	{
@@ -263,7 +263,7 @@ Health.prototype.Reduce = function(amount)
 	// If we are not marked as injured, do it now
 	if (!this.IsInjured())
 	{
-		let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 		if (cmpRangeManager)
 			cmpRangeManager.SetEntityFlag(this.entity, "injured", true);
 	}
@@ -278,7 +278,7 @@ Health.prototype.Reduce = function(amount)
  */
 Health.prototype.HandleDeath = function()
 {
-	let cmpDeathDamage = Engine.QueryInterface(this.entity, IID_DeathDamage);
+	const cmpDeathDamage = Engine.QueryInterface(this.entity, IID_DeathDamage);
 	if (cmpDeathDamage)
 		cmpDeathDamage.CauseDeathDamage();
 	PlaySound("death", this.entity);
@@ -309,7 +309,7 @@ Health.prototype.HandleDeath = function()
 Health.prototype.Increase = function(amount)
 {
 	// Before changing the value, activate Fogging if necessary to hide changes
-	let cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
+	const cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
 	if (cmpFogging)
 		cmpFogging.Activate();
 
@@ -320,12 +320,12 @@ Health.prototype.Increase = function(amount)
 	if (this.hitpoints == 0)
 		return undefined;
 
-	let old = this.hitpoints;
+	const old = this.hitpoints;
 	this.hitpoints = Math.min(this.hitpoints + amount, this.GetMaxHitpoints());
 
 	if (!this.IsInjured())
 	{
-		let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 		if (cmpRangeManager)
 			cmpRangeManager.SetEntityFlag(this.entity, "injured", false);
 	}
@@ -339,32 +339,32 @@ Health.prototype.CreateCorpse = function()
 {
 	// If the unit died while not in the world, don't create any corpse for it
 	// since there's nowhere for the corpse to be placed.
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (!cmpPosition || !cmpPosition.IsInWorld())
 		return;
 
 	// Either creates a static local version of the current entity, or a
 	// persistent corpse retaining the ResourceSupply element of the parent.
-	let templateName = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetCurrentTemplateName(this.entity);
+	const templateName = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetCurrentTemplateName(this.entity);
 
 	let entCorpse;
-	let cmpResourceSupply = Engine.QueryInterface(this.entity, IID_ResourceSupply);
-	let resource = cmpResourceSupply && cmpResourceSupply.GetKillBeforeGather();
+	const cmpResourceSupply = Engine.QueryInterface(this.entity, IID_ResourceSupply);
+	const resource = cmpResourceSupply && cmpResourceSupply.GetKillBeforeGather();
 	if (resource)
 		entCorpse = Engine.AddEntity("resource|" + templateName);
 	else
 		entCorpse = Engine.AddLocalEntity("corpse|" + templateName);
 
 	// Copy various parameters so it looks just like us.
-	let cmpPositionCorpse = Engine.QueryInterface(entCorpse, IID_Position);
-	let pos = cmpPosition.GetPosition();
+	const cmpPositionCorpse = Engine.QueryInterface(entCorpse, IID_Position);
+	const pos = cmpPosition.GetPosition();
 	cmpPositionCorpse.JumpTo(pos.x, pos.z);
-	let rot = cmpPosition.GetRotation();
+	const rot = cmpPosition.GetRotation();
 	cmpPositionCorpse.SetYRotation(rot.y);
 	cmpPositionCorpse.SetXZRotation(rot.x, rot.z);
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let cmpOwnershipCorpse = Engine.QueryInterface(entCorpse, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnershipCorpse = Engine.QueryInterface(entCorpse, IID_Ownership);
 	if (cmpOwnership && cmpOwnershipCorpse)
 		cmpOwnershipCorpse.SetOwner(cmpOwnership.GetOwner());
 
@@ -377,10 +377,10 @@ Health.prototype.CreateCorpse = function()
 			cmpIdentityCorpse.SetPhenotype(cmpIdentity.GetPhenotype());
 	}
 
-	let cmpVisualCorpse = Engine.QueryInterface(entCorpse, IID_Visual);
+	const cmpVisualCorpse = Engine.QueryInterface(entCorpse, IID_Visual);
 	if (cmpVisualCorpse)
 	{
-		let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+		const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 		if (cmpVisual)
 			cmpVisualCorpse.SetActorSeed(cmpVisual.GetActorSeed());
 
@@ -398,23 +398,23 @@ Health.prototype.CreateDeathSpawnedEntity = function()
 {
 	// If the unit died while not in the world, don't spawn a death entity for it
 	// since there's nowhere for it to be placed
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (!cmpPosition.IsInWorld())
 		return INVALID_ENTITY;
 
 	// Create SpawnEntityOnDeath entity
-	let spawnedEntity = Engine.AddLocalEntity(this.template.SpawnEntityOnDeath);
+	const spawnedEntity = Engine.AddLocalEntity(this.template.SpawnEntityOnDeath);
 
 	// Move to same position
-	let cmpSpawnedPosition = Engine.QueryInterface(spawnedEntity, IID_Position);
-	let pos = cmpPosition.GetPosition();
+	const cmpSpawnedPosition = Engine.QueryInterface(spawnedEntity, IID_Position);
+	const pos = cmpPosition.GetPosition();
 	cmpSpawnedPosition.JumpTo(pos.x, pos.z);
-	let rot = cmpPosition.GetRotation();
+	const rot = cmpPosition.GetRotation();
 	cmpSpawnedPosition.SetYRotation(rot.y);
 	cmpSpawnedPosition.SetXZRotation(rot.x, rot.z);
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let cmpSpawnedOwnership = Engine.QueryInterface(spawnedEntity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpSpawnedOwnership = Engine.QueryInterface(spawnedEntity, IID_Ownership);
 	if (cmpOwnership && cmpSpawnedOwnership)
 		cmpSpawnedOwnership.SetOwner(cmpOwnership.GetOwner());
 
@@ -425,14 +425,14 @@ Health.prototype.UpdateActor = function()
 {
 	if (!this.template.DamageVariants)
 		return;
-	let ratio = this.hitpoints / this.GetMaxHitpoints();
+	const ratio = this.hitpoints / this.GetMaxHitpoints();
 	let newDamageVariant = "alive";
 	if (ratio > 0)
 	{
 		let minTreshold = 1;
-		for (let key in this.template.DamageVariants)
+		for (const key in this.template.DamageVariants)
 		{
-			let treshold = +this.template.DamageVariants[key];
+			const treshold = +this.template.DamageVariants[key];
 			if (treshold < ratio || treshold > minTreshold)
 				continue;
 			newDamageVariant = key;
@@ -447,15 +447,15 @@ Health.prototype.UpdateActor = function()
 
 	this.damageVariant = newDamageVariant;
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SetVariant("health", newDamageVariant);
 };
 
 Health.prototype.RecalculateValues = function()
 {
-	let oldMaxHitpoints = this.GetMaxHitpoints();
-	let newMaxHitpoints = ApplyValueModificationsToEntity("Health/Max", +this.template.Max, this.entity);
+	const oldMaxHitpoints = this.GetMaxHitpoints();
+	const newMaxHitpoints = ApplyValueModificationsToEntity("Health/Max", +this.template.Max, this.entity);
 	if (oldMaxHitpoints != newMaxHitpoints)
 	{
 		// Don't recalculate hitpoints when full health due to float imprecision: #6657.
@@ -465,10 +465,10 @@ Health.prototype.RecalculateValues = function()
 		this.SetHitpoints(newHitpoints);
 	}
 
-	let oldRegenRate = this.regenRate;
+	const oldRegenRate = this.regenRate;
 	this.regenRate = ApplyValueModificationsToEntity("Health/RegenRate", +this.template.RegenRate, this.entity);
 
-	let oldIdleRegenRate = this.idleRegenRate;
+	const oldIdleRegenRate = this.idleRegenRate;
 	this.idleRegenRate = ApplyValueModificationsToEntity("Health/IdleRegenRate", +this.template.IdleRegenRate, this.entity);
 
 	if (this.regenRate != oldRegenRate || this.idleRegenRate != oldIdleRegenRate)
@@ -513,7 +513,7 @@ Engine.RegisterGlobal("HealthMirage", HealthMirage);
 
 Health.prototype.Mirage = function()
 {
-	let mirage = new HealthMirage();
+	const mirage = new HealthMirage();
 	mirage.Init(this);
 	return mirage;
 };

@@ -93,19 +93,19 @@ Heal.prototype.GetHealableClasses = function()
  */
 Heal.prototype.CanHeal = function(target)
 {
-	let cmpHealth = Engine.QueryInterface(target, IID_Health);
+	const cmpHealth = Engine.QueryInterface(target, IID_Health);
 	if (!cmpHealth || cmpHealth.IsUnhealable() || !cmpHealth.IsInjured())
 		return false;
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || !IsOwnedByAllyOfPlayer(cmpOwnership.GetOwner(), target))
 		return false;
 
-	let cmpIdentity = Engine.QueryInterface(target, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(target, IID_Identity);
 	if (!cmpIdentity)
 		return false;
 
-	let targetClasses = cmpIdentity.GetClassesList();
+	const targetClasses = cmpIdentity.GetClassesList();
 	return !MatchesClassList(targetClasses, this.GetUnhealableClasses()) &&
 		MatchesClassList(targetClasses, this.GetHealableClasses());
 };
@@ -136,19 +136,19 @@ Heal.prototype.StartHealing = function(target, callerIID)
 	if (!this.CanHeal(target))
 		return false;
 
-	let timings = this.GetTimers();
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const timings = this.GetTimers();
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 
 	// If the repeat time since the last heal hasn't elapsed,
 	// delay the action to avoid healing too fast.
 	let prepare = timings.prepare;
 	if (this.lastHealed)
 	{
-		let repeatLeft = this.lastHealed + timings.repeat - cmpTimer.GetTime();
+		const repeatLeft = this.lastHealed + timings.repeat - cmpTimer.GetTime();
 		prepare = Math.max(prepare, repeatLeft);
 	}
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 	{
 		cmpVisual.SelectAnimation("heal", false, 1.0);
@@ -173,24 +173,24 @@ Heal.prototype.StopHealing = function(reason)
 	if (!this.target)
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timer);
 	delete this.timer;
 
 	delete this.target;
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("idle", false, 1.0);
 
 	// The callerIID component may start again,
 	// replacing the callerIID, hence save that.
-	let callerIID = this.callerIID;
+	const callerIID = this.callerIID;
 	delete this.callerIID;
 
 	if (reason && callerIID)
 	{
-		let component = Engine.QueryInterface(this.entity, callerIID);
+		const component = Engine.QueryInterface(this.entity, callerIID);
 		if (component)
 			component.ProcessMessage(reason, null);
 	}
@@ -217,15 +217,15 @@ Heal.prototype.PerformHeal = function(data, lateness)
 	// ToDo: Enable entities to keep facing a target.
 	Engine.QueryInterface(this.entity, IID_UnitAI)?.FaceTowardsTarget(this.target);
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.lastHealed = cmpTimer.GetTime() - lateness;
 
-	let cmpHealth = Engine.QueryInterface(this.target, IID_Health);
-	let targetState = cmpHealth.Increase(this.GetHealth());
+	const cmpHealth = Engine.QueryInterface(this.target, IID_Health);
+	const targetState = cmpHealth.Increase(this.GetHealth());
 
 	// Add experience.
-	let cmpLoot = Engine.QueryInterface(this.target, IID_Loot);
-	let cmpPromotion = Engine.QueryInterface(this.entity, IID_Promotion);
+	const cmpLoot = Engine.QueryInterface(this.target, IID_Loot);
+	const cmpPromotion = Engine.QueryInterface(this.entity, IID_Promotion);
 	if (targetState !== undefined && cmpLoot && cmpPromotion)
 		// Health healed times experience per health.
 		cmpPromotion.IncreaseXp((targetState.new - targetState.old) / cmpHealth.GetMaxHitpoints() * cmpLoot.GetXp());
@@ -241,10 +241,10 @@ Heal.prototype.PerformHeal = function(data, lateness)
 
 	if (this.resyncAnimation)
 	{
-		let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+		const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 		if (cmpVisual)
 		{
-			let repeat = this.GetTimers().repeat;
+			const repeat = this.GetTimers().repeat;
 			cmpVisual.SetAnimationSyncRepeat(repeat);
 			cmpVisual.SetAnimationSyncOffset(repeat);
 		}
@@ -258,8 +258,8 @@ Heal.prototype.PerformHeal = function(data, lateness)
  */
 Heal.prototype.IsTargetInRange = function(target)
 {
-	let range = this.GetRange();
-	let cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
+	const range = this.GetRange();
+	const cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
 	return cmpObstructionManager.IsInTargetRange(this.entity, target, range.min, range.max, false);
 };
 
@@ -268,7 +268,7 @@ Heal.prototype.OnValueModification = function(msg)
 	if (msg.component != "Heal" || msg.valueNames.indexOf("Heal/Range") === -1)
 		return;
 
-	let cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
 	if (!cmpUnitAI)
 		return;
 
