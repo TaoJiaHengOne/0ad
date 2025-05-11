@@ -33,21 +33,21 @@ Builder.prototype.GetEntitiesList = function()
 	if (!string)
 		return [];
 
-	let cmpPlayer = QueryOwnerInterface(this.entity);
+	const cmpPlayer = QueryOwnerInterface(this.entity);
 	if (!cmpPlayer)
 		return [];
 
 	string = ApplyValueModificationsToEntity("Builder/Entities/_string", string, this.entity);
 
-	let cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
 	if (cmpIdentity)
 		string = string.replace(/\{native\}/g, cmpIdentity.GetCiv());
 
 	const entities = string.replace(/\{civ\}/g, QueryOwnerInterface(this.entity, IID_Identity).GetCiv()).split(/\s+/);
 
-	let disabledTemplates = cmpPlayer.GetDisabledTemplates();
+	const disabledTemplates = cmpPlayer.GetDisabledTemplates();
 
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
 
 	return entities.filter(ent => !disabledTemplates[ent] && cmpTemplateManager.TemplateExists(ent));
 };
@@ -55,7 +55,7 @@ Builder.prototype.GetEntitiesList = function()
 Builder.prototype.GetRange = function()
 {
 	let max = 2;
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	if (cmpObstruction)
 		max += cmpObstruction.GetSize();
 
@@ -73,12 +73,12 @@ Builder.prototype.GetRate = function()
  */
 Builder.prototype.CanRepair = function(target)
 {
-	let cmpFoundation = QueryMiragedInterface(target, IID_Foundation);
-	let cmpRepairable = QueryMiragedInterface(target, IID_Repairable);
+	const cmpFoundation = QueryMiragedInterface(target, IID_Foundation);
+	const cmpRepairable = QueryMiragedInterface(target, IID_Repairable);
 	if (!cmpFoundation && (!cmpRepairable || !cmpRepairable.IsRepairable()))
 		return false;
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	return cmpOwnership && IsOwnedByAllyOfPlayer(cmpOwnership.GetOwner(), target);
 };
 
@@ -95,18 +95,18 @@ Builder.prototype.StartRepairing = function(target, callerIID)
 	if (!this.CanRepair(target))
 		return false;
 
-	let cmpBuilderList = QueryBuilderListInterface(target);
+	const cmpBuilderList = QueryBuilderListInterface(target);
 	if (cmpBuilderList)
 		cmpBuilderList.AddBuilder(this.entity);
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("build", false, 1.0);
 
 	this.target = target;
 	this.callerIID = callerIID;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_Builder, "PerformBuilding", this.BUILD_INTERVAL, this.BUILD_INTERVAL, null);
 
 	return true;
@@ -120,28 +120,28 @@ Builder.prototype.StopRepairing = function(reason)
 	if (!this.target)
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timer);
 	delete this.timer;
 
-	let cmpBuilderList = QueryBuilderListInterface(this.target);
+	const cmpBuilderList = QueryBuilderListInterface(this.target);
 	if (cmpBuilderList)
 		cmpBuilderList.RemoveBuilder(this.entity);
 
 	delete this.target;
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("idle", false, 1.0);
 
 	// The callerIID component may start again,
 	// replacing the callerIID, hence save that.
-	let callerIID = this.callerIID;
+	const callerIID = this.callerIID;
 	delete this.callerIID;
 
 	if (reason && callerIID)
 	{
-		let component = Engine.QueryInterface(this.entity, callerIID);
+		const component = Engine.QueryInterface(this.entity, callerIID);
 		if (component)
 			component.ProcessMessage(reason, null);
 	}
@@ -168,14 +168,14 @@ Builder.prototype.PerformBuilding = function(data, lateness)
 	// ToDo: Enable entities to keep facing a target.
 	Engine.QueryInterface(this.entity, IID_UnitAI)?.FaceTowardsTarget(this.target);
 
-	let cmpFoundation = Engine.QueryInterface(this.target, IID_Foundation);
+	const cmpFoundation = Engine.QueryInterface(this.target, IID_Foundation);
 	if (cmpFoundation)
 	{
 		cmpFoundation.Build(this.entity, this.GetRate());
 		return;
 	}
 
-	let cmpRepairable = Engine.QueryInterface(this.target, IID_Repairable);
+	const cmpRepairable = Engine.QueryInterface(this.target, IID_Repairable);
 	if (cmpRepairable)
 	{
 		cmpRepairable.Repair(this.entity, this.GetRate());
@@ -189,8 +189,8 @@ Builder.prototype.PerformBuilding = function(data, lateness)
  */
 Builder.prototype.IsTargetInRange = function(target)
 {
-	let range = this.GetRange();
-	let cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
+	const range = this.GetRange();
+	const cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
 	return cmpObstructionManager.IsInTargetRange(this.entity, target, range.min, range.max, false);
 };
 
@@ -200,7 +200,7 @@ Builder.prototype.OnValueModification = function(msg)
 		return;
 
 	// Token changes may require selection updates.
-	let cmpPlayer = QueryOwnerInterface(this.entity, IID_Player);
+	const cmpPlayer = QueryOwnerInterface(this.entity, IID_Player);
 	if (cmpPlayer)
 		Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).SetSelectionDirty(cmpPlayer.GetPlayerID());
 };

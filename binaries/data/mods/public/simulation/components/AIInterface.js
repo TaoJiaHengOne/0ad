@@ -30,7 +30,7 @@ AIInterface.prototype.EventNames = [
 AIInterface.prototype.Init = function()
 {
 	this.events = {};
-	for (let name of this.EventNames)
+	for (const name of this.EventNames)
 		this.events[name] = [];
 
 	this.changedEntities = {};
@@ -45,7 +45,7 @@ AIInterface.prototype.Init = function()
 
 AIInterface.prototype.Serialize = function()
 {
-	let state = {};
+	const state = {};
 	for (var key in this)
 	{
 		if (!this.hasOwnProperty(key))
@@ -61,7 +61,7 @@ AIInterface.prototype.Serialize = function()
 
 AIInterface.prototype.Deserialize = function(data)
 {
-	for (let key in data)
+	for (const key in data)
 	{
 		if (!data.hasOwnProperty(key))
 			continue;
@@ -78,7 +78,7 @@ AIInterface.prototype.Deserialize = function(data)
 AIInterface.prototype.Disable = function()
 {
 	this.enabled = false;
-	let nop = function(){};
+	const nop = function(){};
 	this.ChangedEntity = nop;
 	this.PushEvent = nop;
 	this.OnGlobalPlayerDefeated = nop;
@@ -90,15 +90,15 @@ AIInterface.prototype.Disable = function()
 
 AIInterface.prototype.GetNonEntityRepresentation = function()
 {
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 
 	// Return the same game state as the GUI uses
-	let state = cmpGuiInterface.GetSimulationState();
+	const state = cmpGuiInterface.GetSimulationState();
 
 	// Add some extra AI-specific data
 	// add custom events and reset them for the next turn
 	state.events = {};
-	for (let name of this.EventNames)
+	for (const name of this.EventNames)
 	{
 		state.events[name] = this.events[name];
 		this.events[name] = [];
@@ -109,14 +109,14 @@ AIInterface.prototype.GetNonEntityRepresentation = function()
 
 AIInterface.prototype.GetRepresentation = function()
 {
-	let state = this.GetNonEntityRepresentation();
+	const state = this.GetNonEntityRepresentation();
 
 	// Add entity representations
 	Engine.ProfileStart("proxy representations");
 	state.entities = {};
-	for (let id in this.changedEntities)
+	for (const id in this.changedEntities)
 	{
-		let cmpAIProxy = Engine.QueryInterface(+id, IID_AIProxy);
+		const cmpAIProxy = Engine.QueryInterface(+id, IID_AIProxy);
 		if (cmpAIProxy)
 			state.entities[id] = cmpAIProxy.GetRepresentation();
 	}
@@ -136,17 +136,17 @@ AIInterface.prototype.GetRepresentation = function()
  */
 AIInterface.prototype.GetFullRepresentation = function(flushEvents)
 {
-	let state = this.GetNonEntityRepresentation();
+	const state = this.GetNonEntityRepresentation();
 
 	if (flushEvents)
-		for (let name of this.EventNames)
+		for (const name of this.EventNames)
 			state.events[name] = [];
 
 	// Add entity representations
 	Engine.ProfileStart("proxy representations");
 	state.entities = {};
 	// all entities are changed in the initial state.
-	for (let id of Engine.GetEntitiesWithInterface(IID_AIProxy))
+	for (const id of Engine.GetEntitiesWithInterface(IID_AIProxy))
 		state.entities[id] = Engine.QueryInterface(id, IID_AIProxy).GetFullRepresentation();
 	Engine.ProfileStop();
 
@@ -214,35 +214,35 @@ AIInterface.prototype.OnCeasefireEnded = function(msg)
  */
 AIInterface.prototype.OnTemplateModification = function(msg)
 {
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
 	if (!this.templates)
 	{
 		this.templates = [];
-		for (let templateName of cmpTemplateManager.FindAllTemplates(false))
+		for (const templateName of cmpTemplateManager.FindAllTemplates(false))
 		{
 			// Remove templates that we obviously don't care about.
 			if (templateName.startsWith("campaigns/") || templateName.startsWith("rubble/") ||
 			    templateName.startsWith("skirmish/"))
 				continue;
-			let template = cmpTemplateManager.GetTemplateWithoutValidation(templateName);
+			const template = cmpTemplateManager.GetTemplateWithoutValidation(templateName);
 			if (!template || !template.Identity || !template.Identity.Civ)
 				continue;
 			this.templates.push(templateName);
 		}
 	}
 
-	for (let name of this.templates)
+	for (const name of this.templates)
 	{
-		let template = cmpTemplateManager.GetTemplateWithoutValidation(name);
+		const template = cmpTemplateManager.GetTemplateWithoutValidation(name);
 		if (!template || !template[msg.component])
 			continue;
-		for (let valName of msg.valueNames)
+		for (const valName of msg.valueNames)
 		{
 			// let's get the base template value.
-			let strings = valName.split("/");
+			const strings = valName.split("/");
 			let item = template;
 			let ended = true;
-			for (let str of strings)
+			for (const str of strings)
 			{
 				if (item !== undefined && item[str] !== undefined)
 					item = item[str];
@@ -252,7 +252,7 @@ AIInterface.prototype.OnTemplateModification = function(msg)
 			if (!ended)
 				continue;
 			// item now contains the template value for this.
-			let oldValue = +item == item ? +item : item;
+			const oldValue = +item == item ? +item : item;
 			let newValue = ApplyValueModificationsToTemplate(valName, oldValue, msg.player, template);
 			// Apply the same roundings as in the components
 			if (valName === "Player/MaxPopulation" || valName === "Cost/Population" ||
@@ -275,23 +275,23 @@ AIInterface.prototype.OnTemplateModification = function(msg)
 AIInterface.prototype.OnGlobalValueModification = function(msg)
 {
 	this.events.ValueModification.push(msg);
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	for (let ent of msg.entities)
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	for (const ent of msg.entities)
 	{
-		let templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
+		const templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
 		// if there's no template name, the unit is probably killed, ignore it.
 		if (!templateName || !templateName.length)
 			continue;
-		let template = cmpTemplateManager.GetTemplateWithoutValidation(templateName);
+		const template = cmpTemplateManager.GetTemplateWithoutValidation(templateName);
 		if (!template || !template[msg.component])
 			continue;
-		for (let valName of msg.valueNames)
+		for (const valName of msg.valueNames)
 		{
 			// let's get the base template value.
-			let strings = valName.split("/");
+			const strings = valName.split("/");
 			let item = template;
 			let ended = true;
-			for (let str of strings)
+			for (const str of strings)
 			{
 				if (item !== undefined && item[str] !== undefined)
 					item = item[str];
@@ -301,7 +301,7 @@ AIInterface.prototype.OnGlobalValueModification = function(msg)
 			if (!ended)
 				continue;
 			// "item" now contains the unmodified template value for this.
-			let oldValue = +item == item ? +item : item;
+			const oldValue = +item == item ? +item : item;
 			let newValue = ApplyValueModificationsToEntity(valName, oldValue, ent);
 			// Apply the same roundings as in the components
 			if (valName === "Player/MaxPopulation" || valName === "Cost/Population" ||

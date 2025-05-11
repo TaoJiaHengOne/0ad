@@ -24,42 +24,42 @@ AlertRaiser.prototype.GetTargetClasses = function()
 
 AlertRaiser.prototype.UnitFilter = function(unit)
 {
-	let cmpIdentity = Engine.QueryInterface(unit, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(unit, IID_Identity);
 	return cmpIdentity && MatchesClassList(cmpIdentity.GetClassesList(), this.GetTargetClasses());
 };
 
 AlertRaiser.prototype.RaiseAlert = function()
 {
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	if (cmpTimer.GetTime() == this.lastTime)
 		return;
 
 	this.lastTime = cmpTimer.GetTime();
 	PlaySound("alert_raise", this.entity);
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || cmpOwnership.GetOwner() == INVALID_PLAYER)
 		return;
 
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 	const cmpDiplomacy = QueryPlayerIDInterface(owner, IID_Diplomacy);
 	const mutualAllies = cmpDiplomacy ? cmpDiplomacy.GetMutualAllies() : [owner];
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 
 	// Store the number of available garrison spots so that units don't try to garrison in buildings that will be full
-	let reserved = new Map();
+	const reserved = new Map();
 
-	let units = cmpRangeManager.ExecuteQuery(this.entity, 0, +this.template.RaiseAlertRange, [owner], IID_UnitAI, true).filter(ent => this.UnitFilter(ent));
-	for (let unit of units)
+	const units = cmpRangeManager.ExecuteQuery(this.entity, 0, +this.template.RaiseAlertRange, [owner], IID_UnitAI, true).filter(ent => this.UnitFilter(ent));
+	for (const unit of units)
 	{
-		let cmpGarrisonable = Engine.QueryInterface(unit, IID_Garrisonable);
+		const cmpGarrisonable = Engine.QueryInterface(unit, IID_Garrisonable);
 		if (!cmpGarrisonable)
 			continue;
 
-		let size = cmpGarrisonable.TotalSize();
-		let cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);
+		const size = cmpGarrisonable.TotalSize();
+		const cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);
 
-		let holder = cmpRangeManager.ExecuteQuery(unit, 0, +this.template.SearchRange, mutualAllies, IID_GarrisonHolder, true).find(ent => {
+		const holder = cmpRangeManager.ExecuteQuery(unit, 0, +this.template.SearchRange, mutualAllies, IID_GarrisonHolder, true).find(ent => {
 			// Ignore moving garrison holders
 			if (Engine.QueryInterface(ent, IID_UnitAI))
 				return false;
@@ -71,7 +71,7 @@ AlertRaiser.prototype.RaiseAlert = function()
 			if (!cmpUnitAI.CheckTargetVisible(ent))
 				return false;
 
-			let cmpGarrisonHolder = Engine.QueryInterface(ent, IID_GarrisonHolder);
+			const cmpGarrisonHolder = Engine.QueryInterface(ent, IID_GarrisonHolder);
 			if (!reserved.has(ent))
 				reserved.set(ent, cmpGarrisonHolder.GetCapacity() - cmpGarrisonHolder.OccupiedSlots());
 
@@ -91,27 +91,27 @@ AlertRaiser.prototype.RaiseAlert = function()
 
 AlertRaiser.prototype.EndOfAlert = function()
 {
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	if (cmpTimer.GetTime() == this.lastTime)
 		return;
 
 	this.lastTime = cmpTimer.GetTime();
 	PlaySound("alert_end", this.entity);
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || cmpOwnership.GetOwner() == INVALID_PLAYER)
 		return;
 
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 	const cmpDiplomacy = QueryPlayerIDInterface(owner, IID_Diplomacy);
 	const mutualAllies = cmpDiplomacy ? cmpDiplomacy.GetMutualAllies() : [owner];
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 
 	// Units that are not garrisoned should go back to work
-	let units = cmpRangeManager.ExecuteQuery(this.entity, 0, +this.template.EndOfAlertRange, [owner], IID_UnitAI, true).filter(ent => this.UnitFilter(ent));
-	for (let unit of units)
+	const units = cmpRangeManager.ExecuteQuery(this.entity, 0, +this.template.EndOfAlertRange, [owner], IID_UnitAI, true).filter(ent => this.UnitFilter(ent));
+	for (const unit of units)
 	{
-		let cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);
+		const cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);
 		if (cmpUnitAI.HasWorkOrders() && cmpUnitAI.ShouldRespondToEndOfAlert())
 			cmpUnitAI.BackToWork();
 		else if (cmpUnitAI.ShouldRespondToEndOfAlert())
@@ -120,25 +120,25 @@ AlertRaiser.prototype.EndOfAlert = function()
 	}
 
 	// Units that are garrisoned should ungarrison and go back to work
-	let holders = cmpRangeManager.ExecuteQuery(this.entity, 0, +this.template.EndOfAlertRange, mutualAllies, IID_GarrisonHolder, true);
+	const holders = cmpRangeManager.ExecuteQuery(this.entity, 0, +this.template.EndOfAlertRange, mutualAllies, IID_GarrisonHolder, true);
 	if (Engine.QueryInterface(this.entity, IID_GarrisonHolder))
 		holders.push(this.entity);
 
-	for (let holder of holders)
+	for (const holder of holders)
 	{
 		if (Engine.QueryInterface(holder, IID_UnitAI))
 			continue;
 
-		let cmpGarrisonHolder = Engine.QueryInterface(holder, IID_GarrisonHolder);
-		let units = cmpGarrisonHolder.GetEntities().filter(ent => {
-			let cmpOwner = Engine.QueryInterface(ent, IID_Ownership);
+		const cmpGarrisonHolder = Engine.QueryInterface(holder, IID_GarrisonHolder);
+		const units = cmpGarrisonHolder.GetEntities().filter(ent => {
+			const cmpOwner = Engine.QueryInterface(ent, IID_Ownership);
 			return cmpOwner && cmpOwner.GetOwner() == owner && this.UnitFilter(ent);
 		});
 
-		for (let unit of units)
+		for (const unit of units)
 			if (cmpGarrisonHolder.Unload(unit))
 			{
-				let cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);
+				const cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);
 				if (cmpUnitAI.HasWorkOrders())
 					cmpUnitAI.BackToWork();
 				else

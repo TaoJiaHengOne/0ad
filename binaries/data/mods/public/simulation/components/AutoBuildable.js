@@ -25,12 +25,12 @@ class AutoBuildable
 		if (this.timer || !this.rate)
 			return;
 
-		let cmpFoundation = Engine.QueryInterface(this.entity, IID_Foundation);
+		const cmpFoundation = Engine.QueryInterface(this.entity, IID_Foundation);
 		if (!cmpFoundation)
 			return;
 
 		cmpFoundation.AddBuilder(this.entity);
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		this.timer = cmpTimer.SetInterval(this.entity, IID_AutoBuildable, "AutoBuild", 0, 1000, undefined);
 	}
 
@@ -39,11 +39,11 @@ class AutoBuildable
 		if (!this.timer)
 			return;
 
-		let cmpFoundation = Engine.QueryInterface(this.entity, IID_Foundation);
+		const cmpFoundation = Engine.QueryInterface(this.entity, IID_Foundation);
 		if (cmpFoundation)
 			cmpFoundation.RemoveBuilder(this.entity);
 
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 		delete this.timer;
 	}
@@ -55,7 +55,7 @@ class AutoBuildable
 			this.CancelTimer();
 			return;
 		}
-		let cmpFoundation = Engine.QueryInterface(this.entity, IID_Foundation);
+		const cmpFoundation = Engine.QueryInterface(this.entity, IID_Foundation);
 		if (!cmpFoundation)
 		{
 			this.CancelTimer();
