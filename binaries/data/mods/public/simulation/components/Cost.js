@@ -40,20 +40,20 @@ Cost.prototype.GetBuildTime = function()
 
 Cost.prototype.GetResourceCosts = function()
 {
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership)
 	{
 		error("GetResourceCosts called without valid ownership on " + this.entity + ".");
 		return {};
 	}
 
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let entityTemplateName = cmpTemplateManager.GetCurrentTemplateName(this.entity);
-	let entityTemplate = cmpTemplateManager.GetTemplate(entityTemplateName);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const entityTemplateName = cmpTemplateManager.GetCurrentTemplateName(this.entity);
+	const entityTemplate = cmpTemplateManager.GetTemplate(entityTemplateName);
 
-	let owner = cmpOwnership.GetOwner();
-	let costs = {};
-	for (let res in this.template.Resources)
+	const owner = cmpOwnership.GetOwner();
+	const costs = {};
+	for (const res in this.template.Resources)
 		costs[res] = ApplyValueModificationsToTemplate("Cost/Resources/"+res, +this.template.Resources[res], owner, entityTemplate);
 
 	return costs;

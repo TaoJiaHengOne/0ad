@@ -30,7 +30,7 @@ Fogging.prototype.Init = function()
 	this.miraged = [];
 	this.seen = [];
 
-	let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+	const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 	for (let player = 0; player < numPlayers; ++player)
 	{
 		this.mirages.push(INVALID_ENTITY);
@@ -41,14 +41,14 @@ Fogging.prototype.Init = function()
 
 Fogging.prototype.Activate = function()
 {
-	let mustUpdate = !this.activated;
+	const mustUpdate = !this.activated;
 	this.activated = true;
 
 	if (mustUpdate)
 	{
 		// Load a mirage for each player who has already seen the entity.
-		let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
-		let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 		for (let player = 0; player < numPlayers; ++player)
 			if (this.seen[player] && cmpRangeManager.GetLosVisibility(this.entity, player) != "visible")
 				this.LoadMirage(player);
@@ -73,7 +73,7 @@ Fogging.prototype.LoadMirage = function(player)
 	if (this.mirages[player] == INVALID_ENTITY)
 		this.mirages[player] = Engine.AddEntity("mirage|" + Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetCurrentTemplateName(this.entity));
 
-	let cmpMirage = Engine.QueryInterface(this.mirages[player], IID_Mirage);
+	const cmpMirage = Engine.QueryInterface(this.mirages[player], IID_Mirage);
 	if (!cmpMirage)
 	{
 		error("Failed to load a mirage for entity " + this.entity);
@@ -85,8 +85,8 @@ Fogging.prototype.LoadMirage = function(player)
 	cmpMirage.SetPlayer(player);
 	cmpMirage.SetParent(this.entity);
 
-	let cmpParentOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let cmpMirageOwnership = Engine.QueryInterface(this.mirages[player], IID_Ownership);
+	const cmpParentOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpMirageOwnership = Engine.QueryInterface(this.mirages[player], IID_Ownership);
 	if (!cmpParentOwnership || !cmpMirageOwnership)
 	{
 		error("Failed to copy the ownership data of the fogged entity " + this.entity);
@@ -94,8 +94,8 @@ Fogging.prototype.LoadMirage = function(player)
 	}
 	cmpMirageOwnership.SetOwner(cmpParentOwnership.GetOwner());
 
-	let cmpParentPosition = Engine.QueryInterface(this.entity, IID_Position);
-	let cmpMiragePosition = Engine.QueryInterface(this.mirages[player], IID_Position);
+	const cmpParentPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpMiragePosition = Engine.QueryInterface(this.mirages[player], IID_Position);
 	if (!cmpParentPosition || !cmpMiragePosition)
 	{
 		error("Failed to copy the position data of the fogged entity " + this.entity);
@@ -103,14 +103,14 @@ Fogging.prototype.LoadMirage = function(player)
 	}
 	if (!cmpParentPosition.IsInWorld())
 		return;
-	let pos = cmpParentPosition.GetPosition();
+	const pos = cmpParentPosition.GetPosition();
 	cmpMiragePosition.JumpTo(pos.x, pos.z);
-	let rot = cmpParentPosition.GetRotation();
+	const rot = cmpParentPosition.GetRotation();
 	cmpMiragePosition.SetYRotation(rot.y);
 	cmpMiragePosition.SetXZRotation(rot.x, rot.z);
 
-	let cmpParentVisualActor = Engine.QueryInterface(this.entity, IID_Visual);
-	let cmpMirageVisualActor = Engine.QueryInterface(this.mirages[player], IID_Visual);
+	const cmpParentVisualActor = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpMirageVisualActor = Engine.QueryInterface(this.mirages[player], IID_Visual);
 	if (!cmpParentVisualActor || !cmpMirageVisualActor)
 	{
 		error("Failed to copy the visual data of the fogged entity " + this.entity);
@@ -121,7 +121,7 @@ Fogging.prototype.LoadMirage = function(player)
 	cmpMirageVisualActor.SetActorSeed(cmpParentVisualActor.GetActorSeed());
 
 	// Store valuable information into the mirage component (especially for the GUI).
-	for (let component of this.componentsToMirage)
+	for (const component of this.componentsToMirage)
 		cmpMirage.CopyComponent(component);
 
 	// Notify the GUI the entity has been replaced by a mirage, in case it is selected at this moment.
@@ -178,7 +178,7 @@ Fogging.prototype.OnOwnershipChanged = function(msg)
 	if (msg.to != -1)
 		return;
 
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	for (let player = 0; player < this.mirages.length; ++player)
 	{
 		if (this.mirages[player] == INVALID_ENTITY)
@@ -192,7 +192,7 @@ Fogging.prototype.OnOwnershipChanged = function(msg)
 			continue;
 		}
 
-		let cmpMirage = Engine.QueryInterface(this.mirages[player], IID_Mirage);
+		const cmpMirage = Engine.QueryInterface(this.mirages[player], IID_Mirage);
 		if (cmpMirage)
 			cmpMirage.SetParent(INVALID_ENTITY);
 	}

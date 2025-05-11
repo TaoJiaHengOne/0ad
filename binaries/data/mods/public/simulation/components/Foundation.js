@@ -25,7 +25,7 @@ Foundation.prototype.Init = function()
 
 Foundation.prototype.Serialize = function()
 {
-	let ret = Object.assign({}, this);
+	const ret = Object.assign({}, this);
 	ret.previewEntity = INVALID_ENTITY;
 	return ret;
 };
@@ -47,7 +47,7 @@ Foundation.prototype.InitialiseConstruction = function(template)
 
 	// Remember the cost here, so if it changes after construction begins (from auras or technologies)
 	// we will use the correct values to refund partial construction costs.
-	let cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
+	const cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
 	if (!cmpCost)
 		error("A foundation, from " + template + ", must have a cost component to know the build time");
 
@@ -64,7 +64,7 @@ Foundation.prototype.InitialiseConstruction = function(template)
  */
 Foundation.prototype.OnHealthChanged = function(msg)
 {
-	let cmpPosition = Engine.QueryInterface(this.previewEntity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.previewEntity, IID_Position);
 	if (cmpPosition)
 		cmpPosition.SetConstructionProgress(this.GetBuildProgress());
 
@@ -76,7 +76,7 @@ Foundation.prototype.OnHealthChanged = function(msg)
  */
 Foundation.prototype.GetBuildProgress = function()
 {
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
 	if (!cmpHealth)
 		return 0;
 
@@ -110,7 +110,7 @@ Foundation.prototype.OnOwnershipChanged = function(msg)
 {
 	if (msg.to != INVALID_PLAYER && this.previewEntity != INVALID_ENTITY)
 	{
-		let cmpPreviewOwnership = Engine.QueryInterface(this.previewEntity, IID_Ownership);
+		const cmpPreviewOwnership = Engine.QueryInterface(this.previewEntity, IID_Ownership);
 		if (cmpPreviewOwnership)
 			cmpPreviewOwnership.SetOwner(msg.to);
 		return;
@@ -128,14 +128,14 @@ Foundation.prototype.OnOwnershipChanged = function(msg)
 	if (this.IsFinished())
 		return;
 
-	let cmpPlayer = QueryPlayerIDInterface(msg.from);
-	let cmpStatisticsTracker = QueryPlayerIDInterface(msg.from, IID_StatisticsTracker);
+	const cmpPlayer = QueryPlayerIDInterface(msg.from);
+	const cmpStatisticsTracker = QueryPlayerIDInterface(msg.from, IID_StatisticsTracker);
 
 	// Refund a portion of the construction cost, proportional
 	// to the amount of build progress remaining.
-	for (let r in this.costs)
+	for (const r in this.costs)
 	{
-		let scaled = Math.ceil(this.costs[r] * (1.0 - this.maxProgress));
+		const scaled = Math.ceil(this.costs[r] * (1.0 - this.maxProgress));
 		if (scaled)
 		{
 			if (cmpPlayer)
@@ -152,7 +152,7 @@ Foundation.prototype.OnOwnershipChanged = function(msg)
 Foundation.prototype.AddBuilders = function(builders)
 {
 	let changed = false;
-	for (let builder of builders)
+	for (const builder of builders)
 		changed = this.AddBuilderHelper(builder) || changed;
 
 	if (changed)
@@ -168,12 +168,12 @@ Foundation.prototype.AddBuilderHelper = function(builderEnt)
 	if (this.builders.has(builderEnt))
 		return false;
 
-	let cmpBuilder = Engine.QueryInterface(builderEnt, IID_Builder) ||
+	const cmpBuilder = Engine.QueryInterface(builderEnt, IID_Builder) ||
 		Engine.QueryInterface(this.entity, IID_AutoBuildable);
 	if (!cmpBuilder)
 		return false;
 
-	let buildRate = cmpBuilder.GetRate();
+	const buildRate = cmpBuilder.GetRate();
 	this.builders.set(builderEnt, buildRate);
 	this.totalBuilderRate += buildRate;
 
@@ -209,7 +209,7 @@ Foundation.prototype.HandleBuildersChanged = function()
 {
 	this.SetBuildMultiplier();
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SetVariable("numbuilders", this.GetNumBuilders());
 
@@ -233,9 +233,9 @@ Foundation.prototype.SetBuildMultiplier = function()
 
 Foundation.prototype.GetBuildTime = function()
 {
-	let timeLeft = (1 - this.GetBuildProgress()) * Engine.QueryInterface(this.entity, IID_Cost).GetBuildTime();
-	let rate = this.totalBuilderRate * this.buildMultiplier;
-	let rateNew = (this.totalBuilderRate + 1) * this.CalculateBuildMultiplier(this.GetNumBuilders() + 1);
+	const timeLeft = (1 - this.GetBuildProgress()) * Engine.QueryInterface(this.entity, IID_Cost).GetBuildTime();
+	const rate = this.totalBuilderRate * this.buildMultiplier;
+	const rateNew = (this.totalBuilderRate + 1) * this.CalculateBuildMultiplier(this.GetNumBuilders() + 1);
 	return {
 		// Avoid division by zero, in particular 0/0 = NaN which isn't reliably serialized
 		"timeRemaining": rate ? timeLeft / rate : 0,
@@ -251,18 +251,18 @@ Foundation.prototype.Commit = function()
 	if (this.committed)
 		return false;
 
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	if (cmpObstruction && cmpObstruction.GetBlockMovementFlag(true))
 	{
-		for (let ent of cmpObstruction.GetEntitiesDeletedUponConstruction())
+		for (const ent of cmpObstruction.GetEntitiesDeletedUponConstruction())
 			Engine.DestroyEntity(ent);
 
-		let collisions = cmpObstruction.GetEntitiesBlockingConstruction();
+		const collisions = cmpObstruction.GetEntitiesBlockingConstruction();
 		if (collisions.length)
 		{
-			for (let ent of collisions)
+			for (const ent of collisions)
 			{
-				let cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+				const cmpUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 				if (cmpUnitAI)
 					cmpUnitAI.LeaveFoundation(this.entity);
 
@@ -284,13 +284,13 @@ Foundation.prototype.Commit = function()
 	if (cmpObstruction)
 		cmpObstruction.SetDisableBlockMovementPathfinding(false, false, -1);
 
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.CallEvent("OnConstructionStarted", {
 		"foundation": this.entity,
 		"template": this.finalTemplateName
 	});
 
-	let cmpFoundationVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpFoundationVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpFoundationVisual)
 		cmpFoundationVisual.SelectAnimation("scaffold", false, 1.0);
 
@@ -314,13 +314,13 @@ Foundation.prototype.Build = function(builderEnt, work)
 	if (!this.committed && !this.Commit())
 		return;
 
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
 	if (!cmpHealth)
 	{
 		error("Foundation " + this.entity + " does not have a health component.");
 		return;
 	}
-	let deltaHP = work * this.GetBuildRate() * this.buildMultiplier;
+	const deltaHP = work * this.GetBuildRate() * this.buildMultiplier;
 	if (deltaHP > 0)
 		cmpHealth.Increase(deltaHP);
 
@@ -333,9 +333,9 @@ Foundation.prototype.Build = function(builderEnt, work)
 
 	if (this.maxProgress >= 1.0)
 	{
-		let cmpPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
+		const cmpPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
 
-		let building = ChangeEntityTemplate(this.entity, this.finalTemplateName);
+		const building = ChangeEntityTemplate(this.entity, this.finalTemplateName);
 
 		if (cmpPlayerStatisticsTracker)
 			cmpPlayerStatisticsTracker.IncreaseConstructedBuildingsCounter(building);
@@ -345,9 +345,9 @@ Foundation.prototype.Build = function(builderEnt, work)
 		Engine.PostMessage(this.entity, MT_ConstructionFinished,
 			{ "entity": this.entity, "newentity": building });
 
-		for (let builder of this.GetBuilders())
+		for (const builder of this.GetBuilders())
 		{
-			let cmpUnitAIBuilder = Engine.QueryInterface(builder, IID_UnitAI);
+			const cmpUnitAIBuilder = Engine.QueryInterface(builder, IID_UnitAI);
 			if (cmpUnitAIBuilder)
 				cmpUnitAIBuilder.ConstructionFinished({ "entity": this.entity, "newentity": building });
 		}
@@ -356,8 +356,8 @@ Foundation.prototype.Build = function(builderEnt, work)
 
 Foundation.prototype.GetBuildRate = function()
 {
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
-	let cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
 	// Return infinity for instant structure conversion
 	return cmpHealth.GetMaxHitpoints() / cmpCost.GetBuildTime();
 };
@@ -376,13 +376,13 @@ Foundation.prototype.CreateConstructionPreview = function()
 	if (!this.committed)
 		return;
 
-	let cmpFoundationVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpFoundationVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (!cmpFoundationVisual || !cmpFoundationVisual.HasConstructionPreview())
 		return;
 
 	this.previewEntity = Engine.AddLocalEntity("construction|"+this.finalTemplateName);
-	let cmpFoundationOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let cmpPreviewOwnership = Engine.QueryInterface(this.previewEntity, IID_Ownership);
+	const cmpFoundationOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpPreviewOwnership = Engine.QueryInterface(this.previewEntity, IID_Ownership);
 	if (cmpFoundationOwnership && cmpPreviewOwnership)
 		cmpPreviewOwnership.SetOwner(cmpFoundationOwnership.GetOwner());
 
@@ -390,21 +390,21 @@ Foundation.prototype.CreateConstructionPreview = function()
 	// Maybe it makes more sense to simply delete it then?
 
 	// Initially hide the preview underground
-	let cmpPreviewPosition = Engine.QueryInterface(this.previewEntity, IID_Position);
-	let cmpFoundationPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPreviewPosition = Engine.QueryInterface(this.previewEntity, IID_Position);
+	const cmpFoundationPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (cmpPreviewPosition && cmpFoundationPosition)
 	{
-		let rot = cmpFoundationPosition.GetRotation();
+		const rot = cmpFoundationPosition.GetRotation();
 		cmpPreviewPosition.SetYRotation(rot.y);
 		cmpPreviewPosition.SetXZRotation(rot.x, rot.z);
 
-		let pos = cmpFoundationPosition.GetPosition2D();
+		const pos = cmpFoundationPosition.GetPosition2D();
 		cmpPreviewPosition.JumpTo(pos.x, pos.y);
 
 		cmpPreviewPosition.SetConstructionProgress(this.GetBuildProgress());
 	}
 
-	let cmpPreviewVisual = Engine.QueryInterface(this.previewEntity, IID_Visual);
+	const cmpPreviewVisual = Engine.QueryInterface(this.previewEntity, IID_Visual);
 	if (cmpPreviewVisual && cmpFoundationVisual)
 	{
 		cmpPreviewVisual.SetActorSeed(cmpFoundationVisual.GetActorSeed());
@@ -414,7 +414,7 @@ Foundation.prototype.CreateConstructionPreview = function()
 
 Foundation.prototype.OnEntityRenamed = function(msg)
 {
-	let cmpFoundationNew = Engine.QueryInterface(msg.newentity, IID_Foundation);
+	const cmpFoundationNew = Engine.QueryInterface(msg.newentity, IID_Foundation);
 	if (cmpFoundationNew)
 		cmpFoundationNew.AddBuilders(this.GetBuilders());
 };
@@ -433,7 +433,7 @@ Engine.RegisterGlobal("FoundationMirage", FoundationMirage);
 
 Foundation.prototype.Mirage = function()
 {
-	let mirage = new FoundationMirage();
+	const mirage = new FoundationMirage();
 	mirage.Init(this);
 	return mirage;
 };

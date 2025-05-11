@@ -183,8 +183,8 @@ EntityLimits.prototype.AllowedToCreate = function(limitType, category, count, te
 
 EntityLimits.prototype.NotifyLimit = function(limitType, category, limit)
 {
-	let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
-	let notification = {
+	const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+	const notification = {
 		"players": [cmpPlayer.GetPlayerID()],
 		"translateMessage": true,
 		"translateParameters": ["category"],
@@ -200,7 +200,7 @@ EntityLimits.prototype.NotifyLimit = function(limitType, category, limit)
 		warn("EntityLimits.js: Unknown LimitType " + limitType);
 		notification.message = markForTranslation("%(category)s limit of %(limit)s reached");
 	}
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification(notification);
 };
 
@@ -223,19 +223,19 @@ EntityLimits.prototype.AllowedToTrain = function(category, count, templateName, 
  */
 EntityLimits.prototype.AllowedToReplace = function(ent, template)
 {
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let templateFrom = cmpTemplateManager.GetTemplate(cmpTemplateManager.GetCurrentTemplateName(ent));
-	let templateTo = cmpTemplateManager.GetTemplate(template);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const templateFrom = cmpTemplateManager.GetTemplate(cmpTemplateManager.GetCurrentTemplateName(ent));
+	const templateTo = cmpTemplateManager.GetTemplate(template);
 
 	if (templateTo.TrainingRestrictions)
 	{
-		let category = templateTo.TrainingRestrictions.Category;
+		const category = templateTo.TrainingRestrictions.Category;
 		return this.AllowedToCreate(TRAINING, category, templateFrom.TrainingRestrictions && templateFrom.TrainingRestrictions.Category == category ? 0 : 1);
 	}
 
 	if (templateTo.BuildRestrictions)
 	{
-		let category = templateTo.BuildRestrictions.Category;
+		const category = templateTo.BuildRestrictions.Category;
 		return this.AllowedToCreate(BUILD, category, templateFrom.BuildRestrictions && templateFrom.BuildRestrictions.Category == category ? 0 : 1);
 	}
 

@@ -79,7 +79,7 @@ Capturable.prototype.Reduce = function(amount, playerID)
 	if (amount <= 0)
 		return 0;
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || cmpOwnership.GetOwner() == INVALID_PLAYER)
 		return 0;
 
@@ -88,7 +88,7 @@ Capturable.prototype.Reduce = function(amount, playerID)
 		return 0;
 
 	// Before changing the value, activate Fogging if necessary to hide changes.
-	let cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
+	const cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
 	if (cmpFogging)
 		cmpFogging.Activate();
 
@@ -103,7 +103,7 @@ Capturable.prototype.Reduce = function(amount, playerID)
 	while (distributedAmount > 0.0001)
 	{
 		numberOfEnemies = 0;
-		for (let i in this.capturePoints)
+		for (const i in this.capturePoints)
 		{
 			if (!this.capturePoints[i] || !cmpDiplomacySource.IsEnemy(i))
 				continue;
@@ -123,7 +123,7 @@ Capturable.prototype.Reduce = function(amount, playerID)
 	}
 
 	// Give all capture points taken to the player.
-	let takenCapturePoints = this.maxCapturePoints - this.capturePoints.reduce((a, b) => a + b);
+	const takenCapturePoints = this.maxCapturePoints - this.capturePoints.reduce((a, b) => a + b);
 	this.capturePoints[playerID] += takenCapturePoints;
 
 	this.CheckTimer();
@@ -142,9 +142,9 @@ Capturable.prototype.CanCapture = function(playerID)
 
 	if (!cmpDiplomacySource)
 		warn(playerID + " has no diplomacy component defined on its id.");
-	let capturePoints = this.GetCapturePoints();
+	const capturePoints = this.GetCapturePoints();
 	let sourceEnemyCapturePoints = 0;
-	for (let i in this.GetCapturePoints())
+	for (const i in this.GetCapturePoints())
 		if (cmpDiplomacySource.IsEnemy(i))
 			sourceEnemyCapturePoints += capturePoints[i];
 	return sourceEnemyCapturePoints > 0;
@@ -158,24 +158,24 @@ Capturable.prototype.CanCapture = function(playerID)
  */
 Capturable.prototype.RegisterCapturePointsChanged = function()
 {
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership)
 		return;
 
 	Engine.PostMessage(this.entity, MT_CapturePointsChanged, { "capturePoints": this.capturePoints });
 
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 	if (owner == INVALID_PLAYER || this.capturePoints[owner] > 0)
 		return;
 
 	// If all capture points have been taken from the owner, convert it to player with the most capture points.
-	let cmpLostPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
+	const cmpLostPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
 	if (cmpLostPlayerStatisticsTracker)
 		cmpLostPlayerStatisticsTracker.LostEntity(this.entity);
 
 	cmpOwnership.SetOwner(this.capturePoints.reduce((bestPlayer, playerCapturePoints, player, capturePoints) => playerCapturePoints > capturePoints[bestPlayer] ? player : bestPlayer, 0));
 
-	let cmpCapturedPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
+	const cmpCapturedPlayerStatisticsTracker = QueryOwnerInterface(this.entity, IID_StatisticsTracker);
 	if (cmpCapturedPlayerStatisticsTracker)
 		cmpCapturedPlayerStatisticsTracker.CapturedEntity(this.entity);
 };
@@ -202,25 +202,25 @@ Capturable.prototype.GetRegenRate = function()
 
 Capturable.prototype.TimerTick = function()
 {
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || cmpOwnership.GetOwner() == INVALID_PLAYER)
 		return;
 
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 	let modifiedCapturePoints = 0;
 
 	// Special handle for the territory decay.
 	// Reduce capture points from the owner in favour of all neighbours (also allies).
-	let cmpTerritoryDecay = Engine.QueryInterface(this.entity, IID_TerritoryDecay);
+	const cmpTerritoryDecay = Engine.QueryInterface(this.entity, IID_TerritoryDecay);
 	if (cmpTerritoryDecay && cmpTerritoryDecay.IsDecaying())
 	{
-		let neighbours = cmpTerritoryDecay.GetConnectedNeighbours();
-		let totalNeighbours = neighbours.reduce((a, b) => a + b);
-		let decay = Math.min(cmpTerritoryDecay.GetDecayRate(), this.capturePoints[owner]);
+		const neighbours = cmpTerritoryDecay.GetConnectedNeighbours();
+		const totalNeighbours = neighbours.reduce((a, b) => a + b);
+		const decay = Math.min(cmpTerritoryDecay.GetDecayRate(), this.capturePoints[owner]);
 		this.capturePoints[owner] -= decay;
 
 		if (totalNeighbours)
-			for (let p in neighbours)
+			for (const p in neighbours)
 				this.capturePoints[p] += decay * neighbours[p] / totalNeighbours;
 		// Decay to gaia as default.
 		else
@@ -230,7 +230,7 @@ Capturable.prototype.TimerTick = function()
 		this.RegisterCapturePointsChanged();
 	}
 
-	let regenRate = this.GetRegenRate();
+	const regenRate = this.GetRegenRate();
 	if (regenRate < 0)
 		modifiedCapturePoints += this.Reduce(-regenRate, 0);
 	else if (regenRate > 0)
@@ -240,7 +240,7 @@ Capturable.prototype.TimerTick = function()
 		return;
 
 	// Nothing changed, stop the timer.
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timer);
 	delete this.timer;
 	Engine.PostMessage(this.entity, MT_CaptureRegenStateChanged, { "regenerating": false, "regenRate": 0, "territoryDecay": 0 });
@@ -256,13 +256,13 @@ Capturable.prototype.CheckTimer = function()
 	if (this.timer)
 		return;
 
-	let regenRate = this.GetRegenRate();
-	let cmpDecay = Engine.QueryInterface(this.entity, IID_TerritoryDecay);
-	let decay = cmpDecay && cmpDecay.IsDecaying() ? cmpDecay.GetDecayRate() : 0;
+	const regenRate = this.GetRegenRate();
+	const cmpDecay = Engine.QueryInterface(this.entity, IID_TerritoryDecay);
+	const decay = cmpDecay && cmpDecay.IsDecaying() ? cmpDecay.GetDecayRate() : 0;
 	if (regenRate == 0 && decay == 0)
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_Capturable, "TimerTick", 1000, 1000, null);
 	Engine.PostMessage(this.entity, MT_CaptureRegenStateChanged, { "regenerating": true, "regenRate": regenRate, "territoryDecay": decay });
 };
@@ -284,16 +284,16 @@ Capturable.prototype.UpdateCachedValues = function()
 */
 Capturable.prototype.UpdateCachedValuesAndNotify = function(sendMessage = true)
 {
-	let oldMaxCapturePoints = this.maxCapturePoints;
-	let oldGarrisonRegenRate = this.garrisonRegenRate;
-	let oldRegenRate = this.regenRate;
+	const oldMaxCapturePoints = this.maxCapturePoints;
+	const oldGarrisonRegenRate = this.garrisonRegenRate;
+	const oldRegenRate = this.regenRate;
 
 	this.UpdateCachedValues();
 
 	if (oldMaxCapturePoints != this.maxCapturePoints)
 	{
-		let scale = this.maxCapturePoints / oldMaxCapturePoints;
-		for (let i in this.capturePoints)
+		const scale = this.maxCapturePoints / oldMaxCapturePoints;
+		for (const i in this.capturePoints)
 			this.capturePoints[i] *= scale;
 		if (sendMessage)
 			Engine.PostMessage(this.entity, MT_CapturePointsChanged, { "capturePoints": this.capturePoints });
@@ -336,7 +336,7 @@ Capturable.prototype.OnOwnershipChanged = function(msg)
 	if (!this.capturePoints.length)
 	{
 		this.UpdateCachedValues();
-		let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+		const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 		for (let i = 0; i < numPlayers; ++i)
 		{
 			if (i == msg.to)
@@ -370,7 +370,7 @@ Capturable.prototype.OnGlobalPlayerDefeated = function(msg)
 {
 	if (!this.capturePoints[msg.playerId])
 		return;
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (cmpOwnership && (cmpOwnership.GetOwner() == INVALID_PLAYER ||
 	                     cmpOwnership.GetOwner() == msg.playerId))
 		return;
@@ -395,7 +395,7 @@ Engine.RegisterGlobal("CapturableMirage", CapturableMirage);
 
 Capturable.prototype.Mirage = function()
 {
-	let mirage = new CapturableMirage();
+	const mirage = new CapturableMirage();
 	mirage.Init(this);
 	return mirage;
 };

@@ -50,7 +50,7 @@ CeasefireManager.prototype.StartCeasefire = function(ceasefireTime)
 		return;
 
 	// Remove existing timers
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	if (this.ceasefireCountdownMessageTimer)
 		cmpTimer.CancelTimer(this.ceasefireCountdownMessageTimer);
 
@@ -58,7 +58,7 @@ CeasefireManager.prototype.StartCeasefire = function(ceasefireTime)
 		cmpTimer.CancelTimer(this.stopCeasefireTimer);
 
 	// Remove existing messages
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	if (this.ceasefireCountdownMessage)
 		cmpGuiInterface.DeleteTimeNotification(this.ceasefireCountdownMessage);
 
@@ -69,7 +69,7 @@ CeasefireManager.prototype.StartCeasefire = function(ceasefireTime)
 	if (!this.ceasefireIsActive)
 	{
 		// Save diplomacy
-		let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+		const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 		for (let i = 1; i < numPlayers; ++i)
 			this.diplomacyBeforeCeasefire.push(QueryPlayerIDInterface(i, IID_Diplomacy).GetDiplomacy());
 
@@ -94,7 +94,7 @@ CeasefireManager.prototype.StartCeasefire = function(ceasefireTime)
 
 CeasefireManager.prototype.ShowCeasefireCountdownMessage = function()
 {
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	this.ceasefireCountdownMessage = cmpGuiInterface.AddTimeNotification({
 		"message": markForTranslation("You can attack in %(time)s"),
 		"translateMessage": true
@@ -103,7 +103,7 @@ CeasefireManager.prototype.ShowCeasefireCountdownMessage = function()
 
 CeasefireManager.prototype.StopCeasefire = function()
 {
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 
 	if (this.ceasefireCountdownMessage)
 		cmpGuiInterface.DeleteTimeNotification(this.ceasefireCountdownMessage);
@@ -114,7 +114,7 @@ CeasefireManager.prototype.StopCeasefire = function()
 	}, this.postCountdownMessageDuration);
 
 	// Reset diplomacies to original settings
-	let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+	const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 	for (let i = 1; i < numPlayers; ++i)
 		QueryPlayerIDInterface(i, IID_Diplomacy).SetDiplomacy(this.diplomacyBeforeCeasefire[i-1]);
 

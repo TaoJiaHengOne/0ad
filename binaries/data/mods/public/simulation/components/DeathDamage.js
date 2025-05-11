@@ -31,13 +31,13 @@ DeathDamage.prototype.GetDeathDamageEffects = function()
 
 DeathDamage.prototype.CauseDeathDamage = function()
 {
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (!cmpPosition || !cmpPosition.IsInWorld())
 		return;
-	let pos = cmpPosition.GetPosition2D();
+	const pos = cmpPosition.GetPosition2D();
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let owner = cmpOwnership.GetOwner();
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const owner = cmpOwnership.GetOwner();
 	if (owner == INVALID_PLAYER)
 		warn("Unit causing death damage does not have any owner.");
 

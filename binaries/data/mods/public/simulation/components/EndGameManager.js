@@ -85,9 +85,9 @@ EndGameManager.prototype.MarkPlayerAndAlliesAsWon = function(playerID, victorySt
 EndGameManager.prototype.MarkPlayersAsWon = function(winningPlayers, victoryString, defeatString)
 {
 	this.skipAlliedVictoryCheck = true;
-	for (let playerID of winningPlayers)
+	for (const playerID of winningPlayers)
 	{
-		let cmpPlayer = QueryPlayerIDInterface(playerID);
+		const cmpPlayer = QueryPlayerIDInterface(playerID);
 		if (!cmpPlayer.IsActive())
 		{
 			warn("Can't mark player " + playerID + " as won, since the state is " + cmpPlayer.GetState());
@@ -96,13 +96,13 @@ EndGameManager.prototype.MarkPlayersAsWon = function(winningPlayers, victoryStri
 		cmpPlayer.Win(undefined);
 	}
 
-	let defeatedPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers().filter(
+	const defeatedPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetActivePlayers().filter(
 		playerID => winningPlayers.indexOf(playerID) == -1);
 
-	for (let playerID of defeatedPlayers)
+	for (const playerID of defeatedPlayers)
 		QueryPlayerIDInterface(playerID).Defeat(undefined);
 
-	let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGUIInterface.PushNotification({
 		"type": "won",
 		"players": [winningPlayers[0]],
@@ -136,15 +136,15 @@ EndGameManager.prototype.AlliedVictoryCheck = function()
 	if (this.skipAlliedVictoryCheck || this.endlessGame)
 		return;
 
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 	cmpGuiInterface.DeleteTimeNotification(this.lastManStandingMessage);
 
 	// Proceed if only allies are remaining
-	let allies = [];
-	let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+	const allies = [];
+	const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 	for (let playerID = 1; playerID < numPlayers; ++playerID)
 	{
-		let cmpPlayer = QueryPlayerIDInterface(playerID);
+		const cmpPlayer = QueryPlayerIDInterface(playerID);
 		if (!cmpPlayer.IsActive())
 			continue;
 
