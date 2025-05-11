@@ -9,11 +9,11 @@ function PositionHelper() {}
  */
 PositionHelper.prototype.DistanceBetweenEntities = function(firstEntity, secondEntity)
 {
-	let cmpFirstPosition = Engine.QueryInterface(firstEntity, IID_Position);
+	const cmpFirstPosition = Engine.QueryInterface(firstEntity, IID_Position);
 	if (!cmpFirstPosition || !cmpFirstPosition.IsInWorld())
 		return Infinity;
 
-	let cmpSecondPosition = Engine.QueryInterface(secondEntity, IID_Position);
+	const cmpSecondPosition = Engine.QueryInterface(secondEntity, IID_Position);
 	if (!cmpSecondPosition || !cmpSecondPosition.IsInWorld())
 		return Infinity;
 
@@ -33,7 +33,7 @@ PositionHelper.prototype.EntitiesNearPoint = function(origin, radius, players, i
 	if (!origin || !radius || !players || !players.length)
 		return [];
 
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	return cmpRangeManager.ExecuteQueryAroundPos(origin, 0, radius, players, iid, true);
 };
 
@@ -48,13 +48,13 @@ PositionHelper.prototype.EntitiesNearPoint = function(origin, radius, players, i
  */
 PositionHelper.prototype.InterpolatedLocation = function(ent, lateness)
 {
-	let cmpTargetPosition = Engine.QueryInterface(ent, IID_Position);
+	const cmpTargetPosition = Engine.QueryInterface(ent, IID_Position);
 	if (!cmpTargetPosition || !cmpTargetPosition.IsInWorld()) // TODO: handle dead target properly
 		return undefined;
-	let curPos = cmpTargetPosition.GetPosition();
-	let prevPos = cmpTargetPosition.GetPreviousPosition();
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-	let turnLength = cmpTimer.GetLatestTurnLength();
+	const curPos = cmpTargetPosition.GetPosition();
+	const prevPos = cmpTargetPosition.GetPreviousPosition();
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const turnLength = cmpTimer.GetLatestTurnLength();
 	return new Vector3D(
 	    (curPos.x * (turnLength - lateness) + prevPos.x * lateness) / turnLength,
 	    0,
@@ -74,15 +74,15 @@ PositionHelper.prototype.InterpolatedLocation = function(ent, lateness)
  */
 PositionHelper.prototype.TestCollision = function(ent, point, lateness)
 {
-	let targetPosition = this.InterpolatedLocation(ent, lateness);
+	const targetPosition = this.InterpolatedLocation(ent, lateness);
 	if (!targetPosition)
 		return false;
 
-	let cmpFootprint = Engine.QueryInterface(ent, IID_Footprint);
+	const cmpFootprint = Engine.QueryInterface(ent, IID_Footprint);
 	if (!cmpFootprint)
 		return false;
 
-	let targetShape = cmpFootprint.GetShape();
+	const targetShape = cmpFootprint.GetShape();
 	if (!targetShape)
 		return false;
 
@@ -91,8 +91,8 @@ PositionHelper.prototype.TestCollision = function(ent, point, lateness)
 
 	if (targetShape.type == "square")
 	{
-		let angle = Engine.QueryInterface(ent, IID_Position).GetRotation().y;
-		let distance = Vector2D.from3D(Vector3D.sub(point, targetPosition)).rotate(-angle);
+		const angle = Engine.QueryInterface(ent, IID_Position).GetRotation().y;
+		const distance = Vector2D.from3D(Vector3D.sub(point, targetPosition)).rotate(-angle);
 		return Math.abs(distance.x) < targetShape.width / 2 && Math.abs(distance.y) < targetShape.depth / 2;
 	}
 
@@ -114,10 +114,10 @@ PositionHelper.prototype.TestCollision = function(ent, point, lateness)
  */
 PositionHelper.prototype.PredictTimeToTarget = function(firstPosition, selfSpeed, targetPosition, targetVelocity)
 {
-	let relativePosition = new Vector3D.sub(targetPosition, firstPosition);
-	let a = targetVelocity.x * targetVelocity.x + targetVelocity.z * targetVelocity.z - selfSpeed * selfSpeed;
-	let b = relativePosition.x * targetVelocity.x + relativePosition.z * targetVelocity.z;
-	let c = relativePosition.x * relativePosition.x + relativePosition.z * relativePosition.z;
+	const relativePosition = new Vector3D.sub(targetPosition, firstPosition);
+	const a = targetVelocity.x * targetVelocity.x + targetVelocity.z * targetVelocity.z - selfSpeed * selfSpeed;
+	const b = relativePosition.x * targetVelocity.x + relativePosition.z * targetVelocity.z;
+	const c = relativePosition.x * relativePosition.x + relativePosition.z * relativePosition.z;
 
 	// The predicted time to reach the target is the smallest non negative solution
 	// (when it exists) of the equation a t^2 + 2 b t + c = 0.
@@ -126,7 +126,7 @@ PositionHelper.prototype.PredictTimeToTarget = function(firstPosition, selfSpeed
 	if (c == 0)
 		return 0;
 
-	let disc = b * b - a * c;
+	const disc = b * b - a * c;
 	if (a < 0 || b < 0 && disc >= 0)
 		return c / (Math.sqrt(disc) - b);
 
@@ -141,9 +141,9 @@ PositionHelper.prototype.PredictTimeToTarget = function(firstPosition, selfSpeed
  */
 PositionHelper.prototype.GetSpawnPosition = function(target, entity, forced)
 {
-	let cmpFootprint = Engine.QueryInterface(target, IID_Footprint);
-	let cmpHealth = Engine.QueryInterface(target, IID_Health);
-	let cmpIdentity = Engine.QueryInterface(target, IID_Identity);
+	const cmpFootprint = Engine.QueryInterface(target, IID_Footprint);
+	const cmpHealth = Engine.QueryInterface(target, IID_Health);
+	const cmpIdentity = Engine.QueryInterface(target, IID_Identity);
 
 	if (!cmpFootprint)
 		return null;
@@ -162,7 +162,7 @@ PositionHelper.prototype.GetSpawnPosition = function(target, entity, forced)
 			return null;
 
 		// If ejection is forced, we need to continue, so use center of the entity.
-		let cmpPosition = Engine.QueryInterface(target, IID_Position);
+		const cmpPosition = Engine.QueryInterface(target, IID_Position);
 		pos = cmpPosition.GetPosition();
 	}
 	return pos;

@@ -11,16 +11,16 @@ function PreInitGame()
 	Engine.BroadcastMessage(MT_SkirmishReplace, {});
 	Engine.FlushDestroyedEntities();
 
-	let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+	const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 	for (let i = 1; i < numPlayers; ++i) // ignore gaia
 	{
-		let cmpTechnologyManager = QueryPlayerIDInterface(i, IID_TechnologyManager);
+		const cmpTechnologyManager = QueryPlayerIDInterface(i, IID_TechnologyManager);
 		if (cmpTechnologyManager)
 			cmpTechnologyManager.UpdateAutoResearch();
 	}
 
 	// Explore the map inside the players' territory borders
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	cmpRangeManager.ExploreTerritories();
 }
 
@@ -36,7 +36,7 @@ function InitGame(settings)
 
 	if (settings.ExploreMap)
 	{
-		let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 		for (let i = 1; i < settings.PlayerData.length; ++i)
 			cmpRangeManager.ExploreMap(i);
 	}

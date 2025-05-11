@@ -20,25 +20,25 @@
  */
 function GetWallPlacement(placementData, wallSet, start, end)
 {
-	let candidateSegments = ["long", "medium", "short"].map(size => ({
+	const candidateSegments = ["long", "medium", "short"].map(size => ({
 		"template": wallSet.templates[size],
 		"len": placementData[wallSet.templates[size]].templateData.wallPiece.length
 	}));
 
-	let towerWidth = placementData[wallSet.templates.tower].templateData.wallPiece.length;
+	const towerWidth = placementData[wallSet.templates.tower].templateData.wallPiece.length;
 
-	let dir = {
+	const dir = {
 		"x": end.pos.x - start.pos.x,
 		"z": end.pos.z - start.pos.z
 	};
 
-	let len = Math.sqrt(dir.x * dir.x + dir.z * dir.z);
+	const len = Math.sqrt(dir.x * dir.x + dir.z * dir.z);
 
 	// we'll need room for at least our starting and ending towers to fit next to eachother
 	if (len <= towerWidth)
 		return [];
 
-	let placement = GetWallSegmentsRec(
+	const placement = GetWallSegmentsRec(
 		len,
 		candidateSegments,
 		wallSet.minTowerOverlap,
@@ -61,22 +61,22 @@ function GetWallPlacement(placementData, wallSet, start, end)
 	}
 
 	// List of chosen candidate segments
-	let placedEntities = placement.segments;
+	const placedEntities = placement.segments;
 
 	// placement.r is the remaining distance to target without towers (must be <= (N-1) * towerWidth)
-	let spacing = placement.r / (2 * placedEntities.length);
+	const spacing = placement.r / (2 * placedEntities.length);
 
-	let dirNormalized = { "x": dir.x / len, "z": dir.z / len };
+	const dirNormalized = { "x": dir.x / len, "z": dir.z / len };
 
 	// Angle of this wall segment (relative to world-space X/Z axes)
-	let angle = -Math.atan2(dir.z, dir.x);
+	const angle = -Math.atan2(dir.z, dir.x);
 
 	let progress = 0;
-	let result = [];
+	const result = [];
 
 	for (let i = 0; i < placedEntities.length; ++i)
 	{
-		let placedEntity = placedEntities[i];
+		const placedEntity = placedEntities[i];
 
 		result.push({
 			"template": placedEntity.template,
@@ -178,15 +178,15 @@ function GetWallSegmentsRec(d, candidateSegments, minOverlap, maxOverlap, t, dis
 	// backtrack and try a wall segment of the next length instead. Note that we should prefer to use the long segments first since
 	// they can be replaced by gates.
 
-	for (let candSegment of candidateSegments)
+	for (const candSegment of candidateSegments)
 	{
 		segments.push(candSegment);
 
-		let newDistSoFar = distSoFar + candSegment.len;
-		let r = d - newDistSoFar;
+		const newDistSoFar = distSoFar + candSegment.len;
+		const r = d - newDistSoFar;
 
-		let rLowerBound = (1 - 2 * maxOverlap) * segments.length * t;
-		let rUpperBound = (1 - 2 * minOverlap) * segments.length * t;
+		const rLowerBound = (1 - 2 * maxOverlap) * segments.length * t;
+		const rUpperBound = (1 - 2 * minOverlap) * segments.length * t;
 
 		if (r < rLowerBound)
 		{
@@ -197,7 +197,7 @@ function GetWallSegmentsRec(d, candidateSegments, minOverlap, maxOverlap, t, dis
 		}
 		else if (r > rUpperBound)
 		{
-			let recursiveResult = GetWallSegmentsRec(d, candidateSegments, minOverlap, maxOverlap, t, newDistSoFar, segments);
+			const recursiveResult = GetWallSegmentsRec(d, candidateSegments, minOverlap, maxOverlap, t, newDistSoFar, segments);
 			if (!recursiveResult)
 			{
 				// recursive search with this piece yielded no results, pop it and try the next one

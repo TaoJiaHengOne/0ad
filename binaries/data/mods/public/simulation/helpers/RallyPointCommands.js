@@ -2,9 +2,9 @@
 // This assumes that the rally point has a valid position.
 function GetRallyPointCommands(cmpRallyPoint, spawnedEnts)
 {
-	let data = cmpRallyPoint.GetData();
-	let rallyPos = cmpRallyPoint.GetPositions();
-	let ret = [];
+	const data = cmpRallyPoint.GetData();
+	const rallyPos = cmpRallyPoint.GetPositions();
+	const ret = [];
 	for (let i = 0; i < rallyPos.length; ++i)
 	{
 		// Look and see if there is a command in the rally point data, otherwise just walk there.
@@ -14,7 +14,7 @@ function GetRallyPointCommands(cmpRallyPoint, spawnedEnts)
 		// has a valid position, then just walk to the rally point.
 		if (data[i] && data[i].target)
 		{
-			let cmpPosition = Engine.QueryInterface(data[i].target, IID_Position);
+			const cmpPosition = Engine.QueryInterface(data[i].target, IID_Position);
 			if (!cmpPosition || !cmpPosition.IsInWorld())
 			{
 				if (command == "gather")
@@ -149,7 +149,7 @@ function GetRallyPointCommands(cmpRallyPoint, spawnedEnts)
 	if (ret.length > 1 && ret[ret.length-1].type == "setup-trade-route")
 	{
 		let route = [];
-		let waypoints = ret.length - 1;
+		const waypoints = ret.length - 1;
 
 		for (let i = 0; i < waypoints; ++i)
 		{

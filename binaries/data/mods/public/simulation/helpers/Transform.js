@@ -30,37 +30,37 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
 	{
 		if (cmpPosition.IsInWorld())
 		{
-			let pos = cmpPosition.GetPosition2D();
+			const pos = cmpPosition.GetPosition2D();
 			cmpNewPosition.JumpTo(pos.x, pos.y);
 		}
-		let rot = cmpPosition.GetRotation();
+		const rot = cmpPosition.GetRotation();
 		cmpNewPosition.SetYRotation(rot.y);
 		cmpNewPosition.SetXZRotation(rot.x, rot.z);
 		cmpNewPosition.SetHeightOffset(cmpPosition.GetHeightOffset());
 	}
 
 	// Prevent spawning subunits on occupied positions.
-	let cmpTurretHolder = Engine.QueryInterface(oldEnt, IID_TurretHolder);
-	let cmpNewTurretHolder = Engine.QueryInterface(newEnt, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(oldEnt, IID_TurretHolder);
+	const cmpNewTurretHolder = Engine.QueryInterface(newEnt, IID_TurretHolder);
 	if (cmpTurretHolder && cmpNewTurretHolder)
-		for (let entity of cmpTurretHolder.GetEntities())
+		for (const entity of cmpTurretHolder.GetEntities())
 			cmpNewTurretHolder.SetReservedTurretPoint(cmpTurretHolder.GetOccupiedTurretPointName(entity));
 
 	let owner;
-	let cmpTerritoryDecay = Engine.QueryInterface(newEnt, IID_TerritoryDecay);
+	const cmpTerritoryDecay = Engine.QueryInterface(newEnt, IID_TerritoryDecay);
 	if (cmpTerritoryDecay && cmpTerritoryDecay.HasTerritoryOwnership() && cmpNewPosition)
 	{
-		let pos = cmpNewPosition.GetPosition2D();
-		let cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
+		const pos = cmpNewPosition.GetPosition2D();
+		const cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
 		owner = cmpTerritoryManager.GetOwner(pos.x, pos.y);
 	}
 	else
 	{
-		let cmpOwnership = Engine.QueryInterface(oldEnt, IID_Ownership);
+		const cmpOwnership = Engine.QueryInterface(oldEnt, IID_Ownership);
 		if (cmpOwnership)
 			owner = cmpOwnership.GetOwner();
 	}
-	let cmpNewOwnership = Engine.QueryInterface(newEnt, IID_Ownership);
+	const cmpNewOwnership = Engine.QueryInterface(newEnt, IID_Ownership);
 	if (cmpNewOwnership)
 		cmpNewOwnership.SetOwner(owner);
 
@@ -71,8 +71,8 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
 	var cmpNewCapturable = Engine.QueryInterface(newEnt, IID_Capturable);
 	if (cmpCapturable && cmpNewCapturable)
 	{
-		let scale = cmpCapturable.GetMaxCapturePoints() / cmpNewCapturable.GetMaxCapturePoints();
-		let newCapturePoints = cmpCapturable.GetCapturePoints().map(v => v / scale);
+		const scale = cmpCapturable.GetMaxCapturePoints() / cmpNewCapturable.GetMaxCapturePoints();
+		const newCapturePoints = cmpCapturable.GetCapturePoints().map(v => v / scale);
 		cmpNewCapturable.SetCapturePoints(newCapturePoints);
 	}
 
@@ -94,41 +94,41 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
 			cmpNewPromotion.IncreaseXp(cmpPromotion.GetCurrentXp());
 	}
 
-	let cmpResGatherer = Engine.QueryInterface(oldEnt, IID_ResourceGatherer);
-	let cmpNewResGatherer = Engine.QueryInterface(newEnt, IID_ResourceGatherer);
+	const cmpResGatherer = Engine.QueryInterface(oldEnt, IID_ResourceGatherer);
+	const cmpNewResGatherer = Engine.QueryInterface(newEnt, IID_ResourceGatherer);
 	if (cmpResGatherer && cmpNewResGatherer)
 	{
-		let carriedResources = cmpResGatherer.GetCarryingStatus();
+		const carriedResources = cmpResGatherer.GetCarryingStatus();
 		cmpNewResGatherer.GiveResources(carriedResources);
 		cmpNewResGatherer.SetLastCarriedType(cmpResGatherer.GetLastCarriedType());
 	}
 
 	// Maintain the list of guards
-	let cmpGuard = Engine.QueryInterface(oldEnt, IID_Guard);
-	let cmpNewGuard = Engine.QueryInterface(newEnt, IID_Guard);
+	const cmpGuard = Engine.QueryInterface(oldEnt, IID_Guard);
+	const cmpNewGuard = Engine.QueryInterface(newEnt, IID_Guard);
 	if (cmpGuard && cmpNewGuard)
 	{
-		let entities = cmpGuard.GetEntities();
+		const entities = cmpGuard.GetEntities();
 		if (entities.length)
 		{
 			cmpNewGuard.SetEntities(entities);
-			for (let ent of entities)
+			for (const ent of entities)
 			{
-				let cmpEntUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
+				const cmpEntUnitAI = Engine.QueryInterface(ent, IID_UnitAI);
 				if (cmpEntUnitAI)
 					cmpEntUnitAI.SetGuardOf(newEnt);
 			}
 		}
 	}
 
-	let cmpStatusEffectsReceiver = Engine.QueryInterface(oldEnt, IID_StatusEffectsReceiver);
-	let cmpNewStatusEffectsReceiver = Engine.QueryInterface(newEnt, IID_StatusEffectsReceiver);
+	const cmpStatusEffectsReceiver = Engine.QueryInterface(oldEnt, IID_StatusEffectsReceiver);
+	const cmpNewStatusEffectsReceiver = Engine.QueryInterface(newEnt, IID_StatusEffectsReceiver);
 	if (cmpStatusEffectsReceiver && cmpNewStatusEffectsReceiver)
 	{
-		let activeStatus = cmpStatusEffectsReceiver.GetActiveStatuses();
-		for (let status in activeStatus)
+		const activeStatus = cmpStatusEffectsReceiver.GetActiveStatuses();
+		for (const status in activeStatus)
 		{
-			let newStatus = activeStatus[status];
+			const newStatus = activeStatus[status];
 			if (newStatus.Duration)
 				newStatus.Duration -= newStatus._timeElapsed;
 			cmpNewStatusEffectsReceiver.ApplyStatus({ [status]: newStatus }, newStatus.source.entity, newStatus.source.owner);
@@ -140,19 +140,19 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
 	Engine.PostMessage(oldEnt, MT_EntityRenamed, { "entity": oldEnt, "newentity": newEnt });
 
 	// UnitAI generally needs other components to be properly initialised.
-	let cmpUnitAI = Engine.QueryInterface(oldEnt, IID_UnitAI);
-	let cmpNewUnitAI = Engine.QueryInterface(newEnt, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(oldEnt, IID_UnitAI);
+	const cmpNewUnitAI = Engine.QueryInterface(newEnt, IID_UnitAI);
 	if (cmpUnitAI && cmpNewUnitAI)
 	{
-		let pos = cmpUnitAI.GetHeldPosition();
+		const pos = cmpUnitAI.GetHeldPosition();
 		if (pos)
 			cmpNewUnitAI.SetHeldPosition(pos.x, pos.z);
 		cmpNewUnitAI.SwitchToStance(cmpUnitAI.GetStanceName());
 		cmpNewUnitAI.AddOrders(cmpUnitAI.GetOrders());
-		let guarded = cmpUnitAI.IsGuardOf();
+		const guarded = cmpUnitAI.IsGuardOf();
 		if (guarded)
 		{
-			let cmpGuarded = Engine.QueryInterface(guarded, IID_Guard);
+			const cmpGuarded = Engine.QueryInterface(guarded, IID_Guard);
 			if (cmpGuarded)
 			{
 				cmpGuarded.RenameGuard(oldEnt, newEnt);
@@ -181,8 +181,8 @@ function ChangeEntityTemplate(oldEnt, newTemplate)
  */
 function CopyControlGroups(oldEnt, newEnt)
 {
-	let cmpObstruction = Engine.QueryInterface(oldEnt, IID_Obstruction);
-	let cmpNewObstruction = Engine.QueryInterface(newEnt, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(oldEnt, IID_Obstruction);
+	const cmpNewObstruction = Engine.QueryInterface(newEnt, IID_Obstruction);
 	if (cmpObstruction && cmpNewObstruction)
 	{
 		cmpNewObstruction.SetControlGroup(cmpObstruction.GetControlGroup());
@@ -253,10 +253,10 @@ function ObstructionsBlockingTemplateChange(ent, templateArg)
 			if (cmpNewObstruction && cmpNewObstruction.GetBlockMovementFlag())
 			{
 				// Remove all obstructions at the new entity, especially animal corpses
-				for (let ent of cmpNewObstruction.GetEntitiesDeletedUponConstruction())
+				for (const ent of cmpNewObstruction.GetEntitiesDeletedUponConstruction())
 					Engine.DestroyEntity(ent);
 
-				let collisions = cmpNewObstruction.GetEntitiesBlockingConstruction();
+				const collisions = cmpNewObstruction.GetEntitiesBlockingConstruction();
 				if (collisions.length)
 					return DeleteEntityAndReturn(previewEntity, cmpPosition, pos, angle, cmpNewPosition, true);
 			}
@@ -283,18 +283,18 @@ function DeleteEntityAndReturn(ent, cmpPosition, position, angle, cmpNewPosition
 function TransferGarrisonedUnits(oldEnt, newEnt)
 {
 	// Transfer garrisoned units if possible, or unload them
-	let cmpOldGarrison = Engine.QueryInterface(oldEnt, IID_GarrisonHolder);
+	const cmpOldGarrison = Engine.QueryInterface(oldEnt, IID_GarrisonHolder);
 	if (!cmpOldGarrison || !cmpOldGarrison.GetEntities().length)
 		return;
 
-	let cmpNewGarrison = Engine.QueryInterface(newEnt, IID_GarrisonHolder);
-	let entities = cmpOldGarrison.GetEntities().slice();
-	for (let ent of entities)
+	const cmpNewGarrison = Engine.QueryInterface(newEnt, IID_GarrisonHolder);
+	const entities = cmpOldGarrison.GetEntities().slice();
+	for (const ent of entities)
 	{
 		cmpOldGarrison.Unload(ent);
 		if (!cmpNewGarrison)
 			continue;
-		let cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
+		const cmpGarrisonable = Engine.QueryInterface(ent, IID_Garrisonable);
 		if (!cmpGarrisonable)
 			continue;
 		cmpGarrisonable.Garrison(newEnt);

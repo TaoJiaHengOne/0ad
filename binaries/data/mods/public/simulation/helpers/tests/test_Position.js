@@ -178,7 +178,7 @@ class testTestCollision
 	 */
 	testSquareFootprints()
 	{
-		let square = { "type": "square", "width": 2, "depth": 2 };
+		const square = { "type": "square", "width": 2, "depth": 2 };
 		AddMock(this.entity, IID_Position, {
 			"GetRotation": () => new Vector3D(0, 0, 0)
 		});
@@ -213,7 +213,7 @@ class testTestCollision
 	 */
 	testRectangularFootprints()
 	{
-		let rectangle = { "type": "square", "width": 2, "depth": 4 };
+		const rectangle = { "type": "square", "width": 2, "depth": 4 };
 		AddMock(this.entity, IID_Position, {
 			"GetRotation": () => new Vector3D(0, 0, 0)
 		});

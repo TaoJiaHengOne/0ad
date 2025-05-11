@@ -90,14 +90,14 @@ AttackHelper.prototype.BuildAttackEffectsSchema = function()
  */
 AttackHelper.prototype.GetAttackEffectsData = function(valueModifRoot, template, entity)
 {
-	let ret = {};
+	const ret = {};
 
 	if (template.Damage)
 	{
 		ret.Damage = {};
-		let applyMods = damageType =>
+		const applyMods = damageType =>
 			ApplyValueModificationsToEntity(valueModifRoot + "/Damage/" + damageType, +(template.Damage[damageType] || 0), entity);
-		for (let damageType in template.Damage)
+		for (const damageType in template.Damage)
 			ret.Damage[damageType] = applyMods(damageType);
 	}
 	if (template.Capture)
@@ -114,10 +114,10 @@ AttackHelper.prototype.GetAttackEffectsData = function(valueModifRoot, template,
 
 AttackHelper.prototype.GetStatusEffectsData = function(valueModifRoot, template, entity)
 {
-	let result = {};
-	for (let effect in template)
+	const result = {};
+	for (const effect in template)
 	{
-		let statusTemplate = template[effect];
+		const statusTemplate = template[effect];
 		result[effect] = {
 			"Duration": ApplyValueModificationsToEntity(valueModifRoot + "/ApplyStatus/" + effect + "/Duration", +(statusTemplate.Duration || 0), entity),
 			"Interval": ApplyValueModificationsToEntity(valueModifRoot + "/ApplyStatus/" + effect + "/Interval", +(statusTemplate.Interval || 0), entity),
@@ -132,10 +132,10 @@ AttackHelper.prototype.GetStatusEffectsData = function(valueModifRoot, template,
 
 AttackHelper.prototype.GetStatusEffectsModifications = function(valueModifRoot, template, entity, effect)
 {
-	let modifiers = {};
-	for (let modifier in template)
+	const modifiers = {};
+	for (const modifier in template)
 	{
-		let modifierTemplate = template[modifier];
+		const modifierTemplate = template[modifier];
 		modifiers[modifier] = {
 			"Paths": modifierTemplate.Paths,
 			"Affects": modifierTemplate.Affects
@@ -167,17 +167,17 @@ AttackHelper.prototype.GetTotalAttackEffects = function(target, effectData, effe
 	if (!cmpResistance)
 		cmpResistance = Engine.QueryInterface(target, IID_Resistance);
 
-	let resistanceStrengths = cmpResistance ? cmpResistance.GetEffectiveResistanceAgainst(effectType) : {};
+	const resistanceStrengths = cmpResistance ? cmpResistance.GetEffectiveResistanceAgainst(effectType) : {};
 
 	if (effectType == "Damage")
-		for (let type in effectData.Damage)
+		for (const type in effectData.Damage)
 			total += effectData.Damage[type] * Math.pow(0.9, resistanceStrengths.Damage ? resistanceStrengths.Damage[type] || 0 : 0);
 	else if (effectType == "Capture")
 	{
 		total = effectData.Capture * Math.pow(0.9, resistanceStrengths.Capture || 0);
 
 		// If Health is lower we are more susceptible to capture attacks.
-		let cmpHealth = Engine.QueryInterface(target, IID_Health);
+		const cmpHealth = Engine.QueryInterface(target, IID_Health);
 		if (cmpHealth)
 			total /= 0.1 + 0.9 * cmpHealth.GetHitpoints() / cmpHealth.GetMaxHitpoints();
 	}
@@ -187,8 +187,8 @@ AttackHelper.prototype.GetTotalAttackEffects = function(target, effectData, effe
 	if (!resistanceStrengths.ApplyStatus)
 		return effectData[effectType];
 
-	let result = {};
-	for (let statusEffect in effectData[effectType])
+	const result = {};
+	for (const statusEffect in effectData[effectType])
 	{
 		if (!resistanceStrengths.ApplyStatus[statusEffect])
 		{
@@ -238,34 +238,34 @@ AttackHelper.prototype.GetPlayersToDamage = function(attackerOwner, friendlyFire
  */
 AttackHelper.prototype.CauseDamageOverArea = function(data)
 {
-	let nearEnts = PositionHelper.EntitiesNearPoint(data.origin, data.radius,
+	const nearEnts = PositionHelper.EntitiesNearPoint(data.origin, data.radius,
 		this.GetPlayersToDamage(data.attackerOwner, data.friendlyFire));
 	let damageMultiplier = 1;
 
-	let cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
+	const cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
 
 	// Cycle through all the nearby entities and damage it appropriately based on its distance from the origin.
-	for (let ent of nearEnts)
+	for (const ent of nearEnts)
 	{
 		// Correct somewhat for the entity's obstruction radius.
 		// TODO: linear falloff should arguably use something cleverer.
-		let distance = cmpObstructionManager.DistanceToPoint(ent, data.origin.x, data.origin.y);
+		const distance = cmpObstructionManager.DistanceToPoint(ent, data.origin.x, data.origin.y);
 
 		if (data.shape == 'Circular') // circular effect with quadratic falloff in every direction
 			damageMultiplier = 1 - distance * distance / (data.radius * data.radius);
 		else if (data.shape == 'Linear') // linear effect with quadratic falloff in two directions (only used for certain missiles)
 		{
 			// The entity has a position here since it was returned by the range manager.
-			let entityPosition = Engine.QueryInterface(ent, IID_Position).GetPosition2D();
-			let relativePos = entityPosition.sub(data.origin).normalize().mult(distance);
+			const entityPosition = Engine.QueryInterface(ent, IID_Position).GetPosition2D();
+			const relativePos = entityPosition.sub(data.origin).normalize().mult(distance);
 
 			// Get the position relative to the missile direction.
-			let direction = Vector2D.from3D(data.direction);
-			let parallelPos = relativePos.dot(direction);
-			let perpPos = relativePos.cross(direction);
+			const direction = Vector2D.from3D(data.direction);
+			const parallelPos = relativePos.dot(direction);
+			const perpPos = relativePos.cross(direction);
 
 			// The width of linear splash is one fifth of the normal splash radius.
-			let width = data.radius / 5;
+			const width = data.radius / 5;
 
 			// Check that the unit is within the distance splash width of the line starting at the missile's
 			// landing point which extends in the direction of the missile for length splash radius.
@@ -302,19 +302,19 @@ AttackHelper.prototype.CauseDamageOverArea = function(data)
  */
 AttackHelper.prototype.HandleAttackEffects = function(target, data, bonusMultiplier = 1)
 {
-	let cmpResistance = Engine.QueryInterface(target, IID_Resistance);
+	const cmpResistance = Engine.QueryInterface(target, IID_Resistance);
 	if (cmpResistance && cmpResistance.IsInvulnerable())
 		return false;
 
 	bonusMultiplier *= !data.attackData.Bonuses ? 1 : this.GetAttackBonus(data.attacker, target, data.type, data.attackData.Bonuses);
 
-	let targetState = {};
-	for (let receiver of g_AttackEffects.Receivers())
+	const targetState = {};
+	for (const receiver of g_AttackEffects.Receivers())
 	{
 		if (!data.attackData[receiver.type])
 			continue;
 
-		let cmpReceiver = Engine.QueryInterface(target, global[receiver.IID]);
+		const cmpReceiver = Engine.QueryInterface(target, global[receiver.IID]);
 		if (!cmpReceiver)
 			continue;
 
@@ -339,7 +339,7 @@ AttackHelper.prototype.HandleAttackEffects = function(target, data, bonusMultipl
 	if (!!data.attackData.StatusEffect)
 		return true;
 
-	let cmpPromotion = Engine.QueryInterface(data.attacker, IID_Promotion);
+	const cmpPromotion = Engine.QueryInterface(data.attacker, IID_Promotion);
 	if (cmpPromotion && targetState.xp)
 		cmpPromotion.IncreaseXp(targetState.xp);
 
@@ -356,18 +356,18 @@ AttackHelper.prototype.HandleAttackEffects = function(target, data, bonusMultipl
  */
 AttackHelper.prototype.GetAttackBonus = function(source, target, type, template)
 {
-	let cmpIdentity = Engine.QueryInterface(target, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(target, IID_Identity);
 	if (!cmpIdentity)
 		return 1;
 
 	let attackBonus = 1;
-	let targetClasses = cmpIdentity.GetClassesList();
-	let targetCiv = cmpIdentity.GetCiv();
+	const targetClasses = cmpIdentity.GetClassesList();
+	const targetCiv = cmpIdentity.GetCiv();
 
 	// Multiply the bonuses for all matching classes.
-	for (let key in template)
+	for (const key in template)
 	{
-		let bonus = template[key];
+		const bonus = template[key];
 		if (bonus.Civ && bonus.Civ !== targetCiv)
 			continue;
 		if (!bonus.Classes || MatchesClassList(targetClasses, bonus.Classes))

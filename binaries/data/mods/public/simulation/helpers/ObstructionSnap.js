@@ -6,12 +6,12 @@ class ObstructionSnap
 {
 	getValidEdges(allEdges, position, maxSide)
 	{
-		let edges = [];
-		let dir1 = new Vector2D();
-		let dir2 = new Vector2D();
-		for (let edge of allEdges)
+		const edges = [];
+		const dir1 = new Vector2D();
+		const dir2 = new Vector2D();
+		for (const edge of allEdges)
 		{
-			let signedDistance = Vector2D.dot(edge.normal, position) -
+			const signedDistance = Vector2D.dot(edge.normal, position) -
 			                     Vector2D.dot(edge.normal, edge.begin);
 			// Negative signed distance means that the template position
 			// lays behind the edge.
@@ -71,9 +71,9 @@ class ObstructionSnap
 	getNearestSizeAlongNormal(width, depth, angle, normal)
 	{
 		// Front face direction.
-		let direction = new Vector2D(0.0, 1.0);
+		const direction = new Vector2D(0.0, 1.0);
 		direction.rotate(angle);
-		let dot = direction.dot(normal);
+		const dot = direction.dot(normal);
 		const threshold = Math.cos(Math.PI / 4.0);
 		if (Math.abs(dot) > threshold)
 			return [depth, width];
@@ -88,7 +88,7 @@ class ObstructionSnap
 		const width = template.Obstruction.Static["@width"] / 2;
 		const depth = template.Obstruction.Static["@depth"] / 2;
 		const maxSide = Math.max(width, depth);
-		let templatePos = Vector2D.from3D(data);
+		const templatePos = Vector2D.from3D(data);
 		let templateAngle = data.angle || 0;
 
 		let edges = this.getValidEdges(data.snapToEdges, templatePos, maxSide);
@@ -96,7 +96,7 @@ class ObstructionSnap
 			return undefined;
 
 		let baseEdge = edges[0];
-		for (let edge of edges)
+		for (const edge of edges)
 			if (this.compareEdges(edge, baseEdge) < 0)
 				baseEdge = edge;
 		// Now we have the normal, we need to determine an angle,
@@ -113,22 +113,22 @@ class ObstructionSnap
 				break;
 			}
 		}
-		let [sizeToBaseEdge, sizeToPairedEdge] =
+		const [sizeToBaseEdge, sizeToPairedEdge] =
 			this.getNearestSizeAlongNormal(width, depth, templateAngle, baseEdge.normal);
 
-		let distance = Vector2D.dot(baseEdge.normal, templatePos) - Vector2D.dot(baseEdge.normal, baseEdge.begin);
+		const distance = Vector2D.dot(baseEdge.normal, templatePos) - Vector2D.dot(baseEdge.normal, baseEdge.begin);
 		templatePos.sub(Vector2D.mult(baseEdge.normal, distance - sizeToBaseEdge - this.getPadding(baseEdge)));
 		edges = this.getValidEdges(data.snapToEdges, templatePos, maxSide);
 		if (edges.length > 1)
 		{
-			let pairedEdges = [];
-			for (let edge of edges)
+			const pairedEdges = [];
+			for (const edge of edges)
 			{
 				// We have to place a rectangle, so the angle between
 				// edges should be 90 degrees.
 				if (Math.abs(Vector2D.dot(baseEdge.normal, edge.normal)) > this.EPS)
 					continue;
-				let newEdge = {
+				const newEdge = {
 					"begin": edge.end,
 					"end": edge.begin,
 					"normal": Vector2D.mult(edge.normal, -1),
@@ -143,10 +143,10 @@ class ObstructionSnap
 			if (pairedEdges.length)
 			{
 				let secondEdge = pairedEdges[0];
-				for (let edge of pairedEdges)
+				for (const edge of pairedEdges)
 					if (this.compareEdges(edge, secondEdge) < 0)
 						secondEdge = edge;
-				let distance = Vector2D.dot(secondEdge.normal, templatePos) - Vector2D.dot(secondEdge.normal, secondEdge.begin);
+				const distance = Vector2D.dot(secondEdge.normal, templatePos) - Vector2D.dot(secondEdge.normal, secondEdge.begin);
 				templatePos.sub(Vector2D.mult(secondEdge.normal, distance - sizeToPairedEdge - this.getPadding(secondEdge)));
 			}
 		}

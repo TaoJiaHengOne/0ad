@@ -149,12 +149,12 @@ class testHandleAttackEffects {
 	 * Regression test that StatusEffects are handled correctly.
 	 */
 	testStatusEffects() {
-		let cmpStatusEffectsReceiver = AddMock(this.TESTED_ENTITY_ID, IID_StatusEffectsReceiver, {
+		const cmpStatusEffectsReceiver = AddMock(this.TESTED_ENTITY_ID, IID_StatusEffectsReceiver, {
 			"ApplyStatus": (effectData, __, ___) => {
 				TS_ASSERT_UNEVAL_EQUALS(effectData, this.attackData.ApplyStatus);
 			}
 		});
-		let spy = new Spy(cmpStatusEffectsReceiver, "ApplyStatus");
+		const spy = new Spy(cmpStatusEffectsReceiver, "ApplyStatus");
 
 		AttackHelper.HandleAttackEffects(this.TESTED_ENTITY_ID, {
 			"type": "Test",

@@ -74,9 +74,9 @@ function LoadPlayerSettings(settings, newPlayers)
 			cmpPlayer.SetResourceCounts(settings.PlayerData[i].Resources);
 		else if (settings.StartingResources)
 		{
-			let resourceCounts = cmpPlayer.GetResourceCounts();
-			let newResourceCounts = {};
-			for (let resources in resourceCounts)
+			const resourceCounts = cmpPlayer.GetResourceCounts();
+			const newResourceCounts = {};
+			for (const resources in resourceCounts)
 				newResourceCounts[resources] = settings.StartingResources;
 			cmpPlayer.SetResourceCounts(newResourceCounts);
 		}
@@ -123,19 +123,19 @@ function GetPlayerTemplateName(civ)
  */
 function QueryOwnerEntityID(ent)
 {
-	let cmpPlayer = Engine.QueryInterface(ent, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(ent, IID_Player);
 	if (cmpPlayer)
 		return ent;
 
-	let cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(ent, IID_Ownership);
 	if (!cmpOwnership)
 		return null;
 
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 	if (owner == INVALID_PLAYER)
 		return null;
 
-	let cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
+	const cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
 	if (!cmpPlayerManager)
 		return null;
 
@@ -182,7 +182,7 @@ function QueryPlayerIDInterface(id, iid = IID_Player)
  */
 function QueryMiragedInterface(ent, iid)
 {
-	let cmpMirage = Engine.QueryInterface(ent, IID_Mirage);
+	const cmpMirage = Engine.QueryInterface(ent, IID_Mirage);
 	if (cmpMirage && !cmpMirage.Mirages(iid))
 		return null;
 	else if (!cmpMirage)

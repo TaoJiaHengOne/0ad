@@ -25,9 +25,9 @@ Resources.prototype.BuildSchema = function(datatype, additional = [], subtypes =
 		datatype = "<data type='" + datatype + "'/>";
 	}
 
-	let resCodes = this.resourceData.map(resource => resource.code);
+	const resCodes = this.resourceData.map(resource => resource.code);
 	let schema = "";
-	for (let res of resCodes.concat(additional))
+	for (const res of resCodes.concat(additional))
 		schema +=
 			"<optional>" +
 				"<element name='" + res + "'>" +
@@ -38,8 +38,8 @@ Resources.prototype.BuildSchema = function(datatype, additional = [], subtypes =
 	if (!subtypes)
 		return "<interleave>" + schema + "</interleave>";
 
-	for (let res of this.resourceData)
-		for (let subtype in res.subtypes)
+	for (const res of this.resourceData)
+		for (const subtype in res.subtypes)
 			schema +=
 				"<optional>" +
 					"<element name='" + res.code + "." + subtype + "'>" +
@@ -61,11 +61,11 @@ Resources.prototype.BuildChoicesSchema = function(subtypes = false)
 	let schema = "";
 
 	if (!subtypes)
-		for (let res of this.resourceData.map(resource => resource.code))
+		for (const res of this.resourceData.map(resource => resource.code))
 			schema += "<value>" + res + "</value>";
 	else
-		for (let res of this.resourceData)
-			for (let subtype in res.subtypes)
+		for (const res of this.resourceData)
+			for (const subtype in res.subtypes)
 				schema += "<value>" + res.code + "." + subtype + "</value>";
 
 	return "<choice>" + schema + "</choice>";
