@@ -36,7 +36,7 @@ Trigger.prototype.SpawnAndAttack = function()
 };
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.attackSize = 1; // attack with 1 soldier
 	cmpTrigger.attackTime = 60 * 1000; // attack in 1 minute
 	cmpTrigger.DoAfterDelay(cmpTrigger.attackTime, "SpawnAndAttack", {});

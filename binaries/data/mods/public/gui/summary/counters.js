@@ -16,7 +16,7 @@ function formatSummaryValue(values)
 		return values === Infinity ? g_InfinitySymbol : values;
 
 	let ret = "";
-	for (let type in values)
+	for (const type in values)
 		if (!g_SummaryTypes[type].hideInSummary)
 			ret += (g_SummaryTypes[type].color ?
 				coloredText(values[type], g_SummaryTypes[type].color) :
@@ -26,17 +26,17 @@ function formatSummaryValue(values)
 
 function getPlayerValuesPerTeam(team, index, type, counters, headings)
 {
-	let fn = counters[headings.map(heading => heading.identifier).indexOf(type) - 1].fn;
+	const fn = counters[headings.map(heading => heading.identifier).indexOf(type) - 1].fn;
 	return g_Teams[team].map(player => fn(g_GameData.sim.playerStates[player], index, type));
 }
 
 function updateCountersPlayer(playerState, allCounters, allHeadings, idGUI, index)
 {
-	let counters = allCounters.filter(counter => !counter.hideInSummary);
-	let headings = allHeadings.filter(heading => !heading.hideInSummary);
-	for (let n in counters)
+	const counters = allCounters.filter(counter => !counter.hideInSummary);
+	const headings = allHeadings.filter(heading => !heading.hideInSummary);
+	for (const n in counters)
 	{
-		let fn = counters[n].fn;
+		const fn = counters[n].fn;
 		Engine.GetGUIObjectByName(idGUI + "[" + n + "]").caption =
 			formatSummaryValue(fn && fn(playerState, index, headings[+n + 1].identifier));
 	}
@@ -44,14 +44,14 @@ function updateCountersPlayer(playerState, allCounters, allHeadings, idGUI, inde
 
 function updateCountersTeam(teamFn, allCounters, allHeadings, index)
 {
-	let counters = allCounters.filter(counter => !counter.hideInSummary);
-	let headings = allHeadings.filter(heading => !heading.hideInSummary);
-	for (let team in g_Teams)
+	const counters = allCounters.filter(counter => !counter.hideInSummary);
+	const headings = allHeadings.filter(heading => !heading.hideInSummary);
+	for (const team in g_Teams)
 	{
 		if (team == -1)
 			continue;
 
-		for (let n in counters)
+		for (const n in counters)
 			Engine.GetGUIObjectByName("valueDataTeam[" + team + "][" + n + "]").caption =
 				formatSummaryValue(teamFn(team, index, headings[+n + 1].identifier, counters, headings));
 	}
@@ -67,7 +67,7 @@ function updateCountersTeam(teamFn, allCounters, allHeadings, index)
  */
 function summaryAddObject(obj1, obj2)
 {
-	for (let p in obj1)
+	for (const p in obj1)
 		obj1[p] += obj2[p];
 }
 
@@ -92,12 +92,12 @@ function calculateTeamCounterDataHelper()
 {
 	for (let i = 0; i < g_PlayerCount; ++i)
 	{
-		let playerState = g_GameData.sim.playerStates[i + 1];
+		const playerState = g_GameData.sim.playerStates[i + 1];
 
 		if (!g_TeamHelperData[playerState.team])
 		{
 			g_TeamHelperData[playerState.team] = {};
-			for (let value of ["food", "vegetarianFood", "femaleCitizen", "worker", "enemyUnitsKilled",
+			for (const value of ["food", "vegetarianFood", "femaleCitizen", "worker", "enemyUnitsKilled",
 			                   "unitsLost", "mapControl", "mapControlPeak",
 			                   "mapExploration", "totalBought", "totalSold"])
 				g_TeamHelperData[playerState.team][value] = new Array(playerState.sequences.time.length).fill(0);
@@ -117,10 +117,10 @@ function calculateTeamCounterDataHelper()
 
 		g_TeamHelperData[playerState.team].mapExploration = playerState.sequences.teamPercentMapExplored;
 
-		for (let type in playerState.sequences.resourcesBought)
+		for (const type in playerState.sequences.resourcesBought)
 			summaryAddObject(g_TeamHelperData[playerState.team].totalBought, playerState.sequences.resourcesBought[type]);
 
-		for (let type in playerState.sequences.resourcesSold)
+		for (const type in playerState.sequences.resourcesSold)
 			summaryAddObject(g_TeamHelperData[playerState.team].totalSold, playerState.sequences.resourcesSold[type]);
 	}
 }
@@ -133,7 +133,7 @@ function calculateEconomyScore(playerState, index)
 	let total = 0;
 
 	// Notice that this skips the vegetarianFood property of resourcesGathered
-	for (let type of g_ResourceData.GetCodes())
+	for (const type of g_ResourceData.GetCodes())
 		total += playerState.sequences.resourcesGathered[type][index];
 
 	total += playerState.sequences.tradeIncome[index];
@@ -235,7 +235,7 @@ function calculateTotalResources(playerState, index)
 	let totalUsed = 0;
 	let totalCount = 0;
 
-	for (let type of g_ResourceData.GetCodes())
+	for (const type of g_ResourceData.GetCodes())
 	{
 		totalCount += playerState.sequences.resourcesCount[type][index];
 		totalGathered += playerState.sequences.resourcesGathered[type][index];
@@ -286,10 +286,10 @@ function calculateBarterEfficiency(playerState, index)
 	let totalBought = 0;
 	let totalSold = 0;
 
-	for (let type in playerState.sequences.resourcesBought)
+	for (const type in playerState.sequences.resourcesBought)
 		totalBought += playerState.sequences.resourcesBought[type][index];
 
-	for (let type in playerState.sequences.resourcesSold)
+	for (const type in playerState.sequences.resourcesSold)
 		totalSold += playerState.sequences.resourcesSold[type][index];
 
 	return calculatePercent(totalBought, totalSold);

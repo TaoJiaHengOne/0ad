@@ -104,10 +104,10 @@ Trigger.prototype.tutorialGoals = [
 		{
 			if (msg.unitTemplate != "units/athen/infantry_spearman_b" || +msg.count == 1)
 			{
-				let entity = msg.trainerEntity;
-				let cmpProductionQueue = Engine.QueryInterface(entity, IID_ProductionQueue);
+				const entity = msg.trainerEntity;
+				const cmpProductionQueue = Engine.QueryInterface(entity, IID_ProductionQueue);
 				cmpProductionQueue.ResetQueue();
-				let txt = +msg.count == 1 ?
+				const txt = +msg.count == 1 ?
 					markForTranslation("Do not forget to hold Shift while clicking to train several units.") :
 					markForTranslation("Hold Shift and click on the Hoplite icon.");
 				this.WarningMessage(txt);
@@ -145,7 +145,7 @@ Trigger.prototype.tutorialGoals = [
 		],
 		"OnStructureBuilt": function(msg)
 		{
-			let cmpResourceDropsite = Engine.QueryInterface(msg.building, IID_ResourceDropsite);
+			const cmpResourceDropsite = Engine.QueryInterface(msg.building, IID_ResourceDropsite);
 			if (cmpResourceDropsite && cmpResourceDropsite.AcceptsType("wood"))
 				this.NextGoal();
 		},
@@ -163,10 +163,10 @@ Trigger.prototype.tutorialGoals = [
 		{
 			if (msg.unitTemplate != "units/athen/support_female_citizen" || +msg.count == 1)
 			{
-				let entity = msg.trainerEntity;
-				let cmpProductionQueue = Engine.QueryInterface(entity, IID_ProductionQueue);
+				const entity = msg.trainerEntity;
+				const cmpProductionQueue = Engine.QueryInterface(entity, IID_ProductionQueue);
 				cmpProductionQueue.ResetQueue();
-				let txt = +msg.count == 1 ?
+				const txt = +msg.count == 1 ?
 					markForTranslation("Do not forget to hold Shift and click to train several units.") :
 					markForTranslation("Hold shift and click on the Female Citizen icon.");
 				this.WarningMessage(txt);
@@ -229,7 +229,7 @@ Trigger.prototype.tutorialGoals = [
 			if (msg.from != INVALID_PLAYER && this.houseGoal.has(+msg.entity))
 			{
 				this.houseGoal.delete(+msg.entity);
-				let cmpFoundation = Engine.QueryInterface(+msg.entity, IID_Foundation);
+				const cmpFoundation = Engine.QueryInterface(+msg.entity, IID_Foundation);
 				if (cmpFoundation && cmpFoundation.GetBuildProgress() < 1)	// Destroyed before built
 					--this.houseCount;
 			}
@@ -340,10 +340,10 @@ Trigger.prototype.tutorialGoals = [
 		{
 			if (msg.unitTemplate != "units/athen/support_female_citizen" || +msg.count != 1)
 			{
-				let entity = msg.trainerEntity;
-				let cmpProductionQueue = Engine.QueryInterface(entity, IID_ProductionQueue);
+				const entity = msg.trainerEntity;
+				const cmpProductionQueue = Engine.QueryInterface(entity, IID_ProductionQueue);
 				cmpProductionQueue.ResetQueue();
-				let txt = +msg.count != 1 ?
+				const txt = +msg.count != 1 ?
 					markForTranslation("Click without holding Shift to train a single unit.") :
 					markForTranslation("Click on the Female Citizen icon.");
 				this.WarningMessage(txt);
@@ -456,7 +456,7 @@ Trigger.prototype.tutorialGoals = [
 ];
 
 {
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.playerID = 1;
 	cmpTrigger.RegisterTrigger("OnInitGame", "InitTutorial", { "enabled": true });
 }

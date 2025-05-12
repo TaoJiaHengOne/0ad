@@ -8,13 +8,13 @@ async function init(data)
 	const paragraphSpacing = 20;
 	let verticalOffset = paragraphSpacing * 3;
 
-	for (let paragraphObject of paragraphObjects)
+	for (const paragraphObject of paragraphObjects)
 	{
 		const text = paragraphObject.children.find(object => object.toString().startsWith("text"));
 		const icon = paragraphObject.children.find(object => object.toString().startsWith("icon"));
 
 		text.size = new GUISize(textIndent, verticalOffset, -10, 0, 0, 0, 100, 100);
-		let paragraphHeight = Math.max(text.getTextSize().height, iconSize);
+		const paragraphHeight = Math.max(text.getTextSize().height, iconSize);
 		const sizeTop = Math.min(verticalOffset + 5, verticalOffset + paragraphHeight / 2 - iconSize / 2);
 		icon.size = new GUISize(
 			iconMargin, sizeTop,
