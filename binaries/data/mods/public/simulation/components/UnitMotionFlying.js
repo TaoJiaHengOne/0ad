@@ -65,16 +65,16 @@ UnitMotionFlying.prototype.Init = function()
 
 UnitMotionFlying.prototype.OnUpdate = function(msg)
 {
-	let turnLength = msg.turnLength;
+	const turnLength = msg.turnLength;
 	if (!this.hasTarget)
 		return;
-	let cmpGarrisonHolder = Engine.QueryInterface(this.entity, IID_GarrisonHolder);
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
-	let pos = cmpPosition.GetPosition();
-	let angle = cmpPosition.GetRotation().y;
-	let cmpTerrain = Engine.QueryInterface(SYSTEM_ENTITY, IID_Terrain);
-	let cmpWaterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
-	let ground = Math.max(cmpTerrain.GetGroundLevel(pos.x, pos.z), cmpWaterManager.GetWaterLevel(pos.x, pos.z));
+	const cmpGarrisonHolder = Engine.QueryInterface(this.entity, IID_GarrisonHolder);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const pos = cmpPosition.GetPosition();
+	const angle = cmpPosition.GetRotation().y;
+	const cmpTerrain = Engine.QueryInterface(SYSTEM_ENTITY, IID_Terrain);
+	const cmpWaterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
+	const ground = Math.max(cmpTerrain.GetGroundLevel(pos.x, pos.z), cmpWaterManager.GetWaterLevel(pos.x, pos.z));
 	let newangle = angle;
 	let canTurn = true;
 	let distanceToTargetSquared = Math.euclidDistance2DSquared(pos.x, pos.z, this.targetX, this.targetZ);
@@ -99,7 +99,7 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 		}
 		else if (this.speed == 0 && this.onGround)
 		{
-			let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+			const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
 			if (this.waterDeath && cmpHealth)
 				cmpHealth.Kill();
 			else
@@ -112,14 +112,14 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 				this.hasTarget = false;
 				this.landing = false;
 				// Summon planes back from the edge of the map.
-				let terrainSize = cmpTerrain.GetMapSize();
-				let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+				const terrainSize = cmpTerrain.GetMapSize();
+				const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 				if (cmpRangeManager.GetLosCircular())
 				{
-					let mapRadius = terrainSize/2;
-					let x = pos.x - mapRadius;
-					let z = pos.z - mapRadius;
-					let div = (mapRadius - 12) / Math.sqrt(x*x + z*z);
+					const mapRadius = terrainSize/2;
+					const x = pos.x - mapRadius;
+					const z = pos.z - mapRadius;
+					const div = (mapRadius - 12) / Math.sqrt(x*x + z*z);
 					if (div < 1)
 					{
 						pos.x = mapRadius + x*div;
@@ -143,13 +143,13 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 			// We need to slow down to land!
 			this.speed = Math.max(this.template.LandingSpeed, this.speed - turnLength * this.template.SlowingRate);
 			canTurn = false;
-			let targetHeight = ground;
+			const targetHeight = ground;
 			// Steep, then gradual descent.
 			if ((pos.y - targetHeight) / this.template.FlyingHeight > 1 / SHORT_FINAL)
 				this.pitch = -Math.PI / 18;
 			else
 				this.pitch = Math.PI / 18;
-			let descentRate = ((pos.y - targetHeight) / this.template.FlyingHeight * this.template.ClimbRate + SHORT_FINAL) * SHORT_FINAL;
+			const descentRate = ((pos.y - targetHeight) / this.template.FlyingHeight * this.template.ClimbRate + SHORT_FINAL) * SHORT_FINAL;
 			if (pos.y < targetHeight)
 				pos.y = Math.max(targetHeight, pos.y + turnLength * descentRate);
 			else if (pos.y > targetHeight)
@@ -197,7 +197,7 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 			this.onGround = false;
 			// Climb/sink to max height above ground.
 			this.speed = Math.min(this.template.MaxSpeed, this.speed + turnLength * this.template.AccelRate);
-			let targetHeight = ground + (+this.template.FlyingHeight);
+			const targetHeight = ground + (+this.template.FlyingHeight);
 			if (Math.abs(pos.y-targetHeight) > this.template.FlyingHeight/5)
 			{
 				this.pitch = Math.PI / 9;
@@ -227,7 +227,7 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 
 	// If we're facing away from the target, and are still fairly close to it,
 	// then carry on going straight so we overshoot in a straight line.
-	let isBehindTarget = ((this.targetX - pos.x) * Math.sin(angle) + (this.targetZ - pos.z) * Math.cos(angle) < 0);
+	const isBehindTarget = ((this.targetX - pos.x) * Math.sin(angle) + (this.targetZ - pos.z) * Math.cos(angle) < 0);
 	// Overshoot the target: carry on straight.
 	if (isBehindTarget && distanceToTargetSquared < this.template.MaxSpeed * this.template.MaxSpeed * this.template.OvershootTime * this.template.OvershootTime)
 		canTurn = false;
@@ -235,7 +235,7 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 	if (canTurn)
 	{
 		// Turn towards the target.
-		let targetAngle = Math.atan2(this.targetX - pos.x, this.targetZ - pos.z);
+		const targetAngle = Math.atan2(this.targetX - pos.x, this.targetZ - pos.z);
 		let delta = targetAngle - angle;
 		// Wrap delta to -pi..pi.
 		delta = (delta + Math.PI) % (2*Math.PI);
@@ -243,7 +243,7 @@ UnitMotionFlying.prototype.OnUpdate = function(msg)
 			delta += 2 * Math.PI;
 		delta -= Math.PI;
 		// Clamp to max rate.
-		let deltaClamped = Math.min(Math.max(delta, -this.template.TurnRate * turnLength), this.template.TurnRate * turnLength);
+		const deltaClamped = Math.min(Math.max(delta, -this.template.TurnRate * turnLength), this.template.TurnRate * turnLength);
 		// Calculate new orientation, in a peculiar way in order to make sure the
 		// result gets close to targetAngle (rather than being n*2*pi out).
 		newangle = targetAngle + deltaClamped - delta;
@@ -280,11 +280,11 @@ UnitMotionFlying.prototype.MoveToPointRange = function(x, z, minRange, maxRange)
 
 UnitMotionFlying.prototype.MoveToTargetRange = function(target, minRange, maxRange)
 {
-	let cmpTargetPosition = Engine.QueryInterface(target, IID_Position);
+	const cmpTargetPosition = Engine.QueryInterface(target, IID_Position);
 	if (!cmpTargetPosition || !cmpTargetPosition.IsInWorld())
 		return false;
 
-	let targetPos = cmpTargetPosition.GetPosition2D();
+	const targetPos = cmpTargetPosition.GetPosition2D();
 
 	this.hasTarget = true;
 	this.reachedTarget = false;
@@ -327,10 +327,10 @@ UnitMotionFlying.prototype.GetRunMultiplier = function()
  */
 UnitMotionFlying.prototype.EstimateFuturePosition = function(dt)
 {
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (!cmpPosition || !cmpPosition.IsInWorld())
 		return Vector2D();
-	let position = cmpPosition.GetPosition2D();
+	const position = cmpPosition.GetPosition2D();
 
 	return Vector2D.add(position, Vector2D.sub(position, cmpPosition.GetPreviousPosition2D()).mult(dt/Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).GetLatestTurnLength()));
 };

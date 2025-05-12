@@ -38,9 +38,9 @@ Upkeep.prototype.ComputeRates = function()
 {
 	this.rates = {};
 	let hasUpkeep = false;
-	for (let resource in this.template.Rates)
+	for (const resource in this.template.Rates)
 	{
-		let rate = ApplyValueModificationsToEntity("Upkeep/Rates/" + resource, +this.template.Rates[resource], this.entity);
+		const rate = ApplyValueModificationsToEntity("Upkeep/Rates/" + resource, +this.template.Rates[resource], this.entity);
 		if (rate)
 		{
 			this.rates[resource] = rate;
@@ -57,7 +57,7 @@ Upkeep.prototype.ComputeRates = function()
  */
 Upkeep.prototype.Pay = function(data, lateness)
 {
-	let cmpPlayer = QueryOwnerInterface(this.entity);
+	const cmpPlayer = QueryOwnerInterface(this.entity);
 	if (!cmpPlayer)
 		return;
 
@@ -75,7 +75,7 @@ Upkeep.prototype.HandleInsufficientUpkeep = function()
 	if (this.unpayed)
 		return;
 
-	let cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
 	if (cmpIdentity)
 		cmpIdentity.SetControllable(false);
 	this.unpayed = true;
@@ -89,7 +89,7 @@ Upkeep.prototype.HandleSufficientUpkeep = function()
 	if (!this.unpayed)
 		return;
 
-	let cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
 	if (cmpIdentity)
 		cmpIdentity.SetControllable(true);
 	delete this.unpayed;
@@ -113,17 +113,17 @@ Upkeep.prototype.CheckTimer = function()
 		if (!this.timer)
 			return;
 
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 		delete this.timer;
 		return;
 	}
 
-	let oldUpkeepInterval = this.upkeepInterval;
+	const oldUpkeepInterval = this.upkeepInterval;
 	this.upkeepInterval = ApplyValueModificationsToEntity("Upkeep/Interval", +this.template.Interval, this.entity);
 	if (this.upkeepInterval < 0)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 		delete this.timer;
 		return;
@@ -137,13 +137,13 @@ Upkeep.prototype.CheckTimer = function()
 		// If the timer wasn't invalidated before (interval <= 0), just update it.
 		if (oldUpkeepInterval > 0)
 		{
-			let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+			const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 			cmpTimer.UpdateRepeatTime(this.timer, this.upkeepInterval);
 			return;
 		}
 	}
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_Upkeep, "Pay", this.upkeepInterval, this.upkeepInterval, undefined);
 };
 

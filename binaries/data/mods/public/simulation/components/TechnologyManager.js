@@ -210,8 +210,8 @@ TechnologyManager.prototype.Init = function()
 	// Some technologies are automatically researched when their conditions are met.  They have no cost and are
 	// researched instantly.  This allows civ bonuses and more complicated technologies.
 	this.unresearchedAutoResearchTechs = new Set();
-	let allTechs = TechnologyTemplates.GetAll();
-	for (let key in allTechs)
+	const allTechs = TechnologyTemplates.GetAll();
+	for (const key in allTechs)
 		if (allTechs[key].autoResearch || allTechs[key].top)
 			this.unresearchedAutoResearchTechs.add(key);
 };
@@ -260,9 +260,9 @@ TechnologyManager.prototype.OnUpdate = function()
 // This function checks if the requirements of any autoresearch techs are met and if they are it researches them
 TechnologyManager.prototype.UpdateAutoResearch = function()
 {
-	for (let key of this.unresearchedAutoResearchTechs)
+	for (const key of this.unresearchedAutoResearchTechs)
 	{
-		let tech = TechnologyTemplates.Get(key);
+		const tech = TechnologyTemplates.Get(key);
 		if ((tech.autoResearch && this.CanResearch(key)) ||
 			(tech.top && (this.IsTechnologyResearched(tech.top) || this.IsTechnologyResearched(tech.bottom))))
 		{
@@ -298,7 +298,7 @@ TechnologyManager.prototype.IsTechnologyResearched = function(tech)
 // Checks the requirements for a technology to see if it can be researched at the current time
 TechnologyManager.prototype.CanResearch = function(tech)
 {
-	let template = TechnologyTemplates.Get(tech);
+	const template = TechnologyTemplates.Get(tech);
 
 	if (!template)
 	{
@@ -331,7 +331,7 @@ TechnologyManager.prototype.CanResearch = function(tech)
  */
 TechnologyManager.prototype.CheckTechnologyRequirements = function(reqs, civonly = false)
 {
-	let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
 
 	if (!reqs)
 		return false;
@@ -388,7 +388,7 @@ TechnologyManager.prototype.OnGlobalOwnershipChanged = function(msg)
 		// don't use foundations for the class counts but check if techs apply (e.g. health increase)
 		if (!Engine.QueryInterface(msg.entity, IID_Foundation))
 		{
-			for (let cls of classes)
+			for (const cls of classes)
 			{
 				this.classCounts[cls] = this.classCounts[cls] || 0;
 				this.classCounts[cls] += 1;
@@ -411,7 +411,7 @@ TechnologyManager.prototype.OnGlobalOwnershipChanged = function(msg)
 			if (cmpIdentity)
 			{
 				var classes = cmpIdentity.GetClassesList();
-				for (let cls of classes)
+				for (const cls of classes)
 				{
 					this.classCounts[cls] -= 1;
 					if (this.classCounts[cls] <= 0)

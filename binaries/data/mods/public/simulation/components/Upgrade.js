@@ -95,8 +95,8 @@ Upgrade.prototype.ChangeUpgradedEntityCount = function(amount)
 	if (!this.IsUpgrading())
 		return;
 
-	let cmpTempMan = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let template = cmpTempMan.GetTemplate(this.upgrading);
+	const cmpTempMan = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const template = cmpTempMan.GetTemplate(this.upgrading);
 
 	let categoryTo;
 	if (template.TrainingRestrictions)
@@ -108,8 +108,8 @@ Upgrade.prototype.ChangeUpgradedEntityCount = function(amount)
 		return;
 
 	let categoryFrom;
-	let cmpTrainingRestrictions = Engine.QueryInterface(this.entity, IID_TrainingRestrictions);
-	let cmpBuildRestrictions = Engine.QueryInterface(this.entity, IID_BuildRestrictions);
+	const cmpTrainingRestrictions = Engine.QueryInterface(this.entity, IID_TrainingRestrictions);
+	const cmpBuildRestrictions = Engine.QueryInterface(this.entity, IID_BuildRestrictions);
 	if (cmpTrainingRestrictions)
 		categoryFrom = cmpTrainingRestrictions.GetCategory();
 	else if (cmpBuildRestrictions)
@@ -118,7 +118,7 @@ Upgrade.prototype.ChangeUpgradedEntityCount = function(amount)
 	if (categoryTo == categoryFrom)
 		return;
 
-	let cmpEntityLimits = QueryPlayerIDInterface(this.owner, IID_EntityLimits);
+	const cmpEntityLimits = QueryPlayerIDInterface(this.owner, IID_EntityLimits);
 	if (cmpEntityLimits)
 		cmpEntityLimits.ChangeCount(categoryTo, amount);
 };
@@ -130,7 +130,7 @@ Upgrade.prototype.CanUpgradeTo = function(template)
 
 Upgrade.prototype.GetUpgrades = function()
 {
-	let ret = [];
+	const ret = [];
 
 	for (const option in this.upgradeTemplates)
 	{
@@ -142,7 +142,7 @@ Upgrade.prototype.GetUpgrades = function()
 		if (choice.Time)
 			cost.time = this.GetUpgradeTime(option);
 
-		let hasCost = choice.Cost || choice.Time;
+		const hasCost = choice.Cost || choice.Time;
 		ret.push({
 			"entity": option,
 			"icon": choice.Icon || undefined,
@@ -160,7 +160,7 @@ Upgrade.prototype.CancelTimer = function()
 	if (!this.timer)
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timer);
 	delete this.timer;
 };
@@ -186,7 +186,7 @@ Upgrade.prototype.WillCheckPlacementRestrictions = function(template)
 
 Upgrade.prototype.GetRequirements = function(templateArg)
 {
-	let choice = this.upgradeTemplates[templateArg] || templateArg;
+	const choice = this.upgradeTemplates[templateArg] || templateArg;
 
 	if (this.template[choice].Requirements)
 		return this.template[choice].Requirements;
@@ -194,14 +194,14 @@ Upgrade.prototype.GetRequirements = function(templateArg)
 	if (!("Requirements" in this.template[choice]))
 		return undefined;
 
-	let cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-	let cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
 
 	let entType = this.template[choice].Entity;
 	if (cmpIdentity)
 		entType = entType.replace(/\{civ\}/g, cmpIdentity.GetCiv());
 
-	let template = cmpTemplateManager.GetTemplate(entType);
+	const template = cmpTemplateManager.GetTemplate(entType);
 	return template.Identity.Requirements || undefined;
 };
 
@@ -213,12 +213,12 @@ Upgrade.prototype.GetResourceCosts = function(template)
 	if (this.IsUpgrading() && template == this.GetUpgradingTo())
 		return clone(this.expendedResources);
 
-	let choice = this.upgradeTemplates[template];
+	const choice = this.upgradeTemplates[template];
 	if (!this.template[choice].Cost)
 		return {};
 
-	let costs = {};
-	for (let r in this.template[choice].Cost)
+	const costs = {};
+	for (const r in this.template[choice].Cost)
 		costs[r] = ApplyValueModificationsToEntity("Upgrade/Cost/"+r, +this.template[choice].Cost[r], this.entity);
 
 	return costs;
@@ -229,14 +229,14 @@ Upgrade.prototype.Upgrade = function(template)
 	if (this.IsUpgrading() || !this.upgradeTemplates[template])
 		return false;
 
-	let cmpPlayer = QueryOwnerInterface(this.entity, IID_Player);
+	const cmpPlayer = QueryOwnerInterface(this.entity, IID_Player);
 	if (!cmpPlayer)
 		return false;
 
-	let cmpProductionQueue = Engine.QueryInterface(this.entity, IID_ProductionQueue);
+	const cmpProductionQueue = Engine.QueryInterface(this.entity, IID_ProductionQueue);
 	if (cmpProductionQueue && cmpProductionQueue.HasQueuedProduction())
 	{
-		let cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+		const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 		cmpGUIInterface.PushNotification({
 			"players": [cmpPlayer.GetPlayerID()],
 			"message": markForTranslation("Entity is producing. Cannot start upgrading."),
@@ -260,7 +260,7 @@ Upgrade.prototype.Upgrade = function(template)
 
 	if (this.GetUpgradeTime(template) !== 0)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		this.timer = cmpTimer.SetInterval(this.entity, IID_Upgrade, "UpgradeProgress", 0, UPGRADING_PROGRESS_INTERVAL, { "upgrading": template });
 	}
 	else
@@ -274,7 +274,7 @@ Upgrade.prototype.CancelUpgrade = function(owner)
 	if (!this.IsUpgrading())
 		return;
 
-	let cmpPlayer = QueryPlayerIDInterface(owner, IID_Player);
+	const cmpPlayer = QueryPlayerIDInterface(owner, IID_Player);
 	if (cmpPlayer)
 		cmpPlayer.AddResources(this.expendedResources);
 
@@ -282,10 +282,10 @@ Upgrade.prototype.CancelUpgrade = function(owner)
 	this.ChangeUpgradedEntityCount(-1);
 
 	// Do not update visual actor if the animation didn't change.
-	let choice = this.upgradeTemplates[this.upgrading];
+	const choice = this.upgradeTemplates[this.upgrading];
 	if (choice && this.template[choice].Variant)
 	{
-		let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+		const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 		if (cmpVisual)
 			cmpVisual.SelectAnimation("idle", false, 1.0);
 	}
@@ -297,8 +297,8 @@ Upgrade.prototype.CancelUpgrade = function(owner)
 
 Upgrade.prototype.GetUpgradeTime = function(templateArg)
 {
-	let template = this.upgrading || templateArg;
-	let choice = this.upgradeTemplates[template];
+	const template = this.upgrading || templateArg;
+	const choice = this.upgradeTemplates[template];
 
 	if (!choice)
 		return undefined;
@@ -329,12 +329,12 @@ Upgrade.prototype.SetElapsedTime = function(time)
 
 Upgrade.prototype.SetUpgradeAnimationVariant = function()
 {
-	let choice = this.upgradeTemplates[this.upgrading];
+	const choice = this.upgradeTemplates[this.upgrading];
 
 	if (!choice || !this.template[choice].Variant)
 		return;
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (!cmpVisual)
 		return;
 
@@ -355,7 +355,7 @@ Upgrade.prototype.UpgradeProgress = function(data, lateness)
 	this.ChangeUpgradedEntityCount(-1);
 	this.expendedResources = {};
 
-	let newEntity = ChangeEntityTemplate(this.entity, this.upgrading);
+	const newEntity = ChangeEntityTemplate(this.entity, this.upgrading);
 
 	if (newEntity)
 		PlaySound("upgraded", newEntity);

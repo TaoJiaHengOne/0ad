@@ -71,7 +71,7 @@ TerritoryDecay.prototype.IsConnected = function()
 
 	this.connectedNeighbours = cmpTerritoryManager.GetNeighbours(pos.x, pos.y, true);
 
-	let numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
+	const numPlayers = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager).GetNumPlayers();
 	for (var i = 1; i < numPlayers; ++i)
 		if (this.connectedNeighbours[i] > 0 && cmpDiplomacy.IsMutualAlly(i))
 		{
@@ -108,7 +108,7 @@ TerritoryDecay.prototype.GetConnectedNeighbours = function()
 
 TerritoryDecay.prototype.UpdateDecayState = function()
 {
-	let decaying = !this.IsConnected() && this.GetDecayRate() > 0;
+	const decaying = !this.IsConnected() && this.GetDecayRate() > 0;
 	if (decaying === this.decaying)
 		return;
 	this.decaying = decaying;
@@ -117,13 +117,13 @@ TerritoryDecay.prototype.UpdateDecayState = function()
 
 TerritoryDecay.prototype.UpdateOwner = function()
 {
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (!cmpOwnership || !cmpPosition || !cmpPosition.IsInWorld())
 		return;
-	let cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
-	let pos = cmpPosition.GetPosition2D();
-	let tileOwner = cmpTerritoryManager.GetOwner(pos.x, pos.y);
+	const cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
+	const pos = cmpPosition.GetPosition2D();
+	const tileOwner = cmpTerritoryManager.GetOwner(pos.x, pos.y);
 	if (tileOwner != cmpOwnership.GetOwner())
 		cmpOwnership.SetOwner(tileOwner);
 };
@@ -156,7 +156,7 @@ TerritoryDecay.prototype.OnOwnershipChanged = function(msg)
 	// Update the list of TerritoryDecay components in the manager
 	if (msg.from == INVALID_PLAYER || msg.to == INVALID_PLAYER)
 	{
-		let cmpTerritoryDecayManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryDecayManager);
+		const cmpTerritoryDecayManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryDecayManager);
 		if (msg.from == INVALID_PLAYER)
 			cmpTerritoryDecayManager.Add(this.entity);
 		else

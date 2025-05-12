@@ -30,26 +30,26 @@ Trader.prototype.Init = function()
 
 Trader.prototype.CalculateGain = function(currentMarket, nextMarket)
 {
-	let cmpMarket = QueryMiragedInterface(currentMarket, IID_Market);
-	let gain = cmpMarket && cmpMarket.CalculateTraderGain(nextMarket, this.template, this.entity);
+	const cmpMarket = QueryMiragedInterface(currentMarket, IID_Market);
+	const gain = cmpMarket && cmpMarket.CalculateTraderGain(nextMarket, this.template, this.entity);
 	if (!gain)	// One of our markets must have been destroyed
 		return null;
 
 	// For garrisonable unit increase gain for each garrisoned trader
 	// Calculate this here to save passing unnecessary stuff into the CalculateTraderGain function
-	let garrisonGainMultiplier = this.GetGarrisonGainMultiplier();
+	const garrisonGainMultiplier = this.GetGarrisonGainMultiplier();
 	if (garrisonGainMultiplier === undefined)
 		return gain;
 
-	let cmpGarrisonHolder = Engine.QueryInterface(this.entity, IID_GarrisonHolder);
+	const cmpGarrisonHolder = Engine.QueryInterface(this.entity, IID_GarrisonHolder);
 	if (!cmpGarrisonHolder)
 		return gain;
 
 	let garrisonMultiplier = 1;
 	let garrisonedTradersCount = 0;
-	for (let entity of cmpGarrisonHolder.GetEntities())
+	for (const entity of cmpGarrisonHolder.GetEntities())
 	{
-		let cmpGarrisonedUnitTrader = Engine.QueryInterface(entity, IID_Trader);
+		const cmpGarrisonedUnitTrader = Engine.QueryInterface(entity, IID_Trader);
 		if (cmpGarrisonedUnitTrader)
 			++garrisonedTradersCount;
 	}
@@ -74,7 +74,7 @@ Trader.prototype.RemoveTargetMarket = function(target)
 {
 	if (this.markets.length != 1 || this.markets[0] != target)
 		return false;
-	let cmpTargetMarket = QueryMiragedInterface(target, IID_Market);
+	const cmpTargetMarket = QueryMiragedInterface(target, IID_Market);
 	if (!cmpTargetMarket)
 		return false;
 	cmpTargetMarket.RemoveTrader(this.entity);
@@ -87,14 +87,14 @@ Trader.prototype.RemoveTargetMarket = function(target)
 // Return true if at least one of markets was changed.
 Trader.prototype.SetTargetMarket = function(target, source)
 {
-	let cmpTargetMarket = QueryMiragedInterface(target, IID_Market);
+	const cmpTargetMarket = QueryMiragedInterface(target, IID_Market);
 	if (!cmpTargetMarket)
 		return false;
 
 	if (source)
 	{
 		// Establish a trade route with both markets in one go.
-		let cmpSourceMarket = QueryMiragedInterface(source, IID_Market);
+		const cmpSourceMarket = QueryMiragedInterface(source, IID_Market);
 		if (!cmpSourceMarket)
 			return false;
 		this.markets = [source];
@@ -103,9 +103,9 @@ Trader.prototype.SetTargetMarket = function(target, source)
 	{
 		// If we already have both markets - drop them
 		// and use the target as first market
-		for (let market of this.markets)
+		for (const market of this.markets)
 		{
-			let cmpMarket = QueryMiragedInterface(market, IID_Market);
+			const cmpMarket = QueryMiragedInterface(market, IID_Market);
 			if (cmpMarket)
 				cmpMarket.RemoveTrader(this.entity);
 		}
@@ -188,11 +188,11 @@ Trader.prototype.CanTrade = function(target)
 
 Trader.prototype.AddResources = function(ent, gain)
 {
-	let cmpPlayer = QueryOwnerInterface(ent);
+	const cmpPlayer = QueryOwnerInterface(ent);
 	if (cmpPlayer)
 		cmpPlayer.AddResource(this.goods.type, gain);
 
-	let cmpStatisticsTracker = QueryOwnerInterface(ent, IID_StatisticsTracker);
+	const cmpStatisticsTracker = QueryOwnerInterface(ent, IID_StatisticsTracker);
 	if (cmpStatisticsTracker)
 		cmpStatisticsTracker.IncreaseTradeIncomeCounter(gain);
 };
@@ -210,7 +210,7 @@ Trader.prototype.GenerateResources = function(currentMarket, nextMarket)
 
 Trader.prototype.PerformTrade = function(currentMarket)
 {
-	let previousMarket = this.markets[this.index];
+	const previousMarket = this.markets[this.index];
 	if (previousMarket != currentMarket)  // Inconsistent markets
 	{
 		this.goods.amount = null;
@@ -218,12 +218,12 @@ Trader.prototype.PerformTrade = function(currentMarket)
 	}
 
 	this.index = ++this.index % this.markets.length;
-	let nextMarket = this.markets[this.index];
+	const nextMarket = this.markets[this.index];
 
 	if (this.goods.amount && this.goods.amount.traderGain)
 		this.GenerateResources(previousMarket, nextMarket);
 
-	let cmpPlayer = QueryOwnerInterface(this.entity);
+	const cmpPlayer = QueryOwnerInterface(this.entity);
 	if (!cmpPlayer)
 		return INVALID_ENTITY;
 
@@ -251,11 +251,11 @@ Trader.prototype.HasMarket = function(market)
  */
 Trader.prototype.RemoveMarket = function(market)
 {
-	let index = this.markets.indexOf(market);
+	const index = this.markets.indexOf(market);
 	if (index == -1)
 		return;
 	this.markets.splice(index, 1);
-	let cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
 	if (cmpUnitAI)
 		cmpUnitAI.MarketRemoved(market);
 };
@@ -265,20 +265,20 @@ Trader.prototype.RemoveMarket = function(market)
  */
 Trader.prototype.SwitchMarket = function(oldMarket, newMarket)
 {
-	let index = this.markets.indexOf(oldMarket);
+	const index = this.markets.indexOf(oldMarket);
 	if (index == -1)
 		return;
 	this.markets[index] = newMarket;
-	let cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
 	if (cmpUnitAI)
 		cmpUnitAI.SwitchMarketOrder(oldMarket, newMarket);
 };
 
 Trader.prototype.StopTrading = function()
 {
-	for (let market of this.markets)
+	for (const market of this.markets)
 	{
-		let cmpMarket = QueryMiragedInterface(market, IID_Market);
+		const cmpMarket = QueryMiragedInterface(market, IID_Market);
 		if (cmpMarket)
 			cmpMarket.RemoveTrader(this.entity);
 	}
@@ -293,7 +293,7 @@ Trader.prototype.StopTrading = function()
 // to be able to trade with it.
 Trader.prototype.GetRange = function()
 {
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	let max = 1;
 	if (cmpObstruction)
 		max += cmpObstruction.GetSize() * 1.5;

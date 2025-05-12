@@ -27,7 +27,7 @@ TreasureCollector.prototype.GetRange = function()
  */
 TreasureCollector.prototype.CanCollect = function(target)
 {
-	let cmpTreasure = Engine.QueryInterface(target, IID_Treasure);
+	const cmpTreasure = Engine.QueryInterface(target, IID_Treasure);
 	return cmpTreasure && cmpTreasure.IsAvailable();
 };
 
@@ -42,11 +42,11 @@ TreasureCollector.prototype.StartCollecting = function(target, callerIID)
 	if (this.target)
 		this.StopCollecting();
 
-	let cmpTreasure = Engine.QueryInterface(target, IID_Treasure);
+	const cmpTreasure = Engine.QueryInterface(target, IID_Treasure);
 	if (!cmpTreasure || !cmpTreasure.IsAvailable())
 		return false;
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("collecting_treasure", false, 1.0);
 
@@ -54,7 +54,7 @@ TreasureCollector.prototype.StartCollecting = function(target, callerIID)
 	this.callerIID = callerIID;
 
 	// ToDo: Implement rate modifiers.
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetTimeout(this.entity, IID_TreasureCollector, "CollectTreasure", cmpTreasure.CollectionTime(), null);
 
 	return true;
@@ -68,24 +68,24 @@ TreasureCollector.prototype.StopCollecting = function(reason)
 	if (!this.target)
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timer);
 	delete this.timer;
 
 	delete this.target;
 
-	let cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
+	const cmpVisual = Engine.QueryInterface(this.entity, IID_Visual);
 	if (cmpVisual)
 		cmpVisual.SelectAnimation("idle", false, 1.0);
 
 	// The callerIID component may start again,
 	// replacing the callerIID, hence save that.
-	let callerIID = this.callerIID;
+	const callerIID = this.callerIID;
 	delete this.callerIID;
 
 	if (reason && callerIID)
 	{
-		let component = Engine.QueryInterface(this.entity, callerIID);
+		const component = Engine.QueryInterface(this.entity, callerIID);
 		if (component)
 			component.ProcessMessage(reason, null);
 	}
@@ -96,7 +96,7 @@ TreasureCollector.prototype.StopCollecting = function(reason)
  */
 TreasureCollector.prototype.CollectTreasure = function(data, lateness)
 {
-	let cmpTreasure = Engine.QueryInterface(this.target, IID_Treasure);
+	const cmpTreasure = Engine.QueryInterface(this.target, IID_Treasure);
 	if (!cmpTreasure || !cmpTreasure.IsAvailable())
 	{
 		this.StopCollecting("TargetInvalidated");
@@ -119,8 +119,8 @@ TreasureCollector.prototype.CollectTreasure = function(data, lateness)
  */
 TreasureCollector.prototype.IsTargetInRange = function(target)
 {
-	let range = this.GetRange();
-	let cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
+	const range = this.GetRange();
+	const cmpObstructionManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ObstructionManager);
 	return cmpObstructionManager.IsInTargetRange(this.entity, target, range.min, range.max, false);
 };
 

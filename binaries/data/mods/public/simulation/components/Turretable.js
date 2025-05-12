@@ -14,7 +14,7 @@ Turretable.prototype.Init = function()
  */
 Turretable.prototype.GetRange = function(type, target)
 {
-	let cmpTurretHolder = Engine.QueryInterface(target, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(target, IID_TurretHolder);
 	return cmpTurretHolder ? cmpTurretHolder.LoadingRange() : { "min": 0, "max": 1 };
 };
 
@@ -51,7 +51,7 @@ Turretable.prototype.CanOccupy = function(target)
 	if (this.holder)
 		return false;
 
-	let cmpTurretHolder = Engine.QueryInterface(target, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(target, IID_TurretHolder);
 	return cmpTurretHolder && cmpTurretHolder.CanOccupy(this.entity);
 };
 
@@ -67,23 +67,23 @@ Turretable.prototype.OccupyTurret = function(target, turretPointName = "", eject
 	if (!this.CanOccupy(target))
 		return false;
 
-	let cmpTurretHolder = Engine.QueryInterface(target, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(target, IID_TurretHolder);
 	if (!cmpTurretHolder || !cmpTurretHolder.OccupyNamedTurretPoint(this.entity, turretPointName))
 		return false;
 
 	this.holder = target;
 	this.ejectable = ejectable;
 
-	let cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
 	if (cmpUnitAI)
 		cmpUnitAI.SetTurretStance();
 
-	let cmpUnitMotion = Engine.QueryInterface(this.entity, IID_UnitMotion);
+	const cmpUnitMotion = Engine.QueryInterface(this.entity, IID_UnitMotion);
 	if (cmpUnitMotion)
 		cmpUnitMotion.SetFacePointAfterMove(false);
 
 	// Remove the unit's obstruction to avoid interfering with pathing.
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	if (cmpObstruction)
 		cmpObstruction.SetActive(false);
 
@@ -107,31 +107,31 @@ Turretable.prototype.LeaveTurret = function(forced = false)
 	if (!this.ejectable && !forced)
 		return false;
 
-	let pos = PositionHelper.GetSpawnPosition(this.holder, this.entity, forced);
+	const pos = PositionHelper.GetSpawnPosition(this.holder, this.entity, forced);
 	if (!pos)
 		return false;
 
-	let cmpTurretHolder = Engine.QueryInterface(this.holder, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(this.holder, IID_TurretHolder);
 	if (!cmpTurretHolder || !cmpTurretHolder.LeaveTurretPoint(this.entity, forced))
 		return false;
 
-	let cmpUnitMotionEntity = Engine.QueryInterface(this.entity, IID_UnitMotion);
+	const cmpUnitMotionEntity = Engine.QueryInterface(this.entity, IID_UnitMotion);
 	if (cmpUnitMotionEntity)
 		cmpUnitMotionEntity.SetFacePointAfterMove(true);
 
-	let cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
+	const cmpPosition = Engine.QueryInterface(this.entity, IID_Position);
 	if (cmpPosition)
 	{
 		cmpPosition.SetTurretParent(INVALID_ENTITY, new Vector3D());
 		cmpPosition.JumpTo(pos.x, pos.z);
 		cmpPosition.SetHeightOffset(0);
 
-		let cmpHolderPosition = Engine.QueryInterface(this.holder, IID_Position);
+		const cmpHolderPosition = Engine.QueryInterface(this.holder, IID_Position);
 		if (cmpHolderPosition)
 			cmpPosition.SetYRotation(cmpHolderPosition.GetPosition().horizAngleTo(pos));
 	}
 
-	let cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
+	const cmpUnitAI = Engine.QueryInterface(this.entity, IID_UnitAI);
 	if (cmpUnitAI)
 	{
 		cmpUnitAI.Ungarrison();
@@ -139,7 +139,7 @@ Turretable.prototype.LeaveTurret = function(forced = false)
 	}
 
 	// Reset the obstruction flags to template defaults.
-	let cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
+	const cmpObstruction = Engine.QueryInterface(this.entity, IID_Obstruction);
 	if (cmpObstruction)
 		cmpObstruction.SetActive(true);
 
@@ -148,7 +148,7 @@ Turretable.prototype.LeaveTurret = function(forced = false)
 		"holderID": INVALID_ENTITY
 	});
 
-	let cmpRallyPoint = Engine.QueryInterface(this.holder, IID_RallyPoint);
+	const cmpRallyPoint = Engine.QueryInterface(this.holder, IID_RallyPoint);
 
 	// Need to delete this before ordering to a rally
 	// point else we may not occupy another turret point.
@@ -166,14 +166,14 @@ Turretable.prototype.OnEntityRenamed = function(msg)
 	if (!this.holder)
 		return;
 
-	let cmpTurretHolder = Engine.QueryInterface(this.holder, IID_TurretHolder);
+	const cmpTurretHolder = Engine.QueryInterface(this.holder, IID_TurretHolder);
 	if (!cmpTurretHolder)
 		return;
 
-	let holder = this.holder;
-	let currentPoint = cmpTurretHolder.GetOccupiedTurretPointName(this.entity);
+	const holder = this.holder;
+	const currentPoint = cmpTurretHolder.GetOccupiedTurretPointName(this.entity);
 	this.LeaveTurret(true);
-	let cmpTurretableNew = Engine.QueryInterface(msg.newentity, IID_Turretable);
+	const cmpTurretableNew = Engine.QueryInterface(msg.newentity, IID_Turretable);
 	if (cmpTurretableNew)
 		cmpTurretableNew.OccupyTurret(holder, currentPoint);
 };

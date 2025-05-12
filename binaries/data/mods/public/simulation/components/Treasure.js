@@ -23,9 +23,9 @@ Treasure.prototype.Init = function()
 
 Treasure.prototype.ComputeReward = function()
 {
-	for (let resource in this.template.Resources)
+	for (const resource in this.template.Resources)
 	{
-		let amount = ApplyValueModificationsToEntity("Treasure/Resources/" + resource, this.template.Resources[resource], this.entity);
+		const amount = ApplyValueModificationsToEntity("Treasure/Resources/" + resource, this.template.Resources[resource], this.entity);
 		if (!amount)
 			continue;
 		if (!this.resources)
@@ -59,22 +59,22 @@ Treasure.prototype.Reward = function(entity)
 	if (this.isTaken)
 		return false;
 
-	let cmpPlayer = QueryOwnerInterface(entity);
+	const cmpPlayer = QueryOwnerInterface(entity);
 	if (!cmpPlayer)
 		return false;
 
-	let cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
+	const cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
 	if (cmpFogging)
 		cmpFogging.Activate();
 
 	if (this.resources)
 		cmpPlayer.AddResources(this.resources);
 
-	let cmpStatisticsTracker = QueryOwnerInterface(entity, IID_StatisticsTracker);
+	const cmpStatisticsTracker = QueryOwnerInterface(entity, IID_StatisticsTracker);
 	if (cmpStatisticsTracker)
 		cmpStatisticsTracker.IncreaseTreasuresCollectedCounter();
 
-	let cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
 	cmpTrigger.CallEvent("OnTreasureCollected", {
 		"player": cmpPlayer.GetPlayerID(),
 		"treasure": this.entity

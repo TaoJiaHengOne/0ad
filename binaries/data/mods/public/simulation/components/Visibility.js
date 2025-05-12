@@ -36,7 +36,7 @@ Visibility.prototype.Init = function()
  */
 Visibility.prototype.SetActivated = function(status)
 {
-	let cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 	cmpRangeManager.ActivateScriptedVisibility(this.entity, status);
 
 	this.activated = status;
@@ -63,7 +63,7 @@ Visibility.prototype.GetVisibility = function(player, isVisible, isExplored)
 	if (this.preview)
 	{
 		// For the owner only, mock the "RetainInFog" behavior
-		let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+		const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 		if (cmpOwnership && cmpOwnership.GetOwner() == player && isExplored)
 			return isVisible ? VIS_VISIBLE : VIS_FOGGED;
 
@@ -73,7 +73,7 @@ Visibility.prototype.GetVisibility = function(player, isVisible, isExplored)
 	else if (this.corpse)
 	{
 		// For the owner only, mock the "RetainInFog" behavior
-		let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+		const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 		if (cmpOwnership && cmpOwnership.GetOwner() == player && isExplored)
 			return isVisible ? VIS_VISIBLE : VIS_FOGGED;
 

@@ -31,7 +31,7 @@ VisionSharing.prototype.Activate = function()
 {
 	if (this.activated)
 		return;
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || cmpOwnership.GetOwner() <= 0)
 		return;
 	this.shared = new Set([cmpOwnership.GetOwner()]);
@@ -42,10 +42,10 @@ VisionSharing.prototype.Activate = function()
 
 VisionSharing.prototype.CheckVisionSharings = function()
 {
-	let shared = new Set();
+	const shared = new Set();
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
-	let owner = cmpOwnership ? cmpOwnership.GetOwner() : INVALID_PLAYER;
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const owner = cmpOwnership ? cmpOwnership.GetOwner() : INVALID_PLAYER;
 	if (owner >= 0)
 	{
 		// The owner has vision
@@ -53,15 +53,15 @@ VisionSharing.prototype.CheckVisionSharings = function()
 			shared.add(owner);
 
 		// Vision sharing due to garrisoned units
-		let cmpGarrisonHolder = Engine.QueryInterface(this.entity, IID_GarrisonHolder);
+		const cmpGarrisonHolder = Engine.QueryInterface(this.entity, IID_GarrisonHolder);
 		if (cmpGarrisonHolder)
 		{
-			for (let ent of cmpGarrisonHolder.GetEntities())
+			for (const ent of cmpGarrisonHolder.GetEntities())
 			{
-				let cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
+				const cmpEntOwnership = Engine.QueryInterface(ent, IID_Ownership);
 				if (!cmpEntOwnership)
 					continue;
-				let entOwner = cmpEntOwnership.GetOwner();
+				const entOwner = cmpEntOwnership.GetOwner();
 				if (entOwner > 0 && entOwner != owner)
 				{
 					shared.add(entOwner);
@@ -73,7 +73,7 @@ VisionSharing.prototype.CheckVisionSharings = function()
 
 		// vision sharing due to spies
 		if (this.spies)
-			for (let spy of this.spies.values())
+			for (const spy of this.spies.values())
 				if (spy > 0 && spy != owner)
 					shared.add(spy);
 	}
@@ -82,11 +82,11 @@ VisionSharing.prototype.CheckVisionSharings = function()
 		return;
 
 	// compare with previous vision sharing, and update if needed
-	for (let player of shared)
+	for (const player of shared)
 		if (!this.shared.has(player))
 			Engine.PostMessage(this.entity, MT_VisionSharingChanged,
 				{ "entity": this.entity, "player": player, "add": true });
-	for (let player of this.shared)
+	for (const player of this.shared)
 		if (!shared.has(player))
 			Engine.PostMessage(this.entity, MT_VisionSharingChanged,
 				{ "entity": this.entity, "player": player, "add": false });
@@ -114,15 +114,15 @@ VisionSharing.prototype.AddSpy = function(player, timeLength)
 	if (!this.IsBribable())
 		return 0;
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership || cmpOwnership.GetOwner() == player || player <= 0)
 		return 0;
 
-	let cmpTechnologyManager = QueryPlayerIDInterface(player, IID_TechnologyManager);
+	const cmpTechnologyManager = QueryPlayerIDInterface(player, IID_TechnologyManager);
 	if (!cmpTechnologyManager || !cmpTechnologyManager.CanProduce("special/spy"))
 		return 0;
 
-	let template = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetTemplate("special/spy");
+	const template = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager).GetTemplate("special/spy");
 	if (!IncurBribeCost(template, player, cmpOwnership.GetOwner(), false))
 		return 0;
 
@@ -132,7 +132,7 @@ VisionSharing.prototype.AddSpy = function(player, timeLength)
 	if (!duration && template.VisionSharing && template.VisionSharing.Duration)
 	{
 		duration = ApplyValueModificationsToTemplate("VisionSharing/Duration", +template.VisionSharing.Duration, player, template);
-		let cmpVision = Engine.QueryInterface(this.entity, IID_Vision);
+		const cmpVision = Engine.QueryInterface(this.entity, IID_Vision);
 		if (cmpVision)
 			duration *= 60 / Math.max(30, cmpVision.GetRange());
 	}
@@ -143,14 +143,14 @@ VisionSharing.prototype.AddSpy = function(player, timeLength)
 	this.spies.set(++this.spyId, player);
 	if (duration)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.SetTimeout(this.entity, IID_VisionSharing, "RemoveSpy", duration * 1000, { "id": this.spyId });
 	}
 	this.Activate();
 	this.CheckVisionSharings();
 
 	// update statistics for successful bribes
-	let cmpBribesStatisticsTracker = QueryPlayerIDInterface(player, IID_StatisticsTracker);
+	const cmpBribesStatisticsTracker = QueryPlayerIDInterface(player, IID_StatisticsTracker);
 	if (cmpBribesStatisticsTracker)
 		cmpBribesStatisticsTracker.IncreaseSuccessfulBribesCounter();
 
@@ -171,7 +171,7 @@ VisionSharing.prototype.ShareVisionWith = function(player)
 	if (this.activated)
 		return this.shared.has(player);
 
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	return cmpOwnership && cmpOwnership.GetOwner() == player;
 };
 

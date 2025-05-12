@@ -58,7 +58,7 @@ Timer.prototype.SetTimeout = function(ent, iid, funcname, time, data)
  */
 Timer.prototype.SetInterval = function(ent, iid, funcname, time, repeattime, data)
 {
-	let id = ++this.id;
+	const id = ++this.id;
 
 	this.timers.set(id, {
 		"entity": ent,
@@ -81,7 +81,7 @@ Timer.prototype.SetInterval = function(ent, iid, funcname, time, repeattime, dat
  */
 Timer.prototype.UpdateRepeatTime = function(timerID, newRepeatTime)
 {
-	let timer = this.timers.get(timerID);
+	const timer = this.timers.get(timerID);
 	if (timer)
 		this.timers.set(timerID, {
 			"entity": timer.entity,
@@ -113,22 +113,22 @@ Timer.prototype.OnUpdate = function(msg)
 	// Collect the timers that need to run
 	// (We do this in two stages to avoid deleting from the timer list while
 	// we're in the middle of iterating through it)
-	let run = [];
+	const run = [];
 	this.timers.forEach((timer, id) => {
 		if (timer.time <= this.time)
 			run.push(id);
 	});
 
-	for (let id of run)
+	for (const id of run)
 	{
-		let timer = this.timers.get(id);
+		const timer = this.timers.get(id);
 
 		// An earlier timer might have cancelled this one, so skip it
 		if (!timer)
 			continue;
 
 		// The entity was probably destroyed; clean up the timer
-		let timerTargetComponent = Engine.QueryInterface(timer.entity, timer.iid);
+		const timerTargetComponent = Engine.QueryInterface(timer.entity, timer.iid);
 		if (!timerTargetComponent)
 		{
 			this.timers.delete(id);
