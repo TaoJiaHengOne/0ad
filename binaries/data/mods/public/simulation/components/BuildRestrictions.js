@@ -165,8 +165,9 @@ BuildRestrictions.prototype.CheckPlacement = function()
 		case "fail_terrain_class":
 			// TODO: be more specific and/or list valid terrain?
 			result.message = markForTranslation("%(name)s cannot be built on invalid terrain");
+		default:
+			return result; // Fail
 		}
-		return result; // Fail
 	}
 
 	// Check territory restrictions

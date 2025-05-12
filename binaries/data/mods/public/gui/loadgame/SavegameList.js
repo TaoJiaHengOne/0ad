@@ -116,6 +116,8 @@ class SavegameList
 				cmpA = a.description;
 				cmpB = b.description;
 				break;
+			default:
+				error("Unknown sortKey in updateSavegameList: " + sortKey);
 			}
 
 			if (cmpA < cmpB)

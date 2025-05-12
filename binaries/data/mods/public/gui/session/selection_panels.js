@@ -55,6 +55,8 @@ g_SelectionPanels.Alert = {
 			case "end":
 				endOfAlert();
 				return;
+			default:
+				error("Unknown value for alert action: " + data.item);
 			}
 		};
 
@@ -80,6 +82,8 @@ g_SelectionPanels.Alert = {
 			else
 				data.button.tooltip += "\n" + bodyFont(translate("Unload nearby vulnerable units."));
 			break;
+		default:
+			error("Unknown value for alert action: " + data.item);
 		}
 		data.button.enabled = controlsPlayer(data.player);
 
@@ -789,6 +793,8 @@ g_SelectionPanels.Research = {
 							current = playerState.typeCountsByClass[entity.class] ?
 								Object.keys(playerState.typeCountsByClass[entity.class]).length : 0;
 							break;
+						default:
+							error("Unknow value in entity requirement check: " + entity.check);
 						}
 
 						const remaining = entity.number - current;

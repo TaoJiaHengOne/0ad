@@ -500,6 +500,8 @@ function handleInputBeforeGui(ev, hoveredObject)
 		mouseX = ev.x;
 		mouseY = ev.y;
 		break;
+	default:
+		break;
 	}
 
 	mouseIsOverObject = (hoveredObject != null);
@@ -564,9 +566,10 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_UNIT_POSITION:
 		switch (ev.type)
@@ -575,8 +578,9 @@ function handleInputBeforeGui(ev, hoveredObject)
 			return positionUnitsFreehandSelectionMouseMove(ev);
 		case "mousebuttonup":
 			return positionUnitsFreehandSelectionMouseUp(ev);
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_BUILDING_CLICK:
 		switch (ev.type)
@@ -589,7 +593,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_BUILDING_DRAG;
 				return false;
 			}
-			break;
+			return false;
 
 		case "mousebuttonup":
 			if (ev.button == SDL_BUTTON_LEFT)
@@ -607,7 +611,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 					inputState = INPUT_BUILDING_PLACEMENT;
 				return true;
 			}
-			break;
+			return false;
 
 		case "mousebuttondown":
 			if (ev.button == SDL_BUTTON_RIGHT)
@@ -617,9 +621,10 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_BUILDING_WALL_CLICK:
 		// User is mid-click in choosing a starting point for building a wall. The build process can still be cancelled at this point
@@ -632,7 +637,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_BUILDING_WALL_PATHING;
 				return true;
 			}
-			break;
+			return false;
 
 		case "mousebuttondown":
 			if (ev.button == SDL_BUTTON_RIGHT)
@@ -644,9 +649,10 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_BUILDING_WALL_PATHING:
 		// User has chosen a starting point for constructing the wall, and is now looking to set the endpoint.
@@ -679,7 +685,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 				].filter(tip => tip).join("\n");
 			}
 
-			break;
+			return false;
 
 		case "mousebuttondown":
 			if (ev.button == SDL_BUTTON_LEFT)
@@ -715,9 +721,10 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_BUILDING_DRAG:
 		switch (ev.type)
@@ -746,7 +753,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 			}
 
 			updateBuildingPlacementPreview();
-			break;
+			return false;
 
 		case "mousebuttonup":
 			if (ev.button == SDL_BUTTON_LEFT)
@@ -764,7 +771,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 					inputState = INPUT_BUILDING_PLACEMENT;
 				return true;
 			}
-			break;
+			return false;
 
 		case "mousebuttondown":
 			if (ev.button == SDL_BUTTON_RIGHT)
@@ -774,9 +781,10 @@ function handleInputBeforeGui(ev, hoveredObject)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_BATCHTRAINING:
 		if (ev.type == "hotkeyup" && ev.hotkey == "session.batchtrain")
@@ -784,10 +792,10 @@ function handleInputBeforeGui(ev, hoveredObject)
 			flushTrainingBatch();
 			inputState = INPUT_NORMAL;
 		}
-		break;
+		return false;
+	default:
+		return false;
 	}
-
-	return false;
 }
 
 function handleInputAfterGui(ev)
@@ -847,11 +855,11 @@ function handleInputAfterGui(ev)
 			else if (ev.button == SDL_BUTTON_RIGHT)
 			{
 				if (!controlsPlayer(g_ViewedPlayer))
-					break;
+					return false;
 				g_DragStart = new Vector2D(ev.x, ev.y);
 				inputState = INPUT_UNIT_POSITION_START;
 			}
-			break;
+			return false;
 
 		case "hotkeypress":
 			if (ev.hotkey.indexOf("selection.group.") == 0)
@@ -874,9 +882,10 @@ function handleInputAfterGui(ev)
 					prevHotkey = ev.hotkey;
 				}
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_PRESELECTEDACTION:
 		switch (ev.type)
@@ -895,7 +904,7 @@ function handleInputAfterGui(ev)
 			{
 				const action = determineAction(ev.x, ev.y);
 				if (!action)
-					break;
+					return false;
 				if (!Engine.HotkeyIsPressed("session.queue") && !Engine.HotkeyIsPressed("session.orderone"))
 				{
 					preSelectedAction = ACTION_NONE;
@@ -907,18 +916,17 @@ function handleInputAfterGui(ev)
 			{
 				preSelectedAction = ACTION_NONE;
 				inputState = INPUT_NORMAL;
-				break;
 			}
+			return false;
 		default:
 			// Slight hack: If selection is empty, reset the input state.
 			if (!g_Selection.size())
 			{
 				preSelectedAction = ACTION_NONE;
 				inputState = INPUT_NORMAL;
-				break;
 			}
+			return false;
 		}
-		break;
 
 	case INPUT_SELECTING:
 		switch (ev.type)
@@ -999,20 +1007,18 @@ function handleInputAfterGui(ev)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_UNIT_POSITION_START:
 		switch (ev.type)
 		{
 		case "mousemotion":
 			if (g_DragStart.distanceToSquared(ev) >= Math.square(getMaxDragDelta()))
-			{
 				inputState = INPUT_UNIT_POSITION;
-				return false;
-			}
-			break;
+			return false;
 		case "mousebuttonup":
 			inputState = INPUT_NORMAL;
 			if (ev.button == SDL_BUTTON_RIGHT)
@@ -1021,9 +1027,10 @@ function handleInputAfterGui(ev)
 				if (action)
 					return doAction(action, ev);
 			}
-			break;
+			return false;
+		default:
+			return false;
 		}
-		break;
 
 	case INPUT_BUILDING_PLACEMENT:
 		switch (ev.type)
@@ -1114,7 +1121,7 @@ function handleInputAfterGui(ev)
 				inputState = INPUT_NORMAL;
 				return true;
 			}
-			break;
+			return false;
 
 		case "hotkeydown":
 
@@ -1125,16 +1132,19 @@ function handleInputAfterGui(ev)
 			case "session.rotate.cw":
 				placementSupport.angle += rotation_step;
 				updateBuildingPlacementPreview();
-				break;
+				return false;
 			case "session.rotate.ccw":
 				placementSupport.angle -= rotation_step;
 				updateBuildingPlacementPreview();
-				break;
+				return false;
+			default:
+				return false;
 			}
-			break;
 
+		default:
+			return false;
 		}
-		break;
+
 	case INPUT_FLARE:
 		if (ev.type == "mousebuttondown")
 		{
@@ -1150,8 +1160,10 @@ function handleInputAfterGui(ev)
 				return true;
 			}
 		}
+		return false;
+	default:
+		return false;
 	}
-	return false;
 }
 
 function doAction(action, ev)
@@ -1644,6 +1656,8 @@ function performGroup(action, groupId)
 
 		updateGroups();
 		break;
+	default:
+		warn("Unknow action in performGroup: " + action);
 	}
 }
 

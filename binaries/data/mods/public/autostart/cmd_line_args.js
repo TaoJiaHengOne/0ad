@@ -105,6 +105,8 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 			settings.mapExploration.setExplored(true);
 			settings.mapExploration.setRevealed(false);
 			break;
+		default:
+			warn("Unknown argument for option 'autostart-visibility': " + cmdLineArgs['autostart-visibility']);
 		}
 	}
 

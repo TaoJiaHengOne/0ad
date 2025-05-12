@@ -16,6 +16,8 @@ function distributeButtonsHorizontally(button, captions)
 		button[1].size = "33%+5 " + y1 + " 66%-5 " + y2;
 		button[2].size = "66%+5 " + y1 + " 100%-18 " + y2;
 		break;
+	default:
+		error("distributeButtonsHorizontally does not yet support more than 3 buttons, attempting to use " + captions.length);
 	}
 }
 

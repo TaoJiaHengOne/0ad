@@ -348,8 +348,9 @@ TechnologyManager.prototype.CheckTechnologyRequirements = function(reqs, civonly
 
 			case "entities":
 				return req[type].every(this.DoesEntitySpecPass, this);
+			default:
+				return false;
 			}
-			return false;
 		});
 	});
 };
@@ -361,14 +362,15 @@ TechnologyManager.prototype.DoesEntitySpecPass = function(entity)
 	case "count":
 		if (!this.classCounts[entity.class] || this.classCounts[entity.class] < entity.number)
 			return false;
-		break;
+		return true;
 
 	case "variants":
 		if (!this.typeCountsByClass[entity.class] || Object.keys(this.typeCountsByClass[entity.class]).length < entity.number)
 			return false;
-		break;
+		return true;
+	default:
+		return true;
 	}
-	return true;
 };
 
 TechnologyManager.prototype.OnGlobalOwnershipChanged = function(msg)

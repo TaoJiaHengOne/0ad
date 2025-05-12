@@ -294,7 +294,8 @@ function InterpretTechRequirements(civ, operator, value)
 				}
 				break;
 			}
-
+			default:
+				warn("Unknown requirement operator in 'all': " + newOper);
 			}
 		}
 		if (civPermitted === false) // if and only if false
@@ -347,6 +348,8 @@ function InterpretTechRequirements(civ, operator, value)
 					requirements.push(res);
 				break;
 
+			default:
+				warn("Unknown requirement operator in 'any': " + newOper);
 			}
 		}
 		if (!civPermitted && !requirements.length)

@@ -231,6 +231,8 @@ function filterReplays()
 			cmpA_secondary = g_PopulationCapacities.Name.indexOf(a.attribs.settings.PopulationCapType);
 			cmpB_secondary = g_PopulationCapacities.Name.indexOf(b.attribs.settings.PopulationCapType);
 			break;
+		default:
+			error("Unknown sortKey in filterReplays: " + sortKey);
 		}
 
 		if (cmpA < cmpB)
