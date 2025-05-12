@@ -32,7 +32,7 @@ StatusEffectsReceiver.prototype.GetActiveStatuses = function()
  */
 StatusEffectsReceiver.prototype.ApplyStatus = function(effectData, attacker, attackerOwner)
 {
-	for (let effect in effectData)
+	for (const effect in effectData)
 		this.AddStatus(effect, effectData[effect], attacker, attackerOwner);
 
 	// TODO: implement loot?
@@ -76,13 +76,13 @@ StatusEffectsReceiver.prototype.AddStatus = function(baseCode, data, attacker = 
 	this.activeStatusEffects[statusCode] = {
 		"baseCode": baseCode
 	};
-	let status = this.activeStatusEffects[statusCode];
+	const status = this.activeStatusEffects[statusCode];
 	Object.assign(status, data);
 
 	if (status.Modifiers)
 	{
-		let modifications = DeriveModificationsFromXMLTemplate(status.Modifiers);
-		let cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
+		const modifications = DeriveModificationsFromXMLTemplate(status.Modifiers);
+		const cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
 		cmpModifiersManager.AddModifiers(statusCode, modifications, this.entity);
 	}
 
@@ -103,7 +103,7 @@ StatusEffectsReceiver.prototype.AddStatus = function(baseCode, data, attacker = 
 	status._firstTime = true;
 	status.source = { "entity": attacker, "owner": attackerOwner };
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	status._timer = cmpTimer.SetInterval(this.entity, IID_StatusEffectsReceiver, "ExecuteEffect", 0, +(status.Interval || status._interval), statusCode);
 };
 
@@ -114,19 +114,19 @@ StatusEffectsReceiver.prototype.AddStatus = function(baseCode, data, attacker = 
  */
 StatusEffectsReceiver.prototype.RemoveStatus = function(statusCode)
 {
-	let statusEffect = this.activeStatusEffects[statusCode];
+	const statusEffect = this.activeStatusEffects[statusCode];
 	if (!statusEffect)
 		return;
 
 	if (statusEffect.Modifiers)
 	{
-		let cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
+		const cmpModifiersManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_ModifiersManager);
 		cmpModifiersManager.RemoveAllModifiers(statusCode, this.entity);
 	}
 
 	if (statusEffect._timer)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(statusEffect._timer);
 	}
 	delete this.activeStatusEffects[statusCode];
@@ -140,7 +140,7 @@ StatusEffectsReceiver.prototype.RemoveStatus = function(statusCode)
  */
 StatusEffectsReceiver.prototype.ExecuteEffect = function(statusCode, lateness)
 {
-	let status = this.activeStatusEffects[statusCode];
+	const status = this.activeStatusEffects[statusCode];
 	if (!status)
 		return;
 

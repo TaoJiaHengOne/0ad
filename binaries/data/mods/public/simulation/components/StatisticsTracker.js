@@ -38,10 +38,10 @@ StatisticsTracker.prototype.Init = function()
 	this.enemyUnitsKilledValue = 0;
 	this.unitsCapturedValue = 0;
 
-	for (let counterName of ["unitsTrained", "unitsLost", "enemyUnitsKilled", "unitsCaptured"])
+	for (const counterName of ["unitsTrained", "unitsLost", "enemyUnitsKilled", "unitsCaptured"])
 	{
 		this[counterName].total = 0;
-		for (let unitClass of this.unitsClasses)
+		for (const unitClass of this.unitsClasses)
 			// Domestic units are only counted for training
 			if (unitClass != "Domestic" || counterName == "unitsTrained")
 				this[counterName][unitClass] = 0;
@@ -56,10 +56,10 @@ StatisticsTracker.prototype.Init = function()
 	this.enemyBuildingsDestroyedValue = 0;
 	this.buildingsCapturedValue = 0;
 
-	for (let counterName of ["buildingsConstructed", "buildingsLost", "enemyBuildingsDestroyed", "buildingsCaptured"])
+	for (const counterName of ["buildingsConstructed", "buildingsLost", "enemyBuildingsDestroyed", "buildingsCaptured"])
 	{
 		this[counterName].total = 0;
-		for (let unitClass of this.buildingsClasses)
+		for (const unitClass of this.buildingsClasses)
 			this[counterName][unitClass] = 0;
 	}
 
@@ -69,7 +69,7 @@ StatisticsTracker.prototype.Init = function()
 	this.resourcesUsed = {};
 	this.resourcesSold = {};
 	this.resourcesBought = {};
-	for (let res of Resources.GetCodes())
+	for (const res of Resources.GetCodes())
 	{
 		this.resourcesGathered[res] = 0;
 		this.resourcesUsed[res] = 0;
@@ -87,7 +87,7 @@ StatisticsTracker.prototype.Init = function()
 	this.successfulBribes = 0;
 	this.failedBribes = 0;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.updateTimer = cmpTimer.SetInterval(
 		this.entity, IID_StatisticsTracker, "UpdateSequences", 0, this.UpdateSequenceInterval);
 };
@@ -155,8 +155,8 @@ StatisticsTracker.prototype.GetStatistics = function()
 
 StatisticsTracker.prototype.GetSequences = function()
 {
-	let ret = clone(this.sequences);
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const ret = clone(this.sequences);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 
 	ret.time.push(cmpTimer.GetTime() / 1000);
 	this.PushValue(this.GetStatistics(), ret);
@@ -169,9 +169,9 @@ StatisticsTracker.prototype.GetSequences = function()
  */
 StatisticsTracker.prototype.GetStatisticsJSON = function()
 {
-	let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
 
-	let playerStatistics = {
+	const playerStatistics = {
 		"playerID": cmpPlayer.GetPlayerID(),
 		"playerState": cmpPlayer.GetState(),
 		"statistics": this.GetStatistics()
@@ -356,7 +356,7 @@ StatisticsTracker.prototype.IncreaseTreasuresCollectedCounter = function()
 
 StatisticsTracker.prototype.IncreaseLootCollectedCounter = function(amount)
 {
-	for (let type in amount)
+	for (const type in amount)
 		this.lootCollected += amount[type];
 };
 
@@ -387,7 +387,7 @@ StatisticsTracker.prototype.IncreaseTradeIncomeCounter = function(amount)
 
 StatisticsTracker.prototype.GetPopulationCount = function()
 {
-	let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
 	return cmpPlayer ? cmpPlayer.GetPopulationCount() : 0;
 };
 
@@ -403,7 +403,7 @@ StatisticsTracker.prototype.IncreaseFailedBribesCounter = function()
 
 StatisticsTracker.prototype.GetPercentMapExplored = function()
 {
-	let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
 	if (!cmpPlayer)
 		return 0;
 
@@ -442,7 +442,7 @@ StatisticsTracker.prototype.GetTeamPercentMapExplored = function()
 
 StatisticsTracker.prototype.GetPercentMapControlled = function()
 {
-	let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+	const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
 	if (!cmpPlayer)
 		return 0;
 
@@ -459,7 +459,7 @@ StatisticsTracker.prototype.GetTeamPercentMapControlled = function()
 	const cmpTerritoryManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TerritoryManager);
 	if (team === -1 || !cmpDiplomacy.IsTeamLocked())
 	{
-		let cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
+		const cmpPlayer = Engine.QueryInterface(this.entity, IID_Player);
 		if (!cmpPlayer)
 			return 0;
 		return cmpTerritoryManager.GetTerritoryPercentage(cmpPlayer.GetPlayerID());
@@ -505,7 +505,7 @@ StatisticsTracker.prototype.UpdatePeakPercentages = function()
 StatisticsTracker.prototype.PushValue = function(fromData, toData)
 {
 	if (typeof fromData == "object")
-		for (let prop in fromData)
+		for (const prop in fromData)
 		{
 			if (typeof toData[prop] != "object")
 				toData[prop] = [fromData[prop]];
@@ -518,7 +518,7 @@ StatisticsTracker.prototype.PushValue = function(fromData, toData)
 
 StatisticsTracker.prototype.UpdateSequences = function()
 {
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.sequences.time.push(cmpTimer.GetTime() / 1000);
 	this.PushValue(this.GetStatistics(), this.sequences);
 };

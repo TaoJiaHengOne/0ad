@@ -117,9 +117,9 @@ Resistance.prototype.SetInvulnerability = function(invulnerability)
  */
 Resistance.prototype.GetEffectiveResistanceAgainst = function(effectType)
 {
-	let ret = {};
+	const ret = {};
 
-	let template = this.GetResistanceOfForm(Engine.QueryInterface(this.entity, IID_Foundation) ? "Foundation" : "Entity");
+	const template = this.GetResistanceOfForm(Engine.QueryInterface(this.entity, IID_Foundation) ? "Foundation" : "Entity");
 	if (template[effectType])
 		ret[effectType] = template[effectType];
 
@@ -132,8 +132,8 @@ Resistance.prototype.GetEffectiveResistanceAgainst = function(effectType)
  */
 Resistance.prototype.GetFullResistance = function()
 {
-	let ret = {};
-	for (let entityForm in this.template)
+	const ret = {};
+	for (const entityForm in this.template)
 		ret[entityForm] = this.GetResistanceOfForm(entityForm);
 
 	return ret;
@@ -146,15 +146,15 @@ Resistance.prototype.GetFullResistance = function()
  */
 Resistance.prototype.GetResistanceOfForm = function(entityForm)
 {
-	let ret = {};
-	let template = this.template && this.template[entityForm];
+	const ret = {};
+	const template = this.template && this.template[entityForm];
 	if (!template)
 		return ret;
 
 	if (template.Damage)
 	{
 		ret.Damage = {};
-		for (let damageType in template.Damage)
+		for (const damageType in template.Damage)
 			ret.Damage[damageType] = ApplyValueModificationsToEntity("Resistance/" + entityForm + "/Damage/" + damageType, +this.template[entityForm].Damage[damageType], this.entity);
 	}
 
@@ -164,7 +164,7 @@ Resistance.prototype.GetResistanceOfForm = function(entityForm)
 	if (template.ApplyStatus)
 	{
 		ret.ApplyStatus = {};
-		for (let effect in template.ApplyStatus)
+		for (const effect in template.ApplyStatus)
 			ret.ApplyStatus[effect] = {
 				"duration": ApplyValueModificationsToEntity("Resistance/" + entityForm + "/ApplyStatus/" + effect + "/Duration", +(template.ApplyStatus[effect].Duration || 1), this.entity),
 				"blockChance": ApplyValueModificationsToEntity("Resistance/" + entityForm + "/ApplyStatus/" + effect + "/BlockChance", +(template.ApplyStatus[effect].BlockChance || 0), this.entity)
@@ -177,7 +177,7 @@ Resistance.prototype.GetResistanceOfForm = function(entityForm)
 Resistance.prototype.OnOwnershipChanged = function(msg)
 {
 	if (msg.to === INVALID_PLAYER)
-		for (let attacker of this.attackers)
+		for (const attacker of this.attackers)
 			Engine.QueryInterface(attacker, IID_Attack)?.StopAttacking("TargetInvalidated");
 };
 

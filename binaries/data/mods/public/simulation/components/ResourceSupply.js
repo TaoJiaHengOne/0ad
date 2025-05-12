@@ -105,7 +105,7 @@ ResourceSupply.prototype.Init = function()
 	this.gatherers = [];
 	this.activeGatherers = [];
 
-	let [type, subtype] = this.template.Type.split('.');
+	const [type, subtype] = this.template.Type.split('.');
 	this.cachedType = { "generic": type, "specific": subtype };
 
 	if (this.template.Change)
@@ -196,11 +196,11 @@ ResourceSupply.prototype.GetDiminishingReturns = function()
 	if (!this.template.DiminishingReturns)
 		return null;
 
-	let diminishingReturns = ApplyValueModificationsToEntity("ResourceSupply/DiminishingReturns", +this.template.DiminishingReturns, this.entity);
+	const diminishingReturns = ApplyValueModificationsToEntity("ResourceSupply/DiminishingReturns", +this.template.DiminishingReturns, this.entity);
 	if (!diminishingReturns)
 		return null;
 
-	let numGatherers = this.GetNumGatherers();
+	const numGatherers = this.GetNumGatherers();
 	if (numGatherers > 1)
 		return diminishingReturns == 1 ? 1 : (1 - Math.pow(diminishingReturns, numGatherers)) / (1 - diminishingReturns) / numGatherers;
 
@@ -229,18 +229,18 @@ ResourceSupply.prototype.TakeResources = function(amount)
 ResourceSupply.prototype.Change = function(change)
 {
 	// Before changing the amount, activate Fogging if necessary to hide changes
-	let cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
+	const cmpFogging = Engine.QueryInterface(this.entity, IID_Fogging);
 	if (cmpFogging)
 		cmpFogging.Activate();
 
-	let oldAmount = this.amount;
+	const oldAmount = this.amount;
 	this.amount = Math.min(Math.max(oldAmount + change, 0), this.maxAmount);
 
 	// Remove entities that have been exhausted.
 	if (this.amount == 0)
 		Engine.DestroyEntity(this.entity);
 
-	let actualChange = this.amount - oldAmount;
+	const actualChange = this.amount - oldAmount;
 	if (actualChange != 0)
 	{
 		Engine.PostMessage(this.entity, MT_ResourceSupplyChanged, {
@@ -326,14 +326,14 @@ ResourceSupply.prototype.CheckTimers = function()
 	if (!this.template.Change || this.IsInfinite())
 		return;
 
-	for (let changeKey in this.template.Change)
+	for (const changeKey in this.template.Change)
 	{
 		if (!this.CheckState(changeKey))
 		{
 			this.StopTimer(changeKey);
 			continue;
 		}
-		let template = this.template.Change[changeKey];
+		const template = this.template.Change[changeKey];
 		if (this.amount < +(template.LowerLimit || -1) ||
 			this.amount > +(template.UpperLimit || this.GetMaxAmount()))
 		{
@@ -361,17 +361,17 @@ ResourceSupply.prototype.CheckTimers = function()
  */
 ResourceSupply.prototype.CheckState = function(changeKey)
 {
-	let template = this.template.Change[changeKey];
+	const template = this.template.Change[changeKey];
 	if (!template.State)
 		return true;
 
-	let states = template.State;
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const states = template.State;
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
 	if (states.indexOf("alive") != -1 && !cmpHealth && states.indexOf("dead") == -1 ||
 		states.indexOf("dead") != -1 && cmpHealth && states.indexOf("alive") == -1)
 		return false;
 
-	let activeGatherers = this.GetNumActiveGatherers();
+	const activeGatherers = this.GetNumActiveGatherers();
 	if (states.indexOf("gathered") != -1 && activeGatherers == 0 && states.indexOf("notGathered") == -1 ||
 		states.indexOf("notGathered") != -1 && activeGatherers > 0 && states.indexOf("gathered") == -1)
 		return false;
@@ -387,8 +387,8 @@ ResourceSupply.prototype.StartTimer = function(changeKey)
 	if (this.timers[changeKey])
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-	let interval = ApplyValueModificationsToEntity("ResourceSupply/Change/" + changeKey + "/Interval", +(this.template.Change[changeKey].Interval || 1000), this.entity);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const interval = ApplyValueModificationsToEntity("ResourceSupply/Change/" + changeKey + "/Interval", +(this.template.Change[changeKey].Interval || 1000), this.entity);
 	this.timers[changeKey] = cmpTimer.SetInterval(this.entity, IID_ResourceSupply, "TimerTick", interval, interval, changeKey);
 };
 
@@ -400,7 +400,7 @@ ResourceSupply.prototype.StopTimer = function(changeKey)
 	if (!this.timers[changeKey])
 		return;
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	cmpTimer.CancelTimer(this.timers[changeKey]);
 	delete this.timers[changeKey];
 };
@@ -410,7 +410,7 @@ ResourceSupply.prototype.StopTimer = function(changeKey)
  */
 ResourceSupply.prototype.TimerTick = function(changeKey)
 {
-	let template = this.template.Change[changeKey];
+	const template = this.template.Change[changeKey];
 	if (!template || !this.Change(this.cachedChanges[changeKey]))
 		this.StopTimer(changeKey);
 };
@@ -425,7 +425,7 @@ ResourceSupply.prototype.RecalculateValues = function()
 	if (!this.template.Change || this.IsInfinite())
 		return;
 
-	for (let changeKey in this.template.Change)
+	for (const changeKey in this.template.Change)
 		this.cachedChanges[changeKey] = ApplyValueModificationsToEntity("ResourceSupply/Change/" + changeKey + "/Value", +this.template.Change[changeKey].Value, this.entity);
 
 	this.CheckTimers();
@@ -449,8 +449,8 @@ ResourceSupply.prototype.OnOwnershipChanged = function(msg)
 {
 	if (msg.to == INVALID_PLAYER)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
-		for (let changeKey in this.timers)
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		for (const changeKey in this.timers)
 			cmpTimer.CancelTimer(this.timers[changeKey]);
 	}
 	else
@@ -462,7 +462,7 @@ ResourceSupply.prototype.OnOwnershipChanged = function(msg)
  */
 ResourceSupply.prototype.OnEntityRenamed = function(msg)
 {
-	let cmpResourceSupplyNew = Engine.QueryInterface(msg.newentity, IID_ResourceSupply);
+	const cmpResourceSupplyNew = Engine.QueryInterface(msg.newentity, IID_ResourceSupply);
 	if (cmpResourceSupplyNew)
 		cmpResourceSupplyNew.SetAmount(this.GetCurrentAmount());
 };
@@ -495,7 +495,7 @@ Engine.RegisterGlobal("ResourceSupplyMirage", ResourceSupplyMirage);
 
 ResourceSupply.prototype.Mirage = function()
 {
-	let mirage = new ResourceSupplyMirage();
+	const mirage = new ResourceSupplyMirage();
 	mirage.Init(this);
 	return mirage;
 };

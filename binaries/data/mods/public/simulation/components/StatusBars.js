@@ -82,7 +82,7 @@ StatusBars.prototype.AddAuraSource = function(source, auraName)
 
 StatusBars.prototype.RemoveAuraSource = function(source, auraName)
 {
-	let names = this.auraSources.get(source);
+	const names = this.auraSources.get(source);
 	names.splice(names.indexOf(auraName), 1);
 	this.RegenerateSprites();
 };
@@ -137,11 +137,11 @@ StatusBars.prototype.OnPlayerColorChanged = function(msg)
 
 StatusBars.prototype.RegenerateSprites = function()
 {
-	let cmpOverlayRenderer = Engine.QueryInterface(this.entity, IID_OverlayRenderer);
+	const cmpOverlayRenderer = Engine.QueryInterface(this.entity, IID_OverlayRenderer);
 	cmpOverlayRenderer.Reset();
 
 	let yoffset = 0;
-	for (let sprite of this.Sprites)
+	for (const sprite of this.Sprites)
 		yoffset += this["Add" + sprite](cmpOverlayRenderer, yoffset);
 };
 
@@ -152,11 +152,11 @@ StatusBars.prototype.RegenerateSprites = function()
 StatusBars.prototype.AddBar = function(cmpOverlayRenderer, yoffset, type, amount, heightMultiplier = 1)
 {
 	// Size of health bar (in world-space units)
-	let width = +this.template.BarWidth;
-	let height = +this.template.BarHeight * heightMultiplier;
+	const width = +this.template.BarWidth;
+	const height = +this.template.BarHeight * heightMultiplier;
 
 	// World-space offset from the unit's position
-	let offset = { "x": 0, "y": +this.template.HeightOffset, "z": 0 };
+	const offset = { "x": 0, "y": +this.template.HeightOffset, "z": 0 };
 
 	// background
 	cmpOverlayRenderer.AddSprite(
@@ -184,7 +184,7 @@ StatusBars.prototype.AddExperienceBar = function(cmpOverlayRenderer, yoffset)
 	if (!this.enabled || !this.showExperience)
 		return 0;
 
-	let cmpPromotion = Engine.QueryInterface(this.entity, IID_Promotion);
+	const cmpPromotion = Engine.QueryInterface(this.entity, IID_Promotion);
 	if (!cmpPromotion || !cmpPromotion.GetCurrentXp() || !cmpPromotion.GetRequiredXp())
 		return 0;
 
@@ -196,7 +196,7 @@ StatusBars.prototype.AddPackBar = function(cmpOverlayRenderer, yoffset)
 	if (!this.enabled)
 		return 0;
 
-	let cmpPack = Engine.QueryInterface(this.entity, IID_Pack);
+	const cmpPack = Engine.QueryInterface(this.entity, IID_Pack);
 	if (!cmpPack || !cmpPack.IsPacking())
 		return 0;
 
@@ -208,7 +208,7 @@ StatusBars.prototype.AddUpgradeBar = function(cmpOverlayRenderer, yoffset)
 	if (!this.enabled)
 		return 0;
 
-	let cmpUpgrade = Engine.QueryInterface(this.entity, IID_Upgrade);
+	const cmpUpgrade = Engine.QueryInterface(this.entity, IID_Upgrade);
 	if (!cmpUpgrade || !cmpUpgrade.IsUpgrading())
 		return 0;
 
@@ -220,7 +220,7 @@ StatusBars.prototype.AddHealthBar = function(cmpOverlayRenderer, yoffset)
 	if (!this.enabled)
 		return 0;
 
-	let cmpHealth = QueryMiragedInterface(this.entity, IID_Health);
+	const cmpHealth = QueryMiragedInterface(this.entity, IID_Health);
 	if (!cmpHealth || cmpHealth.GetHitpoints() <= 0)
 		return 0;
 
@@ -232,10 +232,10 @@ StatusBars.prototype.AddResourceSupplyBar = function(cmpOverlayRenderer, yoffset
 	if (!this.enabled)
 		return 0;
 
-	let cmpResourceSupply = QueryMiragedInterface(this.entity, IID_ResourceSupply);
+	const cmpResourceSupply = QueryMiragedInterface(this.entity, IID_ResourceSupply);
 	if (!cmpResourceSupply)
 		return 0;
-	let value = cmpResourceSupply.IsInfinite() ? 1 : cmpResourceSupply.GetCurrentAmount() / cmpResourceSupply.GetMaxAmount();
+	const value = cmpResourceSupply.IsInfinite() ? 1 : cmpResourceSupply.GetCurrentAmount() / cmpResourceSupply.GetMaxAmount();
 	return this.AddBar(cmpOverlayRenderer, yoffset, "supply", value);
 };
 
@@ -244,33 +244,33 @@ StatusBars.prototype.AddCaptureBar = function(cmpOverlayRenderer, yoffset)
 	if (!this.enabled)
 		return 0;
 
-	let cmpCapturable = QueryMiragedInterface(this.entity, IID_Capturable);
+	const cmpCapturable = QueryMiragedInterface(this.entity, IID_Capturable);
 	if (!cmpCapturable)
 		return 0;
 
-	let cmpOwnership = QueryMiragedInterface(this.entity, IID_Ownership);
+	const cmpOwnership = QueryMiragedInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership)
 		return 0;
 
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 	if (owner == INVALID_PLAYER)
 		return 0;
 
 	this.usedPlayerColors = true;
-	let capturePoints = cmpCapturable.GetCapturePoints();
+	const capturePoints = cmpCapturable.GetCapturePoints();
 
 	// Size of health bar (in world-space units)
-	let width = +this.template.BarWidth;
-	let height = +this.template.BarHeight;
+	const width = +this.template.BarWidth;
+	const height = +this.template.BarHeight;
 
 	// World-space offset from the unit's position
-	let offset = { "x": 0, "y": +this.template.HeightOffset, "z": 0 };
+	const offset = { "x": 0, "y": +this.template.HeightOffset, "z": 0 };
 
-	let setCaptureBarPart = function(playerID, startSize)
+	const setCaptureBarPart = function(playerID, startSize)
 	{
-		let c = QueryPlayerIDInterface(playerID).GetDisplayedColor();
-		let strColor = (c.r * 255) + " " + (c.g * 255) + " " + (c.b * 255) + " 255";
-		let size = width * capturePoints[playerID] / cmpCapturable.GetMaxCapturePoints();
+		const c = QueryPlayerIDInterface(playerID).GetDisplayedColor();
+		const strColor = (c.r * 255) + " " + (c.g * 255) + " " + (c.b * 255) + " 255";
+		const size = width * capturePoints[playerID] / cmpCapturable.GetMaxCapturePoints();
 
 		cmpOverlayRenderer.AddSprite(
 			"art/textures/ui/session/icons/capture_bar.png",
@@ -285,7 +285,7 @@ StatusBars.prototype.AddCaptureBar = function(cmpOverlayRenderer, yoffset)
 
 	// First handle the owner's points, to keep those points on the left for clarity
 	let size = setCaptureBarPart(owner, -width / 2);
-	for (let i in capturePoints)
+	for (const i in capturePoints)
 		if (i != owner && capturePoints[i] > 0)
 			size = setCaptureBarPart(i, size);
 
@@ -294,28 +294,28 @@ StatusBars.prototype.AddCaptureBar = function(cmpOverlayRenderer, yoffset)
 
 StatusBars.prototype.AddAuraIcons = function(cmpOverlayRenderer, yoffset)
 {
-	let cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
-	let sources = cmpGuiInterface.GetEntitiesWithStatusBars().filter(e => this.auraSources.has(e) && this.auraSources.get(e).length);
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	const sources = cmpGuiInterface.GetEntitiesWithStatusBars().filter(e => this.auraSources.has(e) && this.auraSources.get(e).length);
 
 	if (!sources.length)
 		return 0;
 
-	let iconSet = new Set();
-	for (let ent of sources)
+	const iconSet = new Set();
+	for (const ent of sources)
 	{
-		let cmpAuras = Engine.QueryInterface(ent, IID_Auras);
+		const cmpAuras = Engine.QueryInterface(ent, IID_Auras);
 		if (!cmpAuras) // probably the ent just died
 			continue;
-		for (let name of this.auraSources.get(ent))
+		for (const name of this.auraSources.get(ent))
 			iconSet.add(cmpAuras.GetOverlayIcon(name));
 	}
 
 	// World-space offset from the unit's position
-	let offset = { "x": 0, "y": +this.template.HeightOffset + yoffset, "z": 0 };
+	const offset = { "x": 0, "y": +this.template.HeightOffset + yoffset, "z": 0 };
 
-	let iconSize = +this.template.BarWidth / 2;
+	const iconSize = +this.template.BarWidth / 2;
 	let xoffset = -iconSize * (iconSet.size - 1) * 0.6;
-	for (let icon of iconSet)
+	for (const icon of iconSet)
 	{
 		cmpOverlayRenderer.AddSprite(
 			icon,
@@ -335,11 +335,11 @@ StatusBars.prototype.AddRankIcon = function(cmpOverlayRenderer, yoffset)
 	if (!this.enabled || !this.showRank)
 		return 0;
 
-	let cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+	const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
 	if (!cmpIdentity || !cmpIdentity.GetRank())
 		return 0;
 
-	let iconSize = +this.template.BarWidth / 2;
+	const iconSize = +this.template.BarWidth / 2;
 	cmpOverlayRenderer.AddSprite(
 		"art/textures/ui/session/icons/ranks/" + cmpIdentity.GetRank() + ".png",
 		{ "x": -iconSize / 2, "y": yoffset },

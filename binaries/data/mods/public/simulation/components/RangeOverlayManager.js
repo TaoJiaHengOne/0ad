@@ -24,7 +24,7 @@ RangeOverlayManager.prototype.Deserialize = function(data)
 
 RangeOverlayManager.prototype.UpdateRangeOverlays = function(componentName)
 {
-	let cmp = Engine.QueryInterface(this.entity, global["IID_" + componentName]);
+	const cmp = Engine.QueryInterface(this.entity, global["IID_" + componentName]);
 	if (cmp)
 		this.rangeVisualizations.set(componentName, cmp.GetRangeOverlays());
 };
@@ -39,7 +39,7 @@ RangeOverlayManager.prototype.SetEnabled = function(enabled, enabledRangeTypes, 
 
 RangeOverlayManager.prototype.RegenerateRangeOverlays = function(forceUpdate)
 {
-	let cmpRangeOverlayRenderer = Engine.QueryInterface(this.entity, IID_RangeOverlayRenderer);
+	const cmpRangeOverlayRenderer = Engine.QueryInterface(this.entity, IID_RangeOverlayRenderer);
 	if (!cmpRangeOverlayRenderer)
 		return;
 
@@ -49,9 +49,9 @@ RangeOverlayManager.prototype.RegenerateRangeOverlays = function(forceUpdate)
 		return;
 
 	// Only render individual range types that have been enabled
-	for (let rangeOverlayType of this.rangeVisualizations.keys())
+	for (const rangeOverlayType of this.rangeVisualizations.keys())
 		if (this.enabledRangeTypes[rangeOverlayType])
-			for (let rangeOverlay of this.rangeVisualizations.get(rangeOverlayType))
+			for (const rangeOverlay of this.rangeVisualizations.get(rangeOverlayType))
 				cmpRangeOverlayRenderer.AddRangeOverlay(
 					rangeOverlay.radius,
 					rangeOverlay.texture,
@@ -63,7 +63,7 @@ RangeOverlayManager.prototype.OnOwnershipChanged = function(msg)
 {
 	if (msg.to == INVALID_PLAYER)
 		return;
-	for (let type in this.enabledRangeTypes)
+	for (const type in this.enabledRangeTypes)
 		this.UpdateRangeOverlays(type);
 
 	this.RegenerateRangeOverlays(false);
@@ -85,7 +85,7 @@ RangeOverlayManager.prototype.OnValueModification = function(msg)
  */
 RangeOverlayManager.prototype.OnDeserialized = function(msg)
 {
-	for (let type in this.enabledRangeTypes)
+	for (const type in this.enabledRangeTypes)
 		this.UpdateRangeOverlays(type);
 };
 

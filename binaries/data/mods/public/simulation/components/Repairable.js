@@ -68,7 +68,7 @@ Repairable.prototype.GetNumBuilders = function()
  */
 Repairable.prototype.AddBuilders = function(builders)
 {
-	for (let builder of builders)
+	for (const builder of builders)
 		this.AddBuilder(builder);
 };
 
@@ -109,10 +109,10 @@ Repairable.prototype.SetBuildMultiplier = function()
 
 Repairable.prototype.GetBuildTime = function()
 {
-	let timeLeft = (1 - this.GetBuildProgress()) * Engine.QueryInterface(this.entity, IID_Cost).GetBuildTime() * this.repairTimeRatio;
-	let rate = this.totalBuilderRate * this.buildMultiplier;
+	const timeLeft = (1 - this.GetBuildProgress()) * Engine.QueryInterface(this.entity, IID_Cost).GetBuildTime() * this.repairTimeRatio;
+	const rate = this.totalBuilderRate * this.buildMultiplier;
 	// The rate if we add another woman to the repairs
-	let rateNew = (this.totalBuilderRate + 1) * this.CalculateBuildMultiplier(this.GetNumBuilders() + 1);
+	const rateNew = (this.totalBuilderRate + 1) * this.CalculateBuildMultiplier(this.GetNumBuilders() + 1);
 	return {
 		// Avoid division by zero, in particular 0/0 = NaN which isn't reliably serialized
 		"timeRemaining": rate ? timeLeft / rate : 0,
@@ -123,17 +123,17 @@ Repairable.prototype.GetBuildTime = function()
 // TODO: should we have resource costs?
 Repairable.prototype.Repair = function(builderEnt, rate)
 {
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
-	let cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
 	if (!cmpHealth || !cmpCost)
 		return;
-	let damage = cmpHealth.GetMaxHitpoints() - cmpHealth.GetHitpoints();
+	const damage = cmpHealth.GetMaxHitpoints() - cmpHealth.GetHitpoints();
 	if (damage <= 0)
 		return;
 
 	// Calculate the amount of hitpoints that will be added (using diminishing rate when several builders)
-	let work = rate * this.buildMultiplier * this.GetRepairRate();
-	let amount = Math.min(damage, work);
+	const work = rate * this.buildMultiplier * this.GetRepairRate();
+	const amount = Math.min(damage, work);
 	cmpHealth.Increase(amount);
 
 	// Update the total builder rate
@@ -147,9 +147,9 @@ Repairable.prototype.Repair = function(builderEnt, rate)
 
 		// Inform the builders that repairing has finished.
 		// This not done by listening to a global message due to performance.
-		for (let builder of this.GetBuilders())
+		for (const builder of this.GetBuilders())
 		{
-			let cmpUnitAIBuilder = Engine.QueryInterface(builder, IID_UnitAI);
+			const cmpUnitAIBuilder = Engine.QueryInterface(builder, IID_UnitAI);
 			if (cmpUnitAIBuilder)
 				cmpUnitAIBuilder.ConstructionFinished({ "entity": this.entity, "newentity": this.entity });
 		}
@@ -158,15 +158,15 @@ Repairable.prototype.Repair = function(builderEnt, rate)
 
 Repairable.prototype.GetRepairRate = function()
 {
-	let cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
-	let cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
-	let repairTime = this.repairTimeRatio * cmpCost.GetBuildTime();
+	const cmpHealth = Engine.QueryInterface(this.entity, IID_Health);
+	const cmpCost = Engine.QueryInterface(this.entity, IID_Cost);
+	const repairTime = this.repairTimeRatio * cmpCost.GetBuildTime();
 	return repairTime ? cmpHealth.GetMaxHitpoints() / repairTime : 1;
 };
 
 Repairable.prototype.OnEntityRenamed = function(msg)
 {
-	let cmpRepairableNew = Engine.QueryInterface(msg.newentity, IID_Repairable);
+	const cmpRepairableNew = Engine.QueryInterface(msg.newentity, IID_Repairable);
 	if (cmpRepairableNew)
 		cmpRepairableNew.AddBuilders(this.GetBuilders());
 };
@@ -188,7 +188,7 @@ Engine.RegisterGlobal("RepairableMirage", RepairableMirage);
 
 Repairable.prototype.Mirage = function()
 {
-	let mirage = new RepairableMirage();
+	const mirage = new RepairableMirage();
 	mirage.Init(this);
 	return mirage;
 };

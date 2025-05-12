@@ -32,9 +32,9 @@ ResourceTrickle.prototype.ComputeRates = function()
 {
 	this.rates = {};
 	let hasTrickle = false;
-	for (let resource in this.template.Rates)
+	for (const resource in this.template.Rates)
 	{
-		let rate = ApplyValueModificationsToEntity("ResourceTrickle/Rates/" + resource, +this.template.Rates[resource], this.entity);
+		const rate = ApplyValueModificationsToEntity("ResourceTrickle/Rates/" + resource, +this.template.Rates[resource], this.entity);
 		if (rate)
 		{
 			this.rates[resource] = rate;
@@ -48,7 +48,7 @@ ResourceTrickle.prototype.ComputeRates = function()
 ResourceTrickle.prototype.Trickle = function(data, lateness)
 {
 	// The player entity may also have a ResourceTrickle component
-	let cmpPlayer = QueryOwnerInterface(this.entity) || Engine.QueryInterface(this.entity, IID_Player);
+	const cmpPlayer = QueryOwnerInterface(this.entity) || Engine.QueryInterface(this.entity, IID_Player);
 	if (!cmpPlayer)
 		return;
 
@@ -76,17 +76,17 @@ ResourceTrickle.prototype.CheckTimer = function()
 		if (!this.timer)
 			return;
 
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 		delete this.timer;
 		return;
 	}
 
-	let oldTrickleInterval = this.trickleInterval;
+	const oldTrickleInterval = this.trickleInterval;
 	this.trickleInterval = ApplyValueModificationsToEntity("ResourceTrickle/Interval", +this.template.Interval, this.entity);
 	if (this.trickleInterval < 0)
 	{
-		let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+		const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 		cmpTimer.CancelTimer(this.timer);
 		delete this.timer;
 		return;
@@ -100,13 +100,13 @@ ResourceTrickle.prototype.CheckTimer = function()
 		// If the timer wasn't invalidated before (interval <= 0), just update it.
 		if (oldTrickleInterval > 0)
 		{
-			let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+			const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 			cmpTimer.UpdateRepeatTime(this.timer, this.trickleInterval);
 			return;
 		}
 	}
 
-	let cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
+	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	this.timer = cmpTimer.SetInterval(this.entity, IID_ResourceTrickle, "Trickle", this.trickleInterval, this.trickleInterval, undefined);
 };
 

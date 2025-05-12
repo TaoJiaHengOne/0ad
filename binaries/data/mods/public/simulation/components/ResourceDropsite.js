@@ -24,7 +24,7 @@ ResourceDropsite.prototype.Init = function()
  */
 ResourceDropsite.prototype.GetTypes = function()
 {
-	let types = ApplyValueModificationsToEntity("ResourceDropsite/Types", this.template.Types, this.entity);
+	const types = ApplyValueModificationsToEntity("ResourceDropsite/Types", this.template.Types, this.entity);
 	return types.split(/\s+/);
 };
 
@@ -44,12 +44,12 @@ ResourceDropsite.prototype.AcceptsType = function(type)
  */
 ResourceDropsite.prototype.ReceiveResources = function(resources, entity)
 {
-	let cmpPlayer = QueryOwnerInterface(entity);
+	const cmpPlayer = QueryOwnerInterface(entity);
 	if (!cmpPlayer)
 		return {};
 
-	let taken = {};
-	for (let type in resources)
+	const taken = {};
+	for (const type in resources)
 		if (this.AcceptsType(type))
 			taken[type] = resources[type];
 

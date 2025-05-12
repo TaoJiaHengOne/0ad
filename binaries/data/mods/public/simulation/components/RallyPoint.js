@@ -107,27 +107,27 @@ RallyPoint.prototype.Reset = function()
  */
 RallyPoint.prototype.OrderToRallyPoint = function(entity, ignore = [])
 {
-	let cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
+	const cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 	if (!cmpOwnership)
 		return;
-	let owner = cmpOwnership.GetOwner();
+	const owner = cmpOwnership.GetOwner();
 
-	let cmpEntOwnership = Engine.QueryInterface(entity, IID_Ownership);
+	const cmpEntOwnership = Engine.QueryInterface(entity, IID_Ownership);
 	if (!cmpEntOwnership || cmpEntOwnership.GetOwner() != owner)
 		return;
 
-	let commands = GetRallyPointCommands(this, [entity]);
+	const commands = GetRallyPointCommands(this, [entity]);
 	if (!commands.length ||
 		commands[0].target == this.entity && ignore.includes(commands[0].type))
 		return;
 
-	for (let command of commands)
+	for (const command of commands)
 		ProcessCommand(owner, command);
 };
 
 RallyPoint.prototype.OnGlobalEntityRenamed = function(msg)
 {
-	for (let data of this.data)
+	for (const data of this.data)
 	{
 		if (!data)
 			continue;
@@ -140,11 +140,11 @@ RallyPoint.prototype.OnGlobalEntityRenamed = function(msg)
 	if (msg.entity != this.entity)
 		return;
 
-	let cmpRallyPointNew = Engine.QueryInterface(msg.newentity, IID_RallyPoint);
+	const cmpRallyPointNew = Engine.QueryInterface(msg.newentity, IID_RallyPoint);
 	if (cmpRallyPointNew)
 	{
-		let rallyCoords = this.GetPositions();
-		let rallyData = this.GetData();
+		const rallyCoords = this.GetPositions();
+		const rallyData = this.GetData();
 		for (let i = 0; i < rallyCoords.length; ++i)
 		{
 			cmpRallyPointNew.AddPosition(rallyCoords[i].x, rallyCoords[i].z);

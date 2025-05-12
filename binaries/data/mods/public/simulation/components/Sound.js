@@ -35,16 +35,16 @@ Sound.prototype.PlaySoundGroup = function(name)
 	if (name in this.template.SoundGroups)
 	{
 		// Replace the "{lang}" codes with this entity's civ ID
-		let cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(this.entity, IID_Identity);
 		if (!cmpIdentity)
 			return;
-		let lang = cmpIdentity.GetLang();
+		const lang = cmpIdentity.GetLang();
 		// Replace the "{phenotype}" codes with this entity's phenotype ID
-		let phenotype = cmpIdentity.GetPhenotype();
+		const phenotype = cmpIdentity.GetPhenotype();
 
-		let soundName = this.template.SoundGroups[name].replace(/\{lang\}/g, lang)
+		const soundName = this.template.SoundGroups[name].replace(/\{lang\}/g, lang)
 			.replace(/\{phenotype\}/g, phenotype);
-		let cmpSoundManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_SoundManager);
+		const cmpSoundManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_SoundManager);
 		if (cmpSoundManager)
 			cmpSoundManager.PlaySoundGroup(soundName, this.entity);
 	}
