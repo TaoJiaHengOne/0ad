@@ -3,25 +3,7 @@
  */
 
 /**
- * A mod is defined by a mod.json file, for example
- *	{
- *		"name": "0ad",
- *		"version": "0.28.0",
- *		"label": "0 A.D. - Empires Ascendant",
- *		"url": "https://wildfiregames.com/",
- *		"description": "A free, open-source, historical RTS game.",
- *		"dependencies": []
- *	}
- *
- * Or:
- *	{
- *		"name": "mod2",
- *		"label": "Mod 2",
- *		"version": "1.1",
- *		"description": "",
- *		"dependencies": ["0ad<=0.28.0", "rote"]
- *	}
- *
+ * A mod is defined by a mod.json file.
  * A mod is identified by the directory name.
  * A mod must define the "name", "version", "label", "description" and "dependencies" property.
  * The "url" property is optional.

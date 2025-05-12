@@ -1,5 +1,5 @@
 const g_ModProperties = {
-	// example: "0ad"
+	// example: "community-mod"
 	"name": {
 		"required": true,
 		"type": "string",
@@ -11,19 +11,19 @@ const g_ModProperties = {
 		"type": "string",
 		"validate": validateVersion
 	},
-	// example: ["0ad<=0.0.16", "rote"]
+	// example: ["0ad<=0.0.28", "rote"]
 	"dependencies": {
 		"required": true,
 		"type": "object",
 		"validate": validateDependencies
 	},
-	// example: "0 A.D. - Empires Ascendant"
+	// example: "Community Mod"
 	"label": {
 		"required": true,
 		"type": "string",
 		"validate": validateLabel
 	},
-	// example: "A free, open-source, historical RTS game."
+	// example: "The Community Mod is a community-led effort to improve the gameplay."
 	"description": {
 		"required": true,
 		"type": "string"

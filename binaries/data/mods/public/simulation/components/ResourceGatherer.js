@@ -480,6 +480,7 @@ ResourceGatherer.prototype.OnValueModification = function(msg)
 	if (msg.component != "ResourceGatherer")
 		return;
 
+	// eslint-disable-next-line no-irregular-whitespace
 	// NB: at the moment, 0 A.D. always uses the fast path, the other is mod support.
 	if (msg.valueNames.length === 1)
 	{

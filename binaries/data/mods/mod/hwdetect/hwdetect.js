@@ -219,7 +219,7 @@ function RunDetection(settings)
 	if (GL_VERSION.match(/^[3-9]/))
 		enable_glsl = true;
 
-	// Enable GLSL on OpenGL ES 2.0+, which doesn’t support the fixed
+	// Enable GLSL on OpenGL ES 2.0+, which doesn’t support the fixed
 	// function fallbacks
 	if (GL_VERSION.match(/^OpenGL ES /))
 		enable_glsl = true;
