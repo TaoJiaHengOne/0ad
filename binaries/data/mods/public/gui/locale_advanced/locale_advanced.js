@@ -1,17 +1,17 @@
 function init(initData)
 {
-	let languageList = Engine.GetGUIObjectByName("languageList");
-	let countryList = Engine.GetGUIObjectByName("countryList");
-	let resultingLocaleText = Engine.GetGUIObjectByName("resultingLocale");
-	let scriptInput = Engine.GetGUIObjectByName("scriptInput");
+	const languageList = Engine.GetGUIObjectByName("languageList");
+	const countryList = Engine.GetGUIObjectByName("countryList");
+	const resultingLocaleText = Engine.GetGUIObjectByName("resultingLocale");
+	const scriptInput = Engine.GetGUIObjectByName("scriptInput");
 
 	// get languageList data. Only list languages for which we have a dictionary.
-	let languageListData = [];
-	let languageListTmp = Engine.GetSupportedLocaleBaseNames();
-	let currentLocaleLanguage = Engine.GetLocaleLanguage(initData.locale);
+	const languageListData = [];
+	const languageListTmp = Engine.GetSupportedLocaleBaseNames();
+	const currentLocaleLanguage = Engine.GetLocaleLanguage(initData.locale);
 	for (let i = 0; i < languageListTmp.length; ++i)
 	{
-		let lang = Engine.GetLocaleLanguage(languageListTmp[i]);
+		const lang = Engine.GetLocaleLanguage(languageListTmp[i]);
 		if (lang != "" && languageListData.indexOf(lang) == -1)
 			languageListData.push(lang);
 	}
@@ -23,7 +23,7 @@ function init(initData)
 	var currentLocaleCountry = Engine.GetLocaleCountry(initData.locale);
 	for (let i = 0; i < countryListTmp.length; ++i)
 	{
-		let country = Engine.GetLocaleCountry(countryListTmp[i]);
+		const country = Engine.GetLocaleCountry(countryListTmp[i]);
 		if (country != "" && countryListData.indexOf(country) == -1)
 			countryListData.push(country);
 	}
@@ -78,11 +78,11 @@ function updateResultingLocale()
 	if (countryList.selected != -1 && countryList.list_data[countryList.selected] != translateWithContext("localeCountry", "None"))
 		resultingLocaleTmp = resultingLocaleTmp + "_" + countryList.list_data[countryList.selected];
 
-	let acceptButton = Engine.GetGUIObjectByName("acceptButton");
+	const acceptButton = Engine.GetGUIObjectByName("acceptButton");
 	if (Engine.ValidateLocale(resultingLocaleTmp))
 	{
 		resultingLocaleText.caption = resultingLocaleTmp;
-		let dictionaryFileList = Engine.GetDictionariesForLocale(Engine.GetDictionaryLocale(resultingLocaleTmp));
+		const dictionaryFileList = Engine.GetDictionariesForLocale(Engine.GetDictionaryLocale(resultingLocaleTmp));
 		let dictionaryFileString = "";
 		dictionaryFileList.forEach(entry => { dictionaryFileString = dictionaryFileString + entry + "\n"; });
 		dictionaryFile.caption = dictionaryFileString;

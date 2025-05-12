@@ -15,14 +15,14 @@ class BackgroundHandler
 
 	onWindowResized()
 	{
-		let size = this.backgrounds.getComputedSize();
+		const size = this.backgrounds.getComputedSize();
 		this.backgroundsSize = deepfreeze(new GUISize(size.top, size.left, size.right, size.bottom));
 	}
 
 	onTick()
 	{
-		let time = Date.now() - this.initTime;
-		for (let background of this.backgroundLayers)
+		const time = Date.now() - this.initTime;
+		for (const background of this.backgroundLayers)
 			background.update(time, this.backgroundsSize);
 	}
 }
@@ -41,13 +41,13 @@ class BackgroundLayer
 
 	update(time, backgroundsSize)
 	{
-		let height = backgroundsSize.bottom - backgroundsSize.top;
-		let width = height * this.AspectRatio;
-		let offset = this.layer.offset(time / 1000, width);
+		const height = backgroundsSize.bottom - backgroundsSize.top;
+		const width = height * this.AspectRatio;
+		const offset = this.layer.offset(time / 1000, width);
 
 		if (this.layer.tiling)
 		{
-			let iw = height * 2;
+			const iw = height * 2;
 			let left = offset % iw;
 			if (left >= 0)
 				left -= iw;
@@ -59,7 +59,7 @@ class BackgroundLayer
 		}
 		else
 		{
-			let right = backgroundsSize.right / 2 + offset;
+			const right = backgroundsSize.right / 2 + offset;
 			this.background.size = new GUISize(
 				right - height,
 				backgroundsSize.top,

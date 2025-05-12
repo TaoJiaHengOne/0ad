@@ -25,7 +25,7 @@ class ProgressBar
 			return;
 
 		// Show 100 when it is really 99
-		let progress = progression + 1;
+		const progress = progression + 1;
 		this.progressbar.progress = progress;
 
 		if (this.showDescription)
@@ -36,8 +36,8 @@ class ProgressBar
 			this.progressText.caption = sprintf(this.CaptionFormat, this.percentArgs);
 		}
 
-		let increment = Math.round(progress * this.progressBarSize / 100);
-		let size = this.progressbar_right.size;
+		const increment = Math.round(progress * this.progressBarSize / 100);
+		const size = this.progressbar_right.size;
 		size.left = increment;
 		size.right = increment + this.progressbar_right_width;
 		this.progressbar_right.size = size;

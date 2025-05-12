@@ -32,7 +32,7 @@ class HotkeyPicker
 			// This is a bit "using a bazooka to kill a fly"
 			Engine.ConfigDB_RemoveValueAndSave("user", "hotkey." + this.name);
 			Engine.ReloadHotkeys();
-			let data = Engine.GetHotkeyMap();
+			const data = Engine.GetHotkeyMap();
 			this.combinations = data[this.name];
 			this.setupCombinations();
 			this.render();
@@ -49,7 +49,7 @@ class HotkeyPicker
 	{
 		for (let i = 0; i < 4; ++i)
 		{
-			let s = Engine.GetGUIObjectByName("combination[" + i + "]").size;
+			const s = Engine.GetGUIObjectByName("combination[" + i + "]").size;
 			s.top = +i * 60 + 120;
 			s.bottom = +i * 60 + 150;
 			Engine.GetGUIObjectByName("combination[" + i + "]").size = s;
@@ -58,9 +58,9 @@ class HotkeyPicker
 			if (i == this.combinations.length)
 				this.combinations.push([]);
 
-			let input = Engine.GetGUIObjectByName("combMapping[" + i + "]");
+			const input = Engine.GetGUIObjectByName("combMapping[" + i + "]");
 
-			let picker = Engine.GetGUIObjectByName("picker[" + i + "]");
+			const picker = Engine.GetGUIObjectByName("picker[" + i + "]");
 			Engine.GetGUIObjectByName("combMappingBtn[" + i + "]").onPress = () => {
 				this.enteringInput = i;
 				picker.focus();
@@ -99,7 +99,7 @@ class HotkeyPicker
 	{
 		for (let i = 0; i < 4; ++i)
 		{
-			let input = Engine.GetGUIObjectByName("combMapping[" + i + "]");
+			const input = Engine.GetGUIObjectByName("combMapping[" + i + "]");
 			if (i == this.enteringInput)
 				input.caption = translate("Enter new Hotkey, hold to register.");
 			else
@@ -108,7 +108,7 @@ class HotkeyPicker
 
 			Engine.GetGUIObjectByName("deleteComb[" + i + "]").hidden = !this.combinations[i].length;
 
-			let conflicts = (Engine.GetConflicts(this.combinations[i]) || [])
+			const conflicts = (Engine.GetConflicts(this.combinations[i]) || [])
 				.filter(name => name != this.name).map(translate);
 			if (conflicts.length)
 				Engine.GetGUIObjectByName("conflicts[" + i + "]").caption =

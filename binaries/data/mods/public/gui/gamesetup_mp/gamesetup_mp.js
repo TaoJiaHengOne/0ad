@@ -51,7 +51,7 @@ async function init(attribs)
 	}
 	case "host":
 	{
-		let hasXmppClient = Engine.HasXmppClient();
+		const hasXmppClient = Engine.HasXmppClient();
 		Engine.GetGUIObjectByName("hostPasswordWrapper").hidden = !hasXmppClient;
 		if (hasXmppClient)
 		{
@@ -130,9 +130,9 @@ function confirmSetup(loadSavedGame)
 {
 	if (!Engine.GetGUIObjectByName("pageJoin").hidden)
 	{
-		let joinPlayerName = Engine.GetGUIObjectByName("joinPlayerName").caption;
-		let joinServer = Engine.GetGUIObjectByName("joinServer").caption;
-		let joinPort = Engine.GetGUIObjectByName("joinPort").caption;
+		const joinPlayerName = Engine.GetGUIObjectByName("joinPlayerName").caption;
+		const joinServer = Engine.GetGUIObjectByName("joinServer").caption;
+		const joinPort = Engine.GetGUIObjectByName("joinPort").caption;
 
 		if (startJoin(joinPlayerName, joinServer, getValidPort(joinPort)))
 		{
@@ -144,14 +144,14 @@ function confirmSetup(loadSavedGame)
 
 	if (!Engine.GetGUIObjectByName("pageHost").hidden)
 	{
-		let hostServerName = Engine.GetGUIObjectByName("hostServerName").caption;
+		const hostServerName = Engine.GetGUIObjectByName("hostServerName").caption;
 		if (!hostServerName)
 		{
 			Engine.GetGUIObjectByName("hostFeedback").caption = translate("Please enter a valid server name.");
 			return false;
 		}
 
-		let hostPort = Engine.GetGUIObjectByName("hostPort").caption;
+		const hostPort = Engine.GetGUIObjectByName("hostPort").caption;
 		if (getValidPort(hostPort) != +hostPort)
 		{
 			Engine.GetGUIObjectByName("hostFeedback").caption = sprintf(
@@ -162,8 +162,8 @@ function confirmSetup(loadSavedGame)
 			return false;
 		}
 
-		let hostPlayerName = Engine.GetGUIObjectByName("hostPlayerName").caption;
-		let hostPassword = Engine.GetGUIObjectByName("hostPassword").caption;
+		const hostPlayerName = Engine.GetGUIObjectByName("hostPlayerName").caption;
+		const hostPassword = Engine.GetGUIObjectByName("hostPassword").caption;
 		if (startHost(hostPlayerName, hostServerName, getValidPort(hostPort), hostPassword,
 			loadSavedGame))
 		{
@@ -367,23 +367,23 @@ async function handleAuthenticated(message, loadSavedGame)
 
 function switchSetupPage(newPage)
 {
-	let multiplayerPages = Engine.GetGUIObjectByName("multiplayerPages");
-	for (let page of multiplayerPages.children)
+	const multiplayerPages = Engine.GetGUIObjectByName("multiplayerPages");
+	for (const page of multiplayerPages.children)
 		if (page.name.startsWith("page"))
 			page.hidden = true;
 
 	if (newPage == "pageJoin" || newPage == "pageHost")
 	{
-		let pageSize = multiplayerPages.size;
-		let halfHeight = newPage == "pageJoin" ? 145 : Engine.HasXmppClient() ? 140 : 125;
+		const pageSize = multiplayerPages.size;
+		const halfHeight = newPage == "pageJoin" ? 145 : Engine.HasXmppClient() ? 140 : 125;
 		pageSize.top = -halfHeight;
 		pageSize.bottom = halfHeight;
 		multiplayerPages.size = pageSize;
 	}
 	else if (newPage == "pagePassword")
 	{
-		let pageSize = multiplayerPages.size;
-		let halfHeight = 60;
+		const pageSize = multiplayerPages.size;
+		const halfHeight = 60;
 		pageSize.top = -halfHeight;
 		pageSize.bottom = halfHeight;
 		multiplayerPages.size = pageSize;
@@ -405,7 +405,7 @@ function startHost(playername, servername, port, password, loadSavedGame)
 	Engine.ConfigDB_CreateValue("user", "multiplayerhosting.port", port);
 	Engine.ConfigDB_SaveChanges("user");
 
-	let hostFeedback = Engine.GetGUIObjectByName("hostFeedback");
+	const hostFeedback = Engine.GetGUIObjectByName("hostFeedback");
 
 	// Disallow identically named games in the multiplayer lobby
 	if (Engine.HasXmppClient() &&

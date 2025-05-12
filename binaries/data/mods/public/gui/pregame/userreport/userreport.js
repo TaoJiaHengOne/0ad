@@ -55,9 +55,9 @@ function setUserReportEnabled(enabled)
 
 function updateUserReportButtons()
 {
-	let termsFeedback = checkTerms();
+	const termsFeedback = checkTerms();
 
-	let userReportEnableButton = Engine.GetGUIObjectByName("userReportEnableButton");
+	const userReportEnableButton = Engine.GetGUIObjectByName("userReportEnableButton");
 	userReportEnableButton.caption = Engine.IsUserReportEnabled() ? translate("Disable Feedback") : translate("Enable Feedback");
 	userReportEnableButton.enabled = !termsFeedback;
 	userReportEnableButton.tooltip = termsFeedback;
@@ -65,7 +65,7 @@ function updateUserReportButtons()
 		setUserReportEnabled(!Engine.IsUserReportEnabled());
 	};
 
-	let userReportTermsButton = Engine.GetGUIObjectByName("userReportTermsButton");
+	const userReportTermsButton = Engine.GetGUIObjectByName("userReportTermsButton");
 	userReportTermsButton.caption = g_TermsUserReport.TermsAndConditions.title;
 	userReportTermsButton.onPress = () => {
 		openTerms("TermsAndConditions");
@@ -74,7 +74,7 @@ function updateUserReportButtons()
 
 function updateUserReportStatus()
 {
-	let statusData = Engine.GetUserReportStatus().split(":");
+	const statusData = Engine.GetUserReportStatus().split(":");
 
 	Engine.GetGUIObjectByName("userReportText").caption =
 		Engine.IsUserReportEnabled() ?

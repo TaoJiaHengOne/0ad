@@ -14,30 +14,30 @@ class HotkeyMetadata
 
 	parseSpec()
 	{
-		let files = this.getFiles();
+		const files = this.getFiles();
 		let hotkey_i = 0;
-		let categories = {
+		const categories = {
 			[this.DEFAULT_CATEGORY]: {
 				"name": translate(this.DefaultCategoryString),
 				"desc": translate(this.DefaultCategoryString),
 			}
 		};
-		for (let file of files)
+		for (const file of files)
 		{
-			let data = Engine.ReadJSONFile(file);
+			const data = Engine.ReadJSONFile(file);
 			if (data.categories)
-				for (let cat in data.categories)
+				for (const cat in data.categories)
 					categories[cat] = data.categories[cat];
 			if (data.hotkeys)
-				for (let hotkey in data.hotkeys)
+				for (const hotkey in data.hotkeys)
 				{
 					this.hotkeys[hotkey] = data.hotkeys[hotkey];
 					this.hotkeys[hotkey].order = hotkey_i++;
 					this.hotkeys[hotkey].categories = data.hotkeys[hotkey].categories || [this.DEFAULT_CATEGORY];
 				}
 			if (data.mapped_hotkeys)
-				for (let cat in data.mapped_hotkeys)
-					for (let hotkey in data.mapped_hotkeys[cat])
+				for (const cat in data.mapped_hotkeys)
+					for (const hotkey in data.mapped_hotkeys[cat])
 					{
 						if (data.mapped_hotkeys[cat][hotkey].categories)
 							warn("Categories will be overwritten for mapped hotkey " + hotkey);
@@ -48,14 +48,14 @@ class HotkeyMetadata
 		}
 		// Sort categories (JS objects are (in this case) sorted by insertion order).
 		this.categories = {};
-		let keys = Object.keys(categories).sort((a, b) => {
+		const keys = Object.keys(categories).sort((a, b) => {
 			if (a === this.DEFAULT_CATEGORY || b === this.DEFAULT_CATEGORY)
 				return a === this.DEFAULT_CATEGORY ? 1 : -1;
 			if (categories[a].order === undefined || categories[b].order === undefined)
 				return categories[a].order === undefined ? -1 : 1; // Likely to keep alphabetical order.
 			return categories[a].order - categories[b].order;
 		});
-		for (let key of keys)
+		for (const key of keys)
 			this.categories[key] = categories[key];
 		// TODO: validate that categories exist.
 	}

@@ -93,8 +93,8 @@ var g_OptionType = {
 		"guiToValue": control => control.caption,
 		"guiSetter": "onTextEdit",
 		"sanitizeValue": (value, control, option) => {
-			let color = guiToRgbColor(value);
-			let sanitized = rgbToGuiColor(color);
+			const color = guiToRgbColor(value);
+			const sanitized = rgbToGuiColor(color);
 			if (control)
 			{
 				control.sprite = sanitized == value ? "ModernDarkBoxWhite" : "ModernDarkBoxWhiteInvalid";
@@ -116,7 +116,7 @@ var g_OptionType = {
 		"guiToValue": control => control.caption,
 		"guiSetter": "onTextEdit",
 		"sanitizeValue": (value, control, option) => {
-			let sanitized =
+			const sanitized =
 				Math.min(option.max !== undefined ? option.max : +Infinity,
 					Math.max(option.min !== undefined ? option.min : -Infinity,
 						isNaN(+value) ? 0 : value));
@@ -152,7 +152,7 @@ var g_OptionType = {
 			control.list = option.list.map(e => e.label);
 			control.list_data = option.list.map(e => e.value);
 			control.onHoverChange = () => {
-				let item = option.list[control.hovered];
+				const item = option.list[control.hovered];
 				control.tooltip = item && item.tooltip || option.tooltip;
 			};
 		}
@@ -248,10 +248,10 @@ function getHotloadData()
 function displayOptions()
 {
 	// Hide all controls
-	for (let body of Engine.GetGUIObjectByName("option_controls").children)
+	for (const body of Engine.GetGUIObjectByName("option_controls").children)
 	{
 		body.hidden = true;
-		for (let control of body.children)
+		for (const control of body.children)
 			control.hidden = true;
 	}
 
@@ -259,20 +259,20 @@ function displayOptions()
 	for (let i = 0; i < g_Options[g_TabCategorySelected].options.length; ++i)
 	{
 		// Position vertically
-		let body = Engine.GetGUIObjectByName("option_control[" + i + "]");
-		let bodySize = body.size;
+		const body = Engine.GetGUIObjectByName("option_control[" + i + "]");
+		const bodySize = body.size;
 		bodySize.top = g_OptionControlOffset + i * (g_OptionControlHeight + g_OptionControlDist);
 		bodySize.bottom = bodySize.top + g_OptionControlHeight;
 		body.size = bodySize;
 		body.hidden = false;
 
 		// Load option data
-		let option = g_Options[g_TabCategorySelected].options[i];
-		let optionType = g_OptionType[option.type];
-		let value = optionType.configToValue(Engine.ConfigDB_GetValue("user", option.config));
+		const option = g_Options[g_TabCategorySelected].options[i];
+		const optionType = g_OptionType[option.type];
+		const value = optionType.configToValue(Engine.ConfigDB_GetValue("user", option.config));
 
 		// Setup control
-		let control = Engine.GetGUIObjectByName("option_control_" + option.type + "[" + i + "]");
+		const control = Engine.GetGUIObjectByName("option_control_" + option.type + "[" + i + "]");
 		control.tooltip = option.tooltip + (optionType.tooltip ? "\n" + optionType.tooltip(value, option) : "");
 		control.hidden = false;
 
@@ -286,7 +286,7 @@ function displayOptions()
 
 		control[optionType.guiSetter] = function() {
 
-			let value = optionType.guiToValue(control);
+			const value = optionType.guiToValue(control);
 
 			if (optionType.sanitizeValue)
 				optionType.sanitizeValue(value, control, option);
@@ -311,12 +311,12 @@ function displayOptions()
 		};
 
 		// Setup label
-		let label = Engine.GetGUIObjectByName("option_label[" + i + "]");
+		const label = Engine.GetGUIObjectByName("option_label[" + i + "]");
 		label.caption = option.label;
 		label.tooltip = option.tooltip;
 		label.hidden = false;
 
-		let labelSize = label.size;
+		const labelSize = label.size;
 		labelSize.left = option.dependencies ? g_DependentLabelIndentation : 0;
 		labelSize.rright = control.size.rleft;
 		label.size = labelSize;
@@ -373,8 +373,8 @@ async function setDefaults()
 	if (buttonIndex === 0)
 		return;
 
-	for (let category in g_Options)
-		for (let option of g_Options[category].options)
+	for (const category in g_Options)
+		for (const option of g_Options[category].options)
 		{
 			Engine.ConfigDB_RemoveValue("user", option.config);
 			g_ChangedKeys.add(option.config);
@@ -401,8 +401,8 @@ function revertChanges()
 {
 	Engine.ConfigDB_Reload("user");
 
-	for (let category in g_Options)
-		for (let option of g_Options[category].options)
+	for (const category in g_Options)
+		for (const option of g_Options[category].options)
 			if (option.function)
 				Engine[option.function](
 					g_OptionType[option.type].configToValue(
@@ -415,11 +415,11 @@ async function saveChanges()
 {
 	const category = Object.keys(g_Options).find(key => {
 		return g_Options[key].options.some(option => {
-			let optionType = g_OptionType[option.type];
+			const optionType = g_OptionType[option.type];
 			if (!optionType.sanitizeValue)
 				return false;
 
-			let value = optionType.configToValue(Engine.ConfigDB_GetValue("user", option.config));
+			const value = optionType.configToValue(Engine.ConfigDB_GetValue("user", option.config));
 			return value != optionType.sanitizeValue(value, undefined, option);
 		});
 	});

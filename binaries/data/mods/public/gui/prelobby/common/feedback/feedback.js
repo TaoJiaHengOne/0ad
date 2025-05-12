@@ -17,11 +17,11 @@ var g_LobbyMessages = {
  */
 function onTick()
 {
-	let messages = Engine.LobbyGuiPollNewMessages();
+	const messages = Engine.LobbyGuiPollNewMessages();
 	if (!messages)
 		return;
 
-	for (let message of messages)
+	for (const message of messages)
 	{
 		if (message.type == "system" && message.level)
 			g_LobbyMessages[message.level](message);

@@ -9,7 +9,7 @@ class SavegameWriter
 		this.closePageCallback = closePageCallback;
 		this.savedGameData = savedGameData;
 
-		let saveNew = () => {
+		const saveNew = () => {
 			this.saveGame();
 		};
 
@@ -37,8 +37,8 @@ class SavegameWriter
 
 	async saveGame(gameID, label)
 	{
-		let desc = this.saveGameDesc.caption;
-		let name = gameID || "savegame";
+		const desc = this.saveGameDesc.caption;
+		const name = gameID || "savegame";
 
 		if (gameID)
 		{
@@ -53,7 +53,7 @@ class SavegameWriter
 				return;
 		}
 
-		let simulationState = Engine.GuiInterfaceCall("GetSimulationState");
+		const simulationState = Engine.GuiInterfaceCall("GetSimulationState");
 		this.savedGameData.timeElapsed = simulationState.timeElapsed;
 		this.savedGameData.states = simulationState.players.map(pState => pState.state);
 

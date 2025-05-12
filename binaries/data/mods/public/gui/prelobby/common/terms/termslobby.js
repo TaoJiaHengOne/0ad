@@ -2,9 +2,9 @@ var g_TermsButtonHeight = 38;
 
 function initLobbyTerms()
 {
-	let termsURL = Engine.ConfigDB_GetValue("user", "lobby.terms_url");
+	const termsURL = Engine.ConfigDB_GetValue("user", "lobby.terms_url");
 
-	let terms = {
+	const terms = {
 		"Service": {
 			"title": translate("Terms of Service"),
 			"instruction": translate("Please read and accept the Terms of Service."),
@@ -39,7 +39,7 @@ function initLobbyTerms()
 
 	Object.keys(terms).forEach((page, i) => {
 
-		let button = Engine.GetGUIObjectByName("termsButton[" + i + "]");
+		const button = Engine.GetGUIObjectByName("termsButton[" + i + "]");
 
 		button.caption = terms[page].title;
 
@@ -47,7 +47,7 @@ function initLobbyTerms()
 			openTerms(page);
 		};
 
-		let size = button.size;
+		const size = button.size;
 		size.top = i * g_TermsButtonHeight;
 		size.bottom = i * g_TermsButtonHeight + 28;
 		button.size = size;

@@ -1,6 +1,6 @@
 function checkUsername(register)
 {
-	let username = Engine.GetGUIObjectByName("username").caption;
+	const username = Engine.GetGUIObjectByName("username").caption;
 	if (!username)
 		return translate("Please enter your username");
 
@@ -12,7 +12,7 @@ function checkUsername(register)
 
 function checkPassword(register)
 {
-	let password = Engine.GetGUIObjectByName("password").caption;
+	const password = Engine.GetGUIObjectByName("password").caption;
 
 	if (!password)
 		return register ?
@@ -27,11 +27,11 @@ function checkPassword(register)
 
 function checkPasswordConfirmation()
 {
-	let password1 = Engine.GetGUIObjectByName("password").caption;
+	const password1 = Engine.GetGUIObjectByName("password").caption;
 	if (!password1)
 		return translate("Please enter your password again");
 
-	let password2 = Engine.GetGUIObjectByName("passwordRepeat").caption;
+	const password2 = Engine.GetGUIObjectByName("passwordRepeat").caption;
 	if (password1 != password2)
 		return translate("Passwords do not match");
 
@@ -46,8 +46,8 @@ function initRememberPassword()
 
 async function toggleRememberPassword()
 {
-	let checkbox = Engine.GetGUIObjectByName("rememberPassword");
-	let enabled = Engine.ConfigDB_GetValue("user", "lobby.rememberpassword") == "true";
+	const checkbox = Engine.GetGUIObjectByName("rememberPassword");
+	const enabled = Engine.ConfigDB_GetValue("user", "lobby.rememberpassword") == "true";
 	if (!checkbox.checked && enabled && Engine.ConfigDB_GetValue("user", "lobby.password"))
 	{
 		const buttonIndex = await messageBox(
@@ -68,8 +68,8 @@ async function toggleRememberPassword()
 
 function getEncryptedPassword()
 {
-	let typedUnencryptedPassword = Engine.GetGUIObjectByName("password").caption;
-	let storedEncryptedPassword = Engine.ConfigDB_GetValue("user", "lobby.password");
+	const typedUnencryptedPassword = Engine.GetGUIObjectByName("password").caption;
+	const storedEncryptedPassword = Engine.ConfigDB_GetValue("user", "lobby.password");
 
 	if (typedUnencryptedPassword == storedEncryptedPassword.substr(0, 10))
 		return storedEncryptedPassword;
@@ -81,7 +81,7 @@ function getEncryptedPassword()
 
 function saveCredentials()
 {
-	let username = Engine.GetGUIObjectByName("username").caption;
+	const username = Engine.GetGUIObjectByName("username").caption;
 	Engine.ConfigDB_CreateValue("user", "playername.multiplayer", username);
 	Engine.ConfigDB_CreateValue("user", "lobby.login", username);
 

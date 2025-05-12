@@ -32,9 +32,9 @@ var g_TabButtonDist = 5;
 function init()
 {
 	// Load credits list from the disk and parse them
-	for (let category of g_OrderTabNames)
+	for (const category of g_OrderTabNames)
 	{
-		let json = Engine.ReadJSONFile("gui/credits/texts/" + category + ".json");
+		const json = Engine.ReadJSONFile("gui/credits/texts/" + category + ".json");
 		if (!json || !json.Content)
 		{
 			if (category == "translators")
@@ -70,7 +70,7 @@ function parseHelper(list)
 {
 	let result = "";
 
-	for (let object of list)
+	for (const object of list)
 	{
 		if (object.LangName)
 			result += setStringTags(object.LangName + "\n", { "font": "sans-bold-stroke-14" });
@@ -83,7 +83,7 @@ function parseHelper(list)
 
 		if (object.List)
 		{
-			for (let element of object.List)
+			for (const element of object.List)
 			{
 				let credit;
 				if (element.nick && element.name)

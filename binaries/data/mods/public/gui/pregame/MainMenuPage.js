@@ -36,8 +36,8 @@ class ProjectInformationHandler
 {
 	constructor(projectInformation)
 	{
-		for (let objectName in projectInformation)
-			for (let propertyName in projectInformation[objectName])
+		for (const objectName in projectInformation)
+			for (const propertyName in projectInformation[objectName])
 				Engine.GetGUIObjectByName(objectName)[propertyName] = projectInformation[objectName][propertyName];
 	}
 }
@@ -46,12 +46,12 @@ class CommunityButtonHandler
 {
 	constructor(communityButtons)
 	{
-		let buttons = Engine.GetGUIObjectByName("communityButtons").children;
+		const buttons = Engine.GetGUIObjectByName("communityButtons").children;
 
 		communityButtons.forEach((buttonInfo, i) => {
-			let button = buttons[i];
+			const button = buttons[i];
 			button.hidden = false;
-			for (let propertyName in buttonInfo)
+			for (const propertyName in buttonInfo)
 				button[propertyName] = buttonInfo[propertyName];
 		});
 

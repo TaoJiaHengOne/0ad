@@ -59,7 +59,7 @@ class SavegameDeleter
 		if (!Engine.DeleteSavedGame(gameID))
 			error("Could not delete saved game: " + gameID);
 
-		for (let handler of this.savegameListChangeHandlers)
+		for (const handler of this.savegameListChangeHandlers)
 			handler.onSavegameListChange();
 	}
 }

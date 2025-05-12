@@ -22,9 +22,9 @@ class SavegameLoader
 	async loadGame(gameId, metadata)
 	{
 		// Check compatibility before really loading it
-		let engineInfo = Engine.GetEngineInfo();
-		let sameMods = hasSameMods(metadata.mods, engineInfo.mods);
-		let sameEngineVersion = metadata.engine_version && metadata.engine_version == engineInfo.engine_version;
+		const engineInfo = Engine.GetEngineInfo();
+		const sameMods = hasSameMods(metadata.mods, engineInfo.mods);
+		const sameEngineVersion = metadata.engine_version && metadata.engine_version == engineInfo.engine_version;
 
 		if (sameEngineVersion && sameMods)
 		{

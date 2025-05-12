@@ -31,15 +31,15 @@ class SavegameList
 
 	initSavegameList()
 	{
-		let engineInfo = Engine.GetEngineInfo();
+		const engineInfo = Engine.GetEngineInfo();
 
 		this.gameSelection.onSelectionColumnChange = () => { this.updateSavegameList(); };
 		this.gameSelection.onMouseLeftDoubleClickItem = () => { this.confirmButton.onPress(); };
 		this.gameSelection.onSelectionChange = () => {
-			let gameId = this.gameSelection.list_data[this.gameSelection.selected];
-			let metadata = this.savedGamesMetadata[this.gameSelection.selected];
-			let label = this.generateSavegameLabel(metadata, engineInfo);
-			for (let handler of this.selectionChangeHandlers)
+			const gameId = this.gameSelection.list_data[this.gameSelection.selected];
+			const metadata = this.savedGamesMetadata[this.gameSelection.selected];
+			const label = this.generateSavegameLabel(metadata, engineInfo);
+			for (const handler of this.selectionChangeHandlers)
 				handler.onSelectionChange(gameId, metadata, label);
 		};
 
@@ -71,7 +71,7 @@ class SavegameList
 		let savedGames = Engine.GetSavedGames();
 
 		// Get current game version and loaded mods
-		let engineInfo = Engine.GetEngineInfo();
+		const engineInfo = Engine.GetEngineInfo();
 
 		if (this.compatibilityFilter.checked)
 			savedGames = savedGames.filter(game => {
@@ -85,7 +85,7 @@ class SavegameList
 		this.gameSelection.enabled = !!savedGames.length;
 		this.gameSelectionFeedback.hidden = !!savedGames.length;
 
-		let selectedGameId = this.gameSelection.list_data[this.gameSelection.selected];
+		const selectedGameId = this.gameSelection.list_data[this.gameSelection.selected];
 
 		// Save metadata for the detailed view
 		this.savedGamesMetadata = savedGames.map(game => {
@@ -93,8 +93,8 @@ class SavegameList
 			return game.metadata;
 		});
 
-		let sortKey = this.gameSelection.selected_column;
-		let sortOrder = this.gameSelection.selected_column_order;
+		const sortKey = this.gameSelection.selected_column;
+		const sortOrder = this.gameSelection.selected_column_order;
 
 		this.savedGamesMetadata = this.savedGamesMetadata.sort((a, b) => {
 			let cmpA, cmpB;
@@ -127,7 +127,7 @@ class SavegameList
 		});
 
 		let list = this.savedGamesMetadata.map(metadata => {
-			let isCompatible = this.isCompatibleSavegame(metadata, engineInfo) &&
+			const isCompatible = this.isCompatibleSavegame(metadata, engineInfo) &&
 			                   this.campaignFilter(metadata, this.campaignRun);
 			// Backwards compatibility for pre-A25 savegames
 			const mapName = metadata.initAttributes.settings?.mapName ?? metadata.initAttributes.settings.Name;
@@ -153,7 +153,7 @@ class SavegameList
 
 		 // Restore selection if the selected savegame still exists.
 		// If the last savegame was deleted, or if it was hidden by the compatibility filter, select the new last item.
-		let selectedGameIndex = this.savedGamesMetadata.findIndex(metadata => metadata.id == selectedGameId);
+		const selectedGameIndex = this.savedGamesMetadata.findIndex(metadata => metadata.id == selectedGameId);
 		if (selectedGameIndex != -1)
 			this.gameSelection.selected = selectedGameIndex;
 		else if (this.gameSelection.selected >= this.savedGamesMetadata.length)

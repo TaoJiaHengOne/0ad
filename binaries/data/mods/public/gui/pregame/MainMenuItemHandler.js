@@ -28,7 +28,7 @@ class MainMenuItemHandler
 	setupMenuButtons(buttons, menuItems)
 	{
 		buttons.forEach((button, i) => {
-			let item = menuItems[i];
+			const item = menuItems[i];
 			button.hidden = !item;
 			if (button.hidden)
 				return;
@@ -82,9 +82,9 @@ class MainMenuItemHandler
 
 	setupHotkeys(menuItems)
 	{
-		for (let i in menuItems)
+		for (const i in menuItems)
 		{
-			let item = menuItems[i];
+			const item = menuItems[i];
 			if (item.onPress && item.hotkey)
 				Engine.SetGlobalHotkey(item.hotkey, "Press", () => {
 					this.closeSubmenu();
@@ -100,7 +100,7 @@ class MainMenuItemHandler
 	{
 		this.setupMenuButtons(this.submenuButtons.children, this.menuItems[i].submenu);
 
-		let top = this.mainMenuButtons.children[i].getComputedSize().top;
+		const top = this.mainMenuButtons.children[i].getComputedSize().top;
 
 		this.submenu.size = new GUISize(
 			this.submenu.size.left, top - this.Margin,
@@ -109,14 +109,14 @@ class MainMenuItemHandler
 		this.submenu.hidden = false;
 
 		{
-			let size = this.MainMenuPanelRightBorderTop.size;
+			const size = this.MainMenuPanelRightBorderTop.size;
 			size.bottom = this.submenu.size.top + this.Margin;
 			size.rbottom = 0;
 			this.MainMenuPanelRightBorderTop.size = size;
 		}
 
 		{
-			let size = this.MainMenuPanelRightBorderBottom.size;
+			const size = this.MainMenuPanelRightBorderBottom.size;
 			size.top = this.submenu.size.bottom;
 			this.MainMenuPanelRightBorderBottom.size = size;
 		}
@@ -131,7 +131,7 @@ class MainMenuItemHandler
 		this.submenu.hidden = true;
 		this.submenu.size = this.mainMenu.size;
 
-		let size = this.MainMenuPanelRightBorderTop.size;
+		const size = this.MainMenuPanelRightBorderTop.size;
 		size.top = 0;
 		size.bottom = 0;
 		size.rbottom = 100;
@@ -140,12 +140,12 @@ class MainMenuItemHandler
 
 	onTick()
 	{
-		let now = Date.now();
+		const now = Date.now();
 		if (now == this.lastTickTime)
 			return;
 
-		let maxOffset = this.mainMenu.size.right - this.submenu.size.left;
-		let offset = Math.min(this.MenuSpeed * (now - this.lastTickTime), maxOffset);
+		const maxOffset = this.mainMenu.size.right - this.submenu.size.left;
+		const offset = Math.min(this.MenuSpeed * (now - this.lastTickTime), maxOffset);
 
 		this.lastTickTime = now;
 
@@ -155,7 +155,7 @@ class MainMenuItemHandler
 			return;
 		}
 
-		let size = this.submenu.size;
+		const size = this.submenu.size;
 		size.left += offset;
 		size.right += offset;
 		this.submenu.size = size;
