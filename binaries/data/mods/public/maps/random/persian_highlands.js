@@ -60,7 +60,7 @@ function* GenerateMap(mapSettings)
 	const clCP = g_Map.createTileClass();
 
 	const pattern = mapSettings.PlayerPlacement;
-	const teamDist = (pattern == "river") ? .50 : .35;
+	const teamDist = (pattern == "river") ? 0.50 : 0.35;
 	const [playerIDs, playerPosition] =
 		playerPlacementByPattern(
 			pattern,
