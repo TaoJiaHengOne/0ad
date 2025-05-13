@@ -1,3 +1,12 @@
+class TimeWarpMessageBox extends SessionMessageBox
+{
+}
+TimeWarpMessageBox.prototype.Width = 500;
+TimeWarpMessageBox.prototype.Height = 250;
+TimeWarpMessageBox.prototype.Title = translate("Time warp mode");
+TimeWarpMessageBox.prototype.Caption = translate(
+	"Note: time warp mode is a developer option, and not intended for use over long periods of time. Using it incorrectly may cause the game to run out of memory or crash.");
+
 /**
  * This class manages the timewarp hotkeys that allow jumping back in time and fast forwarding the game.
  */
@@ -56,12 +65,3 @@ TimeWarp.prototype.NumberTurns = 10;
  * Gamespeed used while pressing the fast forward hotkey.
  */
 TimeWarp.prototype.FastForwardSpeed = 20;
-
-class TimeWarpMessageBox extends SessionMessageBox
-{
-}
-TimeWarpMessageBox.prototype.Width = 500;
-TimeWarpMessageBox.prototype.Height = 250;
-TimeWarpMessageBox.prototype.Title = translate("Time warp mode");
-TimeWarpMessageBox.prototype.Caption = translate(
-	"Note: time warp mode is a developer option, and not intended for use over long periods of time. Using it incorrectly may cause the game to run out of memory or crash.");

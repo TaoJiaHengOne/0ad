@@ -1,32 +1,3 @@
-class BackgroundHandler
-{
-	constructor(layers)
-	{
-		this.backgroundLayers = layers.map((layer, i) =>
-			new BackgroundLayer(layer, i));
-
-		this.initTime = Date.now();
-
-		this.backgrounds = Engine.GetGUIObjectByName("backgrounds");
-		this.backgrounds.onTick = this.onTick.bind(this);
-		this.backgrounds.onWindowResized = this.onWindowResized.bind(this);
-		this.onWindowResized();
-	}
-
-	onWindowResized()
-	{
-		const size = this.backgrounds.getComputedSize();
-		this.backgroundsSize = deepfreeze(new GUISize(size.top, size.left, size.right, size.bottom));
-	}
-
-	onTick()
-	{
-		const time = Date.now() - this.initTime;
-		for (const background of this.backgroundLayers)
-			background.update(time, this.backgroundsSize);
-	}
-}
-
 class BackgroundLayer
 {
 	constructor(layer, i)
@@ -66,6 +37,35 @@ class BackgroundLayer
 				right + height,
 				backgroundsSize.bottom);
 		}
+	}
+}
+
+class BackgroundHandler
+{
+	constructor(layers)
+	{
+		this.backgroundLayers = layers.map((layer, i) =>
+			new BackgroundLayer(layer, i));
+
+		this.initTime = Date.now();
+
+		this.backgrounds = Engine.GetGUIObjectByName("backgrounds");
+		this.backgrounds.onTick = this.onTick.bind(this);
+		this.backgrounds.onWindowResized = this.onWindowResized.bind(this);
+		this.onWindowResized();
+	}
+
+	onWindowResized()
+	{
+		const size = this.backgrounds.getComputedSize();
+		this.backgroundsSize = deepfreeze(new GUISize(size.top, size.left, size.right, size.bottom));
+	}
+
+	onTick()
+	{
+		const time = Date.now() - this.initTime;
+		for (const background of this.backgroundLayers)
+			background.update(time, this.backgroundsSize);
 	}
 }
 

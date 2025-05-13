@@ -2,60 +2,6 @@
 //	are likely to fail, which may be useful for debugging AIs
 var g_DebugCommands = false;
 
-function ProcessCommand(player, cmd)
-{
-	const cmpPlayer = QueryPlayerIDInterface(player);
-	if (!cmpPlayer)
-		return;
-
-	const data = {
-		"cmpPlayer": cmpPlayer,
-		"controlAllUnits": cmpPlayer.CanControlAllUnits()
-	};
-
-	if (cmd.entities)
-		data.entities = FilterEntityList(cmd.entities, player, data.controlAllUnits);
-
-	// TODO: queuing order and forcing formations doesn't really work.
-	// To play nice, we'll still no-formation queued order if units are in formation
-	// but the opposite perhaps ought to be implemented.
-	if (!cmd.queued || cmd.formation == NULL_FORMATION)
-		data.formation = cmd.formation || undefined;
-
-	// Allow focusing the camera on recent commands
-	const commandData = {
-		"type": "playercommand",
-		"players": [player],
-		"cmd": cmd
-	};
-
-	// Save the position, since the GUI event is received after the unit died
-	if (cmd.type == "delete-entities")
-	{
-		const cmpPosition = cmd.entities[0] && Engine.QueryInterface(cmd.entities[0], IID_Position);
-		commandData.position = cmpPosition && cmpPosition.IsInWorld() && cmpPosition.GetPosition2D();
-	}
-
-	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
-	cmpGuiInterface.PushNotification(commandData);
-
-	// Note: checks of UnitAI targets are not robust enough here, as ownership
-	//	can change after the order is issued, they should be checked by UnitAI
-	//	when the specific behavior (e.g. attack, garrison) is performed.
-	// (Also it's not ideal if a command silently fails, it's nicer if UnitAI
-	//	moves the entities closer to the target before giving up.)
-
-	// Now handle various commands
-	if (g_Commands[cmd.type])
-	{
-		var cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
-		cmpTrigger.CallEvent("OnPlayerCommand", { "player": player, "cmd": cmd });
-		g_Commands[cmd.type](player, cmd, data);
-	}
-	else
-		error("Invalid command: unknown command type: "+uneval(cmd));
-}
-
 var g_Commands = {
 
 	"aichat": function(player, cmd, data)
@@ -904,6 +850,60 @@ var g_Commands = {
 	},
 
 };
+
+function ProcessCommand(player, cmd)
+{
+	const cmpPlayer = QueryPlayerIDInterface(player);
+	if (!cmpPlayer)
+		return;
+
+	const data = {
+		"cmpPlayer": cmpPlayer,
+		"controlAllUnits": cmpPlayer.CanControlAllUnits()
+	};
+
+	if (cmd.entities)
+		data.entities = FilterEntityList(cmd.entities, player, data.controlAllUnits);
+
+	// TODO: queuing order and forcing formations doesn't really work.
+	// To play nice, we'll still no-formation queued order if units are in formation
+	// but the opposite perhaps ought to be implemented.
+	if (!cmd.queued || cmd.formation == NULL_FORMATION)
+		data.formation = cmd.formation || undefined;
+
+	// Allow focusing the camera on recent commands
+	const commandData = {
+		"type": "playercommand",
+		"players": [player],
+		"cmd": cmd
+	};
+
+	// Save the position, since the GUI event is received after the unit died
+	if (cmd.type == "delete-entities")
+	{
+		const cmpPosition = cmd.entities[0] && Engine.QueryInterface(cmd.entities[0], IID_Position);
+		commandData.position = cmpPosition && cmpPosition.IsInWorld() && cmpPosition.GetPosition2D();
+	}
+
+	const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+	cmpGuiInterface.PushNotification(commandData);
+
+	// Note: checks of UnitAI targets are not robust enough here, as ownership
+	//	can change after the order is issued, they should be checked by UnitAI
+	//	when the specific behavior (e.g. attack, garrison) is performed.
+	// (Also it's not ideal if a command silently fails, it's nicer if UnitAI
+	//	moves the entities closer to the target before giving up.)
+
+	// Now handle various commands
+	if (g_Commands[cmd.type])
+	{
+		var cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+		cmpTrigger.CallEvent("OnPlayerCommand", { "player": player, "cmd": cmd });
+		g_Commands[cmd.type](player, cmd, data);
+	}
+	else
+		error("Invalid command: unknown command type: "+uneval(cmd));
+}
 
 /**
  * Sends a GUI notification about unit(s) that failed to ungarrison.
