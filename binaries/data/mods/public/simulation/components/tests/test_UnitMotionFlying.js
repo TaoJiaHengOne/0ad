@@ -42,7 +42,7 @@ AddMock(entity, IID_Position, {
 	"GetPosition2D": () => { return { "x": 50, "y": 100 }; },
 	"GetPosition": () => { return { "x": 50, "y": height, "z": 100 }; },
 	"GetRotation": () => { return { "y": 3.14 }; },
-	"SetHeightFixed": (y) => height = y,
+	"SetHeightFixed": (y) => { height = y; },
 	"TurnTo": () => {},
 	"SetXZRotation": () => {},
 	"MoveTo": () => {}

@@ -91,7 +91,7 @@ function createDefaultFortressTypes()
 	/**
 	 * Define some basic default fortress types.
 	 */
-	const addFortress = (type, walls) => defaultFortresses[type] = { "wall": walls.concat(walls, walls, walls) };
+	const addFortress = (type, walls) => { defaultFortresses[type] = { "wall": walls.concat(walls, walls, walls) }; };
 	addFortress("tiny", ["gate", "tower", "short", "cornerIn", "short", "tower"]);
 	addFortress("small", ["gate", "tower", "medium", "cornerIn", "medium", "tower"]);
 	addFortress("medium", ["gate", "tower", "long", "cornerIn", "long", "tower"]);
