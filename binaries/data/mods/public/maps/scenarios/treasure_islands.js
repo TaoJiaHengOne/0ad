@@ -20,8 +20,8 @@ Trigger.prototype.TreasureCollected = function(data)
 	var otherPlayer = (data.player == 1 ? 2 : 1);
 
 	// Check if having more treasures than the enemy is still possible
-	if ( (count == this.treasureCount.maximum / 2) &&
-		(this.treasureCount.players[otherPlayer] == this.treasureCount.maximum / 2) )
+	if ((count == this.treasureCount.maximum / 2) &&
+		(this.treasureCount.players[otherPlayer] == this.treasureCount.maximum / 2))
 	{
 		cmpGUIInterface.PushNotification({
 			"players": [1, 2],
@@ -64,7 +64,7 @@ Trigger.prototype.TreasureCollected = function(data)
 
 		if (count + 3 >= goalCount)
 		{
-			var remainingTreasures = ( goalCount - count);
+			var remainingTreasures = (goalCount - count);
 			cmpGUIInterface.PushNotification({
 				"players": [data.player],
 				"parameters": { "remainingTreasures": remainingTreasures },

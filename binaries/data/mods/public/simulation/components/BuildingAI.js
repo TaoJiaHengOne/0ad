@@ -347,7 +347,7 @@ BuildingAI.prototype.FireArrows = function()
 		for (const target of this.targetUnits)
 	        addTarget(target);
 		// Sort targets by preference and then by proximity.
-		targets.sort( (a, b) => {
+		targets.sort((a, b) => {
 			if (a.preference > b.preference)
 				return 1;
 			else if (a.preference < b.preference)

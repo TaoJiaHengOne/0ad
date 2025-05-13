@@ -131,7 +131,7 @@ MountainRangeBuilder.prototype.RemoveInvalidEdges = function()
 		const edge3Equal = this.currentEdgeEnd == comparedEdgeStart;
 
 		if (!edge0Equal && !edge2Equal && !edge1Equal && !edge3Equal && testLineIntersection(this.currentEdgeStart, this.currentEdgeEnd, comparedEdgeStart, comparedEdgeEnd, this.minDistance) ||
-		   ( edge0Equal && !edge2Equal || !edge1Equal && edge3Equal) && distanceOfPointFromLine(this.currentEdgeStart, this.currentEdgeEnd, comparedEdgeEnd) < this.minDistance ||
+		   (edge0Equal && !edge2Equal || !edge1Equal && edge3Equal) && distanceOfPointFromLine(this.currentEdgeStart, this.currentEdgeEnd, comparedEdgeEnd) < this.minDistance ||
 		   (!edge0Equal && edge2Equal || edge1Equal && !edge3Equal) && distanceOfPointFromLine(this.currentEdgeStart, this.currentEdgeEnd, comparedEdgeStart) < this.minDistance)
 		{
 			this.possibleEdges.splice(i, 1);
