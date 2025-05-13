@@ -1361,8 +1361,8 @@ function TryConstructWall(player, cmpPlayer, controlAllUnits, cmd)
 		{
 			if (!(i == 0 && piece.template == cmd.wallSet.templates.tower && !cmd.startSnappedEntity))
 			{
-    			error("[TryConstructWall] Expected last tower control group to be available, none found (1st pass, iteration " + i + ")");
-    			break;
+				error("[TryConstructWall] Expected last tower control group to be available, none found (1st pass, iteration " + i + ")");
+				break;
 			}
 		}
 

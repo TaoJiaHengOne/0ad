@@ -662,7 +662,7 @@ g_SelectionPanels.Research = {
 
 		const sortedEntStates = unitEntStates.sort((a, b) =>
 			(!b.upgrade || !b.upgrade.isUpgrading) - (!a.upgrade || !a.upgrade.isUpgrading) ||
-		 	(!a.production ? 0 : a.production.queue.length) - (!b.production ? 0 : b.production.queue.length)
+			(!a.production ? 0 : a.production.queue.length) - (!b.production ? 0 : b.production.queue.length)
 		 );
 
 		for (const state of sortedEntStates)
