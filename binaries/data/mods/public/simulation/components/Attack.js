@@ -463,7 +463,7 @@ Attack.prototype.GetAttackYOrigin = function(type)
 	return ApplyValueModificationsToEntity("Attack/" + type + "/Origin/Y", +this.template[type].Origin.Y, this.entity);
 };
 
-Attack.prototype.RepeatRangeCheck = function (type) {
+Attack.prototype.RepeatRangeCheck = function(type) {
 	if (!this.IsTargetInRange(this.target, type))
 		this.StopAttacking("OutOfRange");
 };

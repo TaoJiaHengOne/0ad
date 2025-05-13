@@ -431,7 +431,7 @@ var g_Commands = {
 		}
 	},
 
-	"focus-fire": function (player, cmd, data)
+	"focus-fire": function(player, cmd, data)
 	{
 		for (const ent of data.entities)
 		{

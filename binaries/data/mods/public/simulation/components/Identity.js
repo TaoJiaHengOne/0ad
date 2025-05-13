@@ -105,7 +105,7 @@ Identity.prototype.Init = function()
 	this.controllable = this.template.Controllable ? this.template.Controllable == "true" : true;
 };
 
-Identity.prototype.Deserialize = function (data)
+Identity.prototype.Deserialize = function(data)
 {
 	this.Init();
 	this.phenotype = data.phenotype;

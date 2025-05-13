@@ -21,8 +21,7 @@ function cubicInterpolation(tension, x, p0, p1, p2, p3)
  *
  * @param {Vector2D} position - Location of the point to interpolate, relative to p11
  */
-function bicubicInterpolation
-(
+function bicubicInterpolation(
 	position,
 	p00, p01, p02, p03,
 	p10, p11, p12, p13,
