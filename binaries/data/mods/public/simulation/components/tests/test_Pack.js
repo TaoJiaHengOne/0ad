@@ -42,7 +42,7 @@ AddMock(ent, IID_Sound, {
 
 AddMock(SYSTEM_ENTITY, IID_Timer, {
 	"CancelTimer": id => { timerActivated = false; return; },
-	"SetInterval": (ent, iid, funcname, time, repeattime, data) => { timerActivated = true; return 7; }
+	"SetInterval": (entity, iid, funcname, time, repeattime, data) => { timerActivated = true; return 7; }
 });
 
 Engine.AddEntity = function(template) {

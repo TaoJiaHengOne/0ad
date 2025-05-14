@@ -42,6 +42,7 @@ CityPainter.prototype.paint = function(area)
 	const processed = new Array(mapSize).fill(0).map(() => new Uint8Array(mapSize));
 
 	for (let x = 0; x < mapSize; x += 0.5)
+	{
 		for (let y = 0; y < mapSize; y += 0.5)
 		{
 			const point = new Vector2D(x, y).rotateAround(this.angle, mapCenter).round();
@@ -77,8 +78,9 @@ CityPainter.prototype.paint = function(area)
 					tileClass.add(obstructionPoint);
 
 				++templateCounts[template.templateName];
-				templates = templates.filter(template => templateCounts[template.templateName] < template.maxCount);
+				templates = templates.filter(templ => templateCounts[templ.templateName] < templ.maxCount);
 				break;
 			}
 		}
+	}
 };

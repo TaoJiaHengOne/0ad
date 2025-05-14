@@ -18,7 +18,7 @@ var template = { "Identity": { "Classes": { "_string": "CorrectClass OtherClass"
 
 global.AuraTemplates = {
 	"Get": name => {
-		const template = {
+		const auraTemplate = {
 			"type": name,
 			"affectedPlayers": ["Ally"],
 			"affects": ["CorrectClass"],
@@ -27,8 +27,8 @@ global.AuraTemplates = {
 			"auraDescription": "description"
 		};
 		if (name == "range")
-			template.radius = auraRange;
-		return template;
+			auraTemplate.radius = auraRange;
+		return auraTemplate;
 	}
 };
 

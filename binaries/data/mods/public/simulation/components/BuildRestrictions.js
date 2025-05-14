@@ -254,8 +254,7 @@ BuildRestrictions.prototype.CheckPlacement = function()
 
 		var filter = function(id)
 		{
-			var cmpIdentity = Engine.QueryInterface(id, IID_Identity);
-			return cmpIdentity.GetClassesList().indexOf(cat) > -1;
+			return Engine.QueryInterface(id, IID_Identity).GetClassesList().indexOf(cat) > -1;
 		};
 
 		if (this.template.Distance.MinDistance !== undefined)
@@ -263,7 +262,7 @@ BuildRestrictions.prototype.CheckPlacement = function()
 			const minDistance = ApplyValueModificationsToTemplate("BuildRestrictions/Distance/MinDistance", +this.template.Distance.MinDistance, cmpPlayer.GetPlayerID(), template);
 			if (cmpRangeManager.ExecuteQuery(this.entity, 0, minDistance, [cmpPlayer.GetPlayerID()], IID_BuildRestrictions, false).some(filter))
 			{
-				const result = markForPluralTranslation(
+				result = markForPluralTranslation(
 					"%(name)s too close to a %(category)s, must be at least %(distance)s meter away",
 					"%(name)s too close to a %(category)s, must be at least %(distance)s meters away",
 					minDistance);
@@ -284,7 +283,7 @@ BuildRestrictions.prototype.CheckPlacement = function()
 			const maxDistance = ApplyValueModificationsToTemplate("BuildRestrictions/Distance/MaxDistance", +this.template.Distance.MaxDistance, cmpPlayer.GetPlayerID(), template);
 			if (!cmpRangeManager.ExecuteQuery(this.entity, 0, maxDistance, [cmpPlayer.GetPlayerID()], IID_BuildRestrictions, false).some(filter))
 			{
-				const result = markForPluralTranslation(
+				result = markForPluralTranslation(
 					"%(name)s too far from a %(category)s, must be within %(distance)s meter",
 					"%(name)s too far from a %(category)s, must be within %(distance)s meters",
 					maxDistance);

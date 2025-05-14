@@ -146,8 +146,8 @@ class ObstructionSnap
 				for (const edge of pairedEdges)
 					if (this.compareEdges(edge, secondEdge) < 0)
 						secondEdge = edge;
-				const distance = Vector2D.dot(secondEdge.normal, templatePos) - Vector2D.dot(secondEdge.normal, secondEdge.begin);
-				templatePos.sub(Vector2D.mult(secondEdge.normal, distance - sizeToPairedEdge - this.getPadding(secondEdge)));
+				const dist = Vector2D.dot(secondEdge.normal, templatePos) - Vector2D.dot(secondEdge.normal, secondEdge.begin);
+				templatePos.sub(Vector2D.mult(secondEdge.normal, dist - sizeToPairedEdge - this.getPadding(secondEdge)));
 			}
 		}
 		return {

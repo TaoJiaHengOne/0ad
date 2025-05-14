@@ -85,9 +85,9 @@ class CounterManager
 
 		for (const counter of this.counters)
 		{
-			const hidden = g_ViewedPlayer <= 0;
-			counter.panel.hidden = hidden;
-			if (!hidden)
+			const isHidden = g_ViewedPlayer <= 0;
+			counter.panel.hidden = isHidden;
+			if (!isHidden)
 				counter.rebuild(viewedPlayerState, this.getAllyStatTooltip.bind(this));
 		}
 	}

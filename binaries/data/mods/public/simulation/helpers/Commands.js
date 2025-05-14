@@ -768,8 +768,8 @@ var g_Commands = {
 	"spy-request": function(player, cmd, data)
 	{
 		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
-		const ent = pickRandom(cmpRangeManager.GetEntitiesByPlayer(cmd.player).filter(ent => {
-			const cmpVisionSharing = Engine.QueryInterface(ent, IID_VisionSharing);
+		const ent = pickRandom(cmpRangeManager.GetEntitiesByPlayer(cmd.player).filter(entity => {
+			const cmpVisionSharing = Engine.QueryInterface(entity, IID_VisionSharing);
 			return cmpVisionSharing && cmpVisionSharing.IsBribable() && !cmpVisionSharing.ShareVisionWith(player);
 		}));
 

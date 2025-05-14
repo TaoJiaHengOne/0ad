@@ -771,9 +771,9 @@ function updateGroups()
 
 		const button = Engine.GetGUIObjectByName("unitGroupButton[" + i + "]");
 		button.hidden = g_Groups.groups[i].getTotalCount() == 0;
-		button.onPress = (function(i) { return function() { performGroup((Engine.HotkeyIsPressed("selection.add") ? "add" : "select"), i); }; })(i);
-		button.onDoublePress = (function(i) { return function() { performGroup("snap", i); }; })(i);
-		button.onPressRight = (function(i) { return function() { performGroup("breakUp", i); }; })(i);
+		button.onPress = (function(groupId) { return function() { performGroup((Engine.HotkeyIsPressed("selection.add") ? "add" : "select"), groupId); }; })(i);
+		button.onDoublePress = (function(groupId) { return function() { performGroup("snap", groupId); }; })(i);
+		button.onPressRight = (function(groupId) { return function() { performGroup("breakUp", groupId); }; })(i);
 
 		// Choose the icon of the most common template (or the most costly if it's not unique)
 		if (g_Groups.groups[i].getTotalCount() > 0)

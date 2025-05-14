@@ -4179,7 +4179,7 @@ UnitAI.prototype.GetOrderData = function()
 
 UnitAI.prototype.UpdateWorkOrders = function(type)
 {
-	var isWorkType = type => type == "Gather" || type == "Trade" || type == "Repair" || type == "ReturnResource";
+	var isWorkType = kind => kind == "Gather" || kind == "Trade" || kind == "Repair" || kind == "ReturnResource";
 	if (isWorkType(type))
 	{
 		this.workOrders = [];
@@ -5049,7 +5049,7 @@ UnitAI.prototype.GetBestAttackAgainst = function(target, allowCapture = this.DEF
  */
 UnitAI.prototype.AttackVisibleEntity = function(ents)
 {
-	var target = ents.find(target => this.CanAttack(target));
+	var target = ents.find(entity => this.CanAttack(entity));
 	if (!target)
 		return false;
 
@@ -5064,10 +5064,10 @@ UnitAI.prototype.AttackVisibleEntity = function(ents)
  */
 UnitAI.prototype.AttackEntityInZone = function(ents)
 {
-	var target = ents.find(target =>
-		this.CanAttack(target) &&
-		this.CheckTargetDistanceFromHeldPosition(target, IID_Attack, this.GetBestAttackAgainst(target, true)) &&
-		(this.GetStance().respondChaseBeyondVision || this.CheckTargetIsInVisionRange(target))
+	var target = ents.find(entity =>
+		this.CanAttack(entity) &&
+		this.CheckTargetDistanceFromHeldPosition(entity, IID_Attack, this.GetBestAttackAgainst(target, true)) &&
+		(this.GetStance().respondChaseBeyondVision || this.CheckTargetIsInVisionRange(entity))
 	);
 	if (!target)
 		return false;
@@ -5130,11 +5130,11 @@ UnitAI.prototype.RespondToSightedEntities = function(ents)
  */
 UnitAI.prototype.RespondToHealableEntities = function(ents)
 {
-	const ent = ents.find(ent => this.CanHeal(ent));
-	if (!ent)
+	const target = ents.find(ent => this.CanHeal(ent));
+	if (!target)
 		return false;
 
-	this.PushOrderFront("Heal", { "target": ent, "force": false });
+	this.PushOrderFront("Heal", { "target": target, "force": false });
 	return true;
 };
 
@@ -5156,7 +5156,7 @@ UnitAI.prototype.ShouldAbandonChase = function(target, force, iid, type)
 		const cmpUnitAI = Engine.QueryInterface(target, IID_UnitAI);
 		const cmpAttack = Engine.QueryInterface(target, IID_Attack);
 		if (cmpUnitAI && cmpAttack &&
-		    cmpAttack.GetAttackTypes().some(type => cmpUnitAI.CheckTargetAttackRange(this.isGuardOf, type)))
+		    cmpAttack.GetAttackTypes().some(kind => cmpUnitAI.CheckTargetAttackRange(this.isGuardOf, kind)))
 			return false;
 	}
 

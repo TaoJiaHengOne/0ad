@@ -63,7 +63,7 @@ SmoothElevationPainter.prototype.paint = function(area)
 			}
 		}
 
-	const withinArea = (area, position) => g_TileVertices.some(vertexPos => area.contains(Vector2D.sub(position, vertexPos)));
+	const withinArea = (bounds, position) => g_TileVertices.some(vertexPos => bounds.contains(Vector2D.sub(position, vertexPos)));
 
 	// Change height inside the area depending on the distance to the border
 	breadthFirstSearchPaint({

@@ -209,9 +209,9 @@ function* GenerateMap(mapSettings)
 	yield 38;
 
 	g_Map.log("Creating dirt patches");
-	for (const size of [scaleByMapSize(3, 48), scaleByMapSize(5, 84), scaleByMapSize(8, 128)])
+	for (const dirtClumpSize of [scaleByMapSize(3, 48), scaleByMapSize(5, 84), scaleByMapSize(8, 128)])
 		createAreas(
-			new ClumpPlacer(size, 0.3, 0.06, 0.5),
+			new ClumpPlacer(dirtClumpSize, 0.3, 0.06, 0.5),
 			[
 				new LayeredPainter(
 					[[tMainTerrain, tTier1Terrain], [tTier1Terrain, tTier2Terrain], [tTier2Terrain, tTier3Terrain]],
@@ -231,9 +231,9 @@ function* GenerateMap(mapSettings)
 	yield 42;
 
 	g_Map.log("Creating grass patches");
-	for (const size of [scaleByMapSize(2, 32), scaleByMapSize(3, 48), scaleByMapSize(5, 80)])
+	for (const grassClumpSize of [scaleByMapSize(2, 32), scaleByMapSize(3, 48), scaleByMapSize(5, 80)])
 		createAreas(
-			new ClumpPlacer(size, 0.3, 0.06, 0.5),
+			new ClumpPlacer(grassClumpSize, 0.3, 0.06, 0.5),
 			new TerrainPainter(tTier4Terrain),
 			[avoidClasses(clForest, 0, clHill, 0, clDirt, 5, clIsland, 0), stayClasses(clLand, 7)],
 			scaleByMapSize(15, 45));

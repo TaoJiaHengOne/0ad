@@ -180,8 +180,8 @@ function createMountain(maxHeight, minRadius, maxRadius, numCircles, constraints
 		for (let ix = sx; ix <= lx; ++ix)
 			for (let iz = sz; iz <= lz; ++iz)
 			{
-				const position = new Vector2D(ix, iz);
-				const distance = position.distanceTo(circlePosition);
+				const deltaPosition = new Vector2D(ix, iz);
+				const distance = deltaPosition.distanceTo(circlePosition);
 
 				const newHeight =
 					randIntInclusive(0, 2) +
@@ -190,16 +190,16 @@ function createMountain(maxHeight, minRadius, maxRadius, numCircles, constraints
 				if (distance > radius)
 					continue;
 
-				if (g_Map.getHeight(position) < newHeight)
-					g_Map.setHeight(position, newHeight);
-				else if (g_Map.getHeight(position) >= newHeight && g_Map.getHeight(position) < newHeight + 4)
-					g_Map.setHeight(position, newHeight + 4);
+				if (g_Map.getHeight(deltaPosition) < newHeight)
+					g_Map.setHeight(deltaPosition, newHeight);
+				else if (g_Map.getHeight(deltaPosition) >= newHeight && g_Map.getHeight(position) < newHeight + 4)
+					g_Map.setHeight(deltaPosition, newHeight + 4);
 
 				if (terrain)
-					createTerrain(terrain).place(position);
+					createTerrain(terrain).place(deltaPosition);
 
 				if (tileClass)
-					tileClass.add(position);
+					tileClass.add(deltaPosition);
 			}
 	}
 }

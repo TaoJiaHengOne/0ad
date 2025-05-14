@@ -9,7 +9,7 @@ const entity = 11;
 const entPopBonus = 5;
 
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
-	(valueName, currentValue, entity) => currentValue
+	(valueName, currentValue, entityId) => currentValue
 );
 
 AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
@@ -40,7 +40,7 @@ TS_ASSERT_EQUALS(spy._called, 1);
 // Test value modifications.
 // Test no change.
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
-	(valueName, currentValue, entity) => currentValue
+	(valueName, currentValue, entityId) => currentValue
 );
 
 cmpPlayer = AddMock(player, IID_Player, {
@@ -55,7 +55,7 @@ AddMock(entity, IID_Ownership, {
 });
 let difference = 3;
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
-	(valueName, currentValue, entity) => currentValue + difference
+	(valueName, currentValue, entityId) => currentValue + difference
 );
 
 cmpPlayer = AddMock(player, IID_Player, {
@@ -78,7 +78,7 @@ cmpPlayer = AddMock(player, IID_Player, {
 });
 difference = 0;
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
-	(valueName, currentValue, entity) => currentValue + difference
+	(valueName, currentValue, entityId) => currentValue + difference
 );
 spy = new Spy(cmpPlayer, "AddPopulationBonuses");
 cmpPopulation.OnValueModification({ "component": "Population" });
@@ -87,7 +87,7 @@ TS_ASSERT_EQUALS(spy._called, 1);
 // Test negative change.
 difference = -2;
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
-	(valueName, currentValue, entity) => currentValue + difference
+	(valueName, currentValue, entityId) => currentValue + difference
 );
 
 cmpPlayer = AddMock(player, IID_Player, {
@@ -101,7 +101,7 @@ TS_ASSERT_EQUALS(spy._called, 1);
 // Test newly created entities also get affected by modifications.
 difference = 3;
 Engine.RegisterGlobal("ApplyValueModificationsToEntity",
-	(valueName, currentValue, entity) => currentValue + difference
+	(valueName, currentValue, entityId) => currentValue + difference
 );
 cmpPlayer = AddMock(player, IID_Player, {
 	"AddPopulationBonuses": bonus => TS_ASSERT_EQUALS(bonus, entPopBonus + difference)

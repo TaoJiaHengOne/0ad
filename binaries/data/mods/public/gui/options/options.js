@@ -286,26 +286,26 @@ function displayOptions()
 
 		control[optionType.guiSetter] = function() {
 
-			const value = optionType.guiToValue(control);
+			const newValue = optionType.guiToValue(control);
 
 			if (optionType.sanitizeValue)
-				optionType.sanitizeValue(value, control, option);
+				optionType.sanitizeValue(newValue, control, option);
 
 			const oldValue = optionType.configToValue(Engine.ConfigDB_GetValue("user", option.config));
 
-			control.tooltip = option.tooltip + (optionType.tooltip ? "\n" + optionType.tooltip(value, option) : "");
+			control.tooltip = option.tooltip + (optionType.tooltip ? "\n" + optionType.tooltip(newValue, option) : "");
 
 			const hasChanges = Engine.ConfigDB_HasChanges("user");
-			Engine.ConfigDB_CreateValue("user", option.config, String(value));
+			Engine.ConfigDB_CreateValue("user", option.config, String(newValue));
 
 			g_ChangedKeys.add(option.config);
 			fireConfigChangeHandlers(new Set([option.config]));
 
 			if (option.timeout)
-				optionType.timeout(option, oldValue, hasChanges, value);
+				optionType.timeout(option, oldValue, hasChanges, newValue);
 
 			if (option.function)
-				Engine[option.function](value);
+				Engine[option.function](newValue);
 
 			enableButtons();
 		};

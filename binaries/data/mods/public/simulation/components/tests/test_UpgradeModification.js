@@ -92,7 +92,7 @@ AddMock(SYSTEM_ENTITY, IID_Timer, {
 });
 
 AddMock(SYSTEM_ENTITY, IID_ModifiersManager, {
-	"ApplyTemplateModifiers": (valueName, curValue, template, player) => {
+	"ApplyTemplateModifiers": (valueName, curValue, templ, player) => {
 		// Called in helpers/ValueModification.js::ApplyValueModificationsToTemplate()
 		// as part of Tests T2 and T5 below.
 		const mods = isResearched ? templateTechModifications.with : templateTechModifications.without;

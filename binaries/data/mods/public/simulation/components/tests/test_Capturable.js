@@ -27,25 +27,25 @@ const testCaptureAttacks = {
 	"32": 2.0
 };
 
-function testCapturable(testData, test_function)
+function testCapturable(data, test_function)
 {
 	ResetState();
 
 	AddMock(SYSTEM_ENTITY, IID_Timer, {
-		"SetInterval": (ent, iid, funcname, time, repeattime, data) => {},
+		"SetInterval": (ent, iid, funcname, time, repeattime, payload) => {},
 		"CancelTimer": timer => {}
 	});
 
-	AddMock(testData.structure, IID_Ownership, {
-		"GetOwner": () => testData.playerID,
+	AddMock(data.structure, IID_Ownership, {
+		"GetOwner": () => data.playerID,
 		"SetOwner": id => {}
 	});
 
-	AddMock(testData.structure, IID_GarrisonHolder, {
-		"GetEntities": () => testData.garrisonedEntities
+	AddMock(data.structure, IID_GarrisonHolder, {
+		"GetEntities": () => data.garrisonedEntities
 	});
 
-	AddMock(testData.structure, IID_Fogging, {
+	AddMock(data.structure, IID_Fogging, {
 		"Activate": () => {}
 	});
 
@@ -70,25 +70,25 @@ function testCapturable(testData, test_function)
 		"GetPlayerByID": id => 10 + id
 	});
 
-	AddMock(testData.structure, IID_StatisticsTracker, {
+	AddMock(data.structure, IID_StatisticsTracker, {
 		"LostEntity": () => {},
 		"CapturedBuilding": () => {}
 	});
 
-	const cmpCapturable = ConstructComponent(testData.structure, "Capturable", {
-		"CapturePoints": testData.maxCapturePoints,
-		"RegenRate": testData.regenRate,
-		"GarrisonRegenRate": testData.garrisonRegenRate
+	const cmpCapturable = ConstructComponent(data.structure, "Capturable", {
+		"CapturePoints": data.maxCapturePoints,
+		"RegenRate": data.regenRate,
+		"GarrisonRegenRate": data.garrisonRegenRate
 	});
 
-	AddMock(testData.structure, IID_TerritoryDecay, {
-		"IsDecaying": () => testData.decay,
-		"GetDecayRate": () => testData.decayRate,
-		"GetConnectedNeighbours": () => testData.neighbours
+	AddMock(data.structure, IID_TerritoryDecay, {
+		"IsDecaying": () => data.decay,
+		"GetDecayRate": () => data.decayRate,
+		"GetConnectedNeighbours": () => data.neighbours
 	});
 
-	let regenRate = testData.regenRate;
-	for (const entity of testData.garrisonedEntities)
+	let regenRate = data.regenRate;
+	for (const entity of data.garrisonedEntities)
 	{
 		if (testCaptureAttacks[entity] === undefined)
 			continue;
@@ -97,7 +97,7 @@ function testCapturable(testData, test_function)
 				return type === "Capture" ? { "Capture": testCaptureAttacks[entity] } : undefined;
 			},
 		});
-		regenRate += testCaptureAttacks[entity] * testData.garrisonRegenRate;
+		regenRate += testCaptureAttacks[entity] * data.garrisonRegenRate;
 	}
 
 	TS_ASSERT_EQUALS(cmpCapturable.GetRegenRate(), regenRate);
@@ -147,9 +147,9 @@ testCapturable(testData, cmpCapturable => {
 	TS_ASSERT_UNEVAL_EQUALS(cmpCapturable.GetCapturePoints(), [0, 0, 0, 3000]);
 });
 
-function testRegen(testData, capturePointsIn, capturePointsOut, regenerating)
+function testRegen(data, capturePointsIn, capturePointsOut, regenerating)
 {
-	testCapturable(testData, cmpCapturable => {
+	testCapturable(data, cmpCapturable => {
 		cmpCapturable.SetCapturePoints(capturePointsIn);
 		cmpCapturable.CheckTimer();
 		Engine.PostMessage = function(ent, iid, message) {
@@ -172,14 +172,14 @@ testData.regenRate = -19;
 testRegen(testData, [100, 2800, 50, 50], [112, 2796, 46, 46], true);
 testData.regenRate = 2;
 
-function testDecay(testData, capturePointsIn, capturePointsOut)
+function testDecay(data, capturePointsIn, capturePointsOut)
 {
-	testCapturable(testData, cmpCapturable => {
+	testCapturable(data, cmpCapturable => {
 		cmpCapturable.SetCapturePoints(capturePointsIn);
 		cmpCapturable.CheckTimer();
 		Engine.PostMessage = function(ent, iid, message) {
 			if (iid == MT_CaptureRegenStateChanged)
-				TS_ASSERT_UNEVAL_EQUALS(message.territoryDecay, testData.decayRate);
+				TS_ASSERT_UNEVAL_EQUALS(message.territoryDecay, data.decayRate);
 		};
 		cmpCapturable.TimerTick();
 		TS_ASSERT_UNEVAL_EQUALS(cmpCapturable.GetCapturePoints(), capturePointsOut);
@@ -193,9 +193,9 @@ testDecay(testData, [2900, 35, 10, 55], [2901, 27, 22, 50]);
 testData.decay = false;
 
 // Tests Reduce
-function testReduce(testData, amount, player, taken)
+function testReduce(data, amount, player, taken)
 {
-	testCapturable(testData, cmpCapturable => {
+	testCapturable(data, cmpCapturable => {
 		cmpCapturable.SetCapturePoints([0, 2000, 0, 1000]);
 		cmpCapturable.CheckTimer();
 		TS_ASSERT_UNEVAL_EQUALS(cmpCapturable.Reduce(amount, player), taken);

@@ -157,7 +157,7 @@ AddMock(14, IID_Player, {
 	"TrySubtractResources": costs => true
 });
 AddMock(SYSTEM_ENTITY, IID_Timer, {
-	"SetTimeout": (ent, iid, funcname, time, data) => TS_ASSERT_EQUALS(time, 25 * 1000)
+	"SetTimeout": (entity, iid, funcname, time, data) => TS_ASSERT_EQUALS(time, 25 * 1000)
 });
 cmpVisionSharing.AddSpy(4, 25);
 TS_ASSERT_UNEVAL_EQUALS(cmpVisionSharing.shared, new Set([1, 2, 5, 4]));
@@ -171,7 +171,7 @@ AddMock(ent, IID_Vision, {
 	"GetRange": () => 48
 });
 AddMock(SYSTEM_ENTITY, IID_Timer, {
-	"SetTimeout": (ent, iid, funcname, time, data) => TS_ASSERT_EQUALS(time, 15 * 1000 * 60 / 48)
+	"SetTimeout": (entity, iid, funcname, time, data) => TS_ASSERT_EQUALS(time, 15 * 1000 * 60 / 48)
 });
 cmpVisionSharing.AddSpy(4);
 TS_ASSERT_UNEVAL_EQUALS(cmpVisionSharing.shared, new Set([1, 2, 5, 4]));

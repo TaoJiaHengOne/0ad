@@ -130,12 +130,12 @@ AlertRaiser.prototype.EndOfAlert = function()
 			continue;
 
 		const cmpGarrisonHolder = Engine.QueryInterface(holder, IID_GarrisonHolder);
-		const units = cmpGarrisonHolder.GetEntities().filter(ent => {
+		const garrisonedUnits = cmpGarrisonHolder.GetEntities().filter(ent => {
 			const cmpOwner = Engine.QueryInterface(ent, IID_Ownership);
 			return cmpOwner && cmpOwner.GetOwner() == owner && this.UnitFilter(ent);
 		});
 
-		for (const unit of units)
+		for (const unit of garrisonedUnits)
 			if (cmpGarrisonHolder.Unload(unit))
 			{
 				const cmpUnitAI = Engine.QueryInterface(unit, IID_UnitAI);

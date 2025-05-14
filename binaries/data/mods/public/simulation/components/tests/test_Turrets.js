@@ -32,7 +32,7 @@ const createTurretCmp = entity => {
 		"JumpTo": (posX, posZ) => {},
 		"MoveOutOfWorld": () => {},
 		"SetHeightOffset": height => {},
-		"SetTurretParent": entity => {},
+		"SetTurretParent": ent => {},
 		"SetYRotation": angle => {}
 	});
 
