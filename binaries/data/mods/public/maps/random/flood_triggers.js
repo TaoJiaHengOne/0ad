@@ -1,95 +1,96 @@
+// In what steps the watherlevel rises [s].
+Trigger.prototype.deltaTime = 2.4;
+// By how much the water level changes each step [m].
+Trigger.prototype.deltaWaterLevel = 0.5;
+
+Trigger.prototype.warningDuration = 14.4;
+
+Trigger.prototype.drownDepth = 2;
+
+Trigger.prototype.warning = markForTranslation("The flood continues. Soon the waters will swallow the land. You should evacuate the units.");
+
+Trigger.prototype.RiseWaterLevel = function(targetWaterLevel)
 {
-	// In what steps the watherlevel rises [s].
-	const deltaTime = 2.4;
-	// By how much the water level changes each step [m].
-	const deltaWaterLevel = 0.5;
+	Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager).SetWaterLevel(targetWaterLevel);
 
-	const warningDuration = 14.4;
+	const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+	const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 
-	const drownDepth = 2;
-
-	const warning = markForTranslation("The flood continues. Soon the waters will swallow the land. " +
-		"You should evacuate the units.");
-
-	const riseWaterLevel = (targetWaterLevel) =>
+	for (const ent of cmpRangeManager.GetGaiaAndNonGaiaEntities())
 	{
-		Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager).SetWaterLevel(targetWaterLevel);
+		const cmpPosition = Engine.QueryInterface(ent, IID_Position);
+		if (!cmpPosition || !cmpPosition.IsInWorld())
+			continue;
 
-		const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const pos = cmpPosition.GetPosition();
+		if (pos.y + this.drownDepth >= targetWaterLevel)
+			continue;
 
-		for (const ent of cmpRangeManager.GetGaiaAndNonGaiaEntities())
+		const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
+		if (!cmpIdentity)
+			continue;
+
+		const templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
+
+		// Animals and units drown
+		const cmpHealth = Engine.QueryInterface(ent, IID_Health);
+		if (cmpHealth && cmpIdentity.HasClass("Organic"))
 		{
-			const cmpPosition = Engine.QueryInterface(ent, IID_Position);
-			if (!cmpPosition || !cmpPosition.IsInWorld())
-				continue;
-
-			const pos = cmpPosition.GetPosition();
-			if (pos.y + drownDepth >= targetWaterLevel)
-				continue;
-
-			const cmpIdentity = Engine.QueryInterface(ent, IID_Identity);
-			if (!cmpIdentity)
-				continue;
-
-			const templateName = cmpTemplateManager.GetCurrentTemplateName(ent);
-
-			// Animals and units drown
-			const cmpHealth = Engine.QueryInterface(ent, IID_Health);
-			if (cmpHealth && cmpIdentity.HasClass("Organic"))
-			{
-				cmpHealth.Kill();
-				continue;
-			}
-
-			// Resources and buildings become actors
-			// Do not use ChangeEntityTemplate for performance and
-			// because we don't need nor want the effects of MT_EntityRenamed
-
-			const cmpVisualActor = Engine.QueryInterface(ent, IID_Visual);
-			if (!cmpVisualActor)
-				continue;
-
-			const height = cmpPosition.GetHeightOffset();
-			const rot = cmpPosition.GetRotation();
-
-			const actorTemplate = cmpTemplateManager.GetTemplate(templateName).VisualActor.Actor;
-			const seed = cmpVisualActor.GetActorSeed();
-			Engine.DestroyEntity(ent);
-
-			const newEnt = Engine.AddEntity("actor|" + actorTemplate);
-			Engine.QueryInterface(newEnt, IID_Visual).SetActorSeed(seed);
-
-			const cmpNewPos = Engine.QueryInterface(newEnt, IID_Position);
-			cmpNewPos.JumpTo(pos.x, pos.z);
-			cmpNewPos.SetHeightOffset(height);
-			cmpNewPos.SetXZRotation(rot.x, rot.z);
-			cmpNewPos.SetYRotation(rot.y);
-		}
-	};
-
-	Trigger.prototype.RiseWaterLevelStep = (finalWaterLevel) =>
-	{
-		const waterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
-		const nextExpectedWaterLevel = waterManager.GetWaterLevel() + deltaWaterLevel;
-
-		if (nextExpectedWaterLevel >= finalWaterLevel)
-		{
-			riseWaterLevel(finalWaterLevel);
-			return;
+			cmpHealth.Kill();
+			continue;
 		}
 
-		riseWaterLevel(nextExpectedWaterLevel);
-		Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger).DoAfterDelay(deltaTime * 1000,
-			"RiseWaterLevelStep", finalWaterLevel);
-	};
+		// Resources and buildings become actors
+		// Do not use ChangeEntityTemplate for performance and
+		// because we don't need nor want the effects of MT_EntityRenamed
 
-	Trigger.prototype.DisplayWarning = () =>
+		const cmpVisualActor = Engine.QueryInterface(ent, IID_Visual);
+		if (!cmpVisualActor)
+			continue;
+
+		const height = cmpPosition.GetHeightOffset();
+		const rot = cmpPosition.GetRotation();
+
+		const actorTemplate = cmpTemplateManager.GetTemplate(templateName).VisualActor.Actor;
+		const seed = cmpVisualActor.GetActorSeed();
+		Engine.DestroyEntity(ent);
+
+		const newEnt = Engine.AddEntity("actor|" + actorTemplate);
+		Engine.QueryInterface(newEnt, IID_Visual).SetActorSeed(seed);
+
+		const cmpNewPos = Engine.QueryInterface(newEnt, IID_Position);
+		cmpNewPos.JumpTo(pos.x, pos.z);
+		cmpNewPos.SetHeightOffset(height);
+		cmpNewPos.SetXZRotation(rot.x, rot.z);
+		cmpNewPos.SetYRotation(rot.y);
+	}
+};
+
+Trigger.prototype.RaiseWaterLevelStep = function(finalWaterLevel)
+{
+	const waterManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_WaterManager);
+	const nextExpectedWaterLevel = waterManager.GetWaterLevel() + this.deltaWaterLevel;
+
+	if (nextExpectedWaterLevel >= finalWaterLevel)
 	{
-		Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).AddTimeNotification(
-			{ "message": warning });
-	};
+		this.RiseWaterLevel(finalWaterLevel);
+		return;
+	}
 
+	this.RiseWaterLevel(nextExpectedWaterLevel);
+	Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger).DoAfterDelay(this.deltaTime * 1000,
+		"RaiseWaterLevelStep", finalWaterLevel);
+};
+
+Trigger.prototype.DisplayWarning = function()
+{
+	Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).AddTimeNotification(
+		{ "message": this.warning });
+};
+
+// override
+Trigger.prototype.OnGlobalInitGame = function(msg)
+{
 	if (InitAttributes.settings.waterLevel === "Shallow")
 		return;
 
@@ -97,17 +98,15 @@
 
 	if (InitAttributes.settings.waterLevel === "Deep")
 	{
-		riseWaterLevel(currentWaterLevel + 1);
+		this.RiseWaterLevel(currentWaterLevel + 1);
 		return;
 	}
 
-	const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
-	const schedule = (targetWaterLevel, riseStartTime) =>
-	{
-		cmpTrigger.DoAfterDelay(riseStartTime * 1000, "RiseWaterLevelStep", targetWaterLevel);
-		cmpTrigger.DoAfterDelay((riseStartTime - warningDuration) * 1000, "DisplayWarning");
+	const schedule = (targetWaterLevel, riseStartTime) => {
+		this.DoAfterDelay(riseStartTime * 1000, "RaiseWaterLevelStep", targetWaterLevel);
+		this.DoAfterDelay((riseStartTime - this.warningDuration) * 1000, "DisplayWarning");
 	};
 
 	schedule(currentWaterLevel + 1, 260);
 	schedule(currentWaterLevel + 5, 1560);
-}
+};
