@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -31,10 +31,10 @@ class CFontMetrics
 public:
 	CFontMetrics(CStrIntern font);
 
-	int GetLineSpacing() const;
-	int GetHeight() const;
-	int GetCharacterWidth(wchar_t c) const;
-	void CalculateStringSize(const wchar_t* string, int& w, int& h) const;
+	float GetLineSpacing() const;
+	float GetHeight() const;
+	float GetCharacterWidth(wchar_t c) const;
+	void CalculateStringSize(const wchar_t* string, float& w, float& h) const;
 
 private:
 	std::shared_ptr<CFont> m_Font;

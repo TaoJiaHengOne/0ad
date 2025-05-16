@@ -18,19 +18,32 @@
 #include "precompiled.h"
 #include "Font.h"
 
-#include "graphics/FontManager.h"
 #include "graphics/TextureManager.h"
-#include "ps/Filesystem.h"
 #include "ps/CLogger.h"
 #include "ps/Profile.h"
 
 #include <algorithm>
-#include <map>
+#include <cmath>
 #include <numeric>
 #include <string>
 
 namespace
 {
+/**
+* FreeType represents most of its size and position values in 26.6 fixed-point format — that is,
+* 26 bits for the integer part and 6 bits for the fractional part.
+* FreeType's metrics such as: ascender, descender, height, advance, etc. are measured in 1/64th of a pixel.
+*/
+inline FT_F26Dot6 FloatToF26Dot6(float value)
+{
+    return static_cast<FT_F26Dot6>(std::lround(value * 64.0f));
+}
+
+inline float FPosF26Dot6ToFloat(FT_Pos value)
+{
+    return static_cast<float>(value) / 64.0f;
+}
+
 struct FTGlyphDeleter {
 	void operator()(FT_Glyph glyph) const
 	{
@@ -59,7 +72,15 @@ void CFont::GlyphMap::set(u16 codepoint, const GlyphData& glyph)
 	(*m_Data[codepoint >> 8])[codepoint & 0xff].defined = 1;
 }
 
-int CFont::GetCharacterWidth(wchar_t c)
+float CFont::GetLineSpacing() const {
+	return m_LineSpacing / m_Scale;
+}
+
+float CFont::GetHeight() const {
+	return m_Height / m_Scale;
+}
+
+float CFont::GetCharacterWidth(wchar_t c)
 {
 	PROFILE2("GetCharacterWidth font texture generate");
 	const CFont::GlyphData* g{GetGlyph(c)};
@@ -67,11 +88,11 @@ int CFont::GetCharacterWidth(wchar_t c)
 	return g ? g->xadvance : 0;
 }
 
-void CFont::CalculateStringSize(const wchar_t* string, int& width, int& height)
+void CFont::CalculateStringSize(const wchar_t* string, float& width, float& height)
 {
 	PROFILE2("CalculateStringSize font texture generate");
 	width = 0;
-	height = m_Height;
+	height = GetHeight();
 
 	// Compute the width as the width of the longest line.
 	std::wistringstream stream{string};
@@ -79,7 +100,7 @@ void CFont::CalculateStringSize(const wchar_t* string, int& width, int& height)
 	while (std::getline(stream, line))
 	{
 		FT_UInt glyphIndexStorage{0};
-		const int lineWidth{std::accumulate(line.begin(), line.end(), 0, [&](int sum, wchar_t c)
+		const float lineWidth{std::accumulate(line.begin(), line.end(), 0.0f, [&](float sum, wchar_t c)
 			{
 				const CFont::GlyphData* g{GetGlyph(c)};
 
@@ -101,20 +122,21 @@ void CFont::CalculateStringSize(const wchar_t* string, int& width, int& height)
 				FT_Vector kerning;
 				FT_Get_Kerning(m_Font.get(), prevGlyph, glyphIndex, FT_KERNING_DEFAULT, &kerning);
 				// Add the kerning distance.
-				return sum + g->xadvance + static_cast<int>(kerning.x >> SUBPIXEL_SHIFT);
+				return sum + g->xadvance + FPosF26Dot6ToFloat(kerning.x);
 			})
 		};
 
 		width = std::max(width, lineWidth);
-		height += m_LineSpacing;
+		height += GetLineSpacing();
 	}
 }
 
-bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& fontName, int size, int strokeWidth)
+bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& fontName, float size, float strokeWidth, float scale)
 {
 	// TODO: expose the Stroke Width outside class.
-	m_StrokeWidth = strokeWidth;
-	m_FontSize = size;
+	m_Scale = scale;
+	m_StrokeWidth = strokeWidth * scale;
+	m_FontSize = size * scale;
 	m_FontName = fontName;
 
 	FT_Face face;
@@ -131,7 +153,7 @@ bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& font
 	m_Font.reset(face);
 
 	// Set the font size.
-	if (FT_Error error{FT_Set_Pixel_Sizes(m_Font.get(), 0, m_FontSize)})
+	if (FT_Error error{FT_Set_Char_Size(m_Font.get(), 0, FloatToF26Dot6(m_FontSize), 0 , 0)})
 	{
 		LOGERROR("Failed to set font size %d: %d", size, error);
 		return false;
@@ -146,7 +168,7 @@ bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& font
 			return false;
 		}
 		m_Stroker.reset(stroker);
-		FT_Stroker_Set(m_Stroker.get(), m_StrokeWidth * 64, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+		FT_Stroker_Set(m_Stroker.get(), FloatToF26Dot6(m_StrokeWidth), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 	}
 
 	if (!ConstructTextureAtlas())
@@ -156,10 +178,10 @@ bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& font
 	}
 
 	// Get the height of the font.
-	m_Height = m_Font->size->metrics.height >> SUBPIXEL_SHIFT;
+	m_Height = FPosF26Dot6ToFloat(m_Font->size->metrics.height);
 
 	// Get the line spacing of the font.
-	m_LineSpacing = (m_Font->size->metrics.ascender - m_Font->size->metrics.descender) >> SUBPIXEL_SHIFT;
+	m_LineSpacing = FPosF26Dot6ToFloat(m_Font->size->metrics.ascender - m_Font->size->metrics.descender);
 
 	m_IsLoading = true;
 
@@ -265,13 +287,13 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 	}
 	UniqueFTGlyph glyphPtr(glyph);
 
-	const int baselineInAtlas{static_cast<int>(m_Font->size->metrics.ascender >> SUBPIXEL_SHIFT)};
-	const int glyphW{static_cast<int>(slot->advance.x >> SUBPIXEL_SHIFT)};
+	const float baselineInAtlas{FPosF26Dot6ToFloat(m_Font->size->metrics.ascender)};
+	const float glyphW{FPosF26Dot6ToFloat(slot->advance.x)};
 
 	if (m_AtlasX + glyphW + m_StrokeWidth + m_AtlasPadding > m_AtlasWidth)
 	{
 		m_AtlasX = 0;
-		m_AtlasY += m_Height + m_AtlasPadding;
+		m_AtlasY += std::ceil(m_Height + m_StrokeWidth + m_AtlasPadding);
 	}
 
 	if (m_AtlasY + m_Height + m_StrokeWidth + m_AtlasPadding > m_AtlasHeight)
@@ -281,13 +303,13 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 	}
 
 	m_IsDirty = true;
-	CFont::Offset offset{0,0};
+	CVector2D offset{0,0};
 
 	const FT_Render_Mode renderMode{FT_RENDER_MODE_NORMAL};
 
 	if (m_StrokeWidth)
 	{
-		std::optional<CFont::Offset> offsetStroke{GenerateStrokeGlyphBitmap(glyph, codepoint, renderMode, baselineInAtlas)};
+		std::optional<CVector2D> offsetStroke{GenerateStrokeGlyphBitmap(glyph, codepoint, renderMode, baselineInAtlas)};
 		if (!offsetStroke.has_value())
 		{
 			LOGERROR("Failed to generate stroke glyph %u", codepoint);
@@ -297,7 +319,7 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 		offset = offsetStroke.value();
 	}
 
-	std::optional<CFont::Offset> offsetGlyph{GenerateGlyphBitmap(glyph, codepoint, renderMode, offset, baselineInAtlas)};
+	std::optional<CVector2D> offsetGlyph{GenerateGlyphBitmap(glyph, codepoint, renderMode, offset, baselineInAtlas)};
 	if (!offsetGlyph.has_value())
 	{
 		LOGERROR("Failed to generate glyph %u", codepoint);
@@ -308,26 +330,26 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 	CFont::GlyphData gd;
 	gd.u0 = static_cast<float>(m_AtlasX) / m_AtlasWidth;
 	gd.v0 = static_cast<float>(m_AtlasY) / m_AtlasHeight;
-	gd.u1 = static_cast<float>(m_AtlasX - offset.x + glyphW + m_StrokeWidth * 2) / m_AtlasWidth;
-	gd.v1 = static_cast<float>(m_AtlasY + offset.y + m_Height + m_StrokeWidth * 2) / m_AtlasHeight;
+	gd.u1 = static_cast<float>(m_AtlasX - offset.X + glyphW + m_StrokeWidth * 2) / m_AtlasWidth;
+	gd.v1 = static_cast<float>(m_AtlasY + offset.Y + m_Height + m_StrokeWidth * 2) / m_AtlasHeight;
 
-	gd.x0 = offset.x - m_StrokeWidth;
-	gd.y0 = - (m_Height + offset.y + m_StrokeWidth);
-	gd.x1 = glyphW + m_StrokeWidth;
-	gd.y1 = m_StrokeWidth;
+	gd.x0 = (offset.X - m_StrokeWidth) / m_Scale;
+	gd.y0 = (-(m_Height + offset.Y + m_StrokeWidth)) / m_Scale;
+	gd.x1 = (glyphW + m_StrokeWidth) / m_Scale;
+	gd.y1 = m_StrokeWidth / m_Scale;
 
-	gd.xadvance = glyphW;
+	gd.xadvance = glyphW / m_Scale;
 	gd.defined = 1;
 
 	m_Glyphs.set(codepoint, gd);
 
 	// Update positions for next glyph.
-	m_AtlasX += glyphW + m_StrokeWidth + m_AtlasPadding;
+	m_AtlasX += std::ceil(glyphW + m_StrokeWidth + m_AtlasPadding);
 
 	return m_Glyphs.get(codepoint);
 }
 
-std::optional<CFont::Offset> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, const int baselineInAtlas)
+std::optional<CVector2D> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, const float baselineInAtlas)
 {
 	FT_Glyph strokedGlyph;
 	if (FT_Error error{FT_Glyph_Copy(glyph, &strokedGlyph)})
@@ -354,17 +376,17 @@ std::optional<CFont::Offset> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& gl
 	FT_BitmapGlyph bitmapGlyph{reinterpret_cast<FT_BitmapGlyph>(strokedGlyph)};
 	FT_Bitmap& bitmapStroke{bitmapGlyph->bitmap};
 
-	CFont::Offset offset{0,0};
-	int targetStrokeY{m_AtlasY + m_StrokeWidth + baselineInAtlas - bitmapGlyph->top};
-	int targetStrokeX{m_AtlasX + m_StrokeWidth + bitmapGlyph->left};
+	CVector2D offset{0.0f, 0.0f};
+	int targetStrokeY{static_cast<int>(std::ceil(m_AtlasY + m_StrokeWidth + baselineInAtlas - bitmapGlyph->top))};
+	int targetStrokeX{static_cast<int>(std::ceil(m_AtlasX + m_StrokeWidth + bitmapGlyph->left))};
 	if (targetStrokeX < m_AtlasX)
 	{
-		offset.x = bitmapGlyph->left + m_StrokeWidth;
+		offset.X = bitmapGlyph->left + m_StrokeWidth;
 		targetStrokeX = m_AtlasX;
 	}
 	if (targetStrokeY < m_AtlasY)
 	{
-		offset.y = bitmapGlyph->top - baselineInAtlas - m_StrokeWidth;
+		offset.Y = bitmapGlyph->top - baselineInAtlas - m_StrokeWidth;
 		targetStrokeY = m_AtlasY;
 	}
 	BlendGlyphBitmapToTexture(bitmapStroke, targetStrokeX, targetStrokeY, 0, 0, 0);
@@ -372,7 +394,7 @@ std::optional<CFont::Offset> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& gl
 	return offset;
 }
 
-std::optional<CFont::Offset> CFont::GenerateGlyphBitmap(FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, CFont::Offset offset, const int baselineInAtlas)
+std::optional<CVector2D> CFont::GenerateGlyphBitmap(FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, CVector2D offset, const float baselineInAtlas)
 {
 	if (FT_Error error{FT_Glyph_To_Bitmap(&glyph, renderMode, nullptr, 0)})
 	{
@@ -382,18 +404,18 @@ std::optional<CFont::Offset> CFont::GenerateGlyphBitmap(FT_Glyph& glyph, u16 cod
 	FT_BitmapGlyph bitmapGlyph{reinterpret_cast<FT_BitmapGlyph>(glyph)};
 	FT_Bitmap& bitmap{bitmapGlyph->bitmap};
 
-	int targetY{m_AtlasY + offset.y + m_StrokeWidth + baselineInAtlas - bitmapGlyph->top};
-	int targetX{m_AtlasX - offset.x + m_StrokeWidth + bitmapGlyph->left};
-	CFont::Offset newOffset{0,0};
+	int targetY{static_cast<int>(std::ceil(m_AtlasY + offset.Y + m_StrokeWidth + baselineInAtlas - bitmapGlyph->top))};
+	int targetX{static_cast<int>(std::ceil(m_AtlasX - offset.X + m_StrokeWidth + bitmapGlyph->left))};
+	CVector2D newOffset{0.0f, 0.0f};
 	if (targetX < m_AtlasX)
 	{
-		newOffset.x = bitmapGlyph->left + m_StrokeWidth;
+		newOffset.X = bitmapGlyph->left + m_StrokeWidth;
 		targetX = m_AtlasX;
 	}
 
 	if (targetY < m_AtlasY)
 	{
-		newOffset.y = bitmapGlyph->top - baselineInAtlas - m_StrokeWidth;
+		newOffset.Y = bitmapGlyph->top - baselineInAtlas - m_StrokeWidth;
 		targetY = m_AtlasY;
 	}
 

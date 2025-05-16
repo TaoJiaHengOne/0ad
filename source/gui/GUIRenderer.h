@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ namespace GUIRenderer
 		DrawCalls& operator=(const DrawCalls&);
 	};
 
-	void UpdateDrawCallCache(const CGUI& pGUI, DrawCalls& Calls, const CStr8& SpriteName, const CRect& Size, std::map<CStr8, std::unique_ptr<const CGUISprite>>& Sprites);
+	void UpdateDrawCallCache(const CGUI& pGUI, DrawCalls& Calls, const CStr8& SpriteName, const CRect& Size, const bool RoundCoordinates, std::map<CStr8, std::unique_ptr<const CGUISprite>>& Sprites);
 
 	void Draw(DrawCalls& Calls, CCanvas2D& canvas);
 }

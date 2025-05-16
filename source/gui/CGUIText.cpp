@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ void SGenerateTextImage::SetupSpriteCall(
 		spriteCall.m_Area.right = width - bufferZone;
 	}
 
-	spriteCall.m_Sprite = textureName;
+	spriteCall.m_Sprite = CGUISpriteInstance{textureName, false};
 
 	m_YFrom = spriteCall.m_Area.top - bufferZone;
 	m_YTo = spriteCall.m_Area.bottom + bufferZone;
@@ -469,7 +469,7 @@ void CGUIText::Draw(CGUI& pGUI, CCanvas2D& canvas, const CGUIColor& DefaultColor
 
 		textRenderer.SetCurrentColor(tc.m_UseCustomColor ? tc.m_Color : DefaultColor);
 		textRenderer.SetCurrentFont(tc.m_Font);
-		textRenderer.Put(floorf(pos.X + tc.m_Pos.X), floorf(pos.Y + tc.m_Pos.Y), &tc.m_String);
+		textRenderer.Put(pos.X + tc.m_Pos.X, pos.Y + tc.m_Pos.Y, &tc.m_String);
 	}
 
 	canvas.DrawText(textRenderer);

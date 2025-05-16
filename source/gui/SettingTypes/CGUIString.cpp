@@ -157,7 +157,7 @@ void CGUIString::GenerateTextCall(const CGUI& pGUI, SFeedback& Feedback, CStrInt
 						TextCall.m_Tooltip = tagAttrib.value;
 				}
 
-				SpriteCall.m_Sprite = icon.m_SpriteName;
+				SpriteCall.m_Sprite = CGUISpriteInstance{icon.m_SpriteName,false};
 
 				// Add sprite call
 				Feedback.m_SpriteCalls.push_back(std::move(SpriteCall));
@@ -209,17 +209,17 @@ void CGUIString::GenerateTextCall(const CGUI& pGUI, SFeedback& Feedback, CStrInt
 
 			// Calculate the size of the font.
 			CSize2D size;
-			int cx, cy;
+			float cx, cy;
 			CFontMetrics font (TextCall.m_Font);
 			font.CalculateStringSize(TextCall.m_String.c_str(), cx, cy);
 
-			size.Width = static_cast<float>(cx);
+			size.Width = cx;
 			// For anything other than the first line, the line spacing
 			// needs to be considered rather than just the height of the text.
 			if (FirstLine)
-				size.Height = static_cast<float>(font.GetHeight());
+				size.Height = font.GetHeight();
 			else
-				size.Height = static_cast<float>(font.GetLineSpacing());
+				size.Height = font.GetLineSpacing();
 
 			// Append width, and make maximum height the height.
 			Feedback.m_Size.Width += size.Width;

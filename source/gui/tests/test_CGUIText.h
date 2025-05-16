@@ -97,8 +97,8 @@ public:
 		const CStrW font{L"mono-10"};
 		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
 
-		const float lineHeight{static_cast<float>(fontMetrics.GetHeight())};
-		const float lineSpacing{static_cast<float>(fontMetrics.GetLineSpacing())};
+		const float lineHeight{fontMetrics.GetHeight()};
+		const float lineSpacing{fontMetrics.GetLineSpacing()};
 
 		CGUIString string;
 		CGUIText text;
@@ -208,10 +208,12 @@ public:
 		const CStrW font{L"mono-10"};
 		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
 
-		int firstWordWidth = 0, firstWordHeight = 0;
+		float firstWordWidth{0};
+		float firstWordHeight{0};
 		fontMetrics.CalculateStringSize(firstWord.c_str(), firstWordWidth, firstWordHeight);
 		TS_ASSERT(firstWordWidth > 0);
-		int secondWordWidth = 0, secondWordHeight = 0;
+		float secondWordWidth{0};
+		float secondWordHeight{0};
 		fontMetrics.CalculateStringSize(secondWord.c_str(), secondWordWidth, secondWordHeight);
 		TS_ASSERT(secondWordWidth > 0);
 		TS_ASSERT(firstWordWidth < secondWordWidth);
@@ -283,8 +285,8 @@ public:
 
 		const CStrW font{L"mono-10"};
 		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
-		const float lineHeight{static_cast<float>(fontMetrics.GetHeight())};
-		const float lineSpacing{static_cast<float>(fontMetrics.GetLineSpacing())};
+		const float lineHeight{fontMetrics.GetHeight()};
+		const float lineSpacing{fontMetrics.GetLineSpacing()};
 
 		float renderedWidth = 0.f;
 		const float width = 200.f;
@@ -352,8 +354,8 @@ public:
 
 		const CStrW font{L"mono-10"};
 		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
-		const float lineHeight{static_cast<float>(fontMetrics.GetHeight())};
-		const float lineSpacing{static_cast<float>(fontMetrics.GetLineSpacing())};
+		const float lineHeight{fontMetrics.GetHeight()};
+		const float lineSpacing{fontMetrics.GetLineSpacing()};
 
 		CGUIString string;
 		CGUIText text;

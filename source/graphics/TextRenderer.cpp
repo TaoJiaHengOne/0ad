@@ -116,9 +116,9 @@ void CTextRenderer::PutAdvance(const wchar_t* buf)
 {
 	Put(0.0f, 0.0f, buf);
 
-	int w, h;
+	float w, h;
 	m_Font->CalculateStringSize(buf, w, h);
-	Translate((float)w, 0.0f);
+	Translate(w, 0.0f);
 }
 
 void CTextRenderer::Put(float x, float y, const wchar_t* buf)
@@ -279,8 +279,8 @@ void CTextRenderer::Render(
 		for (std::list<SBatchRun>::iterator runit = batch.runs.begin(); runit != batch.runs.end(); ++runit)
 		{
 			SBatchRun& run = *runit;
-			i16 x = run.x;
-			i16 y = run.y;
+			float x{run.x};
+			float y{run.y};
 			for (size_t i = 0; i < run.text->size(); ++i)
 			{
 				const CFont::GlyphData* g = batch.font->GetGlyph((*run.text)[i]);

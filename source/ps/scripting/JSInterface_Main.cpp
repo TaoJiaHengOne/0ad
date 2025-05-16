@@ -87,8 +87,8 @@ int GetFps()
 
 CSize2D GetTextSize(const std::string& fontName, const std::wstring& text)
 {
-	int width = 0;
-	int height = 0;
+	float width = 0;
+	float height = 0;
 	CStrIntern _fontName(fontName);
 	CFontMetrics fontMetrics(_fontName);
 	fontMetrics.CalculateStringSize(text.c_str(), width, height);

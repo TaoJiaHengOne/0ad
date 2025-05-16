@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ void CGUISpriteInstance::Draw(CGUI& pGUI, CCanvas2D& canvas, const CRect& Size, 
 {
 	if (m_CachedSize != Size)
 	{
-		GUIRenderer::UpdateDrawCallCache(pGUI, m_DrawCallCache, m_SpriteName, Size, Sprites);
+		GUIRenderer::UpdateDrawCallCache(pGUI, m_DrawCallCache, m_SpriteName, Size, m_RoundCoordinates, Sprites);
 		m_CachedSize = Size;
 	}
 	GUIRenderer::Draw(m_DrawCallCache, canvas);
@@ -45,13 +45,25 @@ CGUISpriteInstance::CGUISpriteInstance()
 }
 
 CGUISpriteInstance::CGUISpriteInstance(const CStr& SpriteName)
-	: m_SpriteName(SpriteName)
+	: m_SpriteName(SpriteName), m_RoundCoordinates(true)
+{
+}
+
+CGUISpriteInstance::CGUISpriteInstance(const CStr& SpriteName, const bool RoundCoordinates)
+	: m_SpriteName(SpriteName), m_RoundCoordinates(RoundCoordinates)
 {
 }
 
 void CGUISpriteInstance::SetName(const CStr& SpriteName)
 {
 	m_SpriteName = SpriteName;
+	m_CachedSize = CRect();
+	m_DrawCallCache.clear();
+}
+
+void CGUISpriteInstance::SetRoundCoordinates(const bool RoundCoordinates)
+{
+	m_RoundCoordinates = RoundCoordinates;
 	m_CachedSize = CRect();
 	m_DrawCallCache.clear();
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -138,6 +138,7 @@ public:
 
 	CGUISpriteInstance();
 	CGUISpriteInstance(const CStr& SpriteName);
+	CGUISpriteInstance(const CStr& SpriteName, const bool RoundCoordinates);
 
 	void Draw(CGUI& pGUI, CCanvas2D& canvas, const CRect& Size, std::map<CStr, std::unique_ptr<const CGUISprite>>& Sprites) const;
 
@@ -157,8 +158,16 @@ public:
 	 */
 	void SetName(const CStr& SpriteName);
 
+	/**
+	 * Sets the coordinates to be rounded to integer pixels.
+	 * This is useful for pixel art, icons in text, to avoid blurry filtering.
+	 * Use as rarely as possible, because it clears the draw cache.
+	 */
+	void SetRoundCoordinates(const bool RoundCoordinates);
 private:
 	CStr m_SpriteName;
+
+	bool m_RoundCoordinates;
 
 	// Stored drawing calls, for more efficient rendering
 	mutable GUIRenderer::DrawCalls m_DrawCallCache;

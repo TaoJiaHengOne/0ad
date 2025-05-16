@@ -103,7 +103,8 @@ CFontManager::CFontManager()
 std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 {
 	const std::string locale{g_L10n.GetCurrentLocale() != icu::Locale::getUS() ? g_L10n.GetCurrentLocaleString() : ""};
-	CStrIntern localeFontName{locale + fontName.string()};
+	const float guiScale{g_ConfigDB.Get("gui.scale", 1.0f)};
+	CStrIntern localeFontName{fmt::format("{}{}-{}", locale ,fontName.string(), guiScale)};
 
 	FontsMap::iterator it{m_Fonts.find(localeFontName)};
 	if (it != m_Fonts.end())
@@ -185,7 +186,7 @@ std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 	}
 
 	// TODO: For now set strokeWith = 1, later we can expose it to the GUI.
-	if (!font.get()->SetFontFromPath(realPath.string8(), localeFontName.string(), fontSpec.size, fontSpec.stroke ? 1 : 0))
+	if (!font->SetFontFromPath(realPath.string8(), localeFontName.string(), fontSpec.size, fontSpec.stroke ? 1.0f : 0.0f, guiScale))
 	{
 		return nullptr;
 	}

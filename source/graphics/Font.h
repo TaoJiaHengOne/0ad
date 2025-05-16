@@ -1,4 +1,4 @@
-/* Copyright (C) 2025 Wildfire Games.
+	/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -20,15 +20,13 @@
 
 #include "graphics/Texture.h"
 #include "maths/Rect.h"
-#include "ps/CLogger.h"
 #include "renderer/Renderer.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_STROKER_H
-#include FT_OUTLINE_H
 #include FT_GLYPH_H
-#include FT_BITMAP_H
+#include <memory>
 #include <optional>
 
 /**
@@ -44,8 +42,8 @@ public:
 	struct GlyphData
 	{
 		float u0, v0, u1, v1;
-		i16 x0, y0, x1, y1;
-		i16 xadvance;
+		float x0, y0, x1, y1;
+		float xadvance;
 		u8 defined{0};
 	};
 
@@ -77,11 +75,11 @@ public:
 	};
 
 	bool HasRGB() const { return m_HasRGB; }
-	int GetLineSpacing() const { return m_LineSpacing; }
-	int GetHeight() const { return m_Height; }
-	int GetCharacterWidth(wchar_t c);
-	int GetStrokeWidth() const { return m_StrokeWidth; }
-	void CalculateStringSize(const wchar_t* string, int& w, int& h);
+	float GetLineSpacing() const;
+	float GetHeight() const;
+	float GetCharacterWidth(wchar_t c);
+	float GetStrokeWidth() const { return m_StrokeWidth; }
+	void CalculateStringSize(const wchar_t* string, float& w, float& h);
 	void GetGlyphBounds(float& x0, float& y0, float& x1, float& y1) const
 	{
 		x0 = m_Bounds.left;
@@ -104,22 +102,16 @@ private:
 	using UniqueFTFace = std::unique_ptr<std::remove_pointer_t<FT_Face>, decltype(&ftFaceDeleter)>;
 	using UniqueFTStroker = std::unique_ptr<std::remove_pointer_t<FT_Stroker>, decltype(&ftStrokerDeleter)>;
 
-	struct Offset
-	{
-		int x{0};
-		int y{0};
-	};
-
 	friend class CFontManager;
 
-	bool SetFontFromPath(const std::string& fontPath, const std::string& fontName, int size, int strokeWidth);
+	bool SetFontFromPath(const std::string& fontPath, const std::string& fontName, float size, float strokeWidth, float scale);
 
 	void BlendGlyphBitmapToTexture(const FT_Bitmap& bitmap, int targetX, int targetY, u8 r, u8 g, u8 b);
 	void BlendGlyphBitmapToTextureRGBA(const FT_Bitmap& bitmap, int targetX, int targetY, u8 r, u8 g, u8 b);
 	void BlendGlyphBitmapToTextureR8(const FT_Bitmap& bitmap, int targetX, int targetY);
 
-	std::optional<Offset> GenerateStrokeGlyphBitmap(const FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, const int baselineInAtlas);
-	std::optional<Offset> GenerateGlyphBitmap(FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, Offset offset, const int baselineInAtlas);
+	std::optional<CVector2D> GenerateStrokeGlyphBitmap(const FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, const float baselineInAtlas);
+	std::optional<CVector2D> GenerateGlyphBitmap(FT_Glyph& glyph, u16 codepoint, FT_Render_Mode renderMode, CVector2D offset, const float baselineInAtlas);
 
 	const GlyphData* ExtractAndGenerateGlyph(u16 codepoint);
 	bool ConstructTextureAtlas();
@@ -132,10 +124,10 @@ private:
 
 	GlyphMap m_Glyphs;
 
-	int m_LineSpacing;
+	float m_LineSpacing;
 
 	// Height of a capital letter, roughly.
-	int m_Height;
+	float m_Height;
 
 	// Bounding box of all glyphs
 	CRect m_Bounds;
@@ -151,14 +143,15 @@ private:
 	int m_AtlasPadding;
 	bool m_IsDirty{false};
 	bool m_IsLoading{false};
-	int m_StrokeWidth{0};
+	float m_StrokeWidth{0.0f};
+	float m_Scale{1.0f};
 
 	std::unique_ptr<u8[]> m_TexData;
 	Renderer::Backend::Format m_TextureFormat{Renderer::Backend::Format::R8G8B8A8_UNORM};
 	int m_TextureFormatStride{4};
 	int m_AtlasSize{0};
 
-	int m_FontSize{0};
+	float m_FontSize{0.0f};
 	std::string m_FontName;
 	std::shared_ptr<std::array<float, 256>> m_GammaCorrectionLUT{nullptr};
 
@@ -167,18 +160,11 @@ private:
 	UniqueFTStroker m_Stroker{nullptr, &ftStrokerDeleter};
 
 	/**
-	* FreeType represents most of its size and position values in 26.6 fixed-point format — that is,
-	* 26 bits for the integer part and 6 bits for the fractional part.
-	* FreeType's metrics such as: ascender, descender, height, advance, etc. are measured in 1/64th of a pixel.
-	*/
-	static constexpr int SUBPIXEL_SHIFT{6};
-
-	/**
 	* Some fonts are not rendered well at small sizes, so we set a minimum size.
 	* Because we are using a bitmap blending mode, when a font is using small size,
 	* We need to use a different render mode, one with less antialiasing.
 	*/
-	static constexpr int MINIMAL_FONT_SIZE_ANTIALIASING{12};
+	static constexpr float MINIMAL_FONT_SIZE_ANTIALIASING{12.0f};
 };
 
 #endif // INCLUDED_FONT

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -113,7 +113,7 @@ void IGUITextOwner::CalculateTextPosition(CRect& ObjSize, CVector2D& TextPos, CG
 		break;
 	case EVAlign::CENTER:
 		// Round to integer pixel values, else the fonts look awful
-		TextPos.Y = floorf(ObjSize.CenterPoint().Y - Text.GetSize().Height / 2.f);
+		TextPos.Y = ObjSize.CenterPoint().Y - Text.GetSize().Height / 2.f;
 		break;
 	case EVAlign::BOTTOM:
 		TextPos.Y = ObjSize.bottom - Text.GetSize().Height;

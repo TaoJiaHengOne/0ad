@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -56,7 +56,7 @@ DrawCalls& DrawCalls::operator=(const DrawCalls&)
 }
 
 
-void GUIRenderer::UpdateDrawCallCache(const CGUI& pGUI, DrawCalls& Calls, const CStr& SpriteName, const CRect& Size, std::map<CStr, std::unique_ptr<const CGUISprite>>& Sprites)
+void GUIRenderer::UpdateDrawCallCache(const CGUI& pGUI, DrawCalls& Calls, const CStr& SpriteName, const CRect& Size, const bool RoundCoordinates, std::map<CStr, std::unique_ptr<const CGUISprite>>& Sprites)
 {
 	// This is called only when something has changed (like the size of the
 	// sprite), so it doesn't need to be particularly efficient.
@@ -166,7 +166,7 @@ void GUIRenderer::UpdateDrawCallCache(const CGUI& pGUI, DrawCalls& Calls, const 
 			LOGERROR("Trying to use a sprite that doesn't exist (\"%s\").", SpriteName.c_str());
 			return;
 		}
-		
+
 		it = Sprites.emplace(SpriteName, std::move(sprite)).first;
 	}
 
@@ -188,7 +188,7 @@ void GUIRenderer::UpdateDrawCallCache(const CGUI& pGUI, DrawCalls& Calls, const 
 		}
 
 		Call.m_Vertices = ObjectSize;
-		if ((*cit)->m_RoundCoordinates)
+		if ((*cit)->m_RoundCoordinates && RoundCoordinates)
 		{
 			// Round the vertex coordinates to integers, to avoid ugly filtering artifacts
 			Call.m_Vertices.left = (int)(Call.m_Vertices.left + 0.5f);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ CFontMetrics::CFontMetrics(CStrIntern font)
 	m_Font = g_Renderer.GetFontManager().LoadFont(font);
 }
 
-int CFontMetrics::GetLineSpacing() const
+float CFontMetrics::GetLineSpacing() const
 {
 	// Return some arbitrary default if the font failed to load, so that the
 	// user of CFontMetrics doesn't have to care about failures
@@ -38,21 +38,21 @@ int CFontMetrics::GetLineSpacing() const
 	return m_Font->GetLineSpacing();
 }
 
-int CFontMetrics::GetHeight() const
+float CFontMetrics::GetHeight() const
 {
 	if (!m_Font)
 		return 6;
 	return m_Font->GetHeight();
 }
 
-int CFontMetrics::GetCharacterWidth(wchar_t c) const
+float CFontMetrics::GetCharacterWidth(wchar_t c) const
 {
 	if (!m_Font)
 		return 6;
 	return m_Font->GetCharacterWidth(c);
 }
 
-void CFontMetrics::CalculateStringSize(const wchar_t* string, int& w, int& h) const
+void CFontMetrics::CalculateStringSize(const wchar_t* string, float& w, float& h) const
 {
 	if (!m_Font)
 		w = h = 0;
