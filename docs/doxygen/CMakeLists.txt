@@ -34,7 +34,6 @@ if(DOXYGEN_FOUND)
     endif()
     set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/pyrogenesis.png)
     set(DOXYGEN_TAB_SIZE 4)
-    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE ${CMAKE_CURRENT_SOURCE_DIR}/Main-Page.md)
     set(DOXYGEN_EXCLUDE_PATTERNS */.svn* */tests/test_*)
     set(DOXYGEN_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../source)
     set(DOXYGEN_EXAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../source)
@@ -57,7 +56,7 @@ if(DOXYGEN_FOUND)
 
     doxygen_add_docs(${CMAKE_PROJECT_NAME}
              ${CMAKE_CURRENT_SOURCE_DIR}/../../source
-             ${CMAKE_CURRENT_SOURCE_DIR}/Main-Page.md
+             ${CMAKE_CURRENT_SOURCE_DIR}/mainpage.dox
              ${CMAKE_CURRENT_SOURCE_DIR}/../../LICENSE.md
             ALL)
 else()
