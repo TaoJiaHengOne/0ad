@@ -103,6 +103,7 @@ private:
 
 	VfsPath m_HistoryFile;
 	int m_MaxHistoryLines;
+	bool m_HistoryIgnoreDuplicates;
 	std::string m_consoleFont;
 
 	bool m_Visible;	// console is to be drawn

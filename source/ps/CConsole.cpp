@@ -85,6 +85,7 @@ void CConsole::Init()
 {
 	// Initialise console history file
 	m_MaxHistoryLines = g_ConfigDB.Get("console.history.size", 200);
+	m_HistoryIgnoreDuplicates = g_ConfigDB.Get("console.history.ignore_duplicates", true);
 	m_consoleFont = g_ConfigDB.Get("console.font", std::string{"mono-10"});
 
 	m_HistoryFile = L"config/console.txt";
@@ -577,9 +578,12 @@ void CConsole::ProcessBuffer(const wchar_t* szLine)
 
 	ENSURE(wcslen(szLine) < CONSOLE_BUFFER_SIZE);
 
-	m_BufHistory.push_front(szLine);
-	SaveHistory(); // Do this each line for the moment; if a script causes
-	               // a crash it's a useful record.
+	if (!m_HistoryIgnoreDuplicates || m_BufHistory.front() != szLine)
+	{
+		m_BufHistory.push_front(szLine);
+		SaveHistory(); // Do this each line for the moment; if a script causes
+		               // a crash it's a useful record.
+	}
 
 	// Process it as JavaScript
 	std::shared_ptr<ScriptInterface> pScriptInterface = g_GUI->GetActiveGUI()->GetScriptInterface();
