@@ -68,7 +68,7 @@ function showReplayData()
 		}
 	});
 
-	$("#replayGraph").bind("plothover", function (event, pos, item) {
+	$("#replayGraph").bind("plothover", function(event, pos, item) {
 		$("#tooltip").remove();
 		if (!item)
 			return;
@@ -104,7 +104,7 @@ function getReplayGraphData(displayedColumn)
 		if (filteredColumns.indexOf(label) != -1 ||
 		    (displayedColumn == "bytes") != graphFormat.bytes.isColumn(label) ||
 		    (displayedColumn == "garbageCollection") != (graphFormat.garbageCollection.isColumn(label)))
-			continue
+			continue;
 
 		var data = [];
 		for (var j = 0; j < replayData[i].data.length; ++j)
@@ -138,8 +138,8 @@ function showTooltip(x, y, displayedColumn, label, turn, value)
 
 function loadReplayGraphData()
 {
-replayData =
-<!-- include data json -->
+	replayData =
+		"<!-- include data json -->";
 }
 
 $(loadReplayGraphData);
