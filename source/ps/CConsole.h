@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -103,6 +103,7 @@ private:
 
 	VfsPath m_HistoryFile;
 	int m_MaxHistoryLines;
+	std::string m_consoleFont;
 
 	bool m_Visible;	// console is to be drawn
 	bool m_Toggle;		// show/hide animation is currently active

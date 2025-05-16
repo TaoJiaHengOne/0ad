@@ -52,8 +52,6 @@ namespace
 // For text being typed into the console.
 constexpr int CONSOLE_BUFFER_SIZE = 1024;
 
-const char* CONSOLE_FONT = "mono-10";
-
 } // anonymous namespace
 
 CConsole* g_Console = 0;
@@ -87,6 +85,7 @@ void CConsole::Init()
 {
 	// Initialise console history file
 	m_MaxHistoryLines = g_ConfigDB.Get("console.history.size", 200);
+	m_consoleFont = g_ConfigDB.Get("console.font", std::string{"mono-10"});
 
 	m_HistoryFile = L"config/console.txt";
 	LoadHistory();
@@ -94,7 +93,7 @@ void CConsole::Init()
 	UpdateScreenSize(g_xres, g_yres);
 
 	// Calculate and store the line spacing
-	const CFontMetrics font{CStrIntern(CONSOLE_FONT)};
+	const CFontMetrics font{CStrIntern(m_consoleFont)};
 	m_FontHeight = font.GetLineSpacing();
 	m_FontWidth = font.GetCharacterWidth(L'C');
 	m_CharsPerPage = static_cast<size_t>(g_xres / m_FontWidth);
@@ -200,7 +199,7 @@ void CConsole::Render(CCanvas2D& canvas)
 	DrawWindow(canvas);
 
 	CTextRenderer textRenderer;
-	textRenderer.SetCurrentFont(CStrIntern(CONSOLE_FONT));
+	textRenderer.SetCurrentFont(CStrIntern(m_consoleFont));
 	// Animation: slide in from top of screen.
 	const float deltaY = (1.0f - m_VisibleFrac) * m_Height;
 	textRenderer.Translate(m_X, m_Y - deltaY);
