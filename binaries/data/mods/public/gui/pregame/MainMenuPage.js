@@ -1,40 +1,3 @@
-class MusicHandler
-{
-	constructor()
-	{
-		initMusic();
-		global.music.setState(global.music.states.MENU);
-	}
-}
-
-class ProjectInformationHandler
-{
-	constructor(projectInformation)
-	{
-		for (const objectName in projectInformation)
-			for (const propertyName in projectInformation[objectName])
-				Engine.GetGUIObjectByName(objectName)[propertyName] = projectInformation[objectName][propertyName];
-	}
-}
-
-class CommunityButtonHandler
-{
-	constructor(communityButtons)
-	{
-		const buttons = Engine.GetGUIObjectByName("communityButtons").children;
-
-		communityButtons.forEach((buttonInfo, i) => {
-			const button = buttons[i];
-			button.hidden = false;
-			for (const propertyName in buttonInfo)
-				button[propertyName] = buttonInfo[propertyName];
-		});
-
-		if (buttons.length < communityButtons.length)
-			error("GUI page has space for " + buttons.length + " community buttons, but " + menuItems.length + " items are provided!");
-	}
-}
-
 /**
  * This is the handler that coordinates all other handlers on this GUI page.
  */
@@ -47,9 +10,37 @@ class MainMenuPage
 		this.menuHandler = new MainMenuItemHandler(closePageCallback, mainMenuItems);
 		this.splashScreenHandler = new SplashScreenHandler(data, hotloadData && hotloadData.splashScreenHandler);
 
-		new MusicHandler();
-		new ProjectInformationHandler(projectInformation);
-		new CommunityButtonHandler(communityButtons);
+		this.initMusic();
+		this.initProjectInformation(projectInformation);
+		this.initCommunityButton(communityButtons);
+	}
+
+	initMusic()
+	{
+		globalThis.initMusic();
+		globalThis.music.setState(global.music.states.MENU);
+	}
+
+	initProjectInformation(projectInformation)
+	{
+		for (const objectName in projectInformation)
+			for (const propertyName in projectInformation[objectName])
+				Engine.GetGUIObjectByName(objectName)[propertyName] = projectInformation[objectName][propertyName];
+	}
+
+	initCommunityButton(communityButtons)
+	{
+		const buttons = Engine.GetGUIObjectByName("communityButtons").children;
+
+		communityButtons.forEach((buttonInfo, i) => {
+			const button = buttons[i];
+			button.hidden = false;
+			for (const propertyName in buttonInfo)
+				button[propertyName] = buttonInfo[propertyName];
+		});
+
+		if (buttons.length < communityButtons.length)
+			error("GUI page has space for " + buttons.length + " community buttons, but " + menuItems.length + " items are provided!");
 	}
 
 	getHotloadData()

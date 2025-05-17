@@ -182,6 +182,10 @@ class HotkeysPage
 function init()
 {
 	return new Promise(closePageCallback => {
+		// FIXME: There are proposals to remove init and allowing to specify
+		// controller classes in the gui xml, therefore leave it as a class and
+		// suppress the warning.
+		/* eslint-disable-next-line no-new */
 		new HotkeysPage(new HotkeyMetadata(), closePageCallback);
 	});
 }
