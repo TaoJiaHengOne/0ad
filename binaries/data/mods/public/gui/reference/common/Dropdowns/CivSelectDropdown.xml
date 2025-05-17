@@ -6,7 +6,8 @@
 		font="sans-bold-16"
 		textcolor="white"
 		text_align="right"
-		size="0 10 100%-188 48"
+		text_valign="center"
+		size="0 8 100%-188 34"
 	/>
 	<object name="civSelection" type="dropdown" style="ModernDropDown" size="100%-180 8 100% 34" dropdown_size="424"/>
 </object>

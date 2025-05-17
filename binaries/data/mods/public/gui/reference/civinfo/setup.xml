@@ -8,7 +8,7 @@
 		font="sans-12"
 		textcolor="white"
 		maxwidth="440"
-		offset="16 24"
+		offset="16 32"
 		sprite="bkTooltip"
 	/>
 </setup>
