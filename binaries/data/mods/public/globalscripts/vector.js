@@ -1,13 +1,13 @@
-/////////////////////////////////////////////////////////////////////
-//	Vector2D
-//
-//	Class for representing and manipulating 2D vectors
-//
-/////////////////////////////////////////////////////////////////////
-
 // TODO: Type errors if v not instanceof Vector classes
 // TODO: Possibly implement in C++
 
+/**
+ * @class Vector2D
+ * @brief Class for representing and manipulating 2D vectors
+ *
+ * @param {number} x First coordinate value, defaults to 0.
+ * @param {number} y Second coordinate value, defaults to 0.
+ */
 function Vector2D(x = 0, y = 0)
 {
 	this.set(x, y);
@@ -252,13 +252,14 @@ Vector2D.dot = function(v1, v2)
 	return v1.x * v2.x + v1.y * v2.y;
 };
 
-/////////////////////////////////////////////////////////////////////
-//	Vector3D
-//
-//	Class for representing and manipulating 3D vectors
-//
-/////////////////////////////////////////////////////////////////////
-
+/**
+ * @class Vector3D
+ * @brief Class for representing and manipulating 3D vectors
+ *
+ * @param {number} x First coordinate value, defaults to 0.
+ * @param {number} y Second coordinate value, defaults to 0.
+ * @param {number} z Third coordinate value, defaults to 0.
+ */
 function Vector3D(x = 0, y = 0, z = 0)
 {
 	this.set(x, y, z);

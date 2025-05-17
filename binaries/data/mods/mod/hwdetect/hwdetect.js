@@ -344,11 +344,11 @@ global.RunHardwareDetection = function(settings)
 	if (settings.renderer_backend.name != 'gl' && settings.renderer_backend.name != 'glarb')
 		return;
 
-	//print(JSON.stringify(settings, null, 1)+"\n");
+	// print(JSON.stringify(settings, null, 1)+"\n");
 
 	var output = RunDetection(settings);
 
-	//print(JSON.stringify(output, null, 1)+"\n");
+	// print(JSON.stringify(output, null, 1)+"\n");
 
 	for (var i = 0; i < output.warnings.length; ++i)
 		warn(output.warnings[i]);

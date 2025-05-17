@@ -371,7 +371,6 @@ Trigger.prototype.Setup = function()
 {
 	const start = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer).GetTime();
 
-	// /*
 	let gx = 100;
 	let gy = 100;
 	for (const key in experiments)
@@ -384,8 +383,7 @@ Trigger.prototype.Setup = function()
 			gy += 150;
 		}
 	}
-	/**/
-	//perf_experiments.LotsaLocalCollisions.spawn();
+	// perf_experiments.LotsaLocalCollisions.spawn();
 	/*
 	let time = 0;
 	for (let key in perf_experiments)

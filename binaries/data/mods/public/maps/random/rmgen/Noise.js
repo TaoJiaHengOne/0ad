@@ -14,13 +14,13 @@ function modPos(num, m)
 	return p;
 }
 
-/////////////////////////////////////////////////////////////////////
-//	Noise2D
-//
-//	Class representing 2D noise with a given base frequency
-//
-/////////////////////////////////////////////////////////////////////
-
+/**
+ * @class Noise2D
+ * @brief Class representing 2D noise with a given base frequency
+ *
+ * @param {number} freq - The base frequency (grid resolution) of the noise.
+ *                        Determines the number of gradient vectors along each axis.
+ */
 function Noise2D(freq)
 {
 	freq = Math.floor(freq);
@@ -64,13 +64,14 @@ Noise2D.prototype.get = function(x, y)
 	return (a + ey*(b-a)) * 0.5 + 0.5;
 };
 
-/////////////////////////////////////////////////////////////////////
-//	Noise3D
-//
-//	Class representing 3D noise with given base frequencies
-//
-/////////////////////////////////////////////////////////////////////
-
+/**
+ * @class Noise3D
+ * @brief Class representing 3D noise with given base frequencies
+ *
+ * @param {number} freq - The base frequency (grid resolution) of the noise.
+ *     Determines the number of gradient vectors along the first to axis.
+ * @param {number} vfreq - The base frequency for the third dimension.
+ */
 function Noise3D(freq, vfreq)
 {
 	freq = Math.floor(freq);

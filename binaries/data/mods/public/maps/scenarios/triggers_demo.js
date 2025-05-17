@@ -1,8 +1,8 @@
 warn("loading the triggers file");
 
-///////////////////////
-// Trigger listeners //
-///////////////////////
+//
+// Trigger listeners
+//
 
 // every function just logs when it gets fired, and shows the data
 Trigger.prototype.StructureBuiltAction = function(data)

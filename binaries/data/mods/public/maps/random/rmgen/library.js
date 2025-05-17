@@ -270,7 +270,7 @@ function createObjectGroup(group, player, constraints)
 /**
  * Create an avoid constraint for the given classes by the given distances
  */
-function avoidClasses(/*class1, dist1, class2, dist2, etc*/)
+function avoidClasses(/* class1, dist1, class2, dist2, etc */)
 {
 	const ar = [];
 	for (let i = 0; i < arguments.length/2; ++i)
@@ -286,7 +286,7 @@ function avoidClasses(/*class1, dist1, class2, dist2, etc*/)
 /**
  * Create a stay constraint for the given classes by the given distances
  */
-function stayClasses(/*class1, dist1, class2, dist2, etc*/)
+function stayClasses(/* class1, dist1, class2, dist2, etc */)
 {
 	const ar = [];
 	for (let i = 0; i < arguments.length/2; ++i)
@@ -302,7 +302,7 @@ function stayClasses(/*class1, dist1, class2, dist2, etc*/)
 /**
  * Create a border constraint for the given classes by the given distances
  */
-function borderClasses(/*class1, idist1, odist1, class2, idist2, odist2, etc*/)
+function borderClasses(/* class1, idist1, odist1, class2, idist2, odist2, etc */)
 {
 	const ar = [];
 	for (let i = 0; i < arguments.length/3; ++i)

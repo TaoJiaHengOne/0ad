@@ -510,8 +510,9 @@ function getPlayerIDs()
 	return Array.from(Array(getNumPlayers()), (_, index) => index + 1);
 }
 
-/*** Sorts an array of player IDs by team index. Players without teams come first.
- * Randomize order for players of the same team.
+/**
+ * Sorts an array of player IDs by team index.
+ * Players without teams come first. Randomize order for players of the same team.
  */
 function sortPlayers(playerIDs)
 {

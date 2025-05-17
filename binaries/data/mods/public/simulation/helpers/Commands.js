@@ -1341,7 +1341,7 @@ function TryConstructWall(player, cmpPlayer, controlAllUnits, cmd)
 		}
 
 		lastTowerControlGroup = cmpSnappedStartObstruction.GetControlGroup();
-		//warn("setting lastTowerControlGroup to control group of start snapped entity " + cmd.startSnappedEntity + ": " + lastTowerControlGroup);
+		// warn("setting lastTowerControlGroup to control group of start snapped entity " + cmd.startSnappedEntity + ": " + lastTowerControlGroup);
 	}
 
 	var i = 0;
@@ -1405,7 +1405,7 @@ function TryConstructWall(player, cmpPlayer, controlAllUnits, cmd)
 
 				if (i > 0)
 				{
-					//warn("   updating previous wall piece's secondary control group to " + newTowerControlGroup);
+					// warn("   updating previous wall piece's secondary control group to " + newTowerControlGroup);
 					var cmpPreviousObstruction = Engine.QueryInterface(pieces[i-1].ent, IID_Obstruction);
 					// TODO: ensure that cmpPreviousObstruction exists
 					// TODO: ensure that the previous obstruction does not yet have a secondary control group set

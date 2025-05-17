@@ -43,9 +43,9 @@ ClumpPlacer.prototype.place = function(constraint)
 	if (ctrlPts > radius * 2 * Math.PI)
 		ctrlPts = Math.floor(radius * 2 * Math.PI) + 1;
 
-	const noise = new Float32Array(intPerim);			//float32
-	const ctrlCoords = new Float32Array(ctrlPts+1);	//float32
-	const ctrlVals = new Float32Array(ctrlPts+1);		//float32
+	const noise = new Float32Array(intPerim);		// float32
+	const ctrlCoords = new Float32Array(ctrlPts+1);	// float32
+	const ctrlVals = new Float32Array(ctrlPts+1);	// float32
 
 	// Generate some interpolated noise
 	for (let i=0; i < ctrlPts; i++)

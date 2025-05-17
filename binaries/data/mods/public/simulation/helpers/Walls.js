@@ -191,7 +191,7 @@ function GetWallSegmentsRec(d, candidateSegments, minOverlap, maxOverlap, t, dis
 		if (r < rLowerBound)
 		{
 			// we've allocated too much wall length, pop the last segment and try the next
-			//warn("Distance so far exceeds target, trying next level");
+			// warn("Distance so far exceeds target, trying next level");
 			segments.pop();
 			continue;
 		}
