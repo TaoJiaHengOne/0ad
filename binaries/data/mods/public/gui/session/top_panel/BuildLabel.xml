@@ -2,7 +2,7 @@
 <object name="buildLabel" ghost="true">
 
 	<!-- IMPORTANT: remember to update pregame/ProjectInformation.js in sync with this: -->
-	<object type="text" style="ModernLabelText" text_valign="top" ghost="true" size="0% 1 100% 100%">
+	<object type="text" style="ModernLabelText" text_valign="top" ghost="true" size="0% -3 100% 100%">
 		<translatableAttribute id="caption">Release XXVIII: B——</translatableAttribute>
 	</object>
 
