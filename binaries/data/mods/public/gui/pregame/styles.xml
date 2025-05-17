@@ -19,6 +19,7 @@
 		textcolor="white"
 		scrollbar="true"
 		scrollbar_style="ModernScrollBar"
+		buffer_zone="0"
 	/>
 
 </styles>

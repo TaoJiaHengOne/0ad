@@ -35,7 +35,7 @@
 		</object>
 
 		<object name="tradeHelp" type="button" size="100%-24 4 100% 28" style="StoneButton" tooltip_style="sessionToolTipBold" enabled="false">
-			<object type="image" size="20% 15% 80% 75%" sprite="iconInfoWhite" ghost="true"/>
+			<object type="image" size="20% 20% 80% 80%" sprite="iconInfoWhite" ghost="true"/>
 		</object>
 
 	</object>

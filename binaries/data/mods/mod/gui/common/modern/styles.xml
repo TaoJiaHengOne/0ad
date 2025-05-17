@@ -69,7 +69,7 @@
 		sprite2="ModernDropDownArrow"
 		sprite2_disabled="ModernDropDownArrowDisabled"
 		sprite2_pressed="ModernDropDownArrowHighlight"
-		buffer_zone="8"
+		buffer_zone="5"
 		dropdown_size="440"
 		minimum_visible_items="3"
 		sprite_list="GrayBackground"

@@ -166,7 +166,7 @@
 			type="button"
 			sprite="iconBubbleGold"
 			sprite_over="iconBubbleWhite"
-			size="100%-436 100%-45 100%-420 100%-29"
+			size="100%-436 100%-42 100%-420 100%-26"
 			z="50"
 			hotkey="lobby"
 		>
