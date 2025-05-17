@@ -133,25 +133,25 @@ std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 		{
 			std::vector<std::string> candidateFonts;
 			// 3 types * 2 (bold, italic).
-			candidateFonts.reserve(6); 
+			candidateFonts.reserve(6);
 
 			// TODO: explicit Locale like RTL or Arabic fonts.
 			// 1. Locale-specific fonts first
 			if (!locale.empty())
 			{
-				candidateFonts.push_back(fmt::format("fonts.{}.{}.regular", locale, fontSpec.type));
 				if (fontSpec.bold)
 					candidateFonts.push_back(fmt::format("fonts.{}.{}.bold", locale, fontSpec.type));
 				if (fontSpec.italic)
 					candidateFonts.push_back(fmt::format("fonts.{}.{}.italic", locale, fontSpec.type));
+				candidateFonts.push_back(fmt::format("fonts.{}.{}.regular", locale, fontSpec.type));
 			}
 
 			// 2. Then global fonts
-			candidateFonts.push_back(fmt::format("fonts.{}.regular", fontSpec.type));
 			if (fontSpec.bold)
 				candidateFonts.push_back(fmt::format("fonts.{}.bold", fontSpec.type));
 			if (fontSpec.italic)
 				candidateFonts.push_back(fmt::format("fonts.{}.italic", fontSpec.type));
+			candidateFonts.push_back(fmt::format("fonts.{}.regular", fontSpec.type));
 
 			for (const std::string& key : candidateFonts)
 			{
