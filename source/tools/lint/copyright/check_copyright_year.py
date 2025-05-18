@@ -148,7 +148,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         "filenames",
-        nargs="+",
+        nargs="*",
         help="Files to check for the copyright year.",
     )
     parser.add_argument(
