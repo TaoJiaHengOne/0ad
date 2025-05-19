@@ -93,6 +93,7 @@ class TipDisplay
 			if (random <= cumulative)
 				return category;
 		}
+		return undefined;
 	}
 
 	getHotloadData()

@@ -34,9 +34,7 @@ class BarterButtonManager
 
 	getSelectedButton()
 	{
-		for (const button of this.buttons)
-			if (!this.selectedResource || this.selectedResource == button.resourceCode)
-				return button;
+		return this.buttons.find(button => !this.selectedResource || this.selectedResource === button.resourceCode);
 	}
 
 	update()

@@ -3998,7 +3998,10 @@ UnitAI.prototype.PushOrder = function(type, data)
 UnitAI.prototype.PushOrderFront = function(type, data, ignorePacking = false)
 {
 	if (!this.order)
-		return this.PushOrder(type, data);
+	{
+		this.PushOrder(type, data);
+		return;
+	}
 
 	var order = { "type": type, "data": data };
 	// If current order is packing/unpacking then add new order after it.

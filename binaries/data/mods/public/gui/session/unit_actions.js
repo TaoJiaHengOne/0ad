@@ -1053,7 +1053,7 @@ var g_UnitActions =
 		"getActionInfo": function(entState, targetState)
 		{
 			if (!entState.rallyPoint)
-				return false;
+				return undefined;
 
 			let tooltip;
 			const data = { "command": "walk" };
@@ -1077,6 +1077,7 @@ var g_UnitActions =
 					"tooltip": tooltip
 				};
 			}
+			return undefined;
 		},
 		"hotkeyActionCheck": function(target, selection)
 		{

@@ -112,7 +112,7 @@ function parseCmdLineArgs(settings, cmdLineArgs)
 
 	const getPlayer = (key, i) => {
 		if (!(('autostart-' + key) in cmdLineArgs))
-			return;
+			return undefined;
 		var value = cmdLineArgs['autostart-' + key];
 		if (!Array.isArray(value))
 			value = [value];
