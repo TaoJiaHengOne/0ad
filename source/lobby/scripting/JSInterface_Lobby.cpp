@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -218,6 +218,7 @@ void RegisterScriptFunctions(const ScriptRequest& rq)
 	REGISTER_XMPP(SetNick, "LobbySetNick");
 	REGISTER_XMPP(GetNick, "LobbyGetNick");
 	REGISTER_XMPP(GetJID, "LobbyGetJID");
+	REGISTER_XMPP(GetUsername, "LobbyGetUsername");
 	REGISTER_XMPP(ChangePassword, "LobbyChangePassword");
 	REGISTER_XMPP(kick, "LobbyKick");
 	REGISTER_XMPP(ban, "LobbyBan");

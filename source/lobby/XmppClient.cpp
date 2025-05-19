@@ -1155,9 +1155,9 @@ const std::wstring& XmppClient::GetSubject()
 }
 
 /**
- * Request nick change, real change via mucRoomHandler.
+ * Request MUC nick change, real change via mucRoomHandler.
  *
- * @param nick Desired nickname
+ * @param nick Desired MUC nickname
  */
 void XmppClient::SetNick(const std::string& nick)
 {
@@ -1165,7 +1165,7 @@ void XmppClient::SetNick(const std::string& nick)
 }
 
 /**
- * Get current nickname.
+ * Get current MUC nickname.
  */
 std::string XmppClient::GetNick() const
 {
@@ -1177,6 +1177,17 @@ std::string XmppClient::GetJID() const
 	return m_client->jid().full();
 }
 
+
+/**
+ * Get the XMPP username.
+ *
+ * @return current XMPP username
+ */
+std::string XmppClient::GetUsername() const
+{
+	return m_username;
+}
+
 /**
  * Change password for authenticated user.
  *
@@ -1184,7 +1195,7 @@ std::string XmppClient::GetJID() const
  */
 void XmppClient::ChangePassword(const std::string& newPassword)
 {
-	m_registration->changePassword(m_username, newPassword);
+	m_registration->changePassword(m_client->jid().username(), newPassword);
 }
 
 /**

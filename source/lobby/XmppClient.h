@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -88,6 +88,7 @@ public:
 	void SetNick(const std::string& nick) override;
 	std::string GetNick() const override;
 	std::string GetJID() const override;
+	std::string GetUsername() const override;
 	void ChangePassword(const std::string& newPassword) override;
 	void kick(const std::string& nick, const std::string& reason) override;
 	void ban(const std::string& nick, const std::string& reason) override;

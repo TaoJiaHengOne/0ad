@@ -98,14 +98,6 @@ var AccountSettingsPage = {
 		if (Engine.GetGUIObjectByName("as_PasswordInputConfirm").caption !== newPass)
 			throw new SetPasswordError(translate("Passwords do not match"));
 
-		const usn = Engine.LobbyGetJID();
-		const atIndex = usn.indexOf("@");
-		if (atIndex == -1)
-		{
-			// Probably can't happen too easily, so error out.
-			error("Invalid JID");
-			throw new SetPasswordError(translate("Invalid JID, cannot change password."));
-		}
-		return Engine.EncryptPassword(newPass, usn.substring(0, atIndex).toLowerCase());
+		return Engine.EncryptPassword(newPass, Engine.LobbyGetUsername());
 	}
 };
