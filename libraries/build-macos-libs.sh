@@ -497,6 +497,7 @@ echo "Building wxWidgets..."
 			CONF_OPTS="
 				--prefix=$INSTALL_DIR
 				--disable-shared
+				--disable-sys-libs
 				--enable-unicode
 				--with-cocoa
 				--with-opengl
