@@ -4,6 +4,9 @@ newoption { category = "Pyrogenesis", trigger = "gles", description = "Use non-w
 newoption { category = "Pyrogenesis", trigger = "jenkins-tests", description = "Configure CxxTest to use the XmlPrinter runner which produces Jenkins-compatible output" }
 newoption { category = "Pyrogenesis", trigger = "minimal-flags", description = "Only set compiler/linker flags that are really needed. Has no effect on Windows builds" }
 newoption { category = "Pyrogenesis", trigger = "outpath", description = "Location for generated project files", default="../workspaces/default" }
+newoption { category = "Pyrogenesis", trigger = "sanitize-address", description = "Enable ASAN if available" }
+newoption { category = "Pyrogenesis", trigger = "sanitize-thread", description = "Enable TSAN if available" }
+newoption { category = "Pyrogenesis", trigger = "sanitize-undefined-behaviour", description = "Enable UBSAN if available" }
 newoption { category = "Pyrogenesis", trigger = "with-system-cxxtest", description = "Search standard paths for cxxtest, instead of using bundled copy" }
 newoption { category = "Pyrogenesis", trigger = "with-lto", description = "Enable Link Time Optimization (LTO)" }
 newoption { category = "Pyrogenesis", trigger = "with-system-mozjs", description = "Search standard paths for libmozjs115, instead of using bundled copy" }
@@ -188,6 +191,19 @@ function project_set_build_flags()
 		symbols "On"
 	end
 
+	-- ASAN, TSAN, UBSAN
+	local sanitizers = {}
+	if _OPTIONS['sanitize-address'] then
+		table.insert(sanitizers, 'Address')
+	end
+	if _OPTIONS['sanitize-thread'] then
+		table.insert(sanitizers, 'Thread')
+	end
+	if _OPTIONS['sanitize-undefined-behaviour'] then
+		table.insert(sanitizers, 'UndefinedBehavior')
+	end
+	sanitize(sanitizers)
+
 	if os.istarget("windows") or not _OPTIONS["minimal-flags"] then
 		-- adds the -Wall compiler flag
 		warnings "Extra"
@@ -321,7 +337,9 @@ function project_set_build_flags()
 
 			if os.istarget("linux") or os.istarget("bsd") then
 				buildoptions { "-fPIC" }
-				linkoptions { "-Wl,--no-undefined", "-Wl,--as-needed", "-Wl,-z,relro" }
+				if next(sanitizers) == nil then
+					linkoptions { "-Wl,--no-undefined", "-Wl,--as-needed", "-Wl,-z,relro" }
+				end
 			end
 
 			if arch == "x86" then
