@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -52,6 +52,7 @@
 
 #include <array>
 #include <cmath>
+#include <utility>
 #include <vector>
 
 namespace
@@ -257,8 +258,8 @@ bool CMiniMap::FireWorldClickEvent(int button, int UNUSED(clicks))
 	Script::ToJSVal(rq, &buttonJs, button);
 
 	JS::RootedValueVector paramData(rq.cx);
-	ignore_result(paramData.append(coords));
-	ignore_result(paramData.append(buttonJs));
+	std::ignore = paramData.append(coords);
+	std::ignore = paramData.append(buttonJs);
 
 	return ScriptEventWithReturn(EventNameWorldClick, paramData);
 }

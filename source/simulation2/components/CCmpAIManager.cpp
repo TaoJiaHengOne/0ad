@@ -50,6 +50,8 @@
 #include "simulation2/serialization/StdDeserializer.h"
 #include "simulation2/serialization/StdSerializer.h"
 
+#include <utility>
+
 extern void QuitEngine();
 
 /**
@@ -160,7 +162,7 @@ private:
 			}
 
 			JS::RootedValueVector argv(rq.cx);
-			ignore_result(argv.append(settings.get()));
+			std::ignore = argv.append(settings.get());
 			m_ScriptInterface->CallConstructor(ctor, argv, &m_Obj);
 
 			if (m_Obj.get().isNull())
@@ -459,7 +461,7 @@ public:
 			"templates", m_EntityTemplates);
 
 		JS::RootedValueVector argv(rq.cx);
-		ignore_result(argv.append(settings));
+		std::ignore = argv.append(settings);
 		m_ScriptInterface->CallConstructor(ctor, argv, &m_SharedAIObj);
 
 		if (m_SharedAIObj.get().isNull())

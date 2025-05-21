@@ -55,14 +55,6 @@
 #endif
 
 /**
- * Silence the 'unused result' warning.
- * (void) would be sufficient but Spidermonkey still uses warn_unused_result,
- * and GCC is stricter about that. See https://bugzilla.mozilla.org/show_bug.cgi?id=1571631.
- **/
-template<typename T>
-inline void ignore_result(const T&) {}
-
-/**
  * indicate a function will not throw any synchronous exceptions,
  * thus hopefully generating smaller and more efficient code.
  *

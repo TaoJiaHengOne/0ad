@@ -37,6 +37,8 @@
 
 #include "js/Equality.h"
 
+#include <utility>
+
 namespace
 {
 
@@ -468,11 +470,11 @@ void CGUIManager::DisplayLoadProgress(int percent, const wchar_t* pending_task)
 
 	JS::RootedValueVector paramData(rq.cx);
 
-	ignore_result(paramData.append(JS::NumberValue(percent)));
+	std::ignore = paramData.append(JS::NumberValue(percent));
 
 	JS::RootedValue valPendingTask(rq.cx);
 	Script::ToJSVal(rq, &valPendingTask, pending_task);
-	ignore_result(paramData.append(valPendingTask));
+	std::ignore = paramData.append(valPendingTask);
 
 	SendEventToAll(EVENT_NAME_GAME_LOAD_PROGRESS, paramData);
 }

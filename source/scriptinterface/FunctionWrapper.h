@@ -237,7 +237,7 @@ private:
 			return false;
 
 		JS::RootedValueVector argv(rq.cx);
-		ignore_result(argv.resize(sizeof...(Args)));
+		std::ignore = argv.resize(sizeof...(Args));
 		ToJSValVector(std::index_sequence_for<Args...>{}, rq, &argv, args...);
 
 		bool success;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -26,6 +26,8 @@
 #include "scriptinterface/ScriptRequest.h"
 #include "scriptinterface/JSON.h"
 #include "simulation2/Simulation2.h"
+
+#include <utility>
 
 const CStr CReplayTurnManager::EventNameReplayFinished = "ReplayFinished";
 const CStr CReplayTurnManager::EventNameReplayOutOfSync = "ReplayOutOfSync";
@@ -94,15 +96,15 @@ void CReplayTurnManager::NotifyFinishedUpdate(u32 turn)
 
 	JS::RootedValueVector paramData(rq.cx);
 
-	ignore_result(paramData.append(JS::NumberValue(turn)));
+	std::ignore = paramData.append(JS::NumberValue(turn));
 
 	JS::RootedValue hashVal(rq.cx);
 	Script::ToJSVal(rq, &hashVal, hash);
-	ignore_result(paramData.append(hashVal));
+	std::ignore = paramData.append(hashVal);
 
 	JS::RootedValue expectedHashVal(rq.cx);
 	Script::ToJSVal(rq, &expectedHashVal, expectedHash);
-	ignore_result(paramData.append(expectedHashVal));
+	std::ignore = paramData.append(expectedHashVal);
 
 	g_GUI->SendEventToAll(EventNameReplayOutOfSync, paramData);
 }

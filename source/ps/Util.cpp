@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include "ps/Pyrogenesis.h"
 
 #include <iomanip>
+#include <utility>
 
 // not thread-safe!
 static const wchar_t* HardcodedErrorString(int err)
@@ -68,7 +69,7 @@ Status tex_write(Tex* t, const VfsPath& filename)
 			ret = (Status)bytes_written;
 	}
 
-	ignore_result(da_free(&da));
+	std::ignore = da_free(&da);
 	return ret;
 }
 

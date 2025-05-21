@@ -35,7 +35,7 @@
 #include <algorithm>
 #include <string_view>
 #include <unordered_map>
-
+#include <utility>
 
 const CStr IGUIObject::EventNameMouseEnter = "MouseEnter";
 const CStr IGUIObject::EventNameMouseMove = "MouseMove";
@@ -409,7 +409,7 @@ InReaction IGUIObject::SendMouseEvent(EGUIMessageType type, const CStr& eventNam
 			"y", mousePos.Y,
 			"buttons", m_pGUI.GetMouseButtons());
 		JS::RootedValueVector paramData(rq.cx);
-		ignore_result(paramData.append(mouse));
+		std::ignore = paramData.append(mouse);
 		ScriptEvent(eventName, paramData);
 
 		if (type == GUIM_MOUSE_WHEEL_UP || type == GUIM_MOUSE_WHEEL_DOWN || type == GUIM_MOUSE_WHEEL_LEFT || type == GUIM_MOUSE_WHEEL_RIGHT)

@@ -26,6 +26,8 @@
 #include "lib/file/vfs/vfs_populate.h"
 #include "lib/os_path.h"
 
+#include <utility>
+
 static OsPath TEST_FOLDER(DataDir()/"_test.temp");
 
 extern PIVFS g_VFS;
@@ -107,7 +109,7 @@ public:
 		g_VFS->Mount(L"mod", TEST_FOLDER / "mod_b" / "", 0, 0);
 
 		// For consistency, populate everything.
-		ignore_result(g_VFS->TextRepresentation().c_str());
+		std::ignore = g_VFS->TextRepresentation().c_str();
 
 		OsPath realPath;
 		g_VFS->GetDirectoryRealPath(L"mod", realPath);

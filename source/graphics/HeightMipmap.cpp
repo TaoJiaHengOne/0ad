@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include "ps/Filesystem.h"
 
 #include <cmath>
+#include <utility>
 
 CHeightMipmap::CHeightMipmap()
 {
@@ -255,5 +256,5 @@ void CHeightMipmap::DumpToDisk(const VfsPath& filename) const
 	DynArray da;
 	WARN_IF_ERR(t.encode(filename.Extension(), &da));
 	g_VFS->CreateFile(filename, DummySharedPtr(da.base), da.pos);
-	ignore_result(da_free(&da));
+	std::ignore = da_free(&da);
 }
