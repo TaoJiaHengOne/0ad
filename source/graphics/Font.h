@@ -101,6 +101,9 @@ private:
 		FT_Stroker_Done(stroker);
 	}
 
+	using UniqueFTFace = std::unique_ptr<std::remove_pointer_t<FT_Face>, decltype(&ftFaceDeleter)>;
+	using UniqueFTStroker = std::unique_ptr<std::remove_pointer_t<FT_Stroker>, decltype(&ftStrokerDeleter)>;
+
 	struct Offset
 	{
 		int x{0};
@@ -160,8 +163,8 @@ private:
 	std::shared_ptr<std::array<float, 256>> m_GammaCorrectionLUT{nullptr};
 
 	FT_Library m_FreeType;
-	std::unique_ptr<FT_FaceRec_, decltype(&ftFaceDeleter)> m_Font{nullptr, &ftFaceDeleter};
-	std::unique_ptr<FT_StrokerRec_, decltype(&ftStrokerDeleter)> m_Stroker{nullptr, &ftStrokerDeleter};
+	UniqueFTFace m_Font{nullptr, &ftFaceDeleter};
+	UniqueFTStroker m_Stroker{nullptr, &ftStrokerDeleter};
 
 	/**
 	* FreeType represents most of its size and position values in 26.6 fixed-point format — that is,

@@ -333,19 +333,21 @@ std::optional<CFont::Offset> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& gl
 	if (FT_Error error{FT_Glyph_Copy(glyph, &strokedGlyph)})
 	{
 		LOGERROR("Failed to copy glyph %u: %d", codepoint, error);
-		return std::nullopt;
-	}
-	UniqueFTGlyph strokeGlyphPtr(strokedGlyph);
-		
-	if (FT_Error error{FT_Glyph_StrokeBorder(&strokedGlyph, m_Stroker.get(), 0, 0)})
-	{
-		LOGERROR("Failed to stroke glyph %u: %d", codepoint, error);
+		FT_Done_Glyph(strokedGlyph);
 		return std::nullopt;
 	}
 
-	if (FT_Error error{FT_Glyph_To_Bitmap(&strokedGlyph, renderMode, nullptr, 0)})
+	if (FT_Error error{FT_Glyph_StrokeBorder(&strokedGlyph, m_Stroker.get(), 0, 1)})
+	{
+		LOGERROR("Failed to stroke glyph %u: %d", codepoint, error);
+		FT_Done_Glyph(strokedGlyph);
+		return std::nullopt;
+	}
+
+	if (FT_Error error{FT_Glyph_To_Bitmap(&strokedGlyph, renderMode, nullptr, 1)})
 	{
 		LOGERROR("Failed to render glyph %u: %d", codepoint, error);
+		FT_Done_Glyph(strokedGlyph);
 		return std::nullopt;
 	}
 
@@ -366,6 +368,7 @@ std::optional<CFont::Offset> CFont::GenerateStrokeGlyphBitmap(const FT_Glyph& gl
 		targetStrokeY = m_AtlasY;
 	}
 	BlendGlyphBitmapToTexture(bitmapStroke, targetStrokeX, targetStrokeY, 0, 0, 0);
+	FT_Done_Glyph(strokedGlyph);
 	return offset;
 }
 
@@ -395,6 +398,7 @@ std::optional<CFont::Offset> CFont::GenerateGlyphBitmap(FT_Glyph& glyph, u16 cod
 	}
 
 	BlendGlyphBitmapToTexture(bitmap, targetX, targetY, 255, 255, 255);
+	FT_Done_Glyph(glyph);
 	return newOffset;
 }
 
