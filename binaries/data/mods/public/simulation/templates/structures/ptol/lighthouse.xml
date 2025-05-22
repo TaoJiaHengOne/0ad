@@ -51,7 +51,7 @@
   <TerritoryDecay disable=""/>
   <Trainer disable=""/>
   <Vision>
-    <Range>200</Range>
+    <Range>325</Range>
   </Vision>
   <VisualActor>
     <Actor>structures/ptolemies/lighthouse.xml</Actor>
