@@ -578,7 +578,7 @@ void CConsole::ProcessBuffer(const wchar_t* szLine)
 
 	ENSURE(wcslen(szLine) < CONSOLE_BUFFER_SIZE);
 
-	if (!m_HistoryIgnoreDuplicates || m_BufHistory.front() != szLine)
+	if (!m_HistoryIgnoreDuplicates || m_BufHistory.empty() || m_BufHistory.front() != szLine)
 	{
 		m_BufHistory.push_front(szLine);
 		SaveHistory(); // Do this each line for the moment; if a script causes
