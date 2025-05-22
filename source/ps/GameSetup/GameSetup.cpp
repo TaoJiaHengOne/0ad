@@ -349,7 +349,7 @@ void ShutdownNetworkAndUI()
 	if (hasRenderer)
 	{
 		TIMER_BEGIN(L"shutdown Renderer");
-		g_Renderer.~CRenderer();
+		delete &g_Renderer;
 		TIMER_END(L"shutdown Renderer");
 	}
 
