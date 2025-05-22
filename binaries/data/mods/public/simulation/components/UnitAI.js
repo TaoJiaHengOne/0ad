@@ -5066,7 +5066,7 @@ UnitAI.prototype.AttackEntityInZone = function(ents)
 {
 	var target = ents.find(entity =>
 		this.CanAttack(entity) &&
-		this.CheckTargetDistanceFromHeldPosition(entity, IID_Attack, this.GetBestAttackAgainst(target, true)) &&
+		this.CheckTargetDistanceFromHeldPosition(entity, IID_Attack, this.GetBestAttackAgainst(entity, true)) &&
 		(this.GetStance().respondChaseBeyondVision || this.CheckTargetIsInVisionRange(entity))
 	);
 	if (!target)
