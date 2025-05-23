@@ -947,7 +947,7 @@ class CheckRefs:
 
         for category, items in self.deps_gui_items.items():
             for ref, item in items:
-                if item not in self.gui_items[category]:
+                if item != "" and item not in self.gui_items[category]:
                     missing_items[category][item].add(ref)
 
         for category, items in missing_items.items():
