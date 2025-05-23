@@ -22,8 +22,6 @@
 
 # ruff: noqa: SIM115
 
-import glob
-import os
 import sys
 import xml.etree.ElementTree as ET
 from functools import lru_cache
@@ -111,19 +109,19 @@ def htout(file, value):
 
 
 @lru_cache
-def get_parent_names(template_name: str) -> list[str]:
+def get_parent_names(template_file_name: str) -> list[str]:
     """Get the names of the parent templates."""
-    parent_string = ET.parse(template_name).getroot().get("parent")
+    parent_string = ET.parse(base_path / template_file_name).getroot().get("parent")
     if not parent_string:
         return []
     return parent_string.split("|")
 
 
 @lru_cache
-def get_parents(template_name: str) -> set[Path]:
+def get_parents(template_file_name: str) -> set[Path]:
     """Get the file paths of the parent templates."""
     parents = set()
-    for parent in get_parent_names(template_name):
+    for parent in get_parent_names(str(base_path / template_file_name)):
         parents.add(parent)
         for element in get_parents(
             sim_entity.get_file("simulation/templates/", parent + ".xml", "public")
@@ -137,9 +135,12 @@ def extract_value(value):
     return float(value.text) if value is not None else 0.0
 
 
-# This function checks that a template has the given parent.
-def has_parent_template(template_name, parent_name):
-    return any(parent_name == str(parent) + ".xml" for parent in get_parents(template_name))
+def has_any_parent_template(template_name: str, parent_names: list[str]) -> bool:
+    """Check whether the template has at least one of the given parents."""
+    template_parents = [
+        str(template_parent) + ".xml" for template_parent in get_parents(template_name)
+    ]
+    return any(parent_name in template_parents for parent_name in parent_names)
 
 
 def calc_unit(unit_name, existing_unit=None):
@@ -483,19 +484,15 @@ def compute_unit_efficiency_diff(templates_by_parent, civs):
 
 def compute_templates(load_templates_if_parent):
     """Loops over template XMLs and selectively insert into templates dict."""
-    pwd = os.getcwd()
-    os.chdir(base_path)
     templates = {}
-    for template in list(glob.glob("template_*.xml")):
-        if os.path.isfile(template):
-            found = False
-            for poss_parent in load_templates_if_parent:
-                if has_parent_template(template, poss_parent):
-                    found = True
-                    break
-            if found is True:
-                templates[template] = calc_unit(template)
-    os.chdir(pwd)
+    for template in base_path.glob("template_*.xml"):
+        if not template.is_file():
+            continue
+
+        template_file_name = str(template.relative_to(base_path))
+        if has_any_parent_template(template_file_name, load_templates_if_parent):
+            templates[template_file_name] = calc_unit(str(template))
+
     return templates
 
 
@@ -512,45 +509,39 @@ def compute_civ_templates(civs: list):
     loyalty to that Civ. Check this when upgrading this script to keep
     up with the game engine.
     """
-    pwd = os.getcwd()
-    os.chdir(base_path)
-
     civ_templates = {}
 
     for civ in civs:
         civ_templates[civ] = {}
         # Load all templates that start with that civ indicator
         # TODO: consider adding mixin/civs here too
-        civ_list = list(glob.glob("units/" + civ + "/*.xml"))
-        for template in civ_list:
-            if os.path.isfile(template):
-                # filter based on FilterOut
-                break_it = False
-                for civ_filter in FILTER_OUT:
-                    if template.find(civ_filter) != -1:
-                        break_it = True
-                if break_it:
-                    continue
+        for template in base_path.glob("units/" + civ + "/*.xml"):
+            if not template.is_file():
+                continue
 
-                # filter based on loaded generic templates
-                break_it = True
-                for poss_parent in LOAD_TEMPLATES_IF_PARENT:
-                    if has_parent_template(template, poss_parent):
-                        break_it = False
-                        break
-                if break_it:
-                    continue
+            template_file_name = str(template.relative_to(base_path))
 
-                unit = calc_unit(template)
+            # filter based on FilterOut
+            break_it = False
+            for civ_filter in FILTER_OUT:
+                if template_file_name.find(civ_filter) != -1:
+                    break_it = True
+            if break_it:
+                continue
 
-                # Remove variants for now
-                if unit["Parent"].find("template_") == -1:
-                    continue
+            # filter based on loaded generic templates
+            if not has_any_parent_template(template_file_name, LOAD_TEMPLATES_IF_PARENT):
+                continue
 
-                # load template
-                civ_templates[civ][template] = unit
+            unit = calc_unit(str(template))
 
-    os.chdir(pwd)
+            # Remove variants for now
+            if unit["Parent"].find("template_") == -1:
+                continue
+
+            # load template
+            civ_templates[civ][template_file_name] = unit
+
     return civ_templates
 
 
