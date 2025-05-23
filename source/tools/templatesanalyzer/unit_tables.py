@@ -26,6 +26,7 @@ import glob
 import os
 import sys
 import xml.etree.ElementTree as ET
+from functools import lru_cache
 from pathlib import Path
 
 
@@ -98,8 +99,6 @@ ADD_SORTING_OVERLAY = True
 mods_folder = Path(__file__).resolve().parents[3] / "binaries" / "data" / "mods"
 base_path = mods_folder / "public" / "simulation" / "templates"
 
-# For performance purposes, cache opened templates files.
-global_templates_list = {}
 sim_entity = SimulTemplateEntity(mods_folder, None)
 
 
@@ -111,25 +110,20 @@ def htout(file, value):
     file.write("<p>" + value + "</p>\n")
 
 
-def fast_parse(template_name):
-    """Run ET.parse() with memoising in a global table."""
-    if template_name in global_templates_list:
-        return global_templates_list[template_name]
+@lru_cache
+def get_parent_names(template_name: str) -> list[str]:
+    """Get the names of the parent templates."""
     parent_string = ET.parse(template_name).getroot().get("parent")
-    global_templates_list[template_name] = sim_entity.load_inherited(
-        "simulation/templates/", str(template_name), ["public"]
-    )
-    global_templates_list[template_name].set("parent", parent_string)
-    return global_templates_list[template_name]
+    if not parent_string:
+        return []
+    return parent_string.split("|")
 
 
-def get_parents(template_name):
-    template_data = fast_parse(template_name)
-    parents_string = template_data.get("parent")
-    if parents_string is None:
-        return set()
+@lru_cache
+def get_parents(template_name: str) -> set[Path]:
+    """Get the file paths of the parent templates."""
     parents = set()
-    for parent in parents_string.split("|"):
+    for parent in get_parent_names(template_name):
         parents.add(parent)
         for element in get_parents(
             sim_entity.get_file("simulation/templates/", parent + ".xml", "public")
@@ -145,7 +139,7 @@ def extract_value(value):
 
 # This function checks that a template has the given parent.
 def has_parent_template(template_name, parent_name):
-    return any(parent_name == parent + ".xml" for parent in get_parents(template_name))
+    return any(parent_name == str(parent) + ".xml" for parent in get_parents(template_name))
 
 
 def calc_unit(unit_name, existing_unit=None):
@@ -179,13 +173,13 @@ def calc_unit(unit_name, existing_unit=None):
             "Civ": None,
         }
 
-    template = fast_parse(unit_name)
+    template = sim_entity.load_inherited("simulation/templates/", unit_name, ["public"])
 
     # 0ad started using unit class/category prefixed to the unit name
     # separated by |, known as mixins since A25 (rP25223)
     # We strip these categories for now
     # This can be used later for classification
-    unit["Parent"] = template.get("parent").split("|")[-1] + ".xml"
+    unit["Parent"] = get_parent_names(unit_name)[-1] + ".xml"
     unit["Civ"] = template.find("./Identity/Civ").text
     unit["HP"] = extract_value(template.find("./Health/Max"))
     unit["BuildTime"] = extract_value(template.find("./Cost/BuildTime"))
