@@ -169,7 +169,7 @@ class CheckRefs:
             from validate_dae import DaeValidator
 
             dv = DaeValidator(self.vfs_root, self.mods)
-            self.inError = not dv.run()
+            self.inError = self.inError or not dv.run()
 
         return not self.inError
 
