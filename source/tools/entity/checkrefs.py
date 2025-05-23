@@ -968,7 +968,7 @@ class CheckRefs:
                         "### Case-insensitive match (found '%s')", lower_case_items[item.lower()]
                     )
 
-            self.InError = True
+            self.inError = True
 
     def check_fonts(self):
         """Check that fonts referenced in default.cfg exist."""
