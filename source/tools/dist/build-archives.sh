@@ -14,10 +14,9 @@ echo "Building archives"
 
 echo "Filtering languages"
 # Included languages
-# CJK languages are excluded, as they are in mods.
 # Note: Needs to be edited manually at each release.
 # Keep in sync with the installer languages in 0ad.nsi.
-LANGS="ast cs de el en_GB es eu fi fr gl hu id it nl pl pt_BR pt_PT ru sk sv tr uk"
+LANGS="ast cs de el en_GB es eu fi fr gl hu id it ja ko nl pl pt_BR pt_PT ru sk sv tr uk zh zh_TW"
 
 # shellcheck disable=SC2086
 REGEX=$(printf "\|%s" ${LANGS} | cut -c 2-)

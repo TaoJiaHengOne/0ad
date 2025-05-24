@@ -74,13 +74,12 @@ Before moving on with Full Freeze, make sure that:
 
 - [ ] [Freeze Jenkins](wiki/ReleaseProcess#freeze-jenkins)
 - [ ] [Confirm full freeze](wiki/ReleaseProcess#confirm-full-freeze)
-- [ ] [Package East Asian mods](wiki/ReleaseProcess#package-east-asian-mods)
 - [ ] [Announce Release Candidates](wiki/ReleaseProcess#announce-release-candidates)
 - [ ] Release Testing: [link to RC]( )
 
 ---
 
-When RCs are released, a planned release date is decided with the team and published here. This improves internal coordination and allows us to release announcements on all platforms at the same time. 
+When RCs are released, a planned release date is decided with the team and published here. This improves internal coordination and allows us to release announcements on all platforms at the same time.
 
 ---
 
