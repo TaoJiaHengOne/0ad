@@ -55,7 +55,7 @@ def validate_templates(
     if templates:
         templates = [(template, None) for template in templates]
     else:
-        templates = find_files(vfs_root, [mod_name], SIMUL_TEMPLATES_PATH.as_posix(), "xml")
+        templates = find_files(vfs_root.resolve(), [mod_name], SIMUL_TEMPLATES_PATH, ["xml"])
 
     templates_to_validate = []
     for fp, _ in templates:

@@ -5,6 +5,7 @@ import sys
 from argparse import ArgumentParser
 from collections import defaultdict
 from io import BytesIO
+from itertools import chain
 from json import load, loads
 from logging import INFO, WARNING, Filter, Formatter, StreamHandler, getLogger
 from pathlib import Path
@@ -201,13 +202,15 @@ class CheckRefs:
         return self.vfs_root / fn
 
     def find_files(self, vfs_path, *ext_list):
-        return find_files(self.vfs_root, self.mods, vfs_path, *ext_list)
+        return find_files(self.vfs_root, self.mods, Path(vfs_path), ext_list)
 
     def add_maps_xml(self):
         self.logger.info("Loading maps XML...")
-        mapfiles = self.find_files("maps/scenarios", "xml")
-        mapfiles.extend(self.find_files("maps/skirmishes", "xml"))
-        mapfiles.extend(self.find_files("maps/tutorials", "xml"))
+        mapfiles = chain(
+            self.find_files("maps/scenarios", "xml"),
+            self.find_files("maps/skirmishes", "xml"),
+            self.find_files("maps/tutorials", "xml"),
+        )
         actor_prefix = "actor|"
         resource_prefix = "resource|"
         for fp, ffp in sorted(mapfiles):
@@ -253,8 +256,10 @@ class CheckRefs:
                         ffp,
                     )
                 terrains[name] = str(fp)
-        mapfiles = self.find_files("maps/scenarios", "pmp")
-        mapfiles.extend(self.find_files("maps/skirmishes", "pmp"))
+        mapfiles = chain(
+            self.find_files("maps/scenarios", "pmp"),
+            self.find_files("maps/skirmishes", "pmp"),
+        )
         for fp, ffp in sorted(mapfiles):
             self.files.append(fp)
             self.roots.append(fp)
@@ -288,7 +293,7 @@ class CheckRefs:
 
     def get_existing_civ_codes(self):
         existing_civs = set()
-        for _, ffp in sorted(self.find_files("simulation/data/civs", "json")):
+        for _, ffp in self.find_files("simulation/data/civs", "json"):
             with open(ffp, encoding="utf-8") as f:
                 civ = load(f)
                 code = civ.get("Code")
@@ -320,7 +325,7 @@ class CheckRefs:
         #       computing the values ourselves.
         simul_template_entity = SimulTemplateEntity(self.vfs_root, self.logger)
         custom_phase_techs = self.get_custom_phase_techs()
-        for fp, _ in sorted(self.find_files(simul_templates_path, "xml")):
+        for fp, _ in self.find_files(simul_templates_path, "xml"):
             self.files.append(fp)
             entity = simul_template_entity.load_inherited(
                 simul_templates_path, str(fp.relative_to(simul_templates_path)), self.mods
@@ -519,7 +524,7 @@ class CheckRefs:
 
     def add_actors(self):
         self.logger.info("Loading actors...")
-        for fp, ffp in sorted(self.find_files("art/actors", "xml")):
+        for fp, ffp in self.find_files("art/actors", "xml"):
             self.files.append(fp)
             self.roots.append(fp)
             root = ET.parse(ffp).getroot()
@@ -536,7 +541,7 @@ class CheckRefs:
 
     def add_variants(self):
         self.logger.info("Loading variants...")
-        for fp, ffp in sorted(self.find_files("art/variants", "xml")):
+        for fp, ffp in self.find_files("art/variants", "xml"):
             self.files.append(fp)
             self.roots.append(fp)
             variant = ET.parse(ffp).getroot()
@@ -577,7 +582,7 @@ class CheckRefs:
 
     def add_materials(self):
         self.logger.info("Loading materials...")
-        for fp, ffp in sorted(self.find_files("art/materials", "xml")):
+        for fp, ffp in self.find_files("art/materials", "xml"):
             self.files.append(fp)
             material_elem = ET.parse(ffp).getroot()
             for alternative in material_elem.findall("alternative"):
@@ -587,7 +592,7 @@ class CheckRefs:
 
     def add_particles(self):
         self.logger.info("Loading particles...")
-        for fp, ffp in sorted(self.find_files("art/particles", "xml")):
+        for fp, ffp in self.find_files("art/particles", "xml"):
             self.files.append(fp)
             self.roots.append(fp)
             particle = ET.parse(ffp).getroot()
@@ -597,7 +602,7 @@ class CheckRefs:
 
     def add_soundgroups(self):
         self.logger.info("Loading sound groups...")
-        for fp, ffp in sorted(self.find_files("audio", "xml")):
+        for fp, ffp in self.find_files("audio", "xml"):
             self.files.append(fp)
             self.roots.append(fp)
             sound_group = ET.parse(ffp).getroot()
@@ -667,7 +672,7 @@ class CheckRefs:
     def add_gui_xml(self):
         self.logger.info("Loading GUI XML...")
         gui_page_regex = re.compile(r".*[\\\/]page(_[^.\/\\]+)?\.xml$")
-        for fp, ffp in sorted(self.find_files("gui", "xml")):
+        for fp, ffp in self.find_files("gui", "xml"):
             self.files.append(fp)
             # GUI page definitions are assumed to be named page_[something].xml and alone in that.
             if gui_page_regex.match(str(fp)):
@@ -804,7 +809,7 @@ class CheckRefs:
 
     def add_civs(self):
         self.logger.info("Loading civs...")
-        for fp, ffp in sorted(self.find_files("simulation/data/civs", "json")):
+        for fp, ffp in self.find_files("simulation/data/civs", "json"):
             self.files.append(fp)
             self.roots.append(fp)
             with open(ffp, encoding="utf-8") as f:
@@ -857,7 +862,7 @@ class CheckRefs:
 
     def add_techs(self):
         self.logger.info("Loading techs...")
-        for fp, ffp in sorted(self.find_files("simulation/data/technologies", "json")):
+        for fp, ffp in self.find_files("simulation/data/technologies", "json"):
             self.files.append(fp)
             with open(ffp, encoding="utf-8") as f:
                 tech = load(f)
@@ -878,7 +883,7 @@ class CheckRefs:
 
     def add_terrains(self):
         self.logger.info("Loading terrains...")
-        for fp, ffp in sorted(self.find_files("art/terrains", "xml")):
+        for fp, ffp in self.find_files("art/terrains", "xml"):
             # ignore terrains.xml
             if str(fp).endswith("terrains.xml"):
                 continue
@@ -894,7 +899,7 @@ class CheckRefs:
 
     def add_auras(self):
         self.logger.info("Loading auras...")
-        for fp, ffp in sorted(self.find_files("simulation/data/auras", "json")):
+        for fp, ffp in self.find_files("simulation/data/auras", "json"):
             self.files.append(fp)
             with open(ffp, encoding="utf-8") as f:
                 aura = load(f)

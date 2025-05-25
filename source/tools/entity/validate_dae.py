@@ -51,9 +51,10 @@ class DaeValidator:
 
     def run(self):
         is_ok = True
-        files = find_files(self.vfs_root, self.mods, "art/meshes", "dae")
-        self.log.info("Checking %i meshes for invalid weights.", len(files))
+        files = find_files(self.vfs_root, self.mods, Path("art/meshes"), ["dae"])
+        i = 0
         for _, dae in files:
+            i += 1
             status = validate_vertex(dae.as_posix(), self.log.warning)
             if status >= 1:
                 is_ok = False
@@ -62,7 +63,7 @@ class DaeValidator:
         self.log.info(
             "%i out of %i files have vertices with no weight or bones.",
             len(self.has_weightless_vtx),
-            len(files),
+            i,
         )
         return is_ok
 

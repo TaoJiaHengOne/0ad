@@ -1,6 +1,8 @@
 from collections import Counter
+from collections.abc import Generator
 from decimal import Decimal
 from os.path import exists
+from pathlib import Path
 from re import split
 from xml.etree import ElementTree as ET
 
@@ -114,27 +116,18 @@ class SimulTemplateEntity:
         return base
 
 
-def find_files(vfs_root, mods, vfs_path, *ext_list):
+def find_files(
+    vfs_root: Path, mods: list[str], vfs_path: Path, file_extensions: list[str]
+) -> Generator[tuple[Path, Path], None, None]:
     """Find files.
 
     Returns a list of 2-size tuple with:
         - Path relative to the mod base
         - full Path
     """
-    full_exts = ["." + ext for ext in ext_list]
+    full_file_extensions = {f".{ext}" for ext in file_extensions}
 
-    def find_recursive(dp, base):
-        """(relative Path, full Path) generator."""
-        if dp.is_dir():
-            if dp.name not in (".svn", ".git") and not dp.name.endswith("~"):
-                for fp in dp.iterdir():
-                    yield from find_recursive(fp, base)
-        elif dp.suffix in full_exts:
-            relative_file_path = dp.relative_to(base)
-            yield (relative_file_path, dp.resolve())
-
-    return [
-        (rp, fp)
-        for mod in mods
-        for (rp, fp) in find_recursive(vfs_root / mod / vfs_path, vfs_root / mod)
-    ]
+    for mod in mods:
+        for path in (vfs_root / mod / vfs_path).resolve().glob("**/*"):
+            if not path.is_dir() and path.suffix in full_file_extensions:
+                yield path.relative_to(vfs_root / mod), path
