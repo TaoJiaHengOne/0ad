@@ -87,6 +87,11 @@
       </data>
     </choice>
   </define>
+  <define name="font">
+    <data type="string">
+      <param name="pattern">(mono|sans)-(bold-|italic-)?(stroke-)?[0-9]{1,3}</param>
+    </data>
+  </define>
   <define name="size">
     <list>
       <data type="decimal"/>
@@ -272,7 +277,9 @@
         </attribute>
       </optional>
       <optional>
-        <attribute name="font"/>
+        <attribute name="font">
+          <ref name="font"/>
+        </attribute>
       </optional>
       <optional>
         <attribute name="format_x"/>
@@ -829,7 +836,9 @@
           </attribute>
         </optional>
         <optional>
-          <attribute name="font"/>
+          <attribute name="font">
+            <ref name="font"/>
+          </attribute>
         </optional>
         <optional>
           <attribute name="maxwidth">

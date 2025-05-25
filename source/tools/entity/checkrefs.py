@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import configparser
 import re
 import sys
 from argparse import ArgumentParser
@@ -37,7 +38,6 @@ class CheckRefs:
             "styles": [],
             "scrollbars": [],
             "tooltips": [],
-            "fonts": [],
             "colors": [],
         }
         self.deps_gui_items: dict[str, list[tuple[Path, str]]] = {
@@ -46,7 +46,6 @@ class CheckRefs:
             "styles": [],
             "scrollbars": [],
             "tooltips": [],
-            "fonts": [],
             "colors": [],
         }
         # Three or four positive integers below 256 separated by spaces
@@ -57,7 +56,6 @@ class CheckRefs:
         self.supportedMeshesFormats = ("pmd", "dae")
         self.supportedAnimationFormats = ("psa", "dae")
         self.supportedAudioFormats = "ogg"
-        self.supportedFontFormats = "fnt"
         self.mods = []
         self.__init_logger()
         self.inError = False
@@ -145,7 +143,6 @@ class CheckRefs:
         self.add_particles()
         self.add_soundgroups()
         self.add_audio()
-        self.add_fonts()
         self.add_gui_xml()
         self.add_gui_data()
         self.add_civs()
@@ -156,6 +153,7 @@ class CheckRefs:
         self.add_tips()
         self.check_deps()
         self.check_deps_gui_items()
+        self.check_fonts()
         if args.check_unused:
             self.check_unused()
         if args.validate_templates:
@@ -613,14 +611,6 @@ class CheckRefs:
             [fp for (fp, ffp) in self.find_files("audio/", self.supportedAudioFormats)]
         )
 
-    def add_fonts(self):
-        self.logger.info("Loading fonts...")
-        for fp, _ffp in sorted(self.find_files("fonts/", "png")):
-            self.files.append(fp)
-        for fp, _ffp in sorted(self.find_files("fonts/", self.supportedFontFormats)):
-            self.gui_items["fonts"].append(fp.stem)
-            self.deps.append((fp, fp.with_suffix(".png")))
-
     def add_gui_object(self, parent, fp):
         if parent is None:
             return
@@ -635,8 +625,6 @@ class CheckRefs:
         for attr, val in parent.attrib.items():
             if attr == "name":
                 self.gui_items["gui_objects"].append(val)
-            elif attr == "font":
-                self.deps_gui_items["fonts"].append((fp, val))
             elif attr == "textcolor":
                 self.add_gui_color_attrib(val, fp)
             elif "sound" in attr:
@@ -748,8 +736,6 @@ class CheckRefs:
                                     self.add_gui_sprite_attrib(val, fp)
                                 elif attr == "textcolor":
                                     self.add_gui_color_attrib(val, fp)
-                                elif attr == "font":
-                                    self.deps_gui_items["fonts"].append((fp, val))
                         elif obj.tag == "color":
                             if "name" in obj.attrib:
                                 self.gui_items["colors"].append(obj.get("name"))
@@ -983,6 +969,45 @@ class CheckRefs:
                     )
 
             self.InError = True
+
+    def check_fonts(self):
+        """Check that fonts referenced in default.cfg exist."""
+        self.logger.info("Looking for missing font files...")
+
+        base_path = Path(__file__).parents[3]
+        default_cfg_path = base_path / "binaries/data/config/default.cfg"
+        font_dir = self.vfs_root / "mod/fonts"
+
+        try:
+            config = configparser.ConfigParser(allow_unnamed_section=True)
+            config.read(default_cfg_path)
+        except TypeError:
+            # fallback for Python <3.13
+            configparser.UNNAMED_SECTION = "<UNNAMED_SECTION>"
+            config = configparser.ConfigParser()
+            content = "[" + configparser.UNNAMED_SECTION + "]\n"
+            with default_cfg_path.open() as f:
+                content += f.read()
+            config.read_string(content)
+
+        referenced_fonts = set()
+        for section in config.sections():
+            if section == configparser.UNNAMED_SECTION or not section.startswith("fonts."):
+                continue
+
+            for key, value in config[section].items():
+                if key.split(".")[-1] in ["regular", "bold", "italic"]:
+                    for font_name in value.split(","):
+                        referenced_fonts.add(font_name.strip('"'))
+
+        for font in referenced_fonts:
+            if not (font_dir / font).is_file():
+                self.logger.error(
+                    "Missing font '%s' referenced by: %s",
+                    font,
+                    default_cfg_path.relative_to(base_path),
+                )
+                self.inError = True
 
     def check_unused(self):
         self.logger.info("Looking for unused files...")
