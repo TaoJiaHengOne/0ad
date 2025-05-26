@@ -24,14 +24,12 @@
 #include "i18n/L10n.h"
 #include "ps/CLogger.h"
 #include "ps/ConfigDB.h"
-#include "ps/CStr.h"
 #include "ps/CStrInternStatic.h"
 #include "ps/Filesystem.h"
 #include "renderer/Renderer.h"
 
 #include <string>
 #include <regex>
-#include <limits>
 
 namespace {
 struct FontSpec {
@@ -130,7 +128,7 @@ std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 	}
 
 	// Check for font configuration or fallback.
-	const std::string fontToSearch{[&]
+	const std::map<CStr, CConfigValueSet> fontToSearch{[&]
 		{
 			std::vector<std::string> candidateFonts;
 			// 3 types * 2 (bold, italic).
@@ -156,39 +154,52 @@ std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 
 			for (const std::string& key : candidateFonts)
 			{
-				std::string value = g_ConfigDB.Get(key, std::string{});
-				if (!value.empty())
+				std::map<CStr, CConfigValueSet> value{g_ConfigDB.GetValuesWithPrefix(CFG_COMMAND, key)};
+				std::map<CStr, CConfigValueSet>::iterator item{value.find(key)};
+
+				if (item != value.end() && !item->second.empty())
 					return value;
 			}
 
 			// Fallback to default.
-			return defaultFont;
+			return g_ConfigDB.GetValuesWithPrefix(CFG_COMMAND, defaultFont);
 		}()
 	};
 
 	std::shared_ptr<CFont> font{std::make_shared<CFont>(this->m_FreeType.get(), m_GammaCorrectionLUT)};
 
+	if (!font->SetFontParams(localeFontName.string(), fontSpec.size, fontSpec.stroke ? 1.0f : 0.0f, guiScale))
+	{
+		LOGERROR("Failed to set font params for %s", localeFontName.string().c_str());
+		return nullptr;
+	}
+
 	const VfsPath path(L"fonts/");
-	const VfsPath fntName(fontToSearch);
-	OsPath realPath;
-
-	if (!VfsFileExists(path / fntName))
+	for (const std::pair<const CStr, CConfigValueSet>& configPair : fontToSearch)
 	{
-		LOGERROR("Font file %s not found", fontToSearch.c_str());
-		return nullptr;
-	}
+		for (const CStr& fontPath : configPair.second)
+		{
+			const VfsPath fntPath{path / fontPath};
+			if (!VfsFileExists(fntPath))
+			{
+				LOGERROR("Font file %s not found", fontPath.c_str());
+				return nullptr;
+			}
 
-	g_VFS->GetOriginalPath(path / fntName, realPath);
-	if (realPath.empty())
-	{
-		LOGERROR("Font file %s not found", fontToSearch.c_str());
-		return nullptr;
-	}
+			OsPath realPath;
+			g_VFS->GetOriginalPath(fntPath, realPath);
+			if (realPath.empty())
+			{
+				LOGERROR("Font file %s not found", fontPath.c_str());
+				return nullptr;	
+			}
 
-	// TODO: For now set strokeWith = 1, later we can expose it to the GUI.
-	if (!font->SetFontFromPath(realPath.string8(), localeFontName.string(), fontSpec.size, fontSpec.stroke ? 1.0f : 0.0f, guiScale))
-	{
-		return nullptr;
+			if (!font->AddFontFromPath(realPath))
+			{
+				LOGERROR("Failed to load font %s", realPath.string8());
+				return nullptr;
+			}
+		}
 	}
 
 	m_Fonts[localeFontName] = font;

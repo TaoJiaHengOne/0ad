@@ -21,6 +21,7 @@
 #include "graphics/Texture.h"
 #include "maths/Rect.h"
 #include "renderer/Renderer.h"
+#include "ps/Filesystem.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -45,6 +46,7 @@ public:
 		float x0, y0, x1, y1;
 		float xadvance;
 		u8 defined{0};
+		FT_Face face;
 	};
 
 	/**
@@ -104,7 +106,8 @@ private:
 
 	friend class CFontManager;
 
-	bool SetFontFromPath(const std::string& fontPath, const std::string& fontName, float size, float strokeWidth, float scale);
+	bool AddFontFromPath(const OsPath& fontPath);
+	bool SetFontParams(const std::string& fontName, float size, float strokeWidth, float scale);
 
 	void BlendGlyphBitmapToTexture(const FT_Bitmap& bitmap, int targetX, int targetY, u8 r, u8 g, u8 b);
 	void BlendGlyphBitmapToTextureRGBA(const FT_Bitmap& bitmap, int targetX, int targetY, u8 r, u8 g, u8 b);
@@ -142,7 +145,7 @@ private:
 
 	int m_AtlasPadding;
 	bool m_IsDirty{false};
-	bool m_IsLoading{false};
+	bool m_IsLoadingTextureToGPU{false};
 	float m_StrokeWidth{0.0f};
 	float m_Scale{1.0f};
 
@@ -156,7 +159,7 @@ private:
 	std::shared_ptr<std::array<float, 256>> m_GammaCorrectionLUT{nullptr};
 
 	FT_Library m_FreeType;
-	UniqueFTFace m_Font{nullptr, &ftFaceDeleter};
+	std::vector<UniqueFTFace> m_Faces;
 	UniqueFTStroker m_Stroker{nullptr, &ftStrokerDeleter};
 
 	/**

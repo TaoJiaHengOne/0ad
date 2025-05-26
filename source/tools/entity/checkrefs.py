@@ -1003,7 +1003,7 @@ class CheckRefs:
             for key, value in config[section].items():
                 if key.split(".")[-1] in ["regular", "bold", "italic"]:
                     for font_name in value.split(","):
-                        referenced_fonts.add(font_name.strip('"'))
+                        referenced_fonts.add(font_name.strip().strip('"'))
 
         for font in referenced_fonts:
             if not (font_dir / font).is_file():

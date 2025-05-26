@@ -26,6 +26,7 @@
 #include <cmath>
 #include <numeric>
 #include <string>
+#include <vector>
 
 namespace
 {
@@ -107,10 +108,10 @@ void CFont::CalculateStringSize(const wchar_t* string, float& width, float& heig
 				if (!g)
 					return sum;
 
-				if (!FT_HAS_KERNING(m_Font))
+				if (!FT_HAS_KERNING(g->face))
 					return sum + g->xadvance;
 
-				const FT_UInt glyphIndex{FT_Get_Char_Index(m_Font.get(), c)};
+				const FT_UInt glyphIndex{FT_Get_Char_Index(g->face, c)};
 				if (!glyphIndex)
 					return sum + g->xadvance;
 
@@ -120,7 +121,7 @@ void CFont::CalculateStringSize(const wchar_t* string, float& width, float& heig
 
 				// Get the kerning value between the previous and current glyph.
 				FT_Vector kerning;
-				FT_Get_Kerning(m_Font.get(), prevGlyph, glyphIndex, FT_KERNING_DEFAULT, &kerning);
+				FT_Get_Kerning(g->face, prevGlyph, glyphIndex, FT_KERNING_DEFAULT, &kerning);
 				// Add the kerning distance.
 				return sum + g->xadvance + FPosF26Dot6ToFloat(kerning.x);
 			})
@@ -131,33 +132,15 @@ void CFont::CalculateStringSize(const wchar_t* string, float& width, float& heig
 	}
 }
 
-bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& fontName, float size, float strokeWidth, float scale)
+bool CFont::SetFontParams(const std::string& fontName, float size, float strokeWidth, float scale)
 {
+	ENSURE(m_FontSize == 0 && size > 0);
+
 	// TODO: expose the Stroke Width outside class.
 	m_Scale = scale;
 	m_StrokeWidth = strokeWidth * scale;
 	m_FontSize = size * scale;
 	m_FontName = fontName;
-
-	FT_Face face;
-	if (FT_Error error{FT_New_Face(m_FreeType, fontPath.c_str(), 0, &face)})
-	{
-		if (error == FT_Err_Unknown_File_Format)
-		{
-			LOGERROR("Font file format is not supported: %s", fontPath.c_str());
-			return false;
-		}
-		LOGERROR("Failed to load font %s: %d", fontPath.c_str(), error);
-		return false;
-	}
-	m_Font.reset(face);
-
-	// Set the font size.
-	if (FT_Error error{FT_Set_Char_Size(m_Font.get(), 0, FloatToF26Dot6(m_FontSize), 0 , 0)})
-	{
-		LOGERROR("Failed to set font size %d: %d", size, error);
-		return false;
-	}
 
 	if (m_StrokeWidth)
 	{
@@ -177,13 +160,43 @@ bool CFont::SetFontFromPath(const std::string& fontPath, const std::string& font
 		return false;
 	}
 
-	// Get the height of the font.
-	m_Height = FPosF26Dot6ToFloat(m_Font->size->metrics.height);
+	return true;
+}
 
-	// Get the line spacing of the font.
-	m_LineSpacing = FPosF26Dot6ToFloat(m_Font->size->metrics.ascender - m_Font->size->metrics.descender);
+bool CFont::AddFontFromPath(const OsPath& fontPath)
+{
+	ENSURE(m_FontSize > 0);
 
-	m_IsLoading = true;
+	FT_Face face;
+	if (FT_Error error{FT_New_Face(m_FreeType, fontPath.string8().c_str(), 0, &face)}; error == FT_Err_Unknown_File_Format)
+		{
+			LOGERROR("Font file format is not supported: %s", fontPath.string8());
+			return false;
+		}
+	else if (error)
+	{
+		LOGERROR("Failed to load font %s: %d", fontPath.string8(), error);
+		return false;
+	}
+
+	// Set the font size.
+	if (FT_Error error{FT_Set_Char_Size(face, 0, FloatToF26Dot6(m_FontSize), 0 , 0)})
+	{
+		LOGERROR("Failed to set font size %d: %d", m_FontSize, error);
+		return false;
+	}
+
+	if(m_Faces.empty())
+	{
+		// Get the height of the font.
+		m_Height = FPosF26Dot6ToFloat(face->size->metrics.height);
+
+		// Get the line spacing of the font.
+		m_LineSpacing = FPosF26Dot6ToFloat(face->size->metrics.ascender - face->size->metrics.descender);
+	}
+
+	// Add the fallback font to the list.
+	m_Faces.push_back({face, &ftFaceDeleter});
 
 	return true;
 }
@@ -247,6 +260,8 @@ bool CFont::ConstructTextureAtlas()
 		return false;
 	}
 
+	m_IsLoadingTextureToGPU = true;
+
 	// Initialise texture with transparency, for the areas we don't
 	// overwrite with uploading later.
 	m_TexData = std::make_unique<u8[]>(m_AtlasSize);
@@ -267,18 +282,31 @@ const CFont::GlyphData* CFont::GetGlyph(u16 codepoint)
 
 const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 {
+	ENSURE(!m_Faces.empty());
 	PROFILE2("Glyph font texture generate");
 
-	const FT_UInt glyphIndex{FT_Get_Char_Index(m_Font.get(), codepoint)};
+	const auto [faceToUse, glyphIndex]{[&]()->std::pair<FT_Face, FT_UInt>
+		{
+			FT_UInt index{0};
+			std::vector<UniqueFTFace>::iterator it{std::find_if(m_Faces.begin(), m_Faces.end(), [&](const UniqueFTFace& face)
+				{
+					index = FT_Get_Char_Index(face.get(), codepoint);
+					return index != 0;
+				}
+			)};
+
+			return {it != m_Faces.end() ? it->get() : m_Faces.front().get(), index};
+		}()
+	};
 	const FT_Int32 loadFlags{FT_LOAD_DEFAULT | (m_FontSize <= MINIMAL_FONT_SIZE_ANTIALIASING ? FT_LOAD_TARGET_MONO : 0)};
 
-	if (FT_Error error{FT_Load_Glyph(m_Font.get(), glyphIndex, loadFlags)})
+	if (FT_Error error{FT_Load_Glyph(faceToUse, glyphIndex, loadFlags)})
 	{
 		LOGERROR("Failed to load glyph %u: %d", codepoint, error);
 		return nullptr;
 	}
 
-	const FT_GlyphSlot slot{m_Font->glyph};
+	const FT_GlyphSlot slot{faceToUse->glyph};
 	FT_Glyph glyph;
 	if (FT_Error error{FT_Get_Glyph(slot, &glyph)})
 	{
@@ -287,7 +315,7 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 	}
 	UniqueFTGlyph glyphPtr(glyph);
 
-	const float baselineInAtlas{FPosF26Dot6ToFloat(m_Font->size->metrics.ascender)};
+	const float baselineInAtlas{FPosF26Dot6ToFloat(faceToUse->size->metrics.ascender)};
 	const float glyphW{FPosF26Dot6ToFloat(slot->advance.x)};
 
 	if (m_AtlasX + glyphW + m_StrokeWidth + m_AtlasPadding > m_AtlasWidth)
@@ -340,6 +368,7 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 
 	gd.xadvance = glyphW / m_Scale;
 	gd.defined = 1;
+	gd.face = faceToUse;
 
 	m_Glyphs.set(codepoint, gd);
 
@@ -426,7 +455,7 @@ std::optional<CVector2D> CFont::GenerateGlyphBitmap(FT_Glyph& glyph, u16 codepoi
 
 void CFont::UploadTextureAtlasToGPU()
 {
-	if (std::exchange(m_IsLoading, false))
+	if (std::exchange(m_IsLoadingTextureToGPU, false))
 		return;
 
 	if (!m_IsDirty)
