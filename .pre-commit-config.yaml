@@ -60,6 +60,7 @@ repos:
     rev: v0.43.0
     hooks:
       - id: markdownlint
+        language_version: 22.14.0
         exclude: |
           (?x)(
             ^.gitea/ISSUE_TEMPLATE/|
