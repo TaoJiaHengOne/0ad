@@ -110,7 +110,8 @@ var g_Commands = {
 			uais.forEach(cmpUnitAI => {
 				cmpUnitAI.Walk(cmd.x, cmd.z, cmd.queued, cmd.pushFront);
 			});
-		else {
+		else
+		{
 			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
 			uais.forEach((cmpUnitAI, index) => {
 				cmpUnitAI.Walk(positions[index].x, positions[index].y, cmd.queued, cmd.pushFront);
@@ -145,7 +146,8 @@ var g_Commands = {
 			uais.forEach(cmpUnitAI => {
 				cmpUnitAI.WalkAndFight(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued, cmd.pushFront);
 			});
-		else {
+		else
+		{
 			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
 			uais.forEach((cmpUnitAI, index) => {
 				cmpUnitAI.WalkAndFight(positions[index].x, positions[index].y, cmd.targetClasses, cmd.allowCapture, cmd.queued, cmd.pushFront);
@@ -176,7 +178,8 @@ var g_Commands = {
 			uais.forEach(cmpUnitAI => {
 				cmpUnitAI.Patrol(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued)
 			});
-		else {
+		else
+		{
 			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
 			uais.forEach((cmpUnitAI, index) => {
 				cmpUnitAI.Patrol(positions[index].x, positions[index].y, cmd.targetClasses, cmd.allowCapture, cmd.queued)
