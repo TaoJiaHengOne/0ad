@@ -23,9 +23,9 @@ repos:
             ^binaries/data/mods/public/maps/.*\.xml
           )
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.0
+    rev: v0.11.11
     hooks:
-      - id: ruff
+      - id: ruff-check
         args:
           - --output-format=full
         exclude: ^source/tools/webservices/
@@ -45,7 +45,7 @@ repos:
         files: ^binaries/
         exclude: (^binaries/data/mods/(mod|public)/art/.*\.xml|\.dae$)
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.10.0-2
+    rev: v3.11.0-1
     hooks:
       - id: shfmt
         args:
@@ -57,7 +57,7 @@ repos:
     hooks:
       - id: shellcheck
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.43.0
+    rev: v0.45.0
     hooks:
       - id: markdownlint
         language_version: 22.14.0
@@ -67,7 +67,7 @@ repos:
             ^source/third_party/
           )
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.35.1
+    rev: v1.37.1
     hooks:
       - id: yamllint
         args:

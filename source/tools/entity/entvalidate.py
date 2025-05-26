@@ -144,7 +144,7 @@ def main() -> None:
     logger = init_logger(log_level)
 
     if not args.relaxng_schema.exists():
-        logging.error(
+        logger.error(
             "RELAX NG schema file doesn't exist. Please create the file: %s. You can do that by "
             'running "pyrogenesis -dumpSchema" in the "binaries/system" directory',
             args.relaxng_schema,
