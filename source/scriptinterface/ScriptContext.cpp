@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -59,7 +59,8 @@ void GCSliceCallbackHook(JSContext* UNUSED(cx), JS::GCProgress progress, const J
 	if (progress == JS::GCProgress::GC_CYCLE_BEGIN)
 		printf("starting cycle ===========================================\n");
 
-	const char16_t* str = desc.formatMessage(cx);
+	//const char16_t* str = desc.formatMessage(cx);
+	const char16_t* str = desc.formatSliceMessage(cx);
 	int len = 0;
 
 	for(int i = 0; i < 10000; i++)
@@ -77,6 +78,13 @@ void GCSliceCallbackHook(JSContext* UNUSED(cx), JS::GCProgress progress, const J
 	}
 
 	printf("---------------------------------------\n: %ls \n---------------------------------------\n", outstring);
+
+	const uint32_t gcBytes = JS_GetGCParameter(cx, JSGC_BYTES);
+
+	printf("gcBytes: %i KB\n", gcBytes / 1024);
+
+	if (progress == JS::GCProgress::GC_SLICE_END)
+		printf("ending cycle ===========================================\n");
 	#endif
 }
 
@@ -112,12 +120,10 @@ ScriptContext::ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger)
 	JS_SetGCParameter(m_cx, JSGC_INCREMENTAL_GC_ENABLED, true);
 	JS_SetGCParameter(m_cx, JSGC_PER_ZONE_GC_ENABLED, false);
 
-	// Attempt to turn off Spidermonkey-led GCs.
-	JS_SetGCParameter(m_cx, JSGC_HEAP_GROWTH_FACTOR, contextSize);
-	JS_SetGCParameter(m_cx, JSGC_LOW_FREQUENCY_HEAP_GROWTH, 300);
-	JS_SetGCParameter(m_cx, JSGC_HIGH_FREQUENCY_SMALL_HEAP_GROWTH, 500);
-	JS_SetGCParameter(m_cx, JSGC_HIGH_FREQUENCY_LARGE_HEAP_GROWTH, 300);
+	// Set a low time budget to avoid lag spikes, but allow any number of last ditch GCs
+	// to avoid OOM errors.
 	JS_SetGCParameter(m_cx, JSGC_SLICE_TIME_BUDGET_MS, 10);
+	JS_SetGCParameter(m_cx, JSGC_MIN_LAST_DITCH_GC_PERIOD, 0);
 
 
 	JS_SetOffthreadIonCompilationEnabled(m_cx, true);
