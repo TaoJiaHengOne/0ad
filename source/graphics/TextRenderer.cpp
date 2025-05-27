@@ -279,8 +279,8 @@ void CTextRenderer::Render(
 		for (std::list<SBatchRun>::iterator runit = batch.runs.begin(); runit != batch.runs.end(); ++runit)
 		{
 			SBatchRun& run = *runit;
-			float x{run.x};
-			float y{run.y};
+			float x{std::ceil(run.x)};
+			float y{std::ceil(run.y)};
 			for (size_t i = 0; i < run.text->size(); ++i)
 			{
 				const CFont::GlyphData* g = batch.font->GetGlyph((*run.text)[i]);
