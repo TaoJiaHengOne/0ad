@@ -89,7 +89,9 @@ function rgbToHsl(r, g, b)
 	g /= 255;
 	b /= 255;
 	const max = Math.max(r, g, b), min = Math.min(r, g, b);
-	let h, s, l = (max + min) / 2;
+	let h;
+	let s;
+	const l = (max + min) / 2;
 
 	if (max == min)
 	{

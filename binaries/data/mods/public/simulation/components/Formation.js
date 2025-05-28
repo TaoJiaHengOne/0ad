@@ -114,13 +114,10 @@ Formation.prototype.Init = function(deserialized = false)
 		// Loop over the different rectangulars that will map to different animation variants.
 		for (const rectAnimationVariant of differentAnimationVariants)
 		{
-			let rect, replacementAnimationVariant;
-			[rect, replacementAnimationVariant] = rectAnimationVariant.split(/\s*:\s*/);
-			let rows, columns;
-			[rows, columns] = rect.split(/\s*,\s*/);
-			let minRow, maxRow, minColumn, maxColumn;
-			[minRow, maxRow] = rows.split(/\s*\.\.\s*/);
-			[minColumn, maxColumn] = columns.split(/\s*\.\.\s*/);
+			const [rect, replacementAnimationVariant] = rectAnimationVariant.split(/\s*:\s*/);
+			const [rows, columns] = rect.split(/\s*,\s*/);
+			const [minRow, maxRow] = rows.split(/\s*\.\.\s*/);
+			const [minColumn, maxColumn] = columns.split(/\s*\.\.\s*/);
 			this.animationvariants.push({
 				"minRow": +minRow,
 				"maxRow": +maxRow,

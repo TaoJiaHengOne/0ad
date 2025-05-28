@@ -38,7 +38,9 @@ function testFoundation(...mocks)
 	const maxHP = 100;
 	const rot = new Vector3D(1, 2, 3);
 	const pos = new Vector2D(4, 5);
-	let cmpFoundation;
+	const cmpFoundation = ConstructComponent(foundationEnt, "Foundation", {
+		"BuildTimeModifier": "0.7"
+	});
 
 	AddMock(SYSTEM_ENTITY, IID_Trigger, {
 		"CallEvent": () => {},
@@ -139,9 +141,6 @@ function testFoundation(...mocks)
 		TS_ASSERT_EQUALS(template, "construction|" + finalTemplate);
 		return previewEnt;
 	};
-	cmpFoundation = ConstructComponent(foundationEnt, "Foundation", {
-		"BuildTimeModifier": "0.7"
-	});
 	cmpFoundation.InitialiseConstruction(finalTemplate);
 
 	TS_ASSERT_EQUALS(cmpFoundation.finalTemplateName, finalTemplate);

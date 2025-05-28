@@ -384,11 +384,11 @@ function placePlayerBaseTrees(args)
 
 function placePlayerBaseTreasures(args)
 {
-	let [get, basePosition, baseResourceConstraint] = getPlayerBaseArgs(args);
+	const [_, basePosition, baseResourceConstraint] = getPlayerBaseArgs(args);
 
 	for (const resourceTypeArgs of args.types)
 	{
-		get = (property, defaultVal) => resourceTypeArgs[property] === undefined ? defaultVal : resourceTypeArgs[property];
+		const get = (property, defaultVal) => resourceTypeArgs[property] === undefined ? defaultVal : resourceTypeArgs[property];
 
 		let success = false;
 

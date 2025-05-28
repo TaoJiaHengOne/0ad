@@ -21,9 +21,8 @@ var ProfilableMixin = (Parent) => class Profilable extends (() => Parent || Obje
 				{
 					ret = ret.bind(receiver);
 					return (...a) => {
-						let ret2;
 						Engine.ProfileStart(target.constructor.name + ":" + prop);
-						ret2 = ret(...a);
+						const ret2 = ret(...a);
 						Engine.ProfileStop();
 						return ret2;
 					};
