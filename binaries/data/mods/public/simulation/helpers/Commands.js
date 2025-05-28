@@ -176,13 +176,13 @@ var g_Commands = {
 		const uais = GetFormationUnitAIs(data.entities, player, cmd, data.formation);
 		if (uais.length === 1 || uais.length !== ents)
 			uais.forEach(cmpUnitAI => {
-				cmpUnitAI.Patrol(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued)
+				cmpUnitAI.Patrol(cmd.x, cmd.z, cmd.targetClasses, cmd.allowCapture, cmd.queued);
 			});
 		else
 		{
 			const positions = Engine.QueryInterface(SYSTEM_ENTITY, IID_Pathfinder).DistributeAround(data.entities, cmd.x, cmd.z);
 			uais.forEach((cmpUnitAI, index) => {
-				cmpUnitAI.Patrol(positions[index].x, positions[index].y, cmd.targetClasses, cmd.allowCapture, cmd.queued)
+				cmpUnitAI.Patrol(positions[index].x, positions[index].y, cmd.targetClasses, cmd.allowCapture, cmd.queued);
 			});
 		}
 	},

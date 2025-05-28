@@ -185,7 +185,7 @@ var g_OptionType = {
 				[translate("No"), translate("Yes")]);
 
 			if (buttonIndex === 0)
-				this.revertChange(option, +oldValue, hasChanges);
+				revertChange(option, +oldValue, hasChanges);
 		}
 	},
 	"slider":

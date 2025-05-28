@@ -76,7 +76,6 @@ function* GenerateMap(mapSettings)
 		if (teams.length != 2)
 		{
 			throw new Error("Too many teams for " + pattern + ", use circle or make two teams.");
-			pattern = "circle";
 		}
 		startAngle = 1.600;
 	}
