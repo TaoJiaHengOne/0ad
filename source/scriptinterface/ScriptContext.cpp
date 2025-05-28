@@ -122,7 +122,7 @@ ScriptContext::ScriptContext(int contextSize, uint32_t heapGrowthBytesGCTrigger)
 
 	// Set a low time budget to avoid lag spikes, but allow any number of last ditch GCs
 	// to avoid OOM errors.
-	JS_SetGCParameter(m_cx, JSGC_SLICE_TIME_BUDGET_MS, 10);
+	JS_SetGCParameter(m_cx, JSGC_SLICE_TIME_BUDGET_MS, 6);
 	JS_SetGCParameter(m_cx, JSGC_MIN_LAST_DITCH_GC_PERIOD, 0);
 
 
