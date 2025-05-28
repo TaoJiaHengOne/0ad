@@ -26,6 +26,7 @@
 #include "maths/Matrix3D.h"
 #include "ps/CStrIntern.h"
 #include "ps/CStrInternStatic.h"
+#include "ps/ConfigDB.h"
 #include "renderer/Renderer.h"
 
 #include <errno.h>
@@ -202,6 +203,11 @@ void CTextRenderer::Render(
 	std::vector<CVector2D> positions;
 	std::vector<CVector2D> uvs;
 
+	const bool debugFontBox{g_ConfigDB.Get("fonts.debugBox", false)};
+	const std::string debugFontBoxColor{ g_ConfigDB.Get("fonts.debugBoxColor", std::string{"128 0 128"})};
+	CColor debugBoxColor;
+	debugBoxColor.ParseString(debugFontBoxColor.c_str());
+	
 	// Try to merge non-consecutive batches that share the same font/color/translate:
 	// sort the batch list by font, then merge the runs of adjacent compatible batches
 	m_Batches.sort(SBatchCompare());
@@ -245,13 +251,18 @@ void CTextRenderer::Render(
 			translationChanged = true;
 		}
 
+		CColor boxColor;
+		
 		// ALPHA-only textures will have .rgb sampled as 0, so we need to
 		// replace it with white (but not affect RGBA textures)
-		if (batch.font->HasRGB())
-			deviceCommandContext->SetUniform(colorAddBindingSlot, 0.0f, 0.0f, 0.0f, 0.0f);
+		if (!debugFontBox && batch.font->HasRGB())
+			boxColor = CColor(0.0f, 0.0f, 0.0f, 0.0f);
+		else if (debugFontBox && batch.font->HasRGB())
+			boxColor = debugBoxColor;
 		else
-			deviceCommandContext->SetUniform(colorAddBindingSlot, batch.color.r, batch.color.g, batch.color.b, 0.0f);
+			boxColor = CColor(batch.color.r, batch.color.g, batch.color.b, debugFontBox ? debugBoxColor.r : 0);
 
+		deviceCommandContext->SetUniform(colorAddBindingSlot, boxColor.AsFloatArray());
 		deviceCommandContext->SetUniform(colorMulBindingSlot, batch.color.AsFloatArray());
 
 		positions.resize(std::min(MAX_CHAR_COUNT_PER_BATCH, batch.chars) * 4);
