@@ -69,7 +69,8 @@ function LoadPlayerSettings(settings, newPlayers)
 		if (i === 0)
 			continue;
 
-		cmpPlayer.SetRemoved(getPlayerSetting(i, "Removed"));
+		// Atlas has no information about player removal.
+		cmpPlayer.SetRemoved(getPlayerSetting(i, "Removed") === true);
 
 		// StartingResources
 		if (settings.PlayerData[i].Resources !== undefined)
