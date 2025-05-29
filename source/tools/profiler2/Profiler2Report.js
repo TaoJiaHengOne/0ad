@@ -22,32 +22,51 @@
 // Create one instance per profiler report you wish to open.
 // This gives you the interface to access the raw and processed data
 
-var Profiler2Report = function(callback, tryLive, file)
+class Profiler2Report
 {
-	var outInterface = {};
 
 	// Item types returned by the engine
-	var ITEM_EVENT = 1;
-	var ITEM_ENTER = 2;
-	var ITEM_LEAVE = 3;
-	var ITEM_ATTRIBUTE = 4;
+	ITEM_EVENT = 1;
+	ITEM_ENTER = 2;
+	ITEM_LEAVE = 3;
+	ITEM_ATTRIBUTE = 4;
 
-	var g_used_colours = {};
+	m_used_colours = {};
+	m_raw_data;
+	m_data;
+	m_data_by_frame;
 
-	var g_raw_data;
-	var g_data;
+	constructor(callback, tryLive, file)
+	{
+		this.refresh(callback, tryLive, file);
+	}
 
-	function refresh(callback, tryLive, file)
+	data()
+	{
+		return this.m_data;
+	}
+
+	raw_data()
+	{
+		return this.m_raw_data;
+	}
+
+	data_by_frame()
+	{
+		return this.m_data_by_frame;
+	}
+
+	refresh(callback, tryLive, file)
 	{
 		if (tryLive)
-			refresh_live(callback, file);
+			this.refresh_live(callback, file);
 		else
-			refresh_jsonp(callback, file);
+			this.refresh_jsonp(callback, file);
 	}
-	outInterface.refresh = refresh;
 
-	function refresh_jsonp(callback, source)
+	refresh_jsonp(callback, source)
 	{
+		const self = this;
 		if (!source)
 		{
 			callback(false);
@@ -56,7 +75,7 @@ var Profiler2Report = function(callback, tryLive, file)
 		var reader = new FileReader();
 		reader.onload = function(e)
 		{
-			refresh_from_jsonp(callback, e.target.result);
+			self.refresh_from_jsonp(callback, e.target.result);
 		};
 		reader.onerror = function(e) {
 			alert("Failed to load report file");
@@ -66,8 +85,9 @@ var Profiler2Report = function(callback, tryLive, file)
 		reader.readAsText(source);
 	}
 
-	function refresh_from_jsonp(callback, content)
+	refresh_from_jsonp(callback, content)
 	{
+		const self = this;
 		var script = document.createElement('script');
 
 		window.profileDataCB = function(data)
@@ -79,8 +99,8 @@ var Profiler2Report = function(callback, tryLive, file)
 				var canvas = $('<canvas width="1600" height="160"></canvas>');
 				threads.push({ 'name': thread.name, 'data': { 'events': concat_events(thread.data) }, 'canvas': canvas.get(0) });
 			});
-			g_raw_data = { 'threads': threads };
-			compute_data();
+			self.m_raw_data = { 'threads': threads };
+			self.compute_data();
 			callback(true);
 		};
 
@@ -88,8 +108,9 @@ var Profiler2Report = function(callback, tryLive, file)
 		document.body.appendChild(script);
 	}
 
-	function refresh_live(callback, file)
+	refresh_live(callback, file)
 	{
+		const self = this;
 		$.ajax({
 			"url": `http://127.0.0.1:${$("#gameport").val()}/overview`,
 			"dataType": 'json',
@@ -101,7 +122,7 @@ var Profiler2Report = function(callback, tryLive, file)
 				var callback_data = { 'threads': threads, 'completed': 0 };
 
 				threads.forEach(function(thread) {
-					refresh_thread(callback, thread, callback_data);
+					self.refresh_thread(callback, thread, callback_data);
 				});
 			},
 			"error": function(jqXHR, textStatus, errorThrown)
@@ -112,8 +133,9 @@ var Profiler2Report = function(callback, tryLive, file)
 		});
 	}
 
-	function refresh_thread(callback, thread, callback_data)
+	refresh_thread(callback, thread, callback_data)
 	{
+		const self = this;
 		$.ajax({
 			"url": `http://127.0.0.1:${$("#gameport").val()}/query`,
 			"dataType": 'json',
@@ -124,8 +146,8 @@ var Profiler2Report = function(callback, tryLive, file)
 
 				if (++callback_data.completed == callback_data.threads.length)
 				{
-					g_raw_data = { 'threads': callback_data.threads };
-					compute_data();
+					self.m_raw_data = { 'threads': callback_data.threads };
+					self.compute_data();
 					callback(true);
 				}
 			},
@@ -135,43 +157,43 @@ var Profiler2Report = function(callback, tryLive, file)
 		});
 	}
 
-	function compute_data(range)
+	compute_data(range)
 	{
-		g_data = { "threads": [] };
-		g_data_by_frame = { "threads": [] };
-		for (let thread = 0; thread < g_raw_data.threads.length; thread++)
+		this.m_data = { "threads": [] };
+		this.m_data_by_frame = { "threads": [] };
+		for (let thread = 0; thread < this.m_raw_data.threads.length; thread++)
 		{
-			const processed_data = process_raw_data(g_raw_data.threads[thread].data.events, range);
+			const processed_data = this.process_raw_data(this.m_raw_data.threads[thread].data.events, range);
 			if (!processed_data.intervals.length && !processed_data.events.length)
 				continue;
 
-			g_data.threads[thread] = processed_data;
+			this.m_data.threads[thread] = processed_data;
 
-			g_data.threads[thread].intervals_by_type_frame = {};
+			this.m_data.threads[thread].intervals_by_type_frame = {};
 
-			if (!g_data.threads[thread].frames.length)
+			if (!this.m_data.threads[thread].frames.length)
 				continue;
 			// compute intervals by types and frames if there are frames.
-			for (const type in g_data.threads[thread].intervals_by_type)
+			for (const type in this.m_data.threads[thread].intervals_by_type)
 			{
 				let current_frame = 0;
-				g_data.threads[thread].intervals_by_type_frame[type] = [[]];
-				for (let i = 0; i < g_data.threads[thread].intervals_by_type[type].length; i++)
+				this.m_data.threads[thread].intervals_by_type_frame[type] = [[]];
+				for (let i = 0; i < this.m_data.threads[thread].intervals_by_type[type].length; i++)
 				{
-					const event = g_data.threads[thread].intervals[g_data.threads[thread].intervals_by_type[type][i]];
-					while (current_frame < g_data.threads[thread].frames.length && event.t0 > g_data.threads[thread].frames[current_frame].t1)
+					const event = this.m_data.threads[thread].intervals[this.m_data.threads[thread].intervals_by_type[type][i]];
+					while (current_frame < this.m_data.threads[thread].frames.length && event.t0 > this.m_data.threads[thread].frames[current_frame].t1)
 					{
-						g_data.threads[thread].intervals_by_type_frame[type].push([]);
+						this.m_data.threads[thread].intervals_by_type_frame[type].push([]);
 						current_frame++;
 					}
-					if (current_frame < g_data.threads[thread].frames.length)
-						g_data.threads[thread].intervals_by_type_frame[type][current_frame].push(g_data.threads[thread].intervals_by_type[type][i]);
+					if (current_frame < this.m_data.threads[thread].frames.length)
+						this.m_data.threads[thread].intervals_by_type_frame[type][current_frame].push(this.m_data.threads[thread].intervals_by_type[type][i]);
 				}
 			}
 		}
 	}
 
-	function process_raw_data(data, range)
+	process_raw_data(data, range)
 	{
 		if (!data.length)
 			return { 'frames': [], 'events': [], 'intervals': [], 'intervals_by_type': {}, 'tmin': 0, 'tmax': 0 };
@@ -180,20 +202,20 @@ var Profiler2Report = function(callback, tryLive, file)
 		var tmin, tmax;
 
 		var frames = [];
-		var last_frame_time_start = undefined;
+		var last_frame_time_start;
 
 		var stack = [];
 		for (var i = 0; i < data.length; ++i)
 		{
-			if (data[i][0] == ITEM_EVENT && data[i][2] == '__framestart')
+			if (data[i][0] == this.ITEM_EVENT && data[i][2] == '__framestart')
 			{
 				if (last_frame_time_start)
 					frames.push({ 't0': last_frame_time_start, 't1': data[i][1] });
 				last_frame_time_start = data[i][1];
 			}
-			if (data[i][0] == ITEM_ENTER)
+			if (data[i][0] == this.ITEM_ENTER)
 				stack.push(data[i][2]);
-			if (data[i][0] == ITEM_LEAVE)
+			if (data[i][0] == this.ITEM_LEAVE)
 				stack.pop();
 		}
 		if(!range)
@@ -204,7 +226,7 @@ var Profiler2Report = function(callback, tryLive, file)
 		{
 			for (var i = data.length - 1; i > 0; --i)
 			{
-				if (data[i][0] == ITEM_EVENT && data[i][2] == '__framestart')
+				if (data[i][0] == this.ITEM_EVENT && data[i][2] == '__framestart')
 				{
 					end = i;
 					break;
@@ -214,7 +236,7 @@ var Profiler2Report = function(callback, tryLive, file)
 			var framesfound = 0;
 			for (var i = end - 1; i > 0; --i)
 			{
-				if (data[i][0] == ITEM_EVENT && data[i][2] == '__framestart')
+				if (data[i][0] == this.ITEM_EVENT && data[i][2] == '__framestart')
 				{
 					start = i;
 					if (++framesfound == range.numframes)
@@ -231,7 +253,7 @@ var Profiler2Report = function(callback, tryLive, file)
 			for (var i = end; i > 0; --i)
 			{
 				var type = data[i][0];
-				if (type == ITEM_EVENT || type == ITEM_ENTER || type == ITEM_LEAVE)
+				if (type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE)
 				{
 					tmax = data[i][1];
 					break;
@@ -242,7 +264,7 @@ var Profiler2Report = function(callback, tryLive, file)
 			for (var i = end; i > 0; --i)
 			{
 				var type = data[i][0];
-				if ((type == ITEM_EVENT || type == ITEM_ENTER || type == ITEM_LEAVE) && data[i][1] < tmin)
+				if ((type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE) && data[i][1] < tmin)
 					break;
 				start = i;
 			}
@@ -257,7 +279,7 @@ var Profiler2Report = function(callback, tryLive, file)
 			for (var i = data.length-1; i > 0; --i)
 			{
 				var type = data[i][0];
-				if ((type == ITEM_EVENT || type == ITEM_ENTER || type == ITEM_LEAVE) && data[i][1] < tmax)
+				if ((type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE) && data[i][1] < tmax)
 				{
 					end = i;
 					break;
@@ -267,7 +289,7 @@ var Profiler2Report = function(callback, tryLive, file)
 			for (var i = end; i > 0; --i)
 			{
 				var type = data[i][0];
-				if ((type == ITEM_EVENT || type == ITEM_ENTER || type == ITEM_LEAVE) && data[i][1] < tmin)
+				if ((type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE) && data[i][1] < tmin)
 					break;
 				start = i;
 			}
@@ -276,13 +298,13 @@ var Profiler2Report = function(callback, tryLive, file)
 			while (start > 0)
 			{
 				--start;
-				if (data[start][0] == ITEM_EVENT && data[start][2] == '__framestart')
+				if (data[start][0] == this.ITEM_EVENT && data[start][2] == '__framestart')
 					break;
 			}
 			while (end < data.length-1)
 			{
 				++end;
-				if (data[end][0] == ITEM_EVENT && data[end][2] == '__framestart')
+				if (data[end][0] == this.ITEM_EVENT && data[end][2] == '__framestart')
 					break;
 			}
 		}
@@ -295,12 +317,12 @@ var Profiler2Report = function(callback, tryLive, file)
 		var lastWasEvent = false;
 		for (var i = 0; i < data.length; ++i)
 		{
-			if (data[i][0] == ITEM_EVENT)
+			if (data[i][0] == this.ITEM_EVENT)
 			{
 				events.push({ 't': data[i][1], 'id': data[i][2] });
 				lastWasEvent = true;
 			}
-			else if (data[i][0] == ITEM_ATTRIBUTE)
+			else if (data[i][0] == this.ITEM_ATTRIBUTE)
 			{
 				if (lastWasEvent)
 				{
@@ -326,7 +348,7 @@ var Profiler2Report = function(callback, tryLive, file)
 
 		for (var i = start; i <= end; ++i)
 		{
-			if (data[i][0] == ITEM_EVENT)
+			if (data[i][0] == this.ITEM_EVENT)
 			{
 				//            if (data[i][1] < lastT)
 				//                console.log('Time went backwards: ' + (data[i][1] - lastT));
@@ -334,7 +356,7 @@ var Profiler2Report = function(callback, tryLive, file)
 				lastT = data[i][1];
 				lastWasEvent = true;
 			}
-			else if (data[i][0] == ITEM_ENTER)
+			else if (data[i][0] == this.ITEM_ENTER)
 			{
 				//            if (data[i][1] < lastT)
 				//                console.log('Time - ENTER  went backwards: ' + (data[i][1] - lastT) + " - " + JSON.stringify(data[i]));
@@ -344,7 +366,7 @@ var Profiler2Report = function(callback, tryLive, file)
 				lastT = data[i][1];
 				lastWasEvent = false;
 			}
-			else if (data[i][0] == ITEM_LEAVE)
+			else if (data[i][0] == this.ITEM_LEAVE)
 			{
 				//            if (data[i][1] < lastT)
 				//                console.log('Time - LEAVE  went backwards: ' + (data[i][1] - lastT) + " - " + JSON.stringify(data[i]));
@@ -357,10 +379,10 @@ var Profiler2Report = function(callback, tryLive, file)
 
 				var interval = stack.pop();
 
-				if (!g_used_colours[interval.id])
-					g_used_colours[interval.id] = new_colour(num_colours++);
+				if (!this.m_used_colours[interval.id])
+					this.m_used_colours[interval.id] = new_colour(num_colours++);
 
-				interval.colour = g_used_colours[interval.id];
+				interval.colour = this.m_used_colours[interval.id];
 
 				interval.t1 = data[i][1];
 				interval.duration = interval.t1 - interval.t0;
@@ -388,7 +410,7 @@ var Profiler2Report = function(callback, tryLive, file)
 						newInterv.t1 = curT + newInterv.duration;
 						curT += newInterv.duration;
 						newInterv.id = "Script:" + sub.replace(/(.+?) ([.0-9]+)us/, "$1");
-						newInterv.colour = g_used_colours[interval.id];
+						newInterv.colour = this.m_used_colours[interval.id];
 						newInterv.depth = interval.depth+1;
 						intervals.push(newInterv);
 						if (newInterv.id in intervals_by_type)
@@ -398,7 +420,7 @@ var Profiler2Report = function(callback, tryLive, file)
 					}
 				}
 			}
-			else if (data[i][0] == ITEM_ATTRIBUTE)
+			else if (data[i][0] == this.ITEM_ATTRIBUTE)
 			{
 				if (!lastWasEvent && stack.length)
 				{
@@ -410,12 +432,4 @@ var Profiler2Report = function(callback, tryLive, file)
 		}
 		return { 'frames': frames, 'events': events, 'intervals': intervals, 'intervals_by_type': intervals_by_type, 'tmin': tmin, 'tmax': tmax };
 	}
-
-	outInterface.data = function() { return g_data; };
-	outInterface.raw_data = function() { return g_raw_data; };
-	outInterface.data_by_frame = function() { return g_data_by_frame; };
-
-	refresh(callback, tryLive, file);
-
-	return outInterface;
-};
+}

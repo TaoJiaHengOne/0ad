@@ -421,7 +421,7 @@ function load_report(trylive, file)
 	nav.appendChild(newRep);
 
 	const callback = on_report_loaded.bind(undefined, reportID);
-	g_reports.push(Profiler2Report(callback, trylive, file));
+	g_reports.push(new Profiler2Report(callback, trylive, file));
 }
 
 function on_report_loaded(reportID, success)
