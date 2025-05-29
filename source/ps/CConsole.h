@@ -78,9 +78,9 @@ private:
 	// Lock for all state modified by InsertMessage
 	std::mutex m_Mutex;
 
-	int m_FontHeight;
-	int m_FontWidth;
-	int m_FontOffset; // distance to move up before drawing
+	float m_FontHeight;
+	float m_FontWidth;
+	float m_FontOffset; // distance to move up before drawing
 	size_t m_CharsPerPage;
 
 	float m_X;

@@ -31,8 +31,8 @@ class CFontMetrics
 public:
 	CFontMetrics(CStrIntern font);
 
-	float GetLineSpacing() const;
 	float GetHeight() const;
+	float GetCapHeight();
 	float GetCharacterWidth(wchar_t c) const;
 	void CalculateStringSize(const wchar_t* string, float& w, float& h) const;
 

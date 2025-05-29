@@ -42,6 +42,7 @@
 #include "scriptinterface/JSON.h"
 
 #include <algorithm>
+#include <cmath>
 #include <string_view>
 #include <vector>
 #include <wctype.h>
@@ -95,19 +96,19 @@ void CConsole::Init()
 
 	// Calculate and store the line spacing
 	const CFontMetrics font{CStrIntern(m_consoleFont)};
-	m_FontHeight = font.GetLineSpacing();
+	m_FontHeight = font.GetHeight();
 	m_FontWidth = font.GetCharacterWidth(L'C');
 	m_CharsPerPage = static_cast<size_t>(g_xres / m_FontWidth);
 	// Offset by an arbitrary amount, to make it fit more nicely
-	m_FontOffset = 7;
+	m_FontOffset = 7.0f;
 
 	m_CursorBlinkRate = g_ConfigDB.Get("gui.cursorblinkrate", 0.5);
 }
 
 void CConsole::UpdateScreenSize(int w, int h)
 {
-	m_X = 0;
-	m_Y = 0;
+	m_X = 0.0f;
+	m_Y = 0.0f;
 	float height = h * 0.6f;
 	m_Width = w / g_VideoMode.GetScale();
 	m_Height = height / g_VideoMode.GetScale();
@@ -230,8 +231,8 @@ void CConsole::DrawWindow(CCanvas2D& canvas)
 	if (m_Height > m_FontHeight + 4)
 	{
 		points = {
-			CVector2D{0.0f, m_Height - static_cast<float>(m_FontHeight) - 4.0f},
-			CVector2D{m_Width, m_Height - static_cast<float>(m_FontHeight) - 4.0f}
+			CVector2D{0.0f, m_Height - m_FontHeight - 4.0f},
+			CVector2D{m_Width, m_Height - m_FontHeight - 4.0f}
 		};
 		for (CVector2D& point : points)
 			point += CVector2D{m_X, m_Y - (1.0f - m_VisibleFrac) * m_Height};
@@ -258,7 +259,7 @@ void CConsole::DrawHistory(CTextRenderer& textRenderer)
 		{
 			textRenderer.Put(
 				9.0f,
-				m_Height - static_cast<float>(m_FontOffset) - static_cast<float>(m_FontHeight) * (i - m_MsgHistPos + 1),
+				m_Height - m_FontOffset - m_FontHeight * (i - m_MsgHistPos + 1),
 				it->c_str());
 		}
 
@@ -274,7 +275,7 @@ void CConsole::DrawBuffer(CTextRenderer& textRenderer)
 
 	const CVector2D savedTranslate = textRenderer.GetTranslate();
 
-	textRenderer.Translate(2.0f, m_Height - static_cast<float>(m_FontOffset) + 1.0f);
+	textRenderer.Translate(2.0f, m_Height - m_FontOffset + 1.0f);
 
 	textRenderer.SetCurrentColor(CColor(1.0f, 1.0f, 0.0f, 1.0f));
 	textRenderer.PutAdvance(L"]");
@@ -415,7 +416,7 @@ void CConsole::InsertChar(const int szChar, const wchar_t cooked)
 		{
 			std::lock_guard<std::mutex> lock(m_Mutex); // needed for safe access to m_deqMsgHistory
 
-			const int linesShown = static_cast<int>(m_Height / m_FontHeight) - 4;
+			const int linesShown = static_cast<int>(std::ceil(m_Height / m_FontHeight)) - 4;
 			m_MsgHistPos = Clamp(static_cast<int>(m_MsgHistory.size()) - linesShown, 1, static_cast<int>(m_MsgHistory.size()));
 		}
 		else

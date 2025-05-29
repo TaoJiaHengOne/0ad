@@ -95,10 +95,10 @@ public:
 		CGUI gui{*g_ScriptContext};
 
 		const CStrW font{L"mono-10"};
-		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
 
-		const float lineHeight{fontMetrics.GetHeight()};
-		const float lineSpacing{fontMetrics.GetLineSpacing()};
+		const float lineHeight{fontMetrics.GetCapHeight()};
+		const float lineSpacing{fontMetrics.GetHeight()};
 
 		CGUIString string;
 		CGUIText text;
@@ -219,8 +219,8 @@ public:
 		TS_ASSERT(firstWordWidth < secondWordWidth);
 		const float spaceWidth = fontMetrics.GetCharacterWidth(L' ');
 
-		const float lineHeight = fontMetrics.GetHeight();
-		const float lineSpacing = fontMetrics.GetLineSpacing();
+		const float lineHeight{fontMetrics.GetCapHeight()};
+		const float lineSpacing{fontMetrics.GetHeight()};
 
 		auto layoutText = [&gui, &string, &font, lineHeight, firstWordWidth](const float width)
 		{
@@ -284,9 +284,9 @@ public:
 		CGUI gui{*g_ScriptContext};
 
 		const CStrW font{L"mono-10"};
-		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
-		const float lineHeight{fontMetrics.GetHeight()};
-		const float lineSpacing{fontMetrics.GetLineSpacing()};
+		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+		const float lineHeight{fontMetrics.GetCapHeight()};
+		const float lineSpacing{fontMetrics.GetHeight()};
 
 		float renderedWidth = 0.f;
 		const float width = 200.f;
@@ -334,8 +334,8 @@ public:
 
 		const CStrW font{L"sans-bold-13"};
 		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
-		const float lineHeight = fontMetrics.GetHeight();
-		const float lineSpacing = fontMetrics.GetLineSpacing();
+		const float lineHeight{fontMetrics.GetCapHeight()};
+		const float lineSpacing{fontMetrics.GetHeight()};
 
 		CGUIString string;
 		CGUIText text;
@@ -353,9 +353,9 @@ public:
 		CGUI gui{*g_ScriptContext};
 
 		const CStrW font{L"mono-10"};
-		const CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
-		const float lineHeight{fontMetrics.GetHeight()};
-		const float lineSpacing{fontMetrics.GetLineSpacing()};
+		CFontMetrics fontMetrics{CStrIntern(font.ToUTF8())};
+		const float lineHeight{fontMetrics.GetCapHeight()};
+		const float lineSpacing{fontMetrics.GetHeight()};
 
 		CGUIString string;
 		CGUIText text;

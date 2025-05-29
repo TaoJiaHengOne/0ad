@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdlib>
 
 // List of word delimiter bounds
 // The list contains ranges of word delimiters. The odd indexed chars are the start
@@ -217,9 +218,9 @@ void CGUIString::GenerateTextCall(const CGUI& pGUI, SFeedback& Feedback, CStrInt
 			// For anything other than the first line, the line spacing
 			// needs to be considered rather than just the height of the text.
 			if (FirstLine)
-				size.Height = font.GetHeight();
+				size.Height = font.GetCapHeight();
 			else
-				size.Height = font.GetLineSpacing();
+				size.Height = font.GetHeight();
 
 			// Append width, and make maximum height the height.
 			Feedback.m_Size.Width += size.Width;

@@ -28,6 +28,7 @@
 #include <numeric>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 namespace
 {
@@ -74,12 +75,14 @@ void CFont::GlyphMap::set(u16 codepoint, const GlyphData& glyph)
 	(*m_Data[codepoint >> 8])[codepoint & 0xff].defined = 1;
 }
 
-float CFont::GetLineSpacing() const {
-	return m_LineSpacing / m_Scale;
-}
-
 float CFont::GetHeight() const {
 	return m_Height / m_Scale;
+}
+
+float CFont::GetCapHeight()
+{
+	const CFont::GlyphData* g{GetGlyph(L'I')};
+	return (g ? g->yadvance : 0) + std::abs(FPosF26Dot6ToFloat(m_Faces.front()->size->metrics.descender));
 }
 
 float CFont::GetCharacterWidth(wchar_t c)
@@ -94,11 +97,13 @@ void CFont::CalculateStringSize(const wchar_t* string, float& width, float& heig
 {
 	PROFILE2("CalculateStringSize font texture generate");
 	width = 0;
-	height = GetHeight();
+	height = 0;
 
 	// Compute the width as the width of the longest line.
+	std::wstring original{string};
 	std::wistringstream stream{string};
 	std::wstring line;
+	bool firstLine{true};
 	while (std::getline(stream, line))
 	{
 		FT_UInt glyphIndexStorage{0};
@@ -129,8 +134,15 @@ void CFont::CalculateStringSize(const wchar_t* string, float& width, float& heig
 		};
 
 		width = std::max(width, lineWidth);
-		height += GetLineSpacing();
+
+		if (!firstLine || !line.empty())
+			height += firstLine ? GetCapHeight() : GetHeight();
+
+		firstLine = false;
 	}
+
+	if (original.back() == L'\n')
+		height += GetHeight();
 }
 
 bool CFont::SetFontParams(const std::string& fontName, float size, float strokeWidth, float scale)
@@ -204,14 +216,9 @@ bool CFont::AddFontFromPath(const OsPath& fontPath)
 		return false;
 	}
 
+	// Get the height of the font.
 	if(m_Faces.empty())
-	{
-		// Get the height of the font.
 		m_Height = FPosF26Dot6ToFloat(face->size->metrics.height);
-
-		// Get the line spacing of the font.
-		m_LineSpacing = FPosF26Dot6ToFloat(face->size->metrics.ascender - face->size->metrics.descender);
-	}
 
 	// Add the fallback font to the list.
 	m_Faces.push_back({face, &ftFaceDeleter});
@@ -385,6 +392,7 @@ const CFont::GlyphData* CFont::ExtractAndGenerateGlyph(u16 codepoint)
 	gd.y1 = m_StrokeWidth / m_Scale;
 
 	gd.xadvance = glyphW / m_Scale;
+	gd.yadvance = FPosF26Dot6ToFloat(slot->metrics.height) / m_Scale;
 	gd.defined = 1;
 	gd.face = faceToUse;
 

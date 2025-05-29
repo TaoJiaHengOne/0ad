@@ -45,6 +45,7 @@ public:
 		float u0, v0, u1, v1;
 		float x0, y0, x1, y1;
 		float xadvance;
+		float yadvance;
 		u8 defined{0};
 		FT_Face face;
 	};
@@ -77,8 +78,16 @@ public:
 	};
 
 	bool HasRGB() const { return m_HasRGB; }
-	float GetLineSpacing() const;
 	float GetHeight() const;
+
+	/**
+	* In typography, cap height is the height of a capital letter above the baseline for a particular typeface.
+	* It specifically is the height of capital letters that are flat—such as H or I—as opposed to round letters such as O, or pointed letters like A,
+	* both of which may display overshoot. The height of the small letters is the x-height.
+	* REf: https://en.wikipedia.org/wiki/Cap_height
+	*/
+	float GetCapHeight();
+
 	float GetCharacterWidth(wchar_t c);
 	float GetStrokeWidth() const { return m_StrokeWidth; }
 	void CalculateStringSize(const wchar_t* string, float& w, float& h);
@@ -126,8 +135,6 @@ private:
 	bool m_HasRGB{true};
 
 	GlyphMap m_Glyphs;
-
-	float m_LineSpacing;
 
 	// Height of a capital letter, roughly.
 	float m_Height;

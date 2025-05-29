@@ -33,6 +33,8 @@
 #include "ps/Hotkey.h"
 
 #include <sstream>
+#include <maths/Size2D.h>
+#include <cstdlib>
 
 extern int g_yres;
 
@@ -1232,8 +1234,8 @@ void CInput::DrawContent(CCanvas2D& canvas)
 	}
 
 	// Get the height of this font.
-	float h = (float)font.GetHeight();
-	float ls = (float)font.GetLineSpacing();
+	const float h{font.GetCapHeight()};
+	const float ls{font.GetHeight()};
 
 	CTextRenderer textRenderer;
 	textRenderer.SetCurrentFont(font_name);
@@ -1880,7 +1882,7 @@ void CInput::UpdateText(int from, int to_before, int to_after)
 
 	if (m_ScrollBar)
 	{
-		GetScrollBar(0).SetScrollRange(m_CharacterPositions.size() * font.GetLineSpacing() + m_BufferZone * 2.f);
+		GetScrollBar(0).SetScrollRange(m_CharacterPositions.size() * font.GetHeight() + m_BufferZone * 2.f);
 		GetScrollBar(0).SetScrollSpace(m_CachedActualSize.GetHeight());
 	}
 }
@@ -1903,10 +1905,8 @@ int CInput::GetMouseHoveringTextPosition() const
 		if (m_ScrollBar)
 			scroll = GetScrollBarPos(0);
 
-		// Now get the height of the font.
-						// TODO: Get the real font
-		CFontMetrics font(CStrIntern(m_Font->ToUTF8()));
-		float spacing = (float)font.GetLineSpacing();
+		const CFontMetrics font{CStrIntern{m_Font->ToUTF8()}};
+		const float spacing{font.GetHeight()};
 
 		// Change mouse position relative to text.
 		mouse -= m_CachedActualSize.TopLeft();
@@ -2032,11 +2032,8 @@ void CInput::UpdateAutoScroll()
 
 		const float scroll = GetScrollBar(0).GetPos();
 
-		// Now get the height of the font.
-						// TODO: Get the real font
-		CFontMetrics font(CStrIntern(m_Font->ToUTF8()));
-		float spacing = (float)font.GetLineSpacing();
-		//float height = font.GetHeight();
+		const CFontMetrics font{CStrIntern{m_Font->ToUTF8()}};
+		const float spacing{font.GetHeight()};
 
 		// TODO Gee (2004-11-21): Okay, I need a 'std::list' for some reasons, but I would really like to
 		//  be able to get the specific element here. This is hopefully a temporary hack.

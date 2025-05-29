@@ -29,15 +29,6 @@ CFontMetrics::CFontMetrics(CStrIntern font)
 	m_Font = g_Renderer.GetFontManager().LoadFont(font);
 }
 
-float CFontMetrics::GetLineSpacing() const
-{
-	// Return some arbitrary default if the font failed to load, so that the
-	// user of CFontMetrics doesn't have to care about failures
-	if (!m_Font)
-		return 12;
-	return m_Font->GetLineSpacing();
-}
-
 float CFontMetrics::GetHeight() const
 {
 	if (!m_Font)
@@ -58,4 +49,11 @@ void CFontMetrics::CalculateStringSize(const wchar_t* string, float& w, float& h
 		w = h = 0;
 	else
 		m_Font->CalculateStringSize(string, w, h);
+}
+
+float CFontMetrics::GetCapHeight()
+{
+	if (!m_Font)
+		return 0.0f;
+	return m_Font->GetCapHeight();
 }

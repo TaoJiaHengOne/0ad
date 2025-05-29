@@ -173,16 +173,16 @@ void CLogger::Render(CCanvas2D& canvas)
 
 	CleanupRenderQueue();
 
-	CStrIntern font_name("mono-stroke-10");
-	CFontMetrics font(font_name);
-	int lineSpacing = font.GetLineSpacing();
+	CStrIntern font_name{"mono-stroke-10"};
+	CFontMetrics font{font_name};
+	float height{font.GetHeight()};
 
 	CTextRenderer textRenderer;
 	textRenderer.SetCurrentFont(font_name);
 	textRenderer.SetCurrentColor(CColor(1.0f, 1.0f, 1.0f, 1.0f));
 
 	// Offset by an extra 35px vertically to avoid the top bar.
-	textRenderer.Translate(4.0f, 35.0f + lineSpacing);
+	textRenderer.Translate(4.0f, 35.0f + height);
 
 	// (Lock must come after loading the CFont, since that might log error messages
 	// and attempt to lock the mutex recursively which is forbidden)
@@ -216,7 +216,7 @@ void CLogger::Render(CCanvas2D& canvas)
 
 		textRenderer.ResetTranslate(savedTranslate);
 
-		textRenderer.Translate(0.0f, (float)lineSpacing);
+		textRenderer.Translate(0.0f, height);
 	}
 
 	canvas.DrawText(textRenderer);

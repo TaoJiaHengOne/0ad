@@ -162,7 +162,7 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 
 	CStrIntern font_name("mono-stroke-10");
 	CFontMetrics font(font_name);
-	int lineSpacing = font.GetLineSpacing();
+	int height = font.GetHeight();
 
 	// Render background.
 	float estimateWidth = 50.0f;
@@ -172,7 +172,7 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 	float estimateHeight = 3 + static_cast<float>(numrows);
 	if (m->path.size() > 1)
 		estimateHeight += 2;
-	estimateHeight *= lineSpacing;
+	estimateHeight *= height;
 
 	canvas.DrawRect(CRect(CSize2D(estimateWidth, estimateHeight)), CColor(0.0f, 0.0f, 0.0f, 0.5f));
 
@@ -180,7 +180,7 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 	for (size_t row = 0; row < numrows; ++row)
 	{
 		canvas.DrawRect(
-			CRect(CVector2D(0.0f, lineSpacing * (2.0f + row) + 2.0f), CSize2D(estimateWidth, lineSpacing)),
+			CRect(CVector2D(0.0f, height * (2.0f + row) + 2.0f), CSize2D(estimateWidth, height)),
 			row % 2 ? CColor(1.0f, 1.0f, 1.0f, 0.1f): CColor(0.0f, 0.0f, 0.0f, 0.1f));
 	}
 
@@ -188,8 +188,8 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 	CTextRenderer textRenderer;
 	textRenderer.SetCurrentFont(font_name);
 	textRenderer.SetCurrentColor(CColor(1.0f, 1.0f, 1.0f, 1.0f));
-	textRenderer.PrintfAt(2.0f, lineSpacing, L"%hs", table->GetTitle().c_str());
-	textRenderer.Translate(22.0f, lineSpacing*2.0f);
+	textRenderer.PrintfAt(2.0f, height, L"%hs", table->GetTitle().c_str());
+	textRenderer.Translate(22.0f, height*2.0f);
 
 	float colX = 0.0f;
 	for (size_t col = 0; col < columns.size(); ++col)
@@ -206,7 +206,7 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 		colX += columns[col].width;
 	}
 
-	textRenderer.Translate(0.0f, lineSpacing);
+	textRenderer.Translate(0.0f, height);
 
 	// Print rows
 	int currentExpandId = 1;
@@ -239,14 +239,14 @@ void CProfileViewer::RenderProfile(CCanvas2D& canvas)
 			rowColX += columns[col].width;
 		}
 
-		textRenderer.Translate(0.0f, lineSpacing);
+		textRenderer.Translate(0.0f, height);
 	}
 
 	textRenderer.SetCurrentColor(CColor(1.0f, 1.0f, 1.0f, 1.0f));
 
 	if (m->path.size() > 1)
 	{
-		textRenderer.Translate(0.0f, lineSpacing);
+		textRenderer.Translate(0.0f, height);
 		textRenderer.Put(-15.0f, 0.0f, L"0");
 		textRenderer.Put(0.0f, 0.0f, L"back to parent");
 	}
