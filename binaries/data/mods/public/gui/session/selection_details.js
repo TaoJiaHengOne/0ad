@@ -37,10 +37,7 @@ function updateGarrisonHealthBar(entState, selection)
 	if (totalGarrisonHealth > 0)
 	{
 		const healthBarGarrison = Engine.GetGUIObjectByName("healthBarGarrison");
-		const healthSize = healthBarGarrison.size;
-		healthSize.rtop = 100 - 100 * Math.max(0, Math.min(1, totalGarrisonHealth / maxGarrisonHealth));
-		healthBarGarrison.size = healthSize;
-
+		healthBarGarrison.size.rtop = 100 - 100 * Math.max(0, Math.min(1, totalGarrisonHealth / maxGarrisonHealth));
 		healthGarrison.tooltip = getCurrentHealthTooltip({
 			"hitpoints": totalGarrisonHealth,
 			"maxHitpoints": maxGarrisonHealth
@@ -105,10 +102,8 @@ function displaySingle(entState)
 			statusIcons[i].hidden = false;
 			statusIcons[i].sprite = "stretched:session/icons/status_effects/" + g_StatusEffectsMetadata.getIcon(effect.baseCode) + ".png";
 			statusIcons[i].tooltip = getStatusEffectsTooltip(effect.baseCode, effect, false);
-			const size = statusIcons[i].size;
-			size.top = i * 18;
-			size.bottom = i * 18 + 16;
-			statusIcons[i].size = size;
+			statusIcons[i].size.top = i * 18;
+			statusIcons[i].size.bottom = i * 18 + 16;
 
 			if (++i >= statusIcons.length)
 				break;
@@ -134,10 +129,7 @@ function displaySingle(entState)
 	healthSection.hidden = !showHealth;
 	if (showHealth)
 	{
-		const unitHealthBar = Engine.GetGUIObjectByName("healthBar");
-		const healthSize = unitHealthBar.size;
-		healthSize.rright = 100 * Math.max(0, Math.min(1, entState.hitpoints / entState.maxHitpoints));
-		unitHealthBar.size = healthSize;
+		Engine.GetGUIObjectByName("healthBar").size.rright = 100 * Math.max(0, Math.min(1, entState.hitpoints / entState.maxHitpoints));
 		Engine.GetGUIObjectByName("healthStats").caption = sprintf(translate("%(hitpoints)s / %(maxHitpoints)s"), {
 			"hitpoints": Math.ceil(entState.hitpoints),
 			"maxHitpoints": Math.ceil(entState.maxHitpoints)
@@ -161,15 +153,14 @@ function displaySingle(entState)
 	{
 		const setCaptureBarPart = function(playerID, startSize) {
 			const unitCaptureBar = Engine.GetGUIObjectByName("captureBar[" + playerID + "]");
-			const sizeObj = unitCaptureBar.size;
-			sizeObj.rleft = startSize;
 
-			const size = 100 * Math.max(0, Math.min(1, entState.capturePoints[playerID] / entState.maxCapturePoints));
-			sizeObj.rright = startSize + size;
-			unitCaptureBar.size = sizeObj;
+			const width = 100 * Math.max(0, Math.min(1, entState.capturePoints[playerID] / entState.maxCapturePoints));
+			unitCaptureBar.size.rleft = startSize;
+			unitCaptureBar.size.rright = startSize + width;
+
 			unitCaptureBar.sprite = "color:" + g_DiplomacyColors.getPlayerColor(playerID, 128);
 			unitCaptureBar.hidden = false;
-			return startSize + size;
+			return startSize + width;
 		};
 
 		// first handle the owner's points, to keep those points on the left for clarity
@@ -193,10 +184,7 @@ function displaySingle(entState)
 	Engine.GetGUIObjectByName("experience").hidden = !entState.promotion;
 	if (entState.promotion)
 	{
-		const experienceBar = Engine.GetGUIObjectByName("experienceBar");
-		const experienceSize = experienceBar.size;
-		experienceSize.rtop = 100 - (100 * Math.max(0, Math.min(1, 1.0 * +entState.promotion.curr / (+entState.promotion.req || 1))));
-		experienceBar.size = experienceSize;
+		Engine.GetGUIObjectByName("experienceBar").size.rtop = 100 - (100 * Math.max(0, Math.min(1, 1.0 * +entState.promotion.curr / (+entState.promotion.req || 1))));
 
 		if (entState.promotion.curr < entState.promotion.req)
 			Engine.GetGUIObjectByName("experience").tooltip = sprintf(translate("%(experience)s %(current)s / %(required)s"), {
@@ -221,12 +209,8 @@ function displaySingle(entState)
 				"max": entState.resourceSupply.max
 			});
 
-		const unitResourceBar = Engine.GetGUIObjectByName("resourceBar");
-		const resourceSize = unitResourceBar.size;
-
-		resourceSize.rright = entState.resourceSupply.isInfinite ? 100 :
+		Engine.GetGUIObjectByName("resourceBar").size.rright = entState.resourceSupply.isInfinite ? 100 :
 			100 * Math.max(0, Math.min(1, +entState.resourceSupply.amount / +entState.resourceSupply.max));
-		unitResourceBar.size = resourceSize;
 
 		Engine.GetGUIObjectByName("resourceLabel").caption = sprintf(translate("%(resource)s:"), {
 			"resource": resourceNameFirstWord(entState.resourceSupply.type.generic)
@@ -306,9 +290,7 @@ function displaySingle(entState)
 
 	const primaryObject = Engine.GetGUIObjectByName("primary");
 	primaryObject.caption = primaryName;
-	const primaryObjectSize = primaryObject.size;
-	primaryObjectSize.rbottom = hideSecondary ? 100 : 50;
-	primaryObject.size = primaryObjectSize;
+	primaryObject.size.rbottom = hideSecondary ? 100 : 50;
 
 	const secondaryObject = Engine.GetGUIObjectByName("secondary");
 	secondaryObject.caption = hideSecondary ? "" :
@@ -450,10 +432,7 @@ function displayMultiple(entStates)
 	Engine.GetGUIObjectByName("healthMultiple").hidden = averageHealth <= 0;
 	if (averageHealth > 0)
 	{
-		const unitHealthBar = Engine.GetGUIObjectByName("healthBarMultiple");
-		const healthSize = unitHealthBar.size;
-		healthSize.rtop = 100 - 100 * Math.max(0, Math.min(1, averageHealth / maxHealth));
-		unitHealthBar.size = healthSize;
+		Engine.GetGUIObjectByName("healthBarMultiple").size.rtop = 100 - 100 * Math.max(0, Math.min(1, averageHealth / maxHealth));
 
 		Engine.GetGUIObjectByName("healthMultiple").tooltip = getCurrentHealthTooltip({
 			"hitpoints": averageHealth,
@@ -467,15 +446,14 @@ function displayMultiple(entStates)
 		const setCaptureBarPart = function(pID, startSize)
 		{
 			const unitCaptureBar = Engine.GetGUIObjectByName("captureBarMultiple[" + pID + "]");
-			const sizeObj = unitCaptureBar.size;
-			sizeObj.rtop = startSize;
 
-			const size = 100 * Math.max(0, Math.min(1, capturePoints[pID] / maxCapturePoints));
-			sizeObj.rbottom = startSize + size;
-			unitCaptureBar.size = sizeObj;
+			const height = 100 * Math.max(0, Math.min(1, capturePoints[pID] / maxCapturePoints));
+			unitCaptureBar.size.rtop = startSize;
+			unitCaptureBar.size.rbottom = startSize + height;
+
 			unitCaptureBar.sprite = "color:" + g_DiplomacyColors.getPlayerColor(pID, 128);
 			unitCaptureBar.hidden = false;
-			return startSize + size;
+			return startSize + height;
 		};
 
 		let size = 0;

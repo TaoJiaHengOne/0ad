@@ -31,16 +31,16 @@ class GameSettingWarning
 		const labelWidth = Math.min(Engine.GetTextWidth(this.gameSettingWarning.font, this.gameSettingWarning.caption) + 10, maxWidth);
 
 		const neighborElement = !this.savedGameLabel.hidden ? this.savedGameLabel.parent : this.bottomRightPanel;
-		this.gameSettingWarning.parent.size = new GUISize(
-			neighborElement.size.left - labelWidth - marginRight,
-			this.gameSettingWarning.parent.size.top,
-			neighborElement.size.left - marginRight,
-			this.gameSettingWarning.parent.size.bottom,
-			neighborElement.size.rleft,
-			this.gameSettingWarning.parent.size.rtop,
-			neighborElement.size.rright,
-			this.gameSettingWarning.parent.size.rbottom
-		);
+		this.gameSettingWarning.parent.size = {
+			"left": neighborElement.size.left - labelWidth - marginRight,
+			"top": this.gameSettingWarning.parent.size.top,
+			"right": neighborElement.size.left - marginRight,
+			"bottom": this.gameSettingWarning.parent.size.bottom,
+			"rleft": neighborElement.size.rleft,
+			"rtop": this.gameSettingWarning.parent.size.rtop,
+			"rright": neighborElement.size.rright,
+			"rbottom": this.gameSettingWarning.parent.size.rbottom
+		};
 		this.gameSettingWarning.hidden = !caption;
 	}
 }

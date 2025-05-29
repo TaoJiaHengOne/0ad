@@ -39,9 +39,7 @@ class GameDescription
 
 	onTabsResize(settingsTabButtonsFrame)
 	{
-		const size = this.gameDescription.size;
-		size.top = settingsTabButtonsFrame.size.bottom + this.Margin;
-		this.gameDescription.size = size;
+		this.gameDescription.size.top = settingsTabButtonsFrame.size.bottom + this.Margin;
 	}
 
 	updateGameDescription()

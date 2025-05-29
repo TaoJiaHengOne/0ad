@@ -13,9 +13,7 @@ class ProfilePage
 		this.fetchInput = Engine.GetGUIObjectByName("fetchInput");
 		this.fetchInputLabel = Engine.GetGUIObjectByName("fetchInputLabel");
 		resizeGUIObjectToCaption(this.fetchInputLabel, { "horizontal": "right" });
-		const size = this.fetchInput.size;
-		size.left = this.fetchInputLabel.size.right;
-		this.fetchInput.size = size;
+		this.fetchInput.size.left = this.fetchInputLabel.size.right;
 
 		this.fetchInput.onPress = this.onPressLookup.bind(this);
 		this.fetchInput.onTab = this.autocomplete.bind(this);

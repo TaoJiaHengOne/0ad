@@ -47,10 +47,8 @@ function initLobbyTerms()
 			openTerms(page);
 		};
 
-		const size = button.size;
-		size.top = i * g_TermsButtonHeight;
-		size.bottom = i * g_TermsButtonHeight + 28;
-		button.size = size;
+		button.size.top = i * g_TermsButtonHeight;
+		button.size.bottom = i * g_TermsButtonHeight + 28;
 	});
 
 	initTerms(terms);

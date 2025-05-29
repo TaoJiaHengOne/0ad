@@ -30,9 +30,7 @@ class GameDetails
 	resize(dialog)
 	{
 		const bottom = Engine.GetGUIObjectByName(dialog ? "leaveButton" : "joinButton").size.top - 5;
-		const size = this.gameDetails.size;
-		size.bottom = bottom;
-		this.gameDetails.size = size;
+		this.gameDetails.size.bottom = bottom;
 	}
 
 	/**
@@ -87,10 +85,7 @@ class GameDetails
 			this.sgGame.caption = txt;
 
 			const textHeight = this.sgGame.getTextSize().height;
-
-			const sgGameSize = this.sgGame.size;
-			sgGameSize.bottom = textHeight;
-			this.sgGame.size = sgGameSize;
+			this.sgGame.size.bottom = textHeight;
 		}
 
 		{
@@ -128,10 +123,7 @@ class GameDetails
 			this.sgPlayersAndMods.caption = txt;
 
 			// Resize the box
-			const textHeight = this.sgPlayersAndMods.getTextSize().height;
-			const size = this.sgPlayersAndMods.size;
-			size.top = this.sgGame.size.bottom + 5;
-			this.sgPlayersAndMods.size = size;
+			this.sgPlayersAndMods.size.top = this.sgGame.size.bottom + 5;
 		}
 
 		this.lastGame = game;

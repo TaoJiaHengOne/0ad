@@ -28,12 +28,12 @@ class Emblem
 
 	setPosition(x, y)
 	{
-		const size = this.Emblem.size;
-		size.left = x - this.cx;
-		size.right = x + this.cx;
-		size.top = y - this.cy;
-		size.bottom = y + this.cy;
-		this.Emblem.size = size;
+		Object.assign(this.Emblem.size, {
+			"left": x - this.cx,
+			"top": y - this.cy,
+			"right": x + this.cx,
+			"bottom": y + this.cy
+		});
 	}
 }
 

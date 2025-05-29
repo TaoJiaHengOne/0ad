@@ -37,10 +37,8 @@ class ProgressBar
 		}
 
 		const increment = Math.round(progress * this.progressBarSize / 100);
-		const size = this.progressbar_right.size;
-		size.left = increment;
-		size.right = increment + this.progressbar_right_width;
-		this.progressbar_right.size = size;
+		this.progressbar_right.size.left = increment;
+		this.progressbar_right.size.right = increment + this.progressbar_right_width;
 	}
 }
 

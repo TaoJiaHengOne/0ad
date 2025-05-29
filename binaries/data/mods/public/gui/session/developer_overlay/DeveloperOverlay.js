@@ -68,12 +68,10 @@ class DeveloperOverlay
 
 	resize()
 	{
-		const size = this.devCommandsOverlay.size;
-		size.bottom =
-			size.top +
+		this.devCommandsOverlay.size.bottom =
+			this.devCommandsOverlay.size.top +
 			this.checkBoxes.reduce((height, checkbox) => height + checkbox.getHeight(), 0) +
 			this.dropDowns.reduce((height, dropDown) => height + dropDown.getHeight(), 0);
-		this.devCommandsOverlay.size = size;
 	}
 }
 

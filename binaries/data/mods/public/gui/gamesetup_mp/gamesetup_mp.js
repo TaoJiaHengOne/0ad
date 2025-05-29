@@ -374,19 +374,15 @@ function switchSetupPage(newPage)
 
 	if (newPage == "pageJoin" || newPage == "pageHost")
 	{
-		const pageSize = multiplayerPages.size;
 		const halfHeight = newPage == "pageJoin" ? 145 : Engine.HasXmppClient() ? 140 : 125;
-		pageSize.top = -halfHeight;
-		pageSize.bottom = halfHeight;
-		multiplayerPages.size = pageSize;
+		multiplayerPages.size.top = -halfHeight;
+		multiplayerPages.size.bottom = halfHeight;
 	}
 	else if (newPage == "pagePassword")
 	{
-		const pageSize = multiplayerPages.size;
 		const halfHeight = 60;
-		pageSize.top = -halfHeight;
-		pageSize.bottom = halfHeight;
-		multiplayerPages.size = pageSize;
+		multiplayerPages.size.top = -halfHeight;
+		multiplayerPages.size.bottom = halfHeight;
 	}
 
 	Engine.GetGUIObjectByName(newPage).hidden = false;

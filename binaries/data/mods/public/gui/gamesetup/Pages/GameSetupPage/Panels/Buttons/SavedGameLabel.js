@@ -11,16 +11,16 @@ class SavedGameLabel
 
 		if (isSavedGame)
 		{
-			savedGameLabel.parent.size = new GUISize(
-				bottomRightPanel.size.left - labelWidth - marginRight,
-				savedGameLabel.parent.size.top,
-				bottomRightPanel.size.left - marginRight,
-				savedGameLabel.parent.size.bottom,
-				bottomRightPanel.size.rleft,
-				savedGameLabel.parent.size.rtop,
-				bottomRightPanel.size.rleft,
-				savedGameLabel.parent.size.rbottom
-			);
+			savedGameLabel.parent.size = {
+				"left": bottomRightPanel.size.left - labelWidth - marginRight,
+				"top": savedGameLabel.parent.size.top,
+				"right": bottomRightPanel.size.left - marginRight,
+				"bottom": savedGameLabel.parent.size.bottom,
+				"rleft": bottomRightPanel.size.rleft,
+				"rtop": savedGameLabel.parent.size.rtop,
+				"rright": bottomRightPanel.size.rleft,
+				"rbottom": savedGameLabel.parent.size.rbottom
+			};
 			savedGameLabel.hidden = false;
 		}
 	}

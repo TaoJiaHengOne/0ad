@@ -41,11 +41,8 @@ GameListFilters.Rating = class
 		const mapTypeFilter = Engine.GetGUIObjectByName("mapTypeFilter");
 		mapTypeFilter.hidden = enabled;
 		const playersNumberFilter = Engine.GetGUIObjectByName("playersNumberFilter");
-		const mapTypeFilterSize = mapTypeFilter.size;
-		const size = playersNumberFilter.size;
-		size.rleft = mapTypeFilterSize.rleft;
-		size.rright = this.gameRatingFilter.size.rleft;
-		playersNumberFilter.size = size;
+		playersNumberFilter.size.rleft = mapTypeFilter.size.rleft;
+		playersNumberFilter.size.rright = this.gameRatingFilter.size.rleft;
 	}
 
 	onSelectionChange()

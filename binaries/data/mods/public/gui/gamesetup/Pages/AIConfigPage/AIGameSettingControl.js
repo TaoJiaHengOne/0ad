@@ -29,10 +29,8 @@ class AIGameSettingControlDropdown extends GameSettingControlDropdown
 		this.dropdown = this.frame.children[1];
 		this.label = this.frame.children[2];
 
-		const size = this.frame.size;
-		size.top = i * (this.Height + this.Margin);
-		size.bottom = size.top + this.Height;
-		this.frame.size = size;
+		this.frame.size.top = i * (this.Height + this.Margin);
+		this.frame.size.bottom = this.frame.size.top + this.Height;
 
 		this.setHidden(false);
 	}

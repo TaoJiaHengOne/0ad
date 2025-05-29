@@ -126,10 +126,8 @@ class ViewerPage extends ReferencePage
 		const entityStats = this.guiElements.entityStats;
 		entityStats.caption = this.constructor.buildText(this.currentTemplate, this.StatsFunctions);
 
-		const infoSize = this.guiElements.entityInfo.size;
 		const infoTopMargin = 8;
-		infoSize.top = Math.max(entityIcon.size.bottom + infoTopMargin, entityStats.size.top + entityStats.getTextSize().height + infoTopMargin);
-		this.guiElements.entityInfo.size = infoSize;
+		this.guiElements.entityInfo.size.top = Math.max(entityIcon.size.bottom + infoTopMargin, entityStats.size.top + entityStats.getTextSize().height + infoTopMargin);
 
 		this.guiElements.entityInfo.caption = this.constructor.buildText(this.currentTemplate, this.InfoFunctions, "\n\n");
 

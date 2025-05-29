@@ -49,32 +49,24 @@ class LobbyPage
 
 	setDialogStyle()
 	{
-		{
-			const lobbyPage = Engine.GetGUIObjectByName("lobbyPage");
-			lobbyPage.sprite = "ModernDialog";
+		const lobbyPage = Engine.GetGUIObjectByName("lobbyPage");
+		lobbyPage.sprite = "ModernDialog";
+		lobbyPage.size = {
+			"left": this.WindowMargin,
+			"top": this.WindowMargin,
+			"right": -this.WindowMargin,
+			"bottom": -this.WindowMargin,
+			"rleft": 0,
+			"rtop": 0,
+			"rright": 100,
+			"rbottom": 100
+		};
 
-			const size = lobbyPage.size;
-			size.left = this.WindowMargin;
-			size.top = this.WindowMargin;
-			size.right = -this.WindowMargin;
-			size.bottom = -this.WindowMargin;
-			lobbyPage.size = size;
-		}
+		const lobbyPageTitle = Engine.GetGUIObjectByName("lobbyPageTitle");
+		lobbyPageTitle.size.top -= this.WindowMargin / 2;
+		lobbyPageTitle.size.bottom -= this.WindowMargin / 2;
 
-		{
-			const lobbyPageTitle = Engine.GetGUIObjectByName("lobbyPageTitle");
-			const size = lobbyPageTitle.size;
-			size.top -= this.WindowMargin / 2;
-			size.bottom -= this.WindowMargin / 2;
-			lobbyPageTitle.size = size;
-		}
-
-		{
-			const lobbyPanels = Engine.GetGUIObjectByName("lobbyPanels");
-			const size = lobbyPanels.size;
-			size.top -= this.WindowMargin / 2;
-			lobbyPanels.size = size;
-		}
+		Engine.GetGUIObjectByName("lobbyPanels").size.top -= this.WindowMargin / 2;
 	}
 }
 

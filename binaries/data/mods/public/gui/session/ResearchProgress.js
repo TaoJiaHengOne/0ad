@@ -29,18 +29,15 @@ class ResearchProgressButton
 			modifier += "color:0 0 0 127:grayscale:";
 		this.sprite.sprite = modifier + this.PortraitDirectory + template.icon;
 
-		let size = this.button.size;
-		size.top = offset + this.buttonTop;
-		size.bottom = size.top + this.buttonHeight;
-		this.button.size = size;
+		this.button.size.top = offset + this.buttonTop;
+		this.button.size.bottom = this.button.size.top + this.buttonHeight;
+
 		this.button.tooltip = getEntityNames(template);
 		if (researchStatus.paused)
 			this.button.tooltip += "\n" + translate(this.PausedResearchString);
 		this.button.hidden = false;
 
-		size = this.progress.size;
-		size.top = this.progressTop + this.progressHeight * researchStatus.progress;
-		this.progress.size = size;
+		this.progress.size.top = this.progressTop + this.progressHeight * researchStatus.progress;
 
 		this.timeRemaining.caption =
 			Engine.FormatMillisecondsIntoDateStringGMT(

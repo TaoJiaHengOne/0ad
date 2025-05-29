@@ -6,12 +6,8 @@ PlayerSettingControls.PlayerFrame = class PlayerFrame extends GameSettingControl
 
 		this.playerFrame = Engine.GetGUIObjectByName("playerFrame[" + this.playerIndex + "]");
 
-		{
-			const size = this.playerFrame.size;
-			size.top = this.Height * this.playerIndex;
-			size.bottom = this.Height * (this.playerIndex + 1);
-			this.playerFrame.size = size;
-		}
+		this.playerFrame.size.top = this.Height * this.playerIndex;
+		this.playerFrame.size.bottom = this.Height * (this.playerIndex + 1);
 
 		g_GameSettings.playerCount.watch(() => this.render(), ["nbPlayers"]);
 		this.render();

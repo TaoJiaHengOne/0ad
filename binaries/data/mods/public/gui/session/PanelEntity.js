@@ -75,11 +75,8 @@ class PanelEntity
 			return;
 
 		if (this.hitpoints != entityState.hitpoints)
-		{
-			const size = this.panelEntityHealthBar.size;
-			size.rright = 100 * entityState.hitpoints / entityState.maxHitpoints;
-			this.panelEntityHealthBar.size = size;
-		}
+			this.panelEntityHealthBar.size.rright = 100 * entityState.hitpoints / entityState.maxHitpoints;
+
 		if (entityState.hitpoints < this.hitpoints)
 			this.onAttacked();
 		this.hitpoints = entityState.hitpoints;
@@ -93,13 +90,11 @@ class PanelEntity
 		const playerParts = this.panelEntityCaptureBar.children;
 		const setCaptureBarPart = function(player, startSize) {
 			const captureBar = playerParts[player];
-			const size = captureBar.size;
-			size.rleft = startSize;
-			size.rright = startSize + 100 * Math.max(0, Math.min(1, entityState.capturePoints[player] / entityState.maxCapturePoints));
-			captureBar.size = size;
+			captureBar.size.rleft = startSize;
+			captureBar.size.rright = startSize + 100 * Math.max(0, Math.min(1, entityState.capturePoints[player] / entityState.maxCapturePoints));
 			captureBar.sprite = "color:" + g_DiplomacyColors.getPlayerColor(player, 128);
 			captureBar.hidden = false;
-			return size.rright;
+			return captureBar.size.rright;
 		};
 
 		let size = setCaptureBarPart(entityState.player, 0);

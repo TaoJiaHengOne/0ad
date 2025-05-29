@@ -13,14 +13,24 @@ async function init(data)
 		const text = paragraphObject.children.find(object => object.toString().startsWith("text"));
 		const icon = paragraphObject.children.find(object => object.toString().startsWith("icon"));
 
-		text.size = new GUISize(textIndent, verticalOffset, -10, 0, 0, 0, 100, 100);
+		text.size = {
+			"left": textIndent,
+			"top": verticalOffset,
+			"right": -10,
+			"bottom": 0,
+			"rleft": 0,
+			"rtop": 0,
+			"rright": 100,
+			"rbottom": 100
+		};
 		const paragraphHeight = Math.max(text.getTextSize().height, iconSize);
 		const sizeTop = Math.min(verticalOffset + 5, verticalOffset + paragraphHeight / 2 - iconSize / 2);
-		icon.size = new GUISize(
-			iconMargin, sizeTop,
-			iconMargin + iconSize, sizeTop + iconSize,
-			0, 0, 0, 0
-		);
+		icon.size = {
+			"left": iconMargin,
+			"top": sizeTop,
+			"right": iconMargin + iconSize,
+			"bottom": sizeTop + iconSize
+		};
 		verticalOffset += paragraphHeight + paragraphSpacing;
 	}
 

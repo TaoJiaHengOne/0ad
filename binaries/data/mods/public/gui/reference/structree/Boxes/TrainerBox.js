@@ -13,21 +13,19 @@ class TrainerBox extends EntityBox
 		this.ProductionRows = new ProductionRowManager(this.page, "trainer[" + trainerIdx + "]_productionRows", false);
 
 		const rowHeight = ProductionIcon.Size().rowHeight;
-		const size = this.gui.size;
 
 		// Adjust height to accommodate production row
-		size.bottom += rowHeight;
+		this.gui.size.bottom += rowHeight;
 
 		// We make the assumuption that all trainer boxes have the same height
-		const boxHeight = (this.VMargin / 2 + (size.bottom - size.top + this.VMargin)) * trainerIdx;
-		size.top += boxHeight;
-		size.bottom += boxHeight;
-
-		// Make the box adjust automatically to column width
-		size.rright = 100;
-		size.right = -size.left;
-
-		this.gui.size = size;
+		const boxHeight = (this.VMargin / 2 + (this.gui.size.bottom - this.gui.size.top + this.VMargin)) * trainerIdx;
+		Object.assign(this.gui.size, {
+			"top": this.gui.size.top + boxHeight,
+			"bottom": this.gui.size.bottom + boxHeight,
+			// Make the box adjust automatically to column width
+			"rright": 100,
+			"right": -this.gui.size.left,
+		});
 	}
 
 	draw(templateName, civCode)

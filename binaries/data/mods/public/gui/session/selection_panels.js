@@ -154,14 +154,16 @@ g_SelectionPanels.Command = {
 
 		data.icon.sprite = "stretched:session/icons/" + data.item.icon;
 
-		const size = data.button.size;
-		// relative to the center ( = 50%)
-		size.rleft = 50;
-		size.rright = 50;
-		// offset from the center calculation, count on square buttons, so size.bottom is the width too
-		size.left = (data.i - data.numberOfItems / 2) * (size.bottom + 1);
-		size.right = size.left + size.bottom;
-		data.button.size = size;
+		const left = (data.i - data.numberOfItems / 2) * (data.button.size.bottom + 1);
+		Object.assign(data.button.size, {
+			// relative to the center ( = 50%)
+			"rleft": 50,
+			"rright": 50,
+			// offset from the center calculation, count on square buttons, so size.bottom is the width too
+			"left": left,
+			"right": left + data.button.size.bottom
+		});
+
 		return true;
 	}
 };
@@ -548,11 +550,9 @@ g_SelectionPanels.Queue = {
 	{
 		const numRows = Math.ceil(numberOfItems / rowLength);
 		const panel = Engine.GetGUIObjectByName("unitQueuePanel");
-		const size = panel.size;
 		const buttonSize = Engine.GetGUIObjectByName("unitQueueButton[0]").size.bottom;
 		const margin = 4;
-		size.top = size.bottom - numRows * buttonSize - (numRows + 2) * margin;
-		panel.size = size;
+		panel.size.top = panel.size.bottom - numRows * buttonSize - (numRows + 2) * margin;
 	},
 	"setupButton": function(data)
 	{
@@ -591,12 +591,10 @@ g_SelectionPanels.Queue = {
 		if (data.item.ghost)
 		{
 			data.button.enabled = false;
-			progressSlider.sprite="color:0 150 250 50";
-			const size = progressSlider.size;
+			progressSlider.sprite = "color:0 150 250 50";
 
 			// Buttons are assumed to be square, so left/right offsets can be used for top/bottom.
-			size.top = size.left;
-			progressSlider.size = size;
+			progressSlider.size.top = progressSlider.size.left;
 		}
 		else
 		{
@@ -606,11 +604,9 @@ g_SelectionPanels.Queue = {
 					Engine.FormatMillisecondsIntoDateStringGMT(queuedItem.timeRemaining, translateWithContext("countdown format", "m:ss"));
 
 			progressSlider.sprite = "queueProgressSlider";
-			const size = progressSlider.size;
 
 			// Buttons are assumed to be square, so left/right offsets can be used for top/bottom.
-			size.top = size.left + Math.round(queuedItem.progress * (size.right - size.left));
-			progressSlider.size = size;
+			progressSlider.size.top = progressSlider.size.left + Math.round(queuedItem.progress * (progressSlider.size.right - progressSlider.size.left));
 
 			data.button.enabled = controlsPlayer(data.player);
 
@@ -1220,10 +1216,9 @@ g_SelectionPanels.Upgrade = {
 			let progress = 0;
 			for (const state of upgradingEntStates)
 				progress = Math.max(progress, state.upgrade.progress || 1);
-			const progressOverlaySize = progressOverlay.size;
+
 			// TODO This is bad: we assume the progressOverlay is square
-			progressOverlaySize.top = progressOverlaySize.bottom + Math.round((1 - progress) * (progressOverlaySize.left - progressOverlaySize.right));
-			progressOverlay.size = progressOverlaySize;
+			progressOverlay.size.top = progressOverlay.size.bottom + Math.round((1 - progress) * (progressOverlay.size.left - progressOverlay.size.right));
 			progressOverlay.hidden = false;
 		}
 		else

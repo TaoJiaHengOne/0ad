@@ -30,10 +30,8 @@ DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText = class
 
 		// Apply offset
 		const rowSize = DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getRowHeight();
-		const size = this.diplomacyPlayer.size;
-		size.top = rowSize * (this.playerID - 1);
-		size.bottom = rowSize * this.playerID;
-		this.diplomacyPlayer.size = size;
+		this.diplomacyPlayer.size.top = rowSize * (this.playerID - 1);
+		this.diplomacyPlayer.size.bottom = rowSize * this.playerID;
 		this.diplomacyPlayer.hidden = false;
 	}
 

@@ -40,10 +40,8 @@ class ColorMixer
 			if (!object)
 				continue;
 
-			const size = object.size;
-			size.top = i * height0;
-			size.bottom = size.top + height0;
-			object.size = size;
+			object.size.top = i * height0;
+			object.size.bottom = (i + 1) * height0;
 
 			this.sliders[i] = Engine.GetGUIObjectByName("colorSlider[" + i + "]");
 			const slider = this.sliders[i];

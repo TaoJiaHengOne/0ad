@@ -16,15 +16,10 @@ class Tooltip
 		const marginRight = 8;
 		const neighborElement = !g_IsNetworked ? this.bottomRightPanel : this.gameSettingWarning.parent;
 
-		this.onScreenTooltip.parent.size = new GUISize(
-			this.onScreenTooltip.parent.size.left,
-			this.onScreenTooltip.parent.size.top,
-			neighborElement.size.left - marginRight,
-			this.onScreenTooltip.parent.size.bottom,
-			this.onScreenTooltip.size.rleft,
-			this.onScreenTooltip.parent.size.rtop,
-			neighborElement.size.rleft,
-			this.onScreenTooltip.parent.size.rbottom
-		);
+		Object.assign(this.onScreenTooltip.parent.size, {
+			"right": neighborElement.size.left - marginRight,
+			"rleft": this.onScreenTooltip.size.rleft,
+			"rright": neighborElement.size.rleft,
+		});
 	}
 }

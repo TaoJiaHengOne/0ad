@@ -44,15 +44,15 @@ class GameSettingTabs
 
 	resize()
 	{
-		const size = this.settingsTabButtonsFrame.size;
-		size.bottom = size.top + g_GameSettingsLayout.length * (this.TabButtonHeight + this.TabButtonMargin);
+		this.settingsTabButtonsFrame.size.bottom =
+			this.settingsTabButtonsFrame.size.top +
+			g_GameSettingsLayout.length * (this.TabButtonHeight + this.TabButtonMargin);
 
 		if (!this.lobbyButton.lobbyButton.hidden)
 		{
 			const lobbyButtonSize = this.lobbyButton.lobbyButton.parent.size;
-			size.right -= lobbyButtonSize.right - lobbyButtonSize.left + this.LobbyButtonMargin;
+			this.settingsTabButtonsFrame.size.right -= lobbyButtonSize.right - lobbyButtonSize.left + this.LobbyButtonMargin;
 		}
-		this.settingsTabButtonsFrame.size = size;
 
 		for (const handler of this.tabsResizeHandlers)
 			handler(this.settingsTabButtonsFrame);

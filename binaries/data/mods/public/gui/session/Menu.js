@@ -30,10 +30,8 @@ class Menu
 		});
 
 		this.endPosition = this.margin + this.buttonHeight * (1 + handlerNames.length);
-		const size = this.menuButtonPanel.size;
-		size.top = -this.endPosition;
-		size.bottom = 0;
-		this.menuButtonPanel.size = size;
+		this.menuButtonPanel.size.top = -this.endPosition;
+		this.menuButtonPanel.size.bottom = 0;
 	}
 
 	rebuild()
@@ -69,12 +67,8 @@ class Menu
 			this.close();
 			handler.onPress();
 		};
-
-		const size = button.size;
-		size.top = this.buttonHeight * (i + 1) + this.margin;
-		size.bottom = this.buttonHeight * (i + 2);
-		button.size = size;
-
+		button.size.top = this.buttonHeight * (i + 1) + this.margin;
+		button.size.bottom = this.buttonHeight * (i + 2);
 		button.hidden = false;
 	}
 
@@ -106,10 +100,8 @@ class Menu
 		}
 
 		const offset = Math.min(this.Speed * tickLength, maxOffset) * (this.isOpen ? +1 : -1);
-		const size = this.menuButtonPanel.size;
-		size.top += offset;
-		size.bottom += offset;
-		this.menuButtonPanel.size = size;
+		this.menuButtonPanel.size.top += offset;
+		this.menuButtonPanel.size.bottom += offset;
 	}
 }
 

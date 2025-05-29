@@ -260,10 +260,8 @@ function displayOptions()
 	{
 		// Position vertically
 		const body = Engine.GetGUIObjectByName("option_control[" + i + "]");
-		const bodySize = body.size;
-		bodySize.top = g_OptionControlOffset + i * (g_OptionControlHeight + g_OptionControlDist);
-		bodySize.bottom = bodySize.top + g_OptionControlHeight;
-		body.size = bodySize;
+		body.size.top = g_OptionControlOffset + i * (g_OptionControlHeight + g_OptionControlDist);
+		body.size.bottom = body.size.top + g_OptionControlHeight;
 		body.hidden = false;
 
 		// Load option data
@@ -316,10 +314,8 @@ function displayOptions()
 		label.tooltip = option.tooltip;
 		label.hidden = false;
 
-		const labelSize = label.size;
-		labelSize.left = option.dependencies ? g_DependentLabelIndentation : 0;
-		labelSize.rright = control.size.rleft;
-		label.size = labelSize;
+		label.size.left = option.dependencies ? g_DependentLabelIndentation : 0;
+		label.size.rright = control.size.rleft;
 	}
 
 	enableButtons();

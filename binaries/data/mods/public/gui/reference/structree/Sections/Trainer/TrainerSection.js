@@ -50,10 +50,8 @@ class TrainerSection
 		hideRemaining(this.Trainers.name, count);
 
 		// Update width and visibility of section
-		const size = this.TrainerSection.size;
 		this.width += EntityBox.prototype.HMargin;
-		size.left = -this.width + size.right;
-		this.TrainerSection.size = size;
+		this.TrainerSection.size.left = -this.width + this.TrainerSection.size.right;
 		this.TrainerSection.hidden = count == 0;
 
 		for (const handler of this.widthChangedHandlers)

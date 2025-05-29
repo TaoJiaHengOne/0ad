@@ -50,11 +50,9 @@ class TreeSection
 
 	onTrainerSectionWidthChange(trainerSectionWidth, trainerSectionVisible)
 	{
-		const size = this.TreeSection.size;
-		size.right = this.rightMargin;
+		this.TreeSection.size.right = this.rightMargin;
 		if (trainerSectionVisible)
-			size.right -= trainerSectionWidth + this.page.SectionGap;
-		this.TreeSection.size = size;
+			this.TreeSection.size.right -= trainerSectionWidth + this.page.SectionGap;
 	}
 
 	/**

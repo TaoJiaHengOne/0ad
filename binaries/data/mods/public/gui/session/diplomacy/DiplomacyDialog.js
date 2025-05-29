@@ -85,11 +85,9 @@ class DiplomacyDialog
 		const widthOffset = DiplomacyDialogPlayerControl.prototype.TributeButtonManager.getWidthOffset() / 2;
 		const heightOffset = DiplomacyDialogPlayerControl.prototype.DiplomacyPlayerText.getHeightOffset() / 2;
 
-		const size = this.diplomacyDialogPanel.size;
-		size.left -= widthOffset;
-		size.right += widthOffset;
-		size.top -= heightOffset;
-		size.bottom += heightOffset;
-		this.diplomacyDialogPanel.size = size;
+		this.diplomacyDialogPanel.size.left -= widthOffset;
+		this.diplomacyDialogPanel.size.right += widthOffset;
+		this.diplomacyDialogPanel.size.top -= heightOffset;
+		this.diplomacyDialogPanel.size.bottom += heightOffset;
 	}
 }

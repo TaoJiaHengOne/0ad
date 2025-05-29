@@ -13,20 +13,19 @@ class PhaseIdent
 		const entityBoxHeight = EntityBox.IconAndCaptionHeight();
 		for (let i = 0; i < this.Bars.children.length; ++i)
 		{
-			const size = this.Bars.children[i].size;
-			size.top = entityBoxHeight + prodIconSize.rowHeight * (i + 1);
-			size.bottom = entityBoxHeight + prodIconSize.rowHeight * (i + 2) - prodIconSize.rowGap;
-			this.Bars.children[i].size = size;
+			const bar = this.Bars.children[i];
+			bar.size = {
+				"top": entityBoxHeight + prodIconSize.rowHeight * (i + 1),
+				"bottom": entityBoxHeight + prodIconSize.rowHeight * (i + 2) - prodIconSize.rowGap
+			};
 		}
 	}
 
 	draw(phaseList, civCode)
 	{
 		// Position ident
-		const identSize = this.Ident.size;
-		identSize.top = TreeSection.getPositionOffset(this.phaseIdx, this.page.TemplateParser);
-		identSize.bottom = TreeSection.getPositionOffset(this.phaseIdx + 1, this.page.TemplateParser);
-		this.Ident.size = identSize;
+		this.Ident.size.top = TreeSection.getPositionOffset(this.phaseIdx, this.page.TemplateParser);
+		this.Ident.size.bottom = TreeSection.getPositionOffset(this.phaseIdx + 1, this.page.TemplateParser);
 		this.Ident.hidden = false;
 
 		// Draw main icon

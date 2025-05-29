@@ -42,12 +42,10 @@ class ProductionRow
 		const rowOffset = IconSize.rowHeight * (this.phaseOffset - this.rowIndex);
 		const rowWidth = this.productionIconsDrawn * IconSize.rowWidth + IconSize.hMargin;
 
-		const size = this.productionRow.size;
-		size.left = -rowWidth / 2;
-		size.top = -rowOffset;
-		this.productionRow.size = size;
-
+		this.productionRow.size.left = -rowWidth / 2;
+		this.productionRow.size.top = -rowOffset;
 		this.productionRow.hidden = false;
+
 		return rowWidth;
 	}
 

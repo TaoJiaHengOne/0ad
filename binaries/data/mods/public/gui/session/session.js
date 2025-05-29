@@ -720,15 +720,8 @@ function updateCinemaOverlay()
 	if (barHeight < 0)
 		barHeight = 0;
 
-	const cinemaBarTop = Engine.GetGUIObjectByName("cinemaBarTop");
-	const cinemaBarTopSize = cinemaBarTop.size;
-	cinemaBarTopSize.bottom = barHeight;
-	cinemaBarTop.size = cinemaBarTopSize;
-
-	const cinemaBarBottom = Engine.GetGUIObjectByName("cinemaBarBottom");
-	const cinemaBarBottomSize = cinemaBarBottom.size;
-	cinemaBarBottomSize.top = -barHeight;
-	cinemaBarBottom.size = cinemaBarBottomSize;
+	Engine.GetGUIObjectByName("cinemaBarTop").size.bottom = barHeight;
+	Engine.GetGUIObjectByName("cinemaBarBottom").size.top = -barHeight;
 }
 
 // TODO: Use event subscription onSimulationUpdate, onEntitySelectionChange, onPlayerViewChange, ... instead

@@ -21,17 +21,8 @@ class LabelledControl
 	resizeLabel()
 	{
 		const labelWidth = Engine.GetTextWidth(this.label.font, this.label.caption) + 15;
-
-		{
-			const size = this.label.size;
-			size.right = labelWidth;
-			this.label.size = size;
-		}
-		{
-			const size = this.control.size;
-			size.left = labelWidth;
-			this.control.size = size;
-		}
+		this.label.size.right = labelWidth;
+		this.label.size.left = labelWidth;
 	}
 }
 

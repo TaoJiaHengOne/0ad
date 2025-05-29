@@ -42,10 +42,6 @@ class AlignmentHelper
 			value = Math[this.direction](value, this.objectData[objectName].wantedPosition);
 
 		for (const objectName in this.objectData)
-		{
-			const objectSize = this.objectData[objectName].GUIObject.size;
-			objectSize[this.objectData[objectName].edge] = value;
-			this.objectData[objectName].GUIObject.size = objectSize;
-		}
+			this.objectData[objectName].GUIObject.size[this.objectData[objectName].edge] = value;
 	}
 }

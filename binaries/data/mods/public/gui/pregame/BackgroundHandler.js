@@ -22,20 +22,22 @@ class BackgroundLayer
 			let left = offset % iw;
 			if (left >= 0)
 				left -= iw;
-			this.background.size = new GUISize(
-				left,
-				backgroundsSize.top,
-				backgroundsSize.right,
-				backgroundsSize.bottom);
+			this.background.size = {
+				"left": left,
+				"top": backgroundsSize.top,
+				"right": backgroundsSize.right,
+				"bottom": backgroundsSize.bottom
+			};
 		}
 		else
 		{
 			const right = backgroundsSize.right / 2 + offset;
-			this.background.size = new GUISize(
-				right - height,
-				backgroundsSize.top,
-				right + height,
-				backgroundsSize.bottom);
+			this.background.size = {
+				"left": right - height,
+				"top": backgroundsSize.top,
+				"right": right + height,
+				"bottom": backgroundsSize.bottom
+			};
 		}
 	}
 }
@@ -58,7 +60,7 @@ class BackgroundHandler
 	onWindowResized()
 	{
 		const size = this.backgrounds.getComputedSize();
-		this.backgroundsSize = deepfreeze(new GUISize(size.top, size.left, size.right, size.bottom));
+		this.backgroundsSize = { "left": size.top, "top": size.left, "right": size.right, "bottom": size.bottom };
 	}
 
 	onTick()

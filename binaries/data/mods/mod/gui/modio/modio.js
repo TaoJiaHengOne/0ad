@@ -314,12 +314,9 @@ async function progressDialog(dialogCaption, dialogTitle, showProgressBar, butto
 {
 	Engine.GetGUIObjectByName("downloadDialog_title").caption = dialogTitle;
 
-	const downloadDialog_caption = Engine.GetGUIObjectByName("downloadDialog_caption");
-	downloadDialog_caption.caption = dialogCaption;
-
-	const size = downloadDialog_caption.size;
-	size.rbottom = showProgressBar ? 40 : 80;
-	downloadDialog_caption.size = size;
+	const downloadDialogCaption = Engine.GetGUIObjectByName("downloadDialog_caption");
+	downloadDialogCaption.caption = dialogCaption;
+	downloadDialogCaption.size.rbottom = showProgressBar ? 40 : 80;
 
 	Engine.GetGUIObjectByName("downloadDialog_progress").hidden = !showProgressBar;
 	Engine.GetGUIObjectByName("downloadDialog_status").hidden = !showProgressBar;

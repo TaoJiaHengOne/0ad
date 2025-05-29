@@ -362,9 +362,7 @@ function updateGeneralPanelTeams()
 
 		const teamBox = Engine.GetGUIObjectByName("teamBoxt["+i+"]");
 		teamBox.hidden = false;
-		const teamBoxSize = teamBox.size;
-		teamBoxSize.top = yStart;
-		teamBox.size = teamBoxSize;
+		teamBox.size.top = yStart;
 
 		yStart += 30 + g_Teams[i].length * (g_PlayerBoxYSize + g_PlayerBoxGap) + 32;
 
@@ -386,18 +384,14 @@ function initPlayerBoxPositions()
 	for (let h = 0; h < g_MaxPlayers; ++h)
 	{
 		const playerBox = Engine.GetGUIObjectByName("playerBox[" + h + "]");
-		let boxSize = playerBox.size;
-		boxSize.top += h * (g_PlayerBoxYSize + g_PlayerBoxGap);
-		boxSize.bottom = boxSize.top + g_PlayerBoxYSize;
-		playerBox.size = boxSize;
+		playerBox.size.top += h * (g_PlayerBoxYSize + g_PlayerBoxGap);
+		playerBox.size.bottom = playerBox.size.top + g_PlayerBoxYSize;
 
 		for (let i = 0; i < g_MaxTeams; ++i)
 		{
 			const playerBoxt = Engine.GetGUIObjectByName("playerBoxt[" + i + "][" + h + "]");
-			boxSize = playerBoxt.size;
-			boxSize.top += h * (g_PlayerBoxYSize + g_PlayerBoxGap);
-			boxSize.bottom = boxSize.top + g_PlayerBoxYSize;
-			playerBoxt.size = boxSize;
+			playerBoxt.size.top += h * (g_PlayerBoxYSize + g_PlayerBoxGap);
+			playerBoxt.size.bottom = playerBoxt.size.top + g_PlayerBoxYSize;
 		}
 	}
 }

@@ -27,9 +27,6 @@ class ChatPanel
 		resizeGUIObjectToCaption(this.chatSubmit, { "horizontal": "left" }, { "horizontal": 8 });
 
 		this.chatInput = Engine.GetGUIObjectByName("chatInput");
-		const size = this.chatInput.size;
-		size.right = this.chatSubmit.size.left;
-		this.chatInput.size = size;
-		this.chatInput = Engine.GetGUIObjectByName("chatInput");
+		this.chatInput.size.right = this.chatSubmit.size.left;
 	}
 }

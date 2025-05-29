@@ -221,11 +221,10 @@ function horizontallySpaceObjects(parentName, margin = 0)
 	const objects = Engine.GetGUIObjectByName(parentName).children;
 	for (let i = 0; i < objects.length; ++i)
 	{
-		const size = objects[i].size;
-		const width = size.right - size.left;
-		size.left = i * (width + margin) + margin;
-		size.right = (i + 1) * (width + margin);
-		objects[i].size = size;
+		const obj = objects[i];
+		const width = obj.size.right - obj.size.left;
+		obj.size.left = i * (width + margin) + margin;
+		obj.size.right = (i + 1) * (width + margin);
 	}
 }
 
@@ -237,7 +236,6 @@ function horizontallySpaceObjects(parentName, margin = 0)
  */
 function resizeGUIObjectToCaption(object, align, margin = {})
 {
-	const objectSize = object.size;
 	const textSize = Engine.GetTextSize(object.font, object.caption);
 	if (align.horizontal)
 	{
@@ -245,17 +243,17 @@ function resizeGUIObjectToCaption(object, align, margin = {})
 		switch (align.horizontal)
 		{
 		case "right":
-			objectSize.right = object.size.left + width;
+			object.size.right = object.size.left + width;
 			break;
 		case "left":
-			objectSize.left = object.size.right - width;
+			object.size.left = object.size.right - width;
 			break;
 		case "center":
 		{
 			const oldWidth = object.size.right - object.size.left;
 			const widthDiff = width - oldWidth;
-			objectSize.right = object.size.right + (widthDiff / 2);
-			objectSize.left = object.size.left - (widthDiff / 2);
+			object.size.right += (widthDiff / 2);
+			object.size.left -= (widthDiff / 2);
 			break;
 		}
 		default:
@@ -268,17 +266,16 @@ function resizeGUIObjectToCaption(object, align, margin = {})
 		switch (align.vertical)
 		{
 		case "bottom":
-			objectSize.bottom = object.size.top + height;
+			object.size.bottom = object.size.top + height;
 			break;
 		case "top":
-			objectSize.top = object.size.bottom - height;
+			object.size.top = object.size.bottom - height;
 			break;
 		default:
 		}
 	}
 
-	object.size = objectSize;
-	return objectSize;
+	return object.size;
 }
 
 /**

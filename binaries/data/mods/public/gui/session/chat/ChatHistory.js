@@ -23,9 +23,7 @@ class ChatHistory
 		this.chatHistoryFilter.selected = 0;
 		this.chatHistoryFilter.onSelectionChange = this.onSelectionChange.bind(this);
 
-		const chatHistoryFilterSize = this.chatHistoryFilter.size;
-		chatHistoryFilterSize.left = this.chatHistoryFilterCaption.size.right + this.FilterMargin;
-		this.chatHistoryFilter.size = chatHistoryFilterSize;
+		this.chatHistoryFilter.size.left = this.chatHistoryFilterCaption.size.right + this.FilterMargin;
 
 		this.chatHistoryText = Engine.GetGUIObjectByName("chatHistoryText");
 	}

@@ -52,7 +52,7 @@ class HotkeyPicker
 			const s = Engine.GetGUIObjectByName("combination[" + i + "]").size;
 			s.top = +i * 60 + 120;
 			s.bottom = +i * 60 + 150;
-			Engine.GetGUIObjectByName("combination[" + i + "]").size = s;
+
 			Engine.GetGUIObjectByName("combNb[" + i + "]").caption = sprintf(translate("#%i"), i);
 
 			if (i == this.combinations.length)

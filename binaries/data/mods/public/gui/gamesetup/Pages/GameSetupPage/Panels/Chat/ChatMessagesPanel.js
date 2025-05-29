@@ -59,10 +59,7 @@ class ChatMessagesPanel
 
 	onGameSettingsPanelResize(settingsPanel)
 	{
-		const size = this.chatPanel.size;
-		size.right = settingsPanel.size.left + this.gameSettingsPanel.MaxColumnWidth + this.Margin;
-		this.chatPanel.size = size;
-
+		this.chatPanel.size.right = settingsPanel.size.left + this.gameSettingsPanel.MaxColumnWidth + this.Margin;
 		this.updateHidden();
 	}
 }

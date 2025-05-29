@@ -413,7 +413,12 @@ function updateBandbox(bandbox, ev, hidden)
 	const vMin = Vector2D.min(g_DragStart, ev);
 	const vMax = Vector2D.max(g_DragStart, ev);
 
-	bandbox.size = new GUISize(vMin.x / scale, vMin.y / scale, vMax.x / scale, vMax.y / scale);
+	bandbox.size = {
+		"left": vMin.x / scale,
+		"top": vMin.y / scale,
+		"right": vMax.x / scale,
+		"bottom": vMax.y / scale
+	};
 	bandbox.hidden = hidden;
 
 	return [vMin.x, vMin.y, vMax.x, vMax.y];

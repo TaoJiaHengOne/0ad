@@ -70,14 +70,11 @@ class TradeDialog
 
 	onPlayersInit()
 	{
-		const size = this.tradeDialogPanel.size;
-
 		const width = 1/2 * Math.max(
 			TradeDialog.prototype.BarterPanel.getWidthOffset(),
 			TradeDialog.prototype.TradePanel.getWidthOffset());
 
-		size.left -= width;
-		size.right += width;
-		this.tradeDialogPanel.size = size;
+		this.tradeDialogPanel.size.left -= width;
+		this.tradeDialogPanel.size.right += width;
 	}
 }
