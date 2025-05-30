@@ -100,7 +100,7 @@ MenuButtons.prototype.Summary = class
 
 		closeOpenDialogs();
 		this.pauseControl.implicitPause();
-		 // Allows players to see their own summary.
+		// Allows players to see their own summary.
 		// If they have shared ally vision researched, they are able to see the summary of there allies too.
 		const simState = Engine.GuiInterfaceCall("GetExtendedSimulationState");
 		const data = await Engine.OpenChildPage(

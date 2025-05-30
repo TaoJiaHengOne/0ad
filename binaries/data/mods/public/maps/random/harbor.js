@@ -224,7 +224,7 @@ function* GenerateMap(mapSettings)
 				g_TileClasses.rock, 2,
 				g_TileClasses.spine, 2,
 				g_TileClasses.water, 3
-			 ],
+			],
 			"sizes": g_AllSizes,
 			"mixes": g_AllMixes,
 			"amounts": g_AllAmounts
@@ -242,7 +242,7 @@ function* GenerateMap(mapSettings)
 				g_TileClasses.rock, 2,
 				g_TileClasses.spine, 2,
 				g_TileClasses.water, 5
-			 ],
+			],
 			"sizes": g_AllSizes,
 			"mixes": g_AllMixes,
 			"amounts": g_AllAmounts

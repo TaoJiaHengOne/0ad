@@ -16,7 +16,7 @@ ConvexPolygonPlacer.prototype.place = function(constraint)
 	for (const point of getPointsInBoundingBox(getBoundingBox(this.polygonVertices)))
 	{
 		if (this.polygonVertices.some((vertex, i) =>
-		      distanceOfPointFromLine(this.polygonVertices[i], this.polygonVertices[(i + 1) % this.polygonVertices.length], point) > 0))
+			distanceOfPointFromLine(this.polygonVertices[i], this.polygonVertices[(i + 1) % this.polygonVertices.length], point) > 0))
 			continue;
 
 		++count;

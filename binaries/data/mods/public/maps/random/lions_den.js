@@ -101,7 +101,7 @@ function* GenerateMap(mapSettings)
 				g_TileClasses.mountain, 2,
 				g_TileClasses.player, 12,
 				g_TileClasses.step, 2
-			 ],
+			],
 			"stay": [g_TileClasses.valley, 7],
 			"sizes": ["normal"],
 			"mixes": ["normal"],

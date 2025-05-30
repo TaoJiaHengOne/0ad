@@ -188,8 +188,8 @@ var g_MainMenuItems = [
 				"enabled": () => !!Engine.StartXmppClient,
 				"hotkey": "lobby",
 				"onPress": () => {
-					 if (Engine.StartXmppClient)
-						 Engine.OpenChildPage("page_prelobby_entrance.xml");
+					if (Engine.StartXmppClient)
+						Engine.OpenChildPage("page_prelobby_entrance.xml");
 				}
 			},
 			{

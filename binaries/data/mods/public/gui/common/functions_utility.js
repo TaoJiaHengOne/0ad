@@ -167,7 +167,7 @@ function tryAutoComplete(text, autoCompleteList)
 	}
 
 	if (matchingWords.length != 1)
-	    return text;
+		return text;
 
 	text = wordSplit.join(" ");
 	if (text.length > 0)

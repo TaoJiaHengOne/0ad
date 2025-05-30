@@ -153,7 +153,7 @@ function reportMismatchingSoftwareVersions(mismatchType, clientMismatch, serverM
 {
 	messageBox(
 		400, 200,
-	        translate("Failed to connect to the server.") +
+		translate("Failed to connect to the server.") +
 		"\n\n" + getMismatchMessage(mismatchType, clientMismatch, serverMismatch),
 		translate("Disconnected")
 	);

@@ -231,20 +231,20 @@ function* GenerateMap(mapSettings)
 
 	g_Map.log("Creating dirt patches");
 	createLayeredPatches(
-	 [scaleByMapSize(3, 6), scaleByMapSize(5, 10), scaleByMapSize(8, 21)],
-	 [[tMainTerrain, tTier1Terrain], [tTier1Terrain, tTier2Terrain], [tTier2Terrain, tTier3Terrain]],
-	 [1, 1],
-	 [avoidClasses(clForest, 0, clDirt, 5, clPlayer, 12), stayClasses(clLand, 5)],
-	 scaleByMapSize(15, 45),
-	 clDirt);
+		[scaleByMapSize(3, 6), scaleByMapSize(5, 10), scaleByMapSize(8, 21)],
+		[[tMainTerrain, tTier1Terrain], [tTier1Terrain, tTier2Terrain], [tTier2Terrain, tTier3Terrain]],
+		[1, 1],
+		[avoidClasses(clForest, 0, clDirt, 5, clPlayer, 12), stayClasses(clLand, 5)],
+		scaleByMapSize(15, 45),
+		clDirt);
 
 	g_Map.log("Creating grass patches");
 	createPatches(
-	 [scaleByMapSize(2, 4), scaleByMapSize(3, 7), scaleByMapSize(5, 15)],
-	 tTier4Terrain,
-	 [avoidClasses(clForest, 0, clDirt, 5, clPlayer, 12), stayClasses(clLand, 5)],
-	 scaleByMapSize(15, 45),
-	 clDirt);
+		[scaleByMapSize(2, 4), scaleByMapSize(3, 7), scaleByMapSize(5, 15)],
+		tTier4Terrain,
+		[avoidClasses(clForest, 0, clDirt, 5, clPlayer, 12), stayClasses(clLand, 5)],
+		scaleByMapSize(15, 45),
+		clDirt);
 	yield 55;
 
 	g_Map.log("Creating plentiful mountain metal mines");

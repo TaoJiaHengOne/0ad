@@ -667,7 +667,7 @@ g_SelectionPanels.Research = {
 		const sortedEntStates = unitEntStates.sort((a, b) =>
 			(!b.upgrade || !b.upgrade.isUpgrading) - (!a.upgrade || !a.upgrade.isUpgrading) ||
 			(!a.production ? 0 : a.production.queue.length) - (!b.production ? 0 : b.production.queue.length)
-		 );
+		);
 
 		for (const state of sortedEntStates)
 		{
@@ -1193,8 +1193,8 @@ g_SelectionPanels.Upgrade = {
 
 			data.button.onPress = function() {
 				upgradeEntity(
-				    data.item.entity,
-				    upgradableEntStates.map(state => state.id));
+					data.item.entity,
+					upgradableEntStates.map(state => state.id));
 			};
 
 			if (!requirementsMet || limits.canBeAddedCount == 0 &&

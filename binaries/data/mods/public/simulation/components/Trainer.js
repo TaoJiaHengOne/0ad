@@ -305,9 +305,9 @@ Trainer.prototype.Item.prototype.Spawn = function()
 		// Play a sound, but only for the first in the batch (to avoid nasty phasing effects).
 		PlaySound("trained", createdEnts[0]);
 		Engine.PostMessage(this.trainer, MT_TrainingFinished, {
-		    "entities": createdEnts,
-		    "owner": this.player,
-		    "metadata": this.metadata
+			"entities": createdEnts,
+			"owner": this.player,
+			"metadata": this.metadata
 		});
 	}
 	if (this.count)
@@ -317,9 +317,9 @@ Trainer.prototype.Item.prototype.Spawn = function()
 		if (!this.spawnNotified)
 		{
 			Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface).PushNotification({
-			    "players": [cmpPlayer.GetPlayerID()],
-			    "message": markForTranslation("Can't find free space to spawn trained units."),
-			    "translateMessage": true
+				"players": [cmpPlayer.GetPlayerID()],
+				"message": markForTranslation("Can't find free space to spawn trained units."),
+				"translateMessage": true
 			});
 			this.spawnNotified = true;
 		}
@@ -567,9 +567,9 @@ Trainer.prototype.CalculateTrainCostMultiplier = function()
 {
 	for (const res of Resources.GetCodes().concat(["time"]))
 		this.trainCostMultiplier[res] = ApplyValueModificationsToEntity(
-		    "Trainer/TrainCostMultiplier/" + res,
-		    +(this.template?.TrainCostMultiplier?.[res] || 1),
-		    this.entity);
+			"Trainer/TrainCostMultiplier/" + res,
+			+(this.template?.TrainCostMultiplier?.[res] || 1),
+			this.entity);
 };
 
 /**
@@ -587,9 +587,9 @@ Trainer.prototype.GetBatchTime = function(batchSize)
 {
 	// TODO: work out what equation we should use here.
 	return Math.pow(batchSize, ApplyValueModificationsToEntity(
-	    "Trainer/BatchTimeModifier",
-	    +(this.template?.BatchTimeModifier || 1),
-	    this.entity));
+		"Trainer/BatchTimeModifier",
+		+(this.template?.BatchTimeModifier || 1),
+		this.entity));
 };
 
 /**

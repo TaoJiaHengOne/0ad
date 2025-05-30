@@ -76,9 +76,11 @@ repos:
     rev: v9.27.0
     hooks:
       - id: eslint
+        language_version: 22.14.0
         additional_dependencies:
           - eslint@9.27.0
           - eslint-plugin-brace-rules@0.1.6
+          - "@stylistic/eslint-plugin@4.4.0"
         args:
           - --max-warnings=0
           - --no-warn-ignored

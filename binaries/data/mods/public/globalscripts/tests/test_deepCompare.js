@@ -33,7 +33,7 @@ function test_deepCompare()
 
 	// Some nestling.
 	TS_ASSERT(deepCompare({ "foo": new Set([1, 2, { "baz": Infinity }]), "bar": [new Set([9]), { "foo": [0, 1, 2] }] },
-	                      { "foo": new Set([1, 2, { "baz": Infinity }]), "bar": [new Set([9]), { "foo": [0, 1, 2] }] }));
+		{ "foo": new Set([1, 2, { "baz": Infinity }]), "bar": [new Set([9]), { "foo": [0, 1, 2] }] }));
 }
 
 test_deepCompare();

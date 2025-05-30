@@ -153,7 +153,7 @@ class SavegameList
 		this.gameSelection.list = this.savedGamesMetadata.map(metadata => 0);
 		this.gameSelection.list_data = this.savedGamesMetadata.map(metadata => metadata.id);
 
-		 // Restore selection if the selected savegame still exists.
+		// Restore selection if the selected savegame still exists.
 		// If the last savegame was deleted, or if it was hidden by the compatibility filter, select the new last item.
 		const selectedGameIndex = this.savedGamesMetadata.findIndex(metadata => metadata.id == selectedGameId);
 		if (selectedGameIndex != -1)

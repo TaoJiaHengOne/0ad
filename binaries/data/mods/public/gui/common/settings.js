@@ -81,7 +81,7 @@ function loadSettingValuesFile(filename)
 		{
 			keyContext = {};
 			for (const key of json.TranslatedKeys)
-				 keyContext[key] = json.TranslationContext;
+				keyContext[key] = json.TranslationContext;
 		}
 
 		translateObjectKeys(json.Data, keyContext);

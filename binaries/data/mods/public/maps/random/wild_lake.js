@@ -451,7 +451,7 @@ function* GenerateMap(mapSettings)
 	// NOTE: Since terrain generation is quite unpredictable actual water
 	//	coverage might vary much with the same value
 	const averageWaterCoverage = 1 / 5;
-	 // Water height in environment and the engine
+	// Water height in environment and the engine
 	const heightSeaGround = -MIN_HEIGHT + heightRange.min + averageWaterCoverage *
 		(heightRange.max - heightRange.min);
 	// Water height as terrain height

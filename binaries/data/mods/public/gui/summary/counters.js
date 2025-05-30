@@ -98,8 +98,8 @@ function calculateTeamCounterDataHelper()
 		{
 			g_TeamHelperData[playerState.team] = {};
 			for (const value of ["food", "vegetarianFood", "femaleCitizen", "worker", "enemyUnitsKilled",
-			                   "unitsLost", "mapControl", "mapControlPeak",
-			                   "mapExploration", "totalBought", "totalSold"])
+				"unitsLost", "mapControl", "mapControlPeak",
+				"mapExploration", "totalBought", "totalSold"])
 				g_TeamHelperData[playerState.team][value] = new Array(playerState.sequences.time.length).fill(0);
 		}
 

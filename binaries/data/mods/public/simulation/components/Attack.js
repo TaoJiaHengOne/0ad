@@ -779,7 +779,7 @@ Attack.prototype.OnValueModification = function(msg)
 		return;
 
 	if (this.GetAttackTypes().some(type =>
-	      msg.valueNames.indexOf("Attack/" + type + "/MaxRange") != -1))
+		msg.valueNames.indexOf("Attack/" + type + "/MaxRange") != -1))
 		cmpUnitAI.UpdateRangeQueries();
 };
 

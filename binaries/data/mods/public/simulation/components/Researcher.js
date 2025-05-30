@@ -274,9 +274,9 @@ Researcher.prototype.GetTechCostMultiplier = function()
 	const techCostMultiplier = {};
 	for (const res of Resources.GetCodes().concat(["time"]))
 		techCostMultiplier[res] = ApplyValueModificationsToEntity(
-		    "Researcher/TechCostMultiplier/" + res,
-		    +(this.template?.TechCostMultiplier?.[res] || 1),
-		    this.entity);
+			"Researcher/TechCostMultiplier/" + res,
+			+(this.template?.TechCostMultiplier?.[res] || 1),
+			this.entity);
 
 	return techCostMultiplier;
 };

@@ -56,9 +56,9 @@ PositionHelper.prototype.InterpolatedLocation = function(ent, lateness)
 	const cmpTimer = Engine.QueryInterface(SYSTEM_ENTITY, IID_Timer);
 	const turnLength = cmpTimer.GetLatestTurnLength();
 	return new Vector3D(
-	    (curPos.x * (turnLength - lateness) + prevPos.x * lateness) / turnLength,
-	    0,
-	    (curPos.z * (turnLength - lateness) + prevPos.z * lateness) / turnLength
+		(curPos.x * (turnLength - lateness) + prevPos.x * lateness) / turnLength,
+		0,
+		(curPos.z * (turnLength - lateness) + prevPos.z * lateness) / turnLength
 	);
 };
 

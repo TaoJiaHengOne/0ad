@@ -1,8 +1,10 @@
-// Hack to get eslint run via pre-commit to find the braces plugin in the pre-commit cache,
-// should be 'import braceRules from "eslint-plugin-brace-rules";'
+// NODE_PATH isn't supprorted for ESM modules [1], so for eslint to be able to
+// be run via pre-commit use a workaround instead of static import.
+// [1] https://nodejs.org/api/esm.html#esm_no_node_path
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const braceRules = require("eslint-plugin-brace-rules");
+const stylistic = require("@stylistic/eslint-plugin");
 
 
 const configIgnores = {
@@ -34,9 +36,6 @@ const configEslintBase = {
 		"no-duplicate-case": 1,
 		"no-empty": 1,
 		"no-extra-boolean-cast": 0,
-		"no-extra-parens": 0,
-		"no-extra-semi": 1,
-		"no-floating-decimal": 1,
 		"no-func-assign": 1,
 		"no-negated-in-lhs": 1,
 		"no-obj-calls": 1,
@@ -52,10 +51,6 @@ const configEslintBase = {
 		"no-else-return": 1,
 		"no-invalid-this": 1,
 		"no-loop-func": 0,
-
-		"no-multi-spaces": ["warn", {
-			"ignoreEOLComments": true,
-		}],
 
 		"no-new": 1,
 		"no-redeclare": 0,
@@ -74,34 +69,46 @@ const configEslintBase = {
 		"no-undef": 0,
 		"no-undef-init": 1,
 		"no-unused-vars": 0,
-		"comma-spacing": 1,
 
-		"indent": ["warn", "tab", {
-			"outerIIFEBody": 0,
-		}],
 
-		"key-spacing": 1,
 		"new-cap": 0,
-		"new-parens": 1,
-		"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
 		"no-multi-assign": 1,
-		"no-trailing-spaces": 1,
 		"no-unneeded-ternary": 1,
 		"no-irregular-whitespace": 1,
-		"object-curly-spacing": ["warn", "always"],
 		"operator-assignment": 1,
-		"operator-linebreak": ["warn", "after"],
-		"quote-props": 1,
-		"semi": 1,
-		"semi-spacing": 1,
-		"space-before-function-paren": ["warn", "never"],
-		"space-in-parens": 1,
-		"space-unary-ops": 1,
-		"spaced-comment": ["warn", "always"],
 		"no-class-assign": 1,
 		"no-const-assign": 1,
 		"no-dupe-class-members": 1,
 		"prefer-const": 1,
+	}
+};
+
+
+const configStylistic = {
+	"plugins": {
+		'@stylistic': stylistic
+	},
+
+	"rules": {
+		"@stylistic/comma-spacing": "warn",
+		"@stylistic/indent": ["warn", "tab", { "outerIIFEBody": "off" }],
+		"@stylistic/key-spacing": "warn",
+		"@stylistic/new-parens": "warn",
+		"@stylistic/no-extra-parens": "off",
+		"@stylistic/no-extra-semi": "warn",
+		"@stylistic/no-floating-decimal": "warn",
+		"@stylistic/no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
+		"@stylistic/no-multi-spaces": ["warn", { "ignoreEOLComments": true }],
+		"@stylistic/no-trailing-spaces": "warn",
+		"@stylistic/object-curly-spacing": ["warn", "always"],
+		"@stylistic/operator-linebreak": ["warn", "after"],
+		"@stylistic/quote-props": "warn",
+		"@stylistic/semi": "warn",
+		"@stylistic/semi-spacing": "warn",
+		"@stylistic/space-before-function-paren": ["warn", "never"],
+		"@stylistic/space-in-parens": "warn",
+		"@stylistic/space-unary-ops": "warn",
+		"@stylistic/spaced-comment": ["warn", "always"],
 	}
 };
 
@@ -139,5 +146,7 @@ const configBracesRules = {
 const configs = [configIgnores, configEslintBase];
 configs[1].plugins = { ...configBracesRules.plugins };
 Object.assign(configs[1].rules, configBracesRules.rules);
+Object.assign(configs[1].plugins, configStylistic.plugins);
+Object.assign(configs[1].rules, configStylistic.rules);
 
 export default configs;

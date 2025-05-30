@@ -205,7 +205,7 @@ TechnologyManager.prototype.Init = function()
 
 	this.classCounts = {}; // stores the number of entities of each Class
 	this.typeCountsByClass = {}; // stores the number of entities of each type for each class i.e.
-	                             // {"someClass": {"unit/spearman": 2, "unit/cav": 5} "someOtherClass":...}
+	// {"someClass": {"unit/spearman": 2, "unit/cav": 5} "someOtherClass":...}
 
 	// Some technologies are automatically researched when their conditions are met.  They have no cost and are
 	// researched instantly.  This allows civ bonuses and more complicated technologies.

@@ -331,8 +331,8 @@ BuildingAI.prototype.FireArrows = function()
 	let targets = [];
 	const addTarget = function(target)
 	{
-	    const pref = (cmpAttack.GetPreference(target) ?? 49);
-	    targets.push({ "entityId": target, "preference": pref });
+		const pref = (cmpAttack.GetPreference(target) ?? 49);
+		targets.push({ "entityId": target, "preference": pref });
 	};
 
 	// Add the UnitAI target separately, as the UnitMotion and RangeManager implementations differ.
@@ -345,7 +345,7 @@ BuildingAI.prototype.FireArrows = function()
 	if (!this.focusTargets.length)
 	{
 		for (const target of this.targetUnits)
-	        addTarget(target);
+			addTarget(target);
 		// Sort targets by preference and then by proximity.
 		targets.sort((a, b) => {
 			if (a.preference > b.preference)

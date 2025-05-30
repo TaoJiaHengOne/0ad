@@ -323,9 +323,9 @@ ProductionQueue.prototype.AddItem = function(templateName, type, count, metadata
 		const player = cmpPlayer.GetPlayerID();
 		const cmpGUIInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 		cmpGUIInterface.PushNotification({
-		    "players": [player],
-		    "message": markForTranslation("The production queue is full."),
-		    "translateMessage": true,
+			"players": [player],
+			"message": markForTranslation("The production queue is full."),
+			"translateMessage": true,
 		});
 		return false;
 	}

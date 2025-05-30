@@ -129,7 +129,7 @@ TS_ASSERT(!increased);
 let looted;
 AddMock(target, IID_Loot, {
 	"GetXp": () => {
-		 looted = true; return 80;
+		looted = true; return 80;
 	}
 });
 
