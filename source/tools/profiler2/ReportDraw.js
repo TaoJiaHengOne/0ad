@@ -28,29 +28,30 @@ var mouse_is_down = null;
 
 function rebuild_canvases(raw_data)
 {
-	g_canvas = {};
-
-	g_canvas.canvas_frames = $('<canvas width="1600" height="128"></canvas>').get(0);
-	g_canvas.threads = {};
+	const canvas = {
+		"canvas_frames": $('<canvas width="1600" height="128"></canvas>').get(0),
+		"threads": {},
+		"canvas_zoom": $('<canvas width="1600" height="192"></canvas>').get(0),
+		"text_output": $('<pre></pre>').get(0)
+	};
 
 	for (var thread = 0; thread < raw_data.threads.length; thread++)
-		g_canvas.threads[thread] = $('<canvas width="1600" height="128"></canvas>').get(0);
-
-	g_canvas.canvas_zoom = $('<canvas width="1600" height="192"></canvas>').get(0);
-	g_canvas.text_output = $('<pre></pre>').get(0);
+		canvas.threads[thread] = $('<canvas width="1600" height="128"></canvas>').get(0);
 
 	$('#timelines').empty();
 	$('#timelines').append("<h3>Main thread frames</h3>");
-	$('#timelines').append(g_canvas.canvas_frames);
+	$('#timelines').append(canvas.canvas_frames);
 	for (var thread = 0; thread < raw_data.threads.length; thread++)
 	{
 		$('#timelines').append("<h3>" + raw_data.threads[thread].name + "</h3>");
-		$('#timelines').append($(g_canvas.threads[thread]));
+		$('#timelines').append($(canvas.threads[thread]));
 	}
 
 	$('#timelines').append("<h3>Zoomed frames</h3>");
-	$('#timelines').append(g_canvas.canvas_zoom);
-	$('#timelines').append(g_canvas.text_output);
+	$('#timelines').append(canvas.canvas_zoom);
+	$('#timelines').append(canvas.text_output);
+
+	return canvas;
 }
 
 function update_display(report, range)
@@ -59,7 +60,7 @@ function update_display(report, range)
 	const raw_data = report.raw_data();
 	const main_data = data.threads[g_main_thread];
 
-	rebuild_canvases(raw_data);
+	const canvas = rebuild_canvases(raw_data);
 
 	if (range.seconds)
 	{
@@ -72,28 +73,29 @@ function update_display(report, range)
 		range.tmin = main_data.frames[main_data.frames.length-1-range.frames].t0;
 	}
 
-	$(g_canvas.text_output).empty();
+	$(canvas.text_output).empty();
 
-	display_frames(data.threads[g_main_thread], g_canvas.canvas_frames, range);
-	display_events(data.threads[g_main_thread], g_canvas.canvas_frames, range);
+	display_frames(data.threads[g_main_thread], canvas.canvas_frames, range);
+	display_events(data.threads[g_main_thread], canvas.canvas_frames, range);
 
-	set_frames_zoom_handlers(report, g_canvas.canvas_frames);
-	set_tooltip_handlers(g_canvas.canvas_frames);
+	set_frames_zoom_handlers(report, canvas.canvas_frames);
+	set_tooltip_handlers(canvas.canvas_frames);
 
-	$(g_canvas.canvas_zoom).unbind();
+	$(canvas.canvas_zoom).unbind();
 
-	set_zoom_handlers(data.threads[g_main_thread], data.threads[g_main_thread], g_canvas.threads[g_main_thread], g_canvas.canvas_zoom);
+	set_zoom_handlers(data.threads[g_main_thread], data.threads[g_main_thread],
+		canvas.threads[g_main_thread], canvas.canvas_zoom);
 	set_tooltip_handlers(data.canvas_zoom);
 
 	for (var i = 0; i < data.threads.length; i++)
 	{
-		$(g_canvas.threads[i]).unbind();
+		$(canvas.threads[i]).unbind();
 
 		const events = slice_intervals(data.threads[i], range);
 
-		display_hierarchy(data.threads[i], events, g_canvas.threads[i], {});
-		set_zoom_handlers(data.threads[i], events, g_canvas.threads[i], g_canvas.canvas_zoom);
-		set_tooltip_handlers(g_canvas.threads[i]);
+		display_hierarchy(data.threads[i], events, canvas.threads[i], {});
+		set_zoom_handlers(data.threads[i], events, canvas.threads[i], canvas.canvas_zoom);
+		set_tooltip_handlers(canvas.threads[i]);
 	}
 }
 outInterface.update_display = update_display;
