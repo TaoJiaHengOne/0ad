@@ -448,7 +448,7 @@ function select_report(id)
 	g_current_report = id;
 
 	// Load up our canvas
-	g_report_draw.update_display(g_reports[id], { "seconds": 5 });
+	draw_report(g_reports[id], { "seconds": 5 });
 
 	recompute_choices(g_reports[id], g_main_thread);
 }

@@ -20,10 +20,8 @@
 
 // Handles the drawing of a report
 
-var g_report_draw = (function()
+var draw_report = (function()
 {
-var outInterface = {};
-
 var mouse_is_down = null;
 
 function rebuild_canvases(raw_data)
@@ -98,7 +96,6 @@ function update_display(report, range)
 		set_tooltip_handlers(canvas.threads[i]);
 	}
 }
-outInterface.update_display = update_display;
 
 function display_frames(data, canvas, range)
 {
@@ -183,7 +180,6 @@ function display_frames(data, canvas, range)
 
 	ctx.restore();
 }
-outInterface.display_frames = display_frames;
 
 function display_events(data, canvas)
 {
@@ -237,7 +233,6 @@ function display_events(data, canvas)
 
 	ctx.restore();
 }
-outInterface.display_events = display_events;
 
 function display_hierarchy(main_data, data, canvas, range, zoom)
 {
@@ -397,7 +392,6 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 
 	ctx.restore();
 }
-outInterface.display_hierarchy = display_hierarchy;
 
 function set_frames_zoom_handlers(report, canvas0)
 {
@@ -477,5 +471,5 @@ function set_zoom_handlers(main_data, data, canvas0, canvas1)
 	});
 }
 
-return outInterface;
+return update_display;
 })();
