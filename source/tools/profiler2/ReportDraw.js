@@ -33,13 +33,13 @@ function rebuild_canvases(raw_data)
 		"text_output": $('<pre></pre>').get(0)
 	};
 
-	for (var thread = 0; thread < raw_data.threads.length; thread++)
+	for (let thread = 0; thread < raw_data.threads.length; thread++)
 		canvas.threads[thread] = $('<canvas width="1600" height="128"></canvas>').get(0);
 
 	$('#timelines').empty();
 	$('#timelines').append("<h3>Main thread frames</h3>");
 	$('#timelines').append(canvas.canvas_frames);
-	for (var thread = 0; thread < raw_data.threads.length; thread++)
+	for (let thread = 0; thread < raw_data.threads.length; thread++)
 	{
 		$('#timelines').append("<h3>" + raw_data.threads[thread].name + "</h3>");
 		$('#timelines').append($(canvas.threads[thread]));
@@ -85,7 +85,7 @@ function update_display(report, range)
 		canvas.threads[g_main_thread], canvas.canvas_zoom);
 	set_tooltip_handlers(data.canvas_zoom);
 
-	for (var i = 0; i < data.threads.length; i++)
+	for (let i = 0; i < data.threads.length; i++)
 	{
 		$(canvas.threads[i]).unbind();
 
@@ -124,15 +124,15 @@ function display_frames(data, canvas, range)
 
 	ctx.strokeStyle = 'rgb(0, 0, 0)';
 	ctx.fillStyle = 'rgb(255, 255, 255)';
-	for (var i = 0; i < data.frames.length; ++i)
+	for (let i = 0; i < data.frames.length; ++i)
 	{
 		const frame = data.frames[i];
 
 		const duration = frame.t1 - frame.t0;
-		var x0 = xpadding + dx*(frame.t0 - tmin);
-		var x1 = x0 + dx*duration;
-		var y1 = canvas.height;
-		var y0 = y1 * scale(duration*1000);
+		const x0 = xpadding + dx*(frame.t0 - tmin);
+		const x1 = x0 + dx*duration;
+		const y1 = canvas.height;
+		const y0 = y1 * scale(duration*1000);
 
 		ctx.beginPath();
 		ctx.rect(x0, y0, x1-x0, y1-y0);
@@ -189,7 +189,7 @@ function display_events(data, canvas)
 	var x_to_time = canvas._zoomData.x_to_t;
 	var time_to_x = canvas._zoomData.t_to_x;
 
-	for (var i = 0; i < data.events.length; ++i)
+	for (let i = 0; i < data.events.length; ++i)
 	{
 		const event = data.events[i];
 
@@ -199,16 +199,16 @@ function display_events(data, canvas)
 		if (event.id == 'gui event' && event.attrs && event.attrs[0] == 'type: mousemove')
 			continue;
 
-		var x = time_to_x(event.t);
-		var y = 32;
+		const x = time_to_x(event.t);
+		const y = 32;
 
 		if (x < 2)
 			continue;
 
-		var x0 = x;
-		var x1 = x;
-		var y0 = y-4;
-		var y1 = y+4;
+		const x0 = x;
+		const x1 = x;
+		const y0 = y-4;
+		const y1 = y+4;
 
 		ctx.strokeStyle = 'rgb(255, 0, 0)';
 		ctx.beginPath();
@@ -278,20 +278,20 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 	ctx.textAlign = 'center';
 	ctx.strokeStyle = 'rgb(192, 192, 192)';
 	ctx.beginPath();
-	var precision = -3;
+	let precision = -3;
 	while ((tmax-tmin)*Math.pow(10, 3+precision) < 25)
 		++precision;
 	if (precision > 10)
 		precision = 10;
 	if (precision < 0)
 		precision = 0;
-	var ticks_per_sec = Math.pow(10, 3+precision);
-	var major_tick_interval = 5;
+	const ticks_per_sec = Math.pow(10, 3+precision);
+	const major_tick_interval = 5;
 
-	for (var i = 0; i < (tmax-tmin)*ticks_per_sec; ++i)
+	for (let i = 0; i < (tmax-tmin)*ticks_per_sec; ++i)
 	{
-		var major = (i % major_tick_interval == 0);
-		var x = Math.floor(time_to_x(tmin + i/ticks_per_sec));
+		const major = (i % major_tick_interval == 0);
+		const x = Math.floor(time_to_x(tmin + i/ticks_per_sec));
 		ctx.moveTo(x-0.5, padding_top - (major ? 4 : 2));
 		ctx.lineTo(x-0.5, padding_top + height);
 		if (major)
@@ -302,23 +302,23 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 
 	var BAR_SPACING = 16;
 
-	for (var i = 0; i < data.intervals.length; ++i)
+	for (let i = 0; i < data.intervals.length; ++i)
 	{
 		const interval = data.intervals[i];
 
 		if (interval.tmax <= tmin || interval.tmin > tmax)
 			continue;
 
-		var x0 = Math.floor(time_to_x(interval.t0));
-		var x1 = Math.floor(time_to_x(interval.t1));
+		const x0 = Math.floor(time_to_x(interval.t0));
+		const x1 = Math.floor(time_to_x(interval.t1));
 
 		if (x1-x0 < 1)
 			continue;
 
-		var y0 = padding_top + interval.depth * BAR_SPACING;
-		var y1 = y0 + BAR_SPACING;
+		const y0 = padding_top + interval.depth * BAR_SPACING;
+		const y1 = y0 + BAR_SPACING;
 
-		var label = interval.id;
+		let label = interval.id;
 		if (interval.attrs)
 		{
 			if (/^\d+$/.exec(interval.attrs[0]))
@@ -354,14 +354,14 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 
 	}
 
-	for (var i = 0; i < main_data.frames.length; ++i)
+	for (let i = 0; i < main_data.frames.length; ++i)
 	{
-		var frame = main_data.frames[i];
+		const frame = main_data.frames[i];
 
 		if (frame.t0 < tmin || frame.t0 > tmax)
 			continue;
 
-		var x = Math.floor(time_to_x(frame.t0));
+		const x = Math.floor(time_to_x(frame.t0));
 
 		ctx.save();
 		ctx.lineWidth = 3;
