@@ -26,7 +26,9 @@ function hslToRgb(h, s, l, a)
 
 	if (s == 0)
 	{
-		r = g = b = l;
+		r = l;
+		g = l;
+		b = l;
 	}
 	else
 	{
@@ -152,10 +154,10 @@ function set_tooltip_handlers(canvas)
 		if (!tooltips)
 			return;
 
-		var relativeX = event.pageX - this.getBoundingClientRect().left - window.scrollX;
-		var relativeY = event.pageY - this.getBoundingClientRect().top - window.scrollY;
+		var relativeX = event.pageX - canvas.getBoundingClientRect().left - window.scrollX;
+		var relativeY = event.pageY - canvas.getBoundingClientRect().top - window.scrollY;
 
-		var text = undefined;
+		var text;
 		for (var i = 0; i < tooltips.length; ++i)
 		{
 			var t = tooltips[i];
@@ -183,7 +185,7 @@ function set_tooltip_handlers(canvas)
 	}
 
 	$(canvas).mousemove(function(event) {
-		do_tooltip.call(this, event);
+		do_tooltip(event);
 	});
 	$(canvas).mouseleave(function(event) {
 		$('#tooltip').css('visibility', 'hidden');

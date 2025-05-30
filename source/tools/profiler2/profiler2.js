@@ -120,7 +120,7 @@ function draw_frequency_graph()
 		nb.textContent = type + " - n=" + time_by_frame.length;
 		legend.appendChild(nb);
 
-		for (var i = 0; i < time_by_frame.length; i++)
+		for (let i = 0; i < time_by_frame.length; i++)
 		{
 			let x0 = i/time_by_frame.length*(canvas.width-padding*2) + padding;
 			if (i == 0)
@@ -157,7 +157,7 @@ function draw_frequency_graph()
 		canvas._tooltips.push({
 			'x0': +i, 'x1': +i+1,
 			'y0': 0, 'y1': canvas.height,
-			'text': function(text) { return function() { return text; }; }(text)
+			'text': function() { return text; }
 		});
 	}
 	set_tooltip_handlers(canvas);
@@ -233,7 +233,7 @@ function draw_history_graph()
 
 		const time_by_frame = series_data[type];
 		let last_val = 0;
-		for (var i = 0; i < frames_nb; i++)
+		for (let i = 0; i < frames_nb; i++)
 		{
 			const smoothed_time = time_by_frame[i];// smooth_1D(time_by_frame.slice(0), i, 3);
 
@@ -275,7 +275,7 @@ function draw_history_graph()
 		canvas._tooltips.push({
 			'x0': +i, 'x1': +i+1,
 			'y0': 0, 'y1': canvas.height,
-			'text': function(text) { return function() { return text; }; }(text)
+			'text': function() { return text; }
 		});
 	}
 	set_tooltip_handlers(canvas);

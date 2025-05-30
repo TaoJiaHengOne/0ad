@@ -112,12 +112,12 @@ PlayerSettingControls.PlayerAssignment = class PlayerAssignment extends GameSett
 			this.setSelectedValue(ai.bot);
 			return;
 		}
-		
+
 		const isRemoved = g_GameSettings.playerRemoved.get(this.playerIndex);
 		if (isRemoved)
 		{
 			this.rebuildList();
-			this.setSelectedValue(this.removedItem.Value)
+			this.setSelectedValue(this.removedItem.Value);
 			return;
 		}
 

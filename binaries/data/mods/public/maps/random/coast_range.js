@@ -68,7 +68,7 @@ function* GenerateMap(mapSettings)
 	const clNotMountain = g_Map.createTileClass();
 	const plateauPosition = fractionToTiles(0.85);
 
-	let pattern = g_MapSettings.PlayerPlacement;
+	const pattern = g_MapSettings.PlayerPlacement;
 	const teams = getTeamsArray();
 	let startAngle = 0;
 	if ((pattern === "stronghold") || (pattern === "river"))
