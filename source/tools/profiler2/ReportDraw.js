@@ -126,9 +126,9 @@ function display_frames(data, canvas, range)
 	ctx.fillStyle = 'rgb(255, 255, 255)';
 	for (var i = 0; i < data.frames.length; ++i)
 	{
-		var frame = data.frames[i];
+		const frame = data.frames[i];
 
-		var duration = frame.t1 - frame.t0;
+		const duration = frame.t1 - frame.t0;
 		var x0 = xpadding + dx*(frame.t0 - tmin);
 		var x1 = x0 + dx*duration;
 		var y1 = canvas.height;
@@ -141,7 +141,7 @@ function display_frames(data, canvas, range)
 		canvas._tooltips.push({
 			'x0': x0, 'x1': x1,
 			'y0': y0, 'y1': y1,
-			'text': function(frame, duration) { return function() {
+			'text': function() {
 				var t = '<b>Frame</b><br>';
 				t += 'Length: ' + time_label(duration) + '<br>';
 				if (frame.attrs)
@@ -152,7 +152,7 @@ function display_frames(data, canvas, range)
 					});
 				}
 				return t;
-			};} (frame, duration)
+			}
 		});
 	}
 
@@ -191,7 +191,7 @@ function display_events(data, canvas)
 
 	for (var i = 0; i < data.events.length; ++i)
 	{
-		var event = data.events[i];
+		const event = data.events[i];
 
 		if (event.id == '__framestart')
 			continue;
@@ -218,7 +218,7 @@ function display_events(data, canvas)
 		canvas._tooltips.push({
 			'x0': x0, 'x1': x1,
 			'y0': y0, 'y1': y1,
-			'text': function(event) { return function() {
+			'text': function() {
 				var t = '<b>' + event.id + '</b><br>';
 				if (event.attrs)
 				{
@@ -227,7 +227,7 @@ function display_events(data, canvas)
 					});
 				}
 				return t;
-			};} (event)
+			}
 		});
 	}
 
@@ -304,7 +304,7 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 
 	for (var i = 0; i < data.intervals.length; ++i)
 	{
-		var interval = data.intervals[i];
+		const interval = data.intervals[i];
 
 		if (interval.tmax <= tmin || interval.tmin > tmax)
 			continue;
@@ -339,7 +339,7 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 		canvas._tooltips.push({
 			'x0': x0, 'x1': x1,
 			'y0': y0, 'y1': y1,
-			'text': function(interval) { return function() {
+			'text': function() {
 				var t = '<b>' + interval.id + '</b><br>';
 				t += 'Length: ' + time_label(interval.duration) + '<br>';
 				if (interval.attrs)
@@ -349,7 +349,7 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 					});
 				}
 				return t;
-			};} (interval)
+			}
 		});
 
 	}
