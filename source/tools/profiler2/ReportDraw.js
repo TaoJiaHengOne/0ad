@@ -399,8 +399,8 @@ function set_frames_zoom_handlers(report, canvas0)
 	{
 		var zdata = canvas0._zoomData;
 
-		var relativeX = event.pageX - this.offsetLeft;
-		var relativeY = event.pageY - this.offsetTop;
+		var relativeX = event.pageX - canvas0.offsetLeft;
+		var relativeY = event.pageY - canvas0.offsetTop;
 
 		var width = relativeY / canvas0.height;
 		width *=width;
@@ -417,7 +417,7 @@ function set_frames_zoom_handlers(report, canvas0)
 	$(canvas0).mousedown(function(event)
 	{
 		mouse_is_down = canvas0;
-		do_zoom.call(this, report, event);
+		do_zoom(report, event);
 	});
 	$(canvas0).mouseup(function(event)
 	{
@@ -426,7 +426,7 @@ function set_frames_zoom_handlers(report, canvas0)
 	$(canvas0).mousemove(function(event)
 	{
 		if (mouse_is_down)
-			do_zoom.call(this, report, event);
+			do_zoom(report, event);
 	});
 }
 
@@ -441,8 +441,8 @@ function set_zoom_handlers(main_data, data, canvas0, canvas1)
 			return hdata.tmin + x * (hdata.tmax - hdata.tmin) / canvas0.width;
 		}
 
-		var relativeX = event.pageX - this.offsetLeft;
-		var relativeY = (event.pageY + this.offsetTop) / canvas0.height;
+		var relativeX = event.pageX - canvas0.offsetLeft;
+		var relativeY = (event.pageY + canvas0.offsetTop) / canvas0.height;
 		relativeY -= 0.5;
 		relativeY *= 5;
 		relativeY *= relativeY;
@@ -458,7 +458,7 @@ function set_zoom_handlers(main_data, data, canvas0, canvas1)
 	$(canvas0).mousedown(function(event)
 	{
 		mouse_is_down = canvas0;
-		do_zoom.call(this, event);
+		do_zoom(event);
 	});
 	$(canvas0).mouseup(function(event)
 	{
@@ -467,7 +467,7 @@ function set_zoom_handlers(main_data, data, canvas0, canvas1)
 	$(canvas0).mousemove(function(event)
 	{
 		if (mouse_is_down)
-			do_zoom.call(this, event);
+			do_zoom(event);
 	});
 }
 
