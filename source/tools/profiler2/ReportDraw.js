@@ -395,7 +395,7 @@ function display_hierarchy(main_data, data, canvas, range, zoom)
 
 function set_frames_zoom_handlers(report, canvas0)
 {
-	function do_zoom(report, event)
+	function do_zoom(event)
 	{
 		var zdata = canvas0._zoomData;
 
@@ -417,7 +417,7 @@ function set_frames_zoom_handlers(report, canvas0)
 	$(canvas0).mousedown(function(event)
 	{
 		mouse_is_down = canvas0;
-		do_zoom(report, event);
+		do_zoom(event);
 	});
 	$(canvas0).mouseup(function(event)
 	{
@@ -426,7 +426,7 @@ function set_frames_zoom_handlers(report, canvas0)
 	$(canvas0).mousemove(function(event)
 	{
 		if (mouse_is_down)
-			do_zoom(report, event);
+			do_zoom(event);
 	});
 }
 
