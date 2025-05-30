@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -67,7 +67,7 @@ void CTerrainTextureManager::UnloadTerrainTextures()
 	m_LastGroupIndex = 0;
 }
 
-CTerrainTextureEntry* CTerrainTextureManager::FindTexture(const CStr& tag_) const
+CTerrainTextureEntry* CTerrainTextureManager::FindTexture(const CStr& tag_)
 {
 	CStr tag = tag_.BeforeLast("."); // Strip extension
 
@@ -75,8 +75,13 @@ CTerrainTextureEntry* CTerrainTextureManager::FindTexture(const CStr& tag_) cons
 		if (te->GetTag() == tag)
 			return te;
 
-	LOGWARNING("CTerrainTextureManager: Couldn't find terrain %s", tag.c_str());
-	return 0;
+	LOGWARNING("CTerrainTextureManager: Couldn't find terrain %s using fallback texture", tag.c_str());
+
+	// If the texture is not found, return a default texture.
+	// This is a fallback texture, so it should not be used in the editor.
+	CTerrainTextureEntry* fallback{new CTerrainTextureEntry{tag}};
+	m_TextureEntries.push_back(fallback);
+	return fallback;
 }
 
 CTerrainTextureEntry* CTerrainTextureManager::AddTexture(const CTerrainPropertiesPtr& props, const VfsPath& path)

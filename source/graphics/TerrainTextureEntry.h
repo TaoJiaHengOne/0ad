@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -37,6 +37,19 @@ public:
 	// Most of the texture's data is delay-loaded, so after the constructor has
 	// been called, the texture entry is ready to be used.
 	CTerrainTextureEntry(CTerrainPropertiesPtr props, const VfsPath& path);
+
+	/**
+	 * @brief Constructs a terrain texture entry with the given tag.
+	 *
+	 * This constructor creates a placeholder (dummy) texture entry,
+	 * allowing the system to handle missing terrain textures gracefully.
+	 * It ensures stability by avoiding crashes when a texture file is
+	 * not found.
+	 *
+	 * @param tag The identifier for the terrain texture entry.
+	 */
+	CTerrainTextureEntry(const CStr tag);
+
 	~CTerrainTextureEntry();
 
 	const CStr& GetTag() const { return m_Tag; }
@@ -67,6 +80,7 @@ public:
 	CTerrainTextureManager::TerrainAlphaMap::iterator m_TerrainAlpha;
 
 private:
+	void GenerateTextureMatrix(const float texAngle, const float texSize);
 	// Tag = file name stripped of path and extension (grass_dark_1)
 	CStr m_Tag;
 
