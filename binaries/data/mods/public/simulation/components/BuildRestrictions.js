@@ -151,23 +151,25 @@ BuildRestrictions.prototype.CheckPlacement = function()
 		var ret = cmpObstruction.CheckFoundation(passClassName, false);
 	}
 
-	if (ret != "success")
+	if (ret !== "success")
 	{
 		switch (ret)
 		{
-		case "fail_error":
-		case "fail_no_obstruction":
-			error("CheckPlacement: Error returned from CheckFoundation");
-			break;
 		case "fail_obstructs_foundation":
 			result.message = markForTranslation("%(name)s cannot be built on another building or resource");
 			break;
 		case "fail_terrain_class":
 			// TODO: be more specific and/or list valid terrain?
 			result.message = markForTranslation("%(name)s cannot be built on invalid terrain");
+			break;
+		case "fail_error":
+		case "fail_no_obstruction":
 		default:
-			return result; // Fail
+			error(`CheckPlacement: Error returned from CheckFoundation. Got reason: '${ret}'`);
+			break;
 		}
+
+		return result;
 	}
 
 	// Check territory restrictions
