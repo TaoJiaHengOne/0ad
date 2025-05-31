@@ -6,10 +6,25 @@ set -e
 cd "$(dirname "$0")"
 
 # This should match the version in config/milestone.txt
-FOLDER="mozjs-115.16.1"
+PV=115.16.1
+FOLDER="mozjs-${PV}"
 # If same-version changes are needed, increment this.
-LIB_VERSION="115.16.1+5"
+LIB_VERSION="${PV}+wfg6"
 LIB_NAME="mozjs115"
+
+build_archive()
+{
+	if [ ! -e "firefox-${PV}esr.source.tar.xz" ]; then
+		curl -fLo "firefox-${PV}esr.source.tar.xz" \
+			"https://archive.mozilla.org/pub/firefox/releases/${PV}esr/source/firefox-${PV}esr.source.tar.xz"
+	fi
+
+	rm -Rf firefox-${PV}
+	rm -Rf mozjs-${PV}.tar.xz
+	${TAR} -xJf firefox-${PV}esr.source.tar.xz
+
+	DIST="$(realpath .)" STAGING="$(realpath .)/firefox-${PV}/mozjs-src-pkg" firefox-${PV}/js/src/make-source-package.py build
+}
 
 fetch()
 {
@@ -17,9 +32,12 @@ fetch()
 		"https://releases.wildfiregames.com/libs/${FOLDER}.tar.xz"
 }
 
-echo "Building SpiderMonkey..."
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+		--build-archive)
+			build_archive
+			exit
+			;;
 		--fetch-only)
 			fetch
 			exit
@@ -33,6 +51,8 @@ while [ "$#" -gt 0 ]; do
 	shift
 done
 
+echo "Building SpiderMonkey..."
+
 if [ -e .already-built ] && [ "$(cat .already-built || true)" = "${LIB_VERSION}" ]; then
 	echo "Skipping - already built (use --force-rebuild to override)"
 	exit
@@ -44,7 +64,7 @@ OS="${OS:=$(uname -s)}"
 # This tarball is built from https://ftp.mozilla.org/pub/firefox/releases/115.16.1esr/source/
 # by running js/src/make-source-package.py
 if [ ! -e "${FOLDER}.tar.xz" ]; then
-	fetch
+	fetch || build_archive
 fi
 
 # unpack
