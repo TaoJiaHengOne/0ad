@@ -461,6 +461,13 @@ function project_create(project_name, target_type)
 		linkoptions "/ignore:4221"
 	filter {}
 
+	if arch == "amd64" then
+		filter { "Debug", "action:vs*" }
+			-- FIXME: disable LNK4098, some of the prebuilt libs for 64bit debug build have non matching options.
+			linkoptions "/ignore:4098"
+		filter {}
+	end
+
 	project_set_target(project_name)
 	project_set_build_flags()
 end
