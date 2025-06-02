@@ -1042,6 +1042,8 @@ used_extern_libs = {
 	"freetype",
 
 	"valgrind",
+
+	"oleaut32",
 }
 
 if not os.istarget("windows") and not _OPTIONS["android"] and not os.istarget("macosx") then

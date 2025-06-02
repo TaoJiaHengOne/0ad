@@ -31,11 +31,6 @@
 
 #include <OAIdl.h>	// VARIANT
 
-#if MSC_VERSION
-# pragma comment(lib, "oleaut32.lib")	// VariantChangeType
-#endif
-
-
 //-----------------------------------------------------------------------------
 // fix omissions in the VC PSDK's dbghelp.h
 

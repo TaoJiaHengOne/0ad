@@ -587,6 +587,14 @@ extern_lib_defs = {
 			})
 		end,
 	},
+	oleaut32 = {
+		link_settings = function()
+			add_default_links({
+				win_names = { "oleaut32" },
+				dbg_suffix = ""
+			})
+		end,
+	},
 	openal = {
 		compile_settings = function()
 			if os.istarget("windows") then
