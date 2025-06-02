@@ -627,6 +627,15 @@ extern_lib_defs = {
 		link_settings = function()
 			if os.istarget("windows") then
 				add_default_lib_paths("sdl2")
+				add_default_links({
+					win_names  = { "SDL2", "SDL2main" },
+					no_delayload = 1,
+				})
+
+				-- SDL2maind.pdb dont provide debug info, so we ignore the warning
+				filter { "system:windows", "configurations:Debug" }
+					linkoptions { "/IGNORE:4099" }
+				filter{}
 			elseif not _OPTIONS["android"] then
 				pkgconfig.add_links("sdl2")
 			end
