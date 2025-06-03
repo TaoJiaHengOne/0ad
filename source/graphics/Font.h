@@ -159,6 +159,7 @@ private:
 	std::shared_ptr<std::array<float, 256>> m_GammaCorrectionLUT{nullptr};
 
 	FT_Library m_FreeType;
+	std::vector<std::shared_ptr<u8>> m_FontsData;
 	std::vector<UniqueFTFace> m_Faces;
 	UniqueFTStroker m_Stroker{nullptr, &ftStrokerDeleter};
 

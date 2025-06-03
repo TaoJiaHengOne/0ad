@@ -20,6 +20,7 @@
 
 #include "graphics/TextureManager.h"
 #include "ps/CLogger.h"
+#include "ps/Filesystem.h"
 #include "ps/Profile.h"
 
 #include <algorithm>
@@ -167,17 +168,34 @@ bool CFont::AddFontFromPath(const OsPath& fontPath)
 {
 	ENSURE(m_FontSize > 0);
 
+	if (!VfsFileExists(fontPath))
+	{
+		LOGERROR("Font file does not exist: %s", fontPath.string8());
+		return false;
+	}
+
+	std::shared_ptr<u8> fontData;
+	size_t fontDataSize;
+	if (g_VFS->LoadFile(fontPath, fontData, fontDataSize) != 0)
+	{
+		LOGERROR("Failed to load font file: %s", fontPath.string8());
+		return false;
+	}
+
 	FT_Face face;
-	if (FT_Error error{FT_New_Face(m_FreeType, fontPath.string8().c_str(), 0, &face)}; error == FT_Err_Unknown_File_Format)
-		{
-			LOGERROR("Font file format is not supported: %s", fontPath.string8());
-			return false;
-		}
+	if (FT_Error error{FT_New_Memory_Face(m_FreeType, fontData.get(), static_cast<FT_Long>(fontDataSize), 0, &face)}; error == FT_Err_Unknown_File_Format)
+	{
+		LOGERROR("Font file format is not supported: %s", fontPath.string8());
+		return false;
+	}
 	else if (error)
 	{
 		LOGERROR("Failed to load font %s: %d", fontPath.string8(), error);
 		return false;
 	}
+
+	// Keep the font data alive.
+	m_FontsData.push_back(fontData);
 
 	// Set the font size.
 	if (FT_Error error{FT_Set_Char_Size(face, 0, FloatToF26Dot6(m_FontSize), 0 , 0)})

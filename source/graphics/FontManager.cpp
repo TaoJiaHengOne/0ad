@@ -186,17 +186,9 @@ std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 				return nullptr;
 			}
 
-			OsPath realPath;
-			g_VFS->GetOriginalPath(fntPath, realPath);
-			if (realPath.empty())
+			if (!font->AddFontFromPath(fntPath))
 			{
-				LOGERROR("Font file %s not found", fontPath.c_str());
-				return nullptr;	
-			}
-
-			if (!font->AddFontFromPath(realPath))
-			{
-				LOGERROR("Failed to load font %s", realPath.string8());
+				LOGERROR("Failed to load font %s", fntPath.string8());
 				return nullptr;
 			}
 		}
