@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -188,8 +188,7 @@ CModelRData* CPUSkinnedModelVertexRenderer::CreateModelData(const void* key, CMo
 	return modelRData;
 }
 
-void CPUSkinnedModelVertexRenderer::UpdateModelsData(
-	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
+void CPUSkinnedModelVertexRenderer::UpdateModelsData(Renderer::Backend::IDeviceCommandContext*,
 	PS::span<CModel*> models)
 {
 	for (CModel* model : models)
@@ -264,8 +263,8 @@ void CPUSkinnedModelVertexRenderer::PrepareModelDef(
 
 // Render one model
 void CPUSkinnedModelVertexRenderer::RenderModel(
-	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
-	Renderer::Backend::IShaderProgram* UNUSED(shader), CModel* model, CModelRData* data)
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext, Renderer::Backend::IShaderProgram*,
+	CModel* model, CModelRData* data)
 {
 	const CModelDefPtr& mdldef = model->GetModelDef();
 	ModelRData* modelRData = static_cast<ModelRData*>(data);

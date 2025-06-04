@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -71,9 +71,9 @@ class CDummyReplayLogger : public IReplayLogger
 {
 public:
 	virtual void StartGame(JS::MutableHandleValue UNUSED(attribs)) { }
-	virtual void Turn(u32 UNUSED(n), u32 UNUSED(turnLength), std::vector<SimulationCommand>& UNUSED(commands)) { }
+	virtual void Turn(u32 UNUSED(n), u32 UNUSED(turnLength), std::vector<SimulationCommand>&) { }
 	virtual void Hash(const std::string& UNUSED(hash), bool UNUSED(quick)) { }
-	virtual void SaveMetadata(const CSimulation2& UNUSED(simulation)) { };
+	virtual void SaveMetadata(const CSimulation2&) { };
 	virtual OsPath GetDirectory() const { return OsPath(); }
 };
 

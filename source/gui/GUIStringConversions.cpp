@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class CGUIList;
 class CGUISeries;
 
 template <>
-bool CGUI::ParseString<bool>(const CGUI* UNUSED(pGUI), const CStrW& Value, bool& Output)
+bool CGUI::ParseString<bool>(const CGUI*, const CStrW& Value, bool& Output)
 {
 	if (Value == L"true")
 		Output = true;
@@ -39,28 +39,28 @@ bool CGUI::ParseString<bool>(const CGUI* UNUSED(pGUI), const CStrW& Value, bool&
 }
 
 template <>
-bool CGUI::ParseString<i32>(const CGUI* UNUSED(pGUI), const CStrW& Value, int& Output)
+bool CGUI::ParseString<i32>(const CGUI*, const CStrW& Value, int& Output)
 {
 	Output = Value.ToInt();
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<u32>(const CGUI* UNUSED(pGUI), const CStrW& Value, u32& Output)
+bool CGUI::ParseString<u32>(const CGUI*, const CStrW& Value, u32& Output)
 {
 	Output = Value.ToUInt();
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<float>(const CGUI* UNUSED(pGUI), const CStrW& Value, float& Output)
+bool CGUI::ParseString<float>(const CGUI*, const CStrW& Value, float& Output)
 {
 	Output = Value.ToFloat();
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<CRect>(const CGUI* UNUSED(pGUI), const CStrW& Value, CRect& Output)
+bool CGUI::ParseString<CRect>(const CGUI*, const CStrW& Value, CRect& Output)
 {
 	const unsigned int NUM_COORDS = 4;
 	float coords[NUM_COORDS];
@@ -95,7 +95,7 @@ bool CGUI::ParseString<CRect>(const CGUI* UNUSED(pGUI), const CStrW& Value, CRec
 }
 
 template <>
-bool CGUI::ParseString<CGUISize>(const CGUI* UNUSED(pGUI), const CStrW& Value, CGUISize& Output)
+bool CGUI::ParseString<CGUISize>(const CGUI*, const CStrW& Value, CGUISize& Output)
 {
 	return Output.FromString(Value.ToUTF8());
 }
@@ -107,7 +107,7 @@ bool CGUI::ParseString<CGUIColor>(const CGUI* pGUI, const CStrW& Value, CGUIColo
 }
 
 template <>
-bool CGUI::ParseString<CSize2D>(const CGUI* UNUSED(pGUI), const CStrW& Value, CSize2D& Output)
+bool CGUI::ParseString<CSize2D>(const CGUI*, const CStrW& Value, CSize2D& Output)
 {
 	const unsigned int NUM_COORDS = 2;
 	float coords[NUM_COORDS];
@@ -142,7 +142,7 @@ bool CGUI::ParseString<CSize2D>(const CGUI* UNUSED(pGUI), const CStrW& Value, CS
 }
 
 template <>
-bool CGUI::ParseString<CVector2D>(const CGUI* UNUSED(pGUI), const CStrW& Value, CVector2D& Output)
+bool CGUI::ParseString<CVector2D>(const CGUI*, const CStrW& Value, CVector2D& Output)
 {
 	const unsigned int NUM_COORDS = 2;
 	float coords[NUM_COORDS];
@@ -177,7 +177,7 @@ bool CGUI::ParseString<CVector2D>(const CGUI* UNUSED(pGUI), const CStrW& Value, 
 }
 
 template <>
-bool CGUI::ParseString<EAlign>(const CGUI* UNUSED(pGUI), const CStrW& Value, EAlign& Output)
+bool CGUI::ParseString<EAlign>(const CGUI*, const CStrW& Value, EAlign& Output)
 {
 	if (Value == L"left")
 		Output = EAlign::LEFT;
@@ -192,7 +192,7 @@ bool CGUI::ParseString<EAlign>(const CGUI* UNUSED(pGUI), const CStrW& Value, EAl
 }
 
 template <>
-bool CGUI::ParseString<EVAlign>(const CGUI* UNUSED(pGUI), const CStrW& Value, EVAlign& Output)
+bool CGUI::ParseString<EVAlign>(const CGUI*, const CStrW& Value, EVAlign& Output)
 {
 	if (Value == L"top")
 		Output = EVAlign::TOP;
@@ -207,47 +207,47 @@ bool CGUI::ParseString<EVAlign>(const CGUI* UNUSED(pGUI), const CStrW& Value, EV
 }
 
 template <>
-bool CGUI::ParseString<CGUIString>(const CGUI* UNUSED(pGUI), const CStrW& Value, CGUIString& Output)
+bool CGUI::ParseString<CGUIString>(const CGUI*, const CStrW& Value, CGUIString& Output)
 {
 	Output.SetValue(Value);
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<CStr>(const CGUI* UNUSED(pGUI), const CStrW& Value, CStr& Output)
+bool CGUI::ParseString<CStr>(const CGUI*, const CStrW& Value, CStr& Output)
 {
 	Output = Value.ToUTF8();
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<CStrW>(const CGUI* UNUSED(pGUI), const CStrW& Value, CStrW& Output)
+bool CGUI::ParseString<CStrW>(const CGUI*, const CStrW& Value, CStrW& Output)
 {
 	Output = Value;
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<CGUISpriteInstance>(const CGUI* UNUSED(pGUI), const CStrW& Value, CGUISpriteInstance& Output)
+bool CGUI::ParseString<CGUISpriteInstance>(const CGUI*, const CStrW& Value, CGUISpriteInstance& Output)
 {
 	Output = CGUISpriteInstance(Value.ToUTF8());
 	return true;
 }
 
 template <>
-bool CGUI::ParseString<CGUISeries>(const CGUI* UNUSED(pGUI), const CStrW& UNUSED(Value), CGUISeries& UNUSED(Output))
+bool CGUI::ParseString<CGUISeries>(const CGUI*, const CStrW& UNUSED(Value), CGUISeries& UNUSED(Output))
 {
 	return false;
 }
 
 template <>
-bool CGUI::ParseString<CGUIList>(const CGUI* UNUSED(pGUI), const CStrW& UNUSED(Value), CGUIList& UNUSED(Output))
+bool CGUI::ParseString<CGUIList>(const CGUI*, const CStrW& UNUSED(Value), CGUIList& UNUSED(Output))
 {
 	return false;
 }
 
 template <>
-bool CGUI::ParseString<EScrollOrientation>(const CGUI* UNUSED(pGUI), const CStrW& Value, EScrollOrientation& Output)
+bool CGUI::ParseString<EScrollOrientation>(const CGUI*, const CStrW& Value, EScrollOrientation& Output)
 {
 	if (Value == L"vertical")
 		Output = EScrollOrientation::VERTICAL;

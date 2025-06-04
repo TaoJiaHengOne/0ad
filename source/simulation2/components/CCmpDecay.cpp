@@ -47,7 +47,7 @@
 class CCmpDecay final : public ICmpDecay
 {
 public:
-	static void ClassInit(CComponentManager& UNUSED(componentManager))
+	static void ClassInit(CComponentManager&)
 	{
 	}
 
@@ -115,12 +115,12 @@ public:
 	{
 	}
 
-	void Serialize(ISerializer& UNUSED(serialize)) override
+	void Serialize(ISerializer&) override
 	{
 		// This component isn't network-synchronised, so don't serialize anything
 	}
 
-	void Deserialize(const CParamNode& paramNode, IDeserializer& UNUSED(deserialize)) override
+	void Deserialize(const CParamNode& paramNode, IDeserializer&) override
 	{
 		Init(paramNode);
 	}

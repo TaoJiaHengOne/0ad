@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ public:
 		return "<a:component type='system'/><empty/>";
 	}
 
-	void Init(const CParamNode& UNUSED(paramNode)) override
+	void Init(const CParamNode&) override
 	{
 		m_Enabled = false;
 		m_MapRevealed = false;
@@ -73,7 +73,7 @@ public:
 			serializer.String("PathName", path.GetName(), 1, 128);
 	}
 
-	void Deserialize(const CParamNode& UNUSED(paramNode), IDeserializer& deserializer) override
+	void Deserialize(const CParamNode&, IDeserializer& deserializer) override
 	{
 		deserializer.Bool("Enabled", m_Enabled);
 		deserializer.NumberFixed_Unbounded("ElapsedTime", m_ElapsedTime);

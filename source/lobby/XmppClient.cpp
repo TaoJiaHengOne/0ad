@@ -302,7 +302,7 @@ bool XmppClient::onTLSConnect(const gloox::CertInfo& info)
 /**
  * Handle MUC room errors
  */
-void XmppClient::handleMUCError(gloox::MUCRoom* UNUSED(room), gloox::StanzaError err)
+void XmppClient::handleMUCError(gloox::MUCRoom*, gloox::StanzaError err)
 {
 	DbgXMPP("MUC Error " << ": " << StanzaErrorToString(err));
 	CreateGUIMessage("system", "error", std::time(nullptr), "text", err);
@@ -657,7 +657,7 @@ JS::Value XmppClient::GUIGetProfile(const ScriptRequest& rq)
  * Message interfaces                                *
  *****************************************************/
 
-void SetGUIMessageProperty(const ScriptRequest& UNUSED(rq), JS::HandleObject UNUSED(messageObj))
+void SetGUIMessageProperty(const ScriptRequest&, JS::HandleObject UNUSED(messageObj))
 {
 }
 
@@ -783,7 +783,7 @@ void XmppClient::SendMUCMessage(const std::string& message)
 /**
  * Handle a room message.
  */
-void XmppClient::handleMUCMessage(gloox::MUCRoom* UNUSED(room), const gloox::Message& msg, bool priv)
+void XmppClient::handleMUCMessage(gloox::MUCRoom*, const gloox::Message& msg, bool priv)
 {
 	DbgXMPP(msg.from().resource() << " said " << msg.body());
 
@@ -1015,7 +1015,8 @@ bool XmppClient::handleIq(const gloox::IQ& iq)
 /**
  * Update local data when a user changes presence.
  */
-void XmppClient::handleMUCParticipantPresence(gloox::MUCRoom* UNUSED(room), const gloox::MUCRoomParticipant participant, const gloox::Presence& presence)
+void XmppClient::handleMUCParticipantPresence(gloox::MUCRoom*, const gloox::MUCRoomParticipant participant,
+	const gloox::Presence& presence)
 {
 	const std::string& nick = participant.nick->resource();
 
@@ -1134,7 +1135,7 @@ void XmppClient::handleMUCParticipantPresence(gloox::MUCRoom* UNUSED(room), cons
 /**
  * Update local cache when subject changes.
  */
-void XmppClient::handleMUCSubject(gloox::MUCRoom* UNUSED(room), const std::string& nick, const std::string& subject)
+void XmppClient::handleMUCSubject(gloox::MUCRoom*, const std::string& nick, const std::string& subject)
 {
 	m_Subject = wstring_from_utf8(subject);
 
@@ -1525,7 +1526,8 @@ void XmppClient::handleSessionAction(gloox::Jingle::Action action, gloox::Jingle
 		handleSessionInitiation(session, jingle);
 }
 
-void XmppClient::handleSessionInitiation(gloox::Jingle::Session* UNUSED(session), const gloox::Jingle::Session::Jingle* jingle)
+void XmppClient::handleSessionInitiation(gloox::Jingle::Session*,
+	const gloox::Jingle::Session::Jingle* jingle)
 {
 	gloox::Jingle::ICEUDP::Candidate candidate{};
 

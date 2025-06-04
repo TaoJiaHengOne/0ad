@@ -103,7 +103,7 @@ class ScopedIoMonitor
 public:
 	ScopedIoMonitor() {}
 	~ScopedIoMonitor() {}
-	void NotifyOfSuccess(FileIOImplentation UNUSED(fi), int UNUSED(opcode), off_t UNUSED(size)) {}
+	void NotifyOfSuccess(FileIOImplentation, int UNUSED(opcode), off_t UNUSED(size)) {}
 };
 #define stats_cb_start()
 #define stats_cb_finish()

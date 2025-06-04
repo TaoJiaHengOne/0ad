@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -186,37 +186,37 @@ template<> bool Script::FromJSVal<Entity>(const ScriptRequest& rq,  JS::HandleVa
 ////////////////////////////////////////////////////////////////
 // Primitive types:
 
-template<> void Script::ToJSVal<bool>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const bool& val)
+template<> void Script::ToJSVal<bool>(const ScriptRequest&, JS::MutableHandleValue ret, const bool& val)
 {
 	ret.setBoolean(val);
 }
 
-template<> void Script::ToJSVal<float>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const float& val)
+template<> void Script::ToJSVal<float>(const ScriptRequest&, JS::MutableHandleValue ret, const float& val)
 {
 	ret.set(JS::NumberValue(val));
 }
 
-template<> void Script::ToJSVal<double>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const double& val)
+template<> void Script::ToJSVal<double>(const ScriptRequest&, JS::MutableHandleValue ret, const double& val)
 {
 	ret.set(JS::NumberValue(val));
 }
 
-template<> void Script::ToJSVal<i32>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const i32& val)
+template<> void Script::ToJSVal<i32>(const ScriptRequest&, JS::MutableHandleValue ret, const i32& val)
 {
 	ret.set(JS::NumberValue(val));
 }
 
-template<> void Script::ToJSVal<u16>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const u16& val)
+template<> void Script::ToJSVal<u16>(const ScriptRequest&, JS::MutableHandleValue ret, const u16& val)
 {
 	ret.set(JS::NumberValue(val));
 }
 
-template<> void Script::ToJSVal<u8>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const u8& val)
+template<> void Script::ToJSVal<u8>(const ScriptRequest&, JS::MutableHandleValue ret, const u8& val)
 {
 	ret.set(JS::NumberValue(val));
 }
 
-template<> void Script::ToJSVal<u32>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const u32& val)
+template<> void Script::ToJSVal<u32>(const ScriptRequest&, JS::MutableHandleValue ret, const u32& val)
 {
 	ret.set(JS::NumberValue(val));
 }

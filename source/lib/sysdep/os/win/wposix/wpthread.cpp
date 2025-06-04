@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -272,23 +272,23 @@ again:
 // memory manager used a pthread_mutex.
 
 
-int pthread_mutexattr_init(pthread_mutexattr_t* UNUSED(attr))
+int pthread_mutexattr_init(pthread_mutexattr_t*)
 {
 	return 0;
 }
 
-int pthread_mutexattr_destroy(pthread_mutexattr_t* UNUSED(attr))
+int pthread_mutexattr_destroy(pthread_mutexattr_t*)
 {
 	return 0;
 }
 
-int pthread_mutexattr_gettype(const pthread_mutexattr_t* UNUSED(attr), int* type)
+int pthread_mutexattr_gettype(const pthread_mutexattr_t*, int* type)
 {
 	*type = PTHREAD_MUTEX_RECURSIVE;
 	return 0;
 }
 
-int pthread_mutexattr_settype(pthread_mutexattr_t* UNUSED(attr), int type)
+int pthread_mutexattr_settype(pthread_mutexattr_t*, int type)
 {
 	return (type == PTHREAD_MUTEX_RECURSIVE)? 0 : -ENOSYS;
 }
@@ -357,7 +357,7 @@ int pthread_mutex_unlock(pthread_mutex_t* m)
 
 // not implemented - pthread_mutex is based on CRITICAL_SECTION,
 // which doesn't support timeouts. use sem_timedwait instead.
-int pthread_mutex_timedlock(pthread_mutex_t* UNUSED(m), const struct timespec* UNUSED(abs_timeout))
+int pthread_mutex_timedlock(pthread_mutex_t*, const struct timespec* UNUSED(abs_timeout))
 {
 	return -ENOSYS;
 }

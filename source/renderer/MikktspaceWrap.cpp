@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ int MikkTSpace::GetNumFaces(const SMikkTSpaceContext* pContext)
 	return GetUserDataFromContext(pContext)->m_Model->GetNumFaces();
 }
 
-int MikkTSpace::GetNumVerticesOfFace(const SMikkTSpaceContext* UNUSED(pContext), const int UNUSED(iFace))
+int MikkTSpace::GetNumVerticesOfFace(const SMikkTSpaceContext*, const int UNUSED(iFace))
 {
 	return 3;
 }

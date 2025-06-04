@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -103,7 +103,7 @@ struct BuildDirEntListState
 };
 
 // called for each matching directory entry; add its full pathname to array.
-static Status BuildDirEntListCB(const VfsPath& pathname, const CFileInfo& UNUSED(fileINfo), uintptr_t cbData)
+static Status BuildDirEntListCB(const VfsPath& pathname, const CFileInfo&, uintptr_t cbData)
 {
 	BuildDirEntListState* s = (BuildDirEntListState*)cbData;
 

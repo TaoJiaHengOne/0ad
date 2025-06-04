@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ public:
 		serialize.NumberI32_Unbounded("x", m_x);
 	}
 
-	void Deserialize(const CParamNode& UNUSED(paramNode), IDeserializer& deserialize) override
+	void Deserialize(const CParamNode&, IDeserializer& deserialize) override
 	{
 		deserialize.NumberI32_Unbounded("x", m_x);
 	}
@@ -123,7 +123,7 @@ public:
 		serialize.NumberI32_Unbounded("x", m_x);
 	}
 
-	void Deserialize(const CParamNode& UNUSED(paramNode), IDeserializer& deserialize) override
+	void Deserialize(const CParamNode&, IDeserializer& deserialize) override
 	{
 		deserialize.NumberI32_Unbounded("x", m_x);
 	}
@@ -184,7 +184,7 @@ public:
 		serialize.NumberI32_Unbounded("x", m_x);
 	}
 
-	void Deserialize(const CParamNode& UNUSED(paramNode), IDeserializer& deserialize) override
+	void Deserialize(const CParamNode&, IDeserializer& deserialize) override
 	{
 		deserialize.NumberI32_Unbounded("x", m_x);
 	}

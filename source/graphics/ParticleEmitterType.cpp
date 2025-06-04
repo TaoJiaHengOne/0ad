@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -87,17 +87,17 @@ public:
 	{
 	}
 
-	virtual float Compute(CParticleEmitterType& UNUSED(type), CParticleEmitter& UNUSED(emitter))
+	virtual float Compute(CParticleEmitterType&, CParticleEmitter&)
 	{
 		return m_Value;
 	}
 
-	virtual float Min(CParticleEmitterType& UNUSED(type))
+	virtual float Min(CParticleEmitterType&)
 	{
 		return m_Value;
 	}
 
-	virtual float Max(CParticleEmitterType& UNUSED(type))
+	virtual float Max(CParticleEmitterType&)
 	{
 		return m_Value;
 	}
@@ -117,17 +117,17 @@ public:
 	{
 	}
 
-	virtual float Compute(CParticleEmitterType& type, CParticleEmitter& UNUSED(emitter))
+	virtual float Compute(CParticleEmitterType& type, CParticleEmitter&)
 	{
 		return boost::random::uniform_real_distribution<float>(m_Min, m_Max)(type.m_Manager.m_RNG);
 	}
 
-	virtual float Min(CParticleEmitterType& UNUSED(type))
+	virtual float Min(CParticleEmitterType&)
 	{
 		return m_Min;
 	}
 
-	virtual float Max(CParticleEmitterType& UNUSED(type))
+	virtual float Max(CParticleEmitterType&)
 	{
 		return m_Max;
 	}
@@ -149,7 +149,7 @@ public:
 	{
 	}
 
-	virtual float Compute(CParticleEmitterType& type, CParticleEmitter& UNUSED(emitter))
+	virtual float Compute(CParticleEmitterType& type, CParticleEmitter&)
 	{
 		return type.m_Variables[m_From]->LastValue();
 	}
@@ -180,17 +180,17 @@ public:
 	{
 	}
 
-	virtual float Compute(CParticleEmitterType& UNUSED(type), CParticleEmitter& emitter)
+	virtual float Compute(CParticleEmitterType&, CParticleEmitter& emitter)
 	{
 		return std::min(m_Max, emitter.m_EntityVariables[m_From] * m_Mul);
 	}
 
-	virtual float Min(CParticleEmitterType& UNUSED(type))
+	virtual float Min(CParticleEmitterType&)
 	{
 		return 0.f;
 	}
 
-	virtual float Max(CParticleEmitterType& UNUSED(type))
+	virtual float Max(CParticleEmitterType&)
 	{
 		return m_Max;
 	}

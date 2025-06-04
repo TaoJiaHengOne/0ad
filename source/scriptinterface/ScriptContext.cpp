@@ -31,7 +31,7 @@
 #include "js/friend/PerformanceHint.h"
 #include "js/Modules.h"
 
-void GCSliceCallbackHook(JSContext* UNUSED(cx), JS::GCProgress progress, const JS::GCDescription& UNUSED(desc))
+void GCSliceCallbackHook(JSContext*, JS::GCProgress progress, const JS::GCDescription&)
 {
 	/**
 	 * From the GCAPI.h file:

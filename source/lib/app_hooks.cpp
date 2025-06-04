@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -41,7 +41,7 @@ static const OsPath& def_get_log_dir()
 }
 
 
-static void def_bundle_logs(FILE* UNUSED(f))
+static void def_bundle_logs(FILE*)
 {
 }
 

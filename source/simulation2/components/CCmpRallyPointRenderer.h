@@ -75,8 +75,8 @@ public:
 	void Init(const CParamNode& paramNode) override;
 	void Deinit() override;
 
-	void Serialize(ISerializer& UNUSED(serialize)) override;
-	void Deserialize(const CParamNode& paramNode, IDeserializer& UNUSED(deserialize)) override;
+	void Serialize(ISerializer&) override;
+	void Deserialize(const CParamNode& paramNode, IDeserializer&) override;
 
 	void HandleMessage(const CMessage& msg, bool UNUSED(global)) override;
 

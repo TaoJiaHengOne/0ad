@@ -1517,19 +1517,23 @@ std::unique_ptr<CShaderProgram> CShaderProgram::Create(CDevice* device, const CS
 // These should all be overridden by CShaderProgramGLSL
 // (GLES doesn't support any other types of shader program):
 
-void CShaderProgram::VertexPointer(const Renderer::Backend::Format UNUSED(format), GLsizei UNUSED(stride), const void* UNUSED(pointer))
+void CShaderProgram::VertexPointer(const Renderer::Backend::Format, GLsizei UNUSED(stride),
+	const void* UNUSED(pointer))
 {
 	debug_warn("CShaderProgram::VertexPointer should be overridden");
 }
-void CShaderProgram::NormalPointer(const Renderer::Backend::Format UNUSED(format), GLsizei UNUSED(stride), const void* UNUSED(pointer))
+void CShaderProgram::NormalPointer(const Renderer::Backend::Format, GLsizei UNUSED(stride),
+	const void* UNUSED(pointer))
 {
 	debug_warn("CShaderProgram::NormalPointer should be overridden");
 }
-void CShaderProgram::ColorPointer(const Renderer::Backend::Format UNUSED(format), GLsizei UNUSED(stride), const void* UNUSED(pointer))
+void CShaderProgram::ColorPointer(const Renderer::Backend::Format, GLsizei UNUSED(stride),
+	const void* UNUSED(pointer))
 {
 	debug_warn("CShaderProgram::ColorPointer should be overridden");
 }
-void CShaderProgram::TexCoordPointer(GLenum UNUSED(texture), const Renderer::Backend::Format UNUSED(format), GLsizei UNUSED(stride), const void* UNUSED(pointer))
+void CShaderProgram::TexCoordPointer(GLenum UNUSED(texture), const Renderer::Backend::Format,
+	GLsizei UNUSED(stride), const void* UNUSED(pointer))
 {
 	debug_warn("CShaderProgram::TexCoordPointer should be overridden");
 }

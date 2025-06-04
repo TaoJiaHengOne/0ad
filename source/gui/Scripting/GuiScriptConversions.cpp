@@ -130,7 +130,8 @@ template<> void Script::ToJSVal<SDL_Event_>(const ScriptRequest& rq, JS::Mutable
 	ret.setObject(*obj);
 }
 
-template<> void Script::ToJSVal<IGUIObject*>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, IGUIObject* const& val)
+template<> void Script::ToJSVal<IGUIObject*>(const ScriptRequest&, JS::MutableHandleValue ret,
+	IGUIObject* const& val)
 {
 	if (val == nullptr)
 		ret.setNull();

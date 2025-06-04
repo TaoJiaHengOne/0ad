@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -74,13 +74,8 @@ static bool CanRunNotifications()
   #define kFSEventStreamEventFlagItemModified 0x00001000
 #endif
 
-static void fsevent_callback(
-    ConstFSEventStreamRef UNUSED(streamRef),
-    void * UNUSED(clientCallBackInfo),
-    size_t numEvents,
-    void *eventPaths,
-    const FSEventStreamEventFlags eventFlags[],
-    const FSEventStreamEventId UNUSED(eventIds)[] )
+static void fsevent_callback(ConstFSEventStreamRef, void * UNUSED(clientCallBackInfo), size_t numEvents,
+	void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId[])
 {
     unsigned long i;
     char **paths = (char **)eventPaths;

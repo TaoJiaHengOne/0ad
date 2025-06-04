@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -39,7 +39,7 @@ struct Allocator_Heap
 		return malloc(size);
 	}
 
-	void deallocate(void* p, size_t UNUSED(size))
+	void deallocate(void* p, size_t)
 	{
 		return free(p);
 	}
@@ -53,7 +53,7 @@ struct Allocator_Aligned
 		return rtl_AllocateAligned(size, alignment);
 	}
 
-	void deallocate(void* p, size_t UNUSED(size))
+	void deallocate(void* p, size_t)
 	{
 		return rtl_FreeAligned(p);
 	}

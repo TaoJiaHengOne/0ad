@@ -35,7 +35,8 @@
 #define FAIL(msg) STMT(LOGERROR(msg); return false)
 #define FAIL_VOID(msg) STMT(ScriptException::Raise(rq, msg); return)
 
-template<> void Script::ToJSVal<IComponent*>(const ScriptRequest& UNUSED(rq),  JS::MutableHandleValue ret, IComponent* const& val)
+template<> void Script::ToJSVal<IComponent*>(const ScriptRequest&, JS::MutableHandleValue ret,
+	IComponent* const& val)
 {
 	if (val == NULL)
 	{
@@ -113,7 +114,7 @@ template<> bool Script::FromJSVal<fixed>(const ScriptRequest& rq,  JS::HandleVal
 	return true;
 }
 
-template<> void Script::ToJSVal<fixed>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue ret, const fixed& val)
+template<> void Script::ToJSVal<fixed>(const ScriptRequest&, JS::MutableHandleValue ret, const fixed& val)
 {
 	ret.set(JS::NumberValue(val.ToDouble()));
 }

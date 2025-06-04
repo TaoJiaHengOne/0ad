@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -60,7 +60,7 @@ struct BmpHeader
 #define BI_RGB 0		// biCompression
 
 
-Status TexCodecBmp::transform(Tex* UNUSED(t), size_t UNUSED(transforms)) const
+Status TexCodecBmp::transform(Tex*, size_t UNUSED(transforms)) const
 {
 	return INFO::TEX_CODEC_CANNOT_HANDLE;
 }

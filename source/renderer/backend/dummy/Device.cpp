@@ -86,7 +86,7 @@ std::unique_ptr<IComputePipelineState> CDevice::CreateComputePipelineState(
 }
 
 std::unique_ptr<IVertexInputLayout> CDevice::CreateVertexInputLayout(
-	const PS::span<const SVertexAttributeFormat> UNUSED(attributes))
+	const PS::span<const SVertexAttributeFormat>)
 {
 	return nullptr;
 }
@@ -148,12 +148,12 @@ void CDevice::OnWindowResize(const uint32_t UNUSED(width), const uint32_t UNUSED
 {
 }
 
-bool CDevice::IsTextureFormatSupported(const Format UNUSED(format)) const
+bool CDevice::IsTextureFormatSupported(const Format) const
 {
 	return true;
 }
 
-bool CDevice::IsFramebufferFormatSupported(const Format UNUSED(format)) const
+bool CDevice::IsFramebufferFormatSupported(const Format) const
 {
 	return true;
 }
@@ -183,7 +183,7 @@ uint64_t CDevice::GetQueryResult(const uint32_t UNUSED(handle))
 	return 0;
 }
 
-std::unique_ptr<IDevice> CreateDevice(SDL_Window* UNUSED(window))
+std::unique_ptr<IDevice> CreateDevice(SDL_Window*)
 {
 	return std::make_unique<Dummy::CDevice>();
 }

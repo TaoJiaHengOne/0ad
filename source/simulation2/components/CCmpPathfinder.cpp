@@ -48,7 +48,7 @@
 
 REGISTER_COMPONENT_TYPE(Pathfinder)
 
-void CCmpPathfinder::Init(const CParamNode& UNUSED(paramNode))
+void CCmpPathfinder::Init(const CParamNode&)
 {
 	m_GridSize = 0;
 	m_Grid = NULL;

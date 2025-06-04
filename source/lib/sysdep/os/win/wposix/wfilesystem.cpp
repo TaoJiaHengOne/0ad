@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -340,7 +340,7 @@ static int ErrnoFromCreateDirectory()
 	}
 }
 
-int wmkdir(const OsPath& path, mode_t UNUSED(mode))
+int wmkdir(const OsPath& path, mode_t)
 {
 	if(!CreateDirectoryW(OsString(path).c_str(), (LPSECURITY_ATTRIBUTES)NULL))
 	{

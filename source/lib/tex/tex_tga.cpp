@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -67,7 +67,7 @@ TgaHeader;
 #pragma pack(pop)
 
 
-Status TexCodecTga::transform(Tex* UNUSED(t), size_t UNUSED(transforms)) const
+Status TexCodecTga::transform(Tex*, size_t UNUSED(transforms)) const
 {
 	return INFO::TEX_CODEC_CANNOT_HANDLE;
 }

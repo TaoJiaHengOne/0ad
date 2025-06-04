@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -104,10 +104,7 @@ public:
 	}
 
 private:
-	static void ArchiveEntryCallback(
-		const VfsPath& path,
-		const CFileInfo& UNUSED(fileInfo),
-		PIArchiveFile UNUSED(archiveFile),
+	static void ArchiveEntryCallback(const VfsPath& path, const CFileInfo&, PIArchiveFile,
 		uintptr_t UNUSED(cbData))
 	{
 		g_ResultBuffer = path.string8();

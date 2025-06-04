@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -25,12 +25,12 @@
 
 // stub implementations
 
-Status dir_watch_Add(const OsPath& UNUSED(path), PDirWatch& UNUSED(dirWatch))
+Status dir_watch_Add(const OsPath&, PDirWatch&)
 {
 	return INFO::OK;
 }
 
-Status dir_watch_Poll(DirWatchNotifications& UNUSED(notifications))
+Status dir_watch_Poll(DirWatchNotifications&)
 {
 	return INFO::OK;
 }

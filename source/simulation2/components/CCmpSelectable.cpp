@@ -217,13 +217,13 @@ public:
 
 	void Deinit() override { }
 
-	void Serialize(ISerializer& UNUSED(serialize)) override
+	void Serialize(ISerializer&) override
 	{
 		// Nothing to do here (the overlay object is not worth saving, it'll get
 		// reconstructed by the GUI soon enough, I think)
 	}
 
-	void Deserialize(const CParamNode& paramNode, IDeserializer& UNUSED(deserialize)) override
+	void Deserialize(const CParamNode& paramNode, IDeserializer&) override
 	{
 		// Need to call Init to reload the template properties
 		Init(paramNode);

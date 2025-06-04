@@ -47,10 +47,9 @@ class ITerrainOverlay
 public:
 	virtual ~ITerrainOverlay();
 
-	virtual void RenderBeforeWater(Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext)) { }
+	virtual void RenderBeforeWater(Renderer::Backend::IDeviceCommandContext*) { }
 
-	virtual void RenderAfterWater(
-		Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext), int UNUSED(cullGroup)) { }
+	virtual void RenderAfterWater(Renderer::Backend::IDeviceCommandContext*, int UNUSED(cullGroup)) { }
 
 	/**
 	 * Draw all ITerrainOverlay objects that exist

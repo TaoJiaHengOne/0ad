@@ -247,7 +247,7 @@ public:
 	 *
 	 * @param Message GUI Message
 	 */
-	virtual void HandleMessage(SGUIMessage& UNUSED(Message)) {}
+	virtual void HandleMessage(SGUIMessage&) {}
 
 	/**
 	 * Calls an IGUIObject member function recursively on this object and its children.
@@ -287,7 +287,7 @@ protected:
 	 * Returns either IN_PASS or IN_HANDLED. If IN_HANDLED, then
 	 * the event won't be passed on and processed by other handlers.
 	 */
-	virtual InReaction PreemptEvent(const SDL_Event_* UNUSED(ev)) { return IN_PASS; }
+	virtual InReaction PreemptEvent(const SDL_Event_*) { return IN_PASS; }
 
 	/**
 	 * Some objects need to handle the text-related SDL_Event_ manually.
@@ -299,7 +299,7 @@ protected:
 	 * the key won't be passed on and processed by other handlers.
 	 * This is used for keys that the GUI uses.
 	 */
-	virtual InReaction ManuallyHandleKeys(const SDL_Event_* UNUSED(ev)) { return IN_PASS; }
+	virtual InReaction ManuallyHandleKeys(const SDL_Event_*) { return IN_PASS; }
 
 	/**
 	 * Applies the given style to the object.

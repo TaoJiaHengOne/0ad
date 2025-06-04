@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -300,7 +300,7 @@ struct SerializeHelper<Query>
 		serialize.Bool("account for size",value.accountForSize);
 	}
 
-	void operator()(ISerializer& serialize, const char* name, Query& value, const CSimContext& UNUSED(context))
+	void operator()(ISerializer& serialize, const char* name, Query& value, const CSimContext&)
 	{
 		Common(serialize, name, value);
 
@@ -436,7 +436,7 @@ public:
 		return "<a:component type='system'/><empty/>";
 	}
 
-	void Init(const CParamNode& UNUSED(paramNode)) override
+	void Init(const CParamNode&) override
 	{
 		m_QueryNext = 1;
 

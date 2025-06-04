@@ -34,7 +34,7 @@
 class CCmpFootprint final : public ICmpFootprint
 {
 public:
-	static void ClassInit(CComponentManager& UNUSED(componentManager))
+	static void ClassInit(CComponentManager&)
 	{
 	}
 
@@ -125,12 +125,12 @@ public:
 	{
 	}
 
-	void Serialize(ISerializer& UNUSED(serialize)) override
+	void Serialize(ISerializer&) override
 	{
 		// No dynamic state to serialize
 	}
 
-	void Deserialize(const CParamNode& paramNode, IDeserializer& UNUSED(deserialize)) override
+	void Deserialize(const CParamNode& paramNode, IDeserializer&) override
 	{
 		Init(paramNode);
 	}

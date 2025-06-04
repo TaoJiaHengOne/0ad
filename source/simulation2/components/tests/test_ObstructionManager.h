@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ public:
 	EFoundationCheck CheckFoundation(const std::string& UNUSED(className), bool UNUSED(onlyCenterPoint)) const override { return EFoundationCheck(); }
 	std::string CheckFoundation_wrapper(const std::string& UNUSED(className), bool UNUSED(onlyCenterPoint)) const override { return std::string(); }
 	bool CheckDuplicateFoundation() const override { return true; }
-	std::vector<entity_id_t> GetEntitiesByFlags(ICmpObstructionManager::flags_t UNUSED(flags)) const override { return std::vector<entity_id_t>(); }
+	std::vector<entity_id_t> GetEntitiesByFlags(ICmpObstructionManager::flags_t) const override { return std::vector<entity_id_t>(); }
 	std::vector<entity_id_t> GetEntitiesBlockingMovement() const override { return std::vector<entity_id_t>(); }
 	std::vector<entity_id_t> GetEntitiesBlockingConstruction() const override { return std::vector<entity_id_t>(); }
 	std::vector<entity_id_t> GetEntitiesDeletedUponConstruction() const override { return std::vector<entity_id_t>(); }

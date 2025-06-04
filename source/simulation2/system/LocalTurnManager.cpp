@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ void CLocalTurnManager::NotifyFinishedUpdate(u32 UNUSED(turn))
 #endif
 }
 
-void CLocalTurnManager::OnSimulationMessage(CSimulationMessage* UNUSED(msg))
+void CLocalTurnManager::OnSimulationMessage(CSimulationMessage*)
 {
 	debug_warn(L"This should never be called");
 }

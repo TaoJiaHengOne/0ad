@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -56,11 +56,9 @@ CMapWriter::CMapWriter()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // SaveMap: try to save the current map to the given file
-void CMapWriter::SaveMap(const VfsPath& pathname, CTerrain* pTerrain,
-						 WaterManager* pWaterMan, SkyManager* pSkyMan,
-						 CLightEnv* pLightEnv, CCamera* pCamera, CCinemaManager* UNUSED(pCinema),
-						 CPostprocManager* pPostproc,
-						 CSimulation2* pSimulation2)
+void CMapWriter::SaveMap(const VfsPath& pathname, CTerrain* pTerrain, WaterManager* pWaterMan,
+	SkyManager* pSkyMan, CLightEnv* pLightEnv, CCamera* pCamera, CCinemaManager*,
+	CPostprocManager* pPostproc, CSimulation2* pSimulation2)
 {
 	CFilePacker packer(FILE_VERSION, "PSMP");
 

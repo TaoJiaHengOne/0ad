@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 class CCmpCommandQueue final : public ICmpCommandQueue
 {
 public:
-	static void ClassInit(CComponentManager& UNUSED(componentManager))
+	static void ClassInit(CComponentManager&)
 	{
 	}
 
@@ -43,7 +43,7 @@ public:
 		return "<a:component type='system'/><empty/>";
 	}
 
-	void Init(const CParamNode& UNUSED(paramNode)) override
+	void Init(const CParamNode&) override
 	{
 	}
 
@@ -63,7 +63,7 @@ public:
 		}
 	}
 
-	void Deserialize(const CParamNode& UNUSED(paramNode), IDeserializer& deserialize) override
+	void Deserialize(const CParamNode&, IDeserializer& deserialize) override
 	{
 		ScriptRequest rq(GetSimContext().GetScriptInterface());
 

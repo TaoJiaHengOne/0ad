@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ JS::Value CMessageTurnStart::ToJSVal(const ScriptRequest& rq) const
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageTurnStart::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageTurnStart::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	return new CMessageTurnStart();
 }
@@ -112,13 +112,13 @@ CMessage* CMessageInterpolate::FromJSVal(const ScriptRequest& rq, JS::HandleValu
 
 ////////////////////////////////
 
-JS::Value CMessageRenderSubmit::ToJSVal(const ScriptRequest& UNUSED(rq)) const
+JS::Value CMessageRenderSubmit::ToJSVal(const ScriptRequest&) const
 {
 	LOGWARNING("CMessageRenderSubmit::ToJSVal not implemented");
 	return JS::UndefinedValue();
 }
 
-CMessage* CMessageRenderSubmit::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageRenderSubmit::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	LOGWARNING("CMessageRenderSubmit::FromJSVal not implemented");
 	return NULL;
@@ -126,13 +126,13 @@ CMessage* CMessageRenderSubmit::FromJSVal(const ScriptRequest& UNUSED(rq), JS::H
 
 ////////////////////////////////
 
-JS::Value CMessageProgressiveLoad::ToJSVal(const ScriptRequest& UNUSED(rq)) const
+JS::Value CMessageProgressiveLoad::ToJSVal(const ScriptRequest&) const
 {
 	LOGWARNING("CMessageProgressiveLoad::ToJSVal not implemented");
 	return JS::UndefinedValue();
 }
 
-CMessage* CMessageProgressiveLoad::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageProgressiveLoad::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	LOGWARNING("CMessageProgressiveLoad::FromJSVal not implemented");
 	return NULL;
@@ -230,13 +230,13 @@ CMessage* CMessagePositionChanged::FromJSVal(const ScriptRequest& rq, JS::Handle
 
 ////////////////////////////////
 
-JS::Value CMessageInterpolatedPositionChanged::ToJSVal(const ScriptRequest& UNUSED(rq)) const
+JS::Value CMessageInterpolatedPositionChanged::ToJSVal(const ScriptRequest&) const
 {
 	LOGWARNING("CMessageInterpolatedPositionChanged::ToJSVal not implemented");
 	return JS::UndefinedValue();
 }
 
-CMessage* CMessageInterpolatedPositionChanged::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageInterpolatedPositionChanged::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	LOGWARNING("CMessageInterpolatedPositionChanged::FromJSVal not implemented");
 	return NULL;
@@ -329,7 +329,7 @@ JS::Value CMessageWaterChanged::ToJSVal(const ScriptRequest& rq) const
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageWaterChanged::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageWaterChanged::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	return new CMessageWaterChanged();
 }
@@ -342,7 +342,7 @@ JS::Value CMessageMovementObstructionChanged::ToJSVal(const ScriptRequest& rq) c
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageMovementObstructionChanged::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageMovementObstructionChanged::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	return new CMessageMovementObstructionChanged();
 }
@@ -355,7 +355,7 @@ JS::Value CMessageObstructionMapShapeChanged::ToJSVal(const ScriptRequest& rq) c
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageObstructionMapShapeChanged::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageObstructionMapShapeChanged::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	return new CMessageObstructionMapShapeChanged();
 }
@@ -368,7 +368,7 @@ JS::Value CMessageTerritoriesChanged::ToJSVal(const ScriptRequest& rq) const
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageTerritoriesChanged::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageTerritoriesChanged::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	return new CMessageTerritoriesChanged();
 }
@@ -384,7 +384,7 @@ JS::Value CMessageRangeUpdate::ToJSVal(const ScriptRequest& rq) const
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageRangeUpdate::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageRangeUpdate::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	LOGWARNING("CMessageRangeUpdate::FromJSVal not implemented");
 	return NULL;
@@ -392,13 +392,13 @@ CMessage* CMessageRangeUpdate::FromJSVal(const ScriptRequest& UNUSED(rq), JS::Ha
 
 ////////////////////////////////
 
-JS::Value CMessagePathResult::ToJSVal(const ScriptRequest& UNUSED(rq)) const
+JS::Value CMessagePathResult::ToJSVal(const ScriptRequest&) const
 {
 	LOGWARNING("CMessagePathResult::ToJSVal not implemented");
 	return JS::UndefinedValue();
 }
 
-CMessage* CMessagePathResult::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessagePathResult::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	LOGWARNING("CMessagePathResult::FromJSVal not implemented");
 	return NULL;
@@ -490,7 +490,7 @@ JS::Value CMessageMinimapPing::ToJSVal(const ScriptRequest& rq) const
 	return JS::ObjectValue(*obj);
 }
 
-CMessage* CMessageMinimapPing::FromJSVal(const ScriptRequest& UNUSED(rq), JS::HandleValue UNUSED(val))
+CMessage* CMessageMinimapPing::FromJSVal(const ScriptRequest&, JS::HandleValue)
 {
 	return new CMessageMinimapPing();
 }

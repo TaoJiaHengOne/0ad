@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -42,25 +42,29 @@ template<typename T> bool FromJSVal(const ScriptRequest& rq, const JS::HandleVal
 template<typename T> void ToJSVal(const ScriptRequest& rq, JS::MutableHandleValue ret, T const& val);
 
 template<>
-inline void ToJSVal<JS::PersistentRootedValue>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue handle, const JS::PersistentRootedValue& a)
+inline void ToJSVal<JS::PersistentRootedValue>(const ScriptRequest&, JS::MutableHandleValue handle,
+	const JS::PersistentRootedValue& a)
 {
 	handle.set(a);
 }
 
 template<>
-inline void ToJSVal<JS::Heap<JS::Value> >(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue handle, const JS::Heap<JS::Value>& a)
+inline void ToJSVal<JS::Heap<JS::Value> >(const ScriptRequest&, JS::MutableHandleValue handle,
+	const JS::Heap<JS::Value>& a)
 {
 	handle.set(a);
 }
 
 template<>
-inline void ToJSVal<JS::RootedValue>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue handle, const JS::RootedValue& a)
+inline void ToJSVal<JS::RootedValue>(const ScriptRequest&, JS::MutableHandleValue handle,
+	const JS::RootedValue& a)
 {
 	handle.set(a);
 }
 
 template <>
-inline void ToJSVal<JS::HandleValue>(const ScriptRequest& UNUSED(rq), JS::MutableHandleValue handle, const JS::HandleValue& a)
+inline void ToJSVal<JS::HandleValue>(const ScriptRequest&, JS::MutableHandleValue handle,
+	const JS::HandleValue& a)
 {
 	handle.set(a);
 }

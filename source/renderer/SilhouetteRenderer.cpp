@@ -444,8 +444,7 @@ void SilhouetteRenderer::RenderSubmitCasters(SceneCollector& collector)
 		collector.SubmitNonRecursive(m_VisibleModelCasters[i]);
 }
 
-void SilhouetteRenderer::RenderDebugBounds(
-	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext))
+void SilhouetteRenderer::RenderDebugBounds(Renderer::Backend::IDeviceCommandContext*)
 {
 	if (m_DebugBounds.empty())
 		return;

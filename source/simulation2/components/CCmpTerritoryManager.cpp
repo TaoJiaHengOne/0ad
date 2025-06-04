@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -117,7 +117,7 @@ public:
 	bool m_EnableLineDebugOverlays; ///< Enable node debugging overlays for boundary lines?
 	std::vector<SOverlayLine> m_DebugBoundaryLineNodes;
 
-	void Init(const CParamNode& UNUSED(paramNode)) override
+	void Init(const CParamNode&) override
 	{
 		m_Territories = NULL;
 		m_CostGrid = NULL;

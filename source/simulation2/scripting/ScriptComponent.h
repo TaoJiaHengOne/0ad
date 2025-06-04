@@ -127,7 +127,7 @@ private:
 
 
 #define DEFAULT_SCRIPT_WRAPPER(cname) \
-	static void ClassInit(CComponentManager& UNUSED(componentManager)) { } \
+	static void ClassInit(CComponentManager&) { } \
 	void HandleMessage(const CMessage& msg, bool global) override \
 	{ \
 		m_Script.HandleMessage(msg, global); \

@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -1003,7 +1003,8 @@ void VertexPathfinderDebugOverlay::DebugRenderGraph(const CSimContext& simContex
 	}
 }
 
-void VertexPathfinderDebugOverlay::DebugRenderEdges(const CSimContext& UNUSED(simContext), bool UNUSED(visible), CFixedVector2D UNUSED(curr), CFixedVector2D UNUSED(npos))
+void VertexPathfinderDebugOverlay::DebugRenderEdges(const CSimContext&, bool UNUSED(visible),
+	CFixedVector2D UNUSED(curr), CFixedVector2D UNUSED(npos))
 {
 	if (!m_DebugOverlay)
 		return;

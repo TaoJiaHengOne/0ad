@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -109,20 +109,20 @@ public:
 
 	}
 
-	virtual void NotifyLoad(const Path& UNUSED(pathname), size_t UNUSED(size))
+	virtual void NotifyLoad(const Path&, size_t UNUSED(size))
 	{
 	}
 
-	virtual void NotifyStore(const Path& UNUSED(pathname), size_t UNUSED(size))
+	virtual void NotifyStore(const Path&, size_t UNUSED(size))
 	{
 	}
 
-	virtual Status Load(const OsPath& UNUSED(pathname))
+	virtual Status Load(const OsPath&)
 	{
 		return INFO::OK;
 	}
 
-	virtual Status Store(const OsPath& UNUSED(pathname)) const
+	virtual Status Store(const OsPath&) const
 	{
 		return INFO::OK;
 	}

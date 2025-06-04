@@ -1,4 +1,4 @@
-/* Copyright (C) 2011 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -56,7 +56,7 @@ void ReleaseAddressSpace(void* p, size_t size)
 }
 
 
-bool Commit(uintptr_t address, size_t size, PageType UNUSED(pageType), int prot)
+bool Commit(uintptr_t address, size_t size, PageType, int prot)
 {
 	if(prot == PROT_NONE)	// would be understood as a request to decommit
 	{

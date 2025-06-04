@@ -181,7 +181,7 @@ struct DefaultIssueHook
 	 * allows generating the data to write while waiting for
 	 * previous I/Os to complete.
 	 **/
-	Status operator()(aiocb& UNUSED(cb)) const
+	Status operator()(aiocb&) const
 	{
 		return INFO::OK;
 	}

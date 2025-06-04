@@ -118,7 +118,7 @@ static Status AddTextureDirCallback(const VfsPath& pathname, const uintptr_t cbD
 	return INFO::OK;
 }
 
-static Status AddTextureCallback(const VfsPath& pathname, const CFileInfo& UNUSED(fileInfo), const uintptr_t cbData)
+static Status AddTextureCallback(const VfsPath& pathname, const CFileInfo&, const uintptr_t cbData)
 {
 	AddTextureCallbackData& data = *(AddTextureCallbackData*)cbData;
 	if (pathname.Basename() != L"terrains")

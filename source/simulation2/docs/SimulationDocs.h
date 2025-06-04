@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -528,12 +528,12 @@ with a set of scalar fields.)
 If you don't want to support scripts sending/receiving the message, you can implement stub functions instead:
 
 @code
-JS::Value CMessageExample::ToJSVal(const ScriptInterface& UNUSED(scriptInterface)) const
+JS::Value CMessageExample::ToJSVal(const ScriptInterface&) const
 {
 	return JS::UndefinedValue();
 }
 
-CMessage* CMessageExample::FromJSVal(const ScriptInterface& UNUSED(scriptInterface), JS::HandleValue UNUSED(val))
+CMessage* CMessageExample::FromJSVal(const ScriptInterface&, JS::HandleValue)
 {
 	return NULL;
 }

@@ -223,7 +223,7 @@ void CSoundManager::al_check(const char* caller, int line)
 		al_ReportError(err, caller, line);
 }
 
-Status CSoundManager::ReloadChangedFiles(const VfsPath& UNUSED(path))
+Status CSoundManager::ReloadChangedFiles(const VfsPath&)
 {
 	// TODO implement sound file hotloading
 	return INFO::OK;

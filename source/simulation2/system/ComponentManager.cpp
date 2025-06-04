@@ -45,7 +45,7 @@ public:
 	virtual int GetType() const { return mtid; }
 	virtual const char* GetScriptHandlerName() const { return handlerName.c_str(); }
 	virtual const char* GetScriptGlobalHandlerName() const { return globalHandlerName.c_str(); }
-	virtual JS::Value ToJSVal(const ScriptRequest& UNUSED(rq)) const { return msg.get(); }
+	virtual JS::Value ToJSVal(const ScriptRequest&) const { return msg.get(); }
 
 	CMessageScripted(const ScriptRequest& rq, int mtid, const std::string& name, JS::HandleValue msg) :
 		mtid(mtid), handlerName("On" + name), globalHandlerName("OnGlobal" + name), msg(rq.cx, msg)

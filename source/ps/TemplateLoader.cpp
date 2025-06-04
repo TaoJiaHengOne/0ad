@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ bool CTemplateLoader::LoadTemplateFile(CParamNode& node, std::string_view templa
 	return true;
 }
 
-static Status AddToTemplates(const VfsPath& pathname, const CFileInfo& UNUSED(fileInfo), const uintptr_t cbData)
+static Status AddToTemplates(const VfsPath& pathname, const CFileInfo&, const uintptr_t cbData)
 {
 	std::vector<std::string>& templates = *(std::vector<std::string>*)cbData;
 
@@ -105,7 +105,7 @@ static Status AddToTemplates(const VfsPath& pathname, const CFileInfo& UNUSED(fi
 	return INFO::OK;
 }
 
-static Status AddToTemplatesUnrestricted(const VfsPath& pathname, const CFileInfo& UNUSED(fileInfo), const uintptr_t cbData)
+static Status AddToTemplatesUnrestricted(const VfsPath& pathname, const CFileInfo&, const uintptr_t cbData)
 {
 	std::vector<std::string>& templates = *(std::vector<std::string>*)cbData;
 
@@ -120,7 +120,7 @@ static Status AddToTemplatesUnrestricted(const VfsPath& pathname, const CFileInf
 	return INFO::OK;
 }
 
-static Status AddActorToTemplates(const VfsPath& pathname, const CFileInfo& UNUSED(fileInfo), const uintptr_t cbData)
+static Status AddActorToTemplates(const VfsPath& pathname, const CFileInfo&, const uintptr_t cbData)
 {
 	std::vector<std::string>& templates = *(std::vector<std::string>*)cbData;
 

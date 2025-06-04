@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -87,7 +87,7 @@ CTerrainPropertiesPtr CTerrainProperties::FromXML(const CTerrainPropertiesPtr& p
 	return CTerrainPropertiesPtr();
 }
 
-void CTerrainProperties::LoadXml(XMBElement node, CXeromyces *pFile, const VfsPath& UNUSED(pathname))
+void CTerrainProperties::LoadXml(XMBElement node, CXeromyces *pFile, const VfsPath&)
 {
 	#define ELMT(x) int elmt_##x = pFile->GetElementID(#x)
 	#define ATTR(x) int attr_##x = pFile->GetAttributeID(#x)

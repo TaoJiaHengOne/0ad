@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -336,7 +336,7 @@ void* ReserveAddressSpace(size_t size, size_t commitSize, PageType pageType, int
 }
 
 
-void ReleaseAddressSpace(void* p, size_t UNUSED(size))
+void ReleaseAddressSpace(void* p, size_t)
 {
 	// it is customary to ignore null pointers
 	if(!p)
@@ -383,7 +383,7 @@ void* Allocate(size_t size, PageType pageType, int prot)
 }
 
 
-void Free(void* p, size_t UNUSED(size))
+void Free(void* p, size_t)
 {
 	if(p)	// otherwise, VirtualFree complains
 	{

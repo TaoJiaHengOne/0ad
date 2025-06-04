@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -668,7 +668,7 @@ ssize_t aio_return(struct aiocb* cb)
 // Win32 limitation: cancel all I/Os this thread issued for the given file
 // (CancelIoEx can cancel individual operations, but is only
 // available starting with Vista)
-int aio_cancel(int fd, struct aiocb* UNUSED(cb))
+int aio_cancel(int fd, struct aiocb*)
 {
 	FileControlBlock* fcb = fileControlBlocks.FromDescriptor(fd);
 	if(!fcb)

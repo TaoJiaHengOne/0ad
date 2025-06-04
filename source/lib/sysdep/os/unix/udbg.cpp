@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -109,7 +109,7 @@ void debug_puts(const char* text)
 
 #endif
 
-int debug_IsPointerBogus(const void* UNUSED(p))
+int debug_IsPointerBogus(const void*)
 {
 	// TODO: maybe this should do some checks
 	return false;

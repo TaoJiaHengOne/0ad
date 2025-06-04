@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -377,7 +377,7 @@ public:
 class NullObstructionFilter : public IObstructionTestFilter
 {
 public:
-	virtual bool TestShape(tag_t UNUSED(tag), flags_t UNUSED(flags), entity_id_t UNUSED(group), entity_id_t UNUSED(group2)) const
+	virtual bool TestShape(tag_t, flags_t, entity_id_t UNUSED(group), entity_id_t UNUSED(group2)) const
 	{
 		return true;
 	}
@@ -389,7 +389,7 @@ public:
 class StationaryOnlyObstructionFilter : public IObstructionTestFilter
 {
 public:
-	virtual bool TestShape(tag_t UNUSED(tag), flags_t flags, entity_id_t UNUSED(group), entity_id_t UNUSED(group2)) const
+	virtual bool TestShape(tag_t, flags_t flags, entity_id_t UNUSED(group), entity_id_t UNUSED(group2)) const
 	{
 		return !(flags & ICmpObstructionManager::FLAG_MOVING);
 	}
@@ -409,7 +409,7 @@ public:
 		m_AvoidMoving(avoidMoving), m_Group(group)
 	{}
 
-	virtual bool TestShape(tag_t UNUSED(tag), flags_t flags, entity_id_t group, entity_id_t group2) const
+	virtual bool TestShape(tag_t, flags_t flags, entity_id_t group, entity_id_t group2) const
 	{
 		if (group == m_Group || (group2 != INVALID_ENTITY && group2 == m_Group))
 			return false;
@@ -457,7 +457,7 @@ public:
 		Init();
 	}
 
-	virtual bool TestShape(tag_t UNUSED(tag), flags_t flags, entity_id_t group, entity_id_t group2) const
+	virtual bool TestShape(tag_t, flags_t flags, entity_id_t group, entity_id_t group2) const
 	{
 		// Don't test shapes that share one or more of our control groups.
 		if (group == m_Group || group == m_Group2 || (group2 != INVALID_ENTITY &&
@@ -531,7 +531,7 @@ public:
 	{
 	}
 
-	virtual bool TestShape(tag_t tag, flags_t UNUSED(flags), entity_id_t UNUSED(group), entity_id_t UNUSED(group2)) const
+	virtual bool TestShape(tag_t tag, flags_t, entity_id_t UNUSED(group), entity_id_t UNUSED(group2)) const
 	{
 		return tag.n != m_Tag.n;
 	}

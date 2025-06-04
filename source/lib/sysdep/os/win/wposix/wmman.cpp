@@ -1,4 +1,4 @@
-/* Copyright (C) 2011 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -219,7 +219,7 @@ void* mmap(void* start, size_t len, int prot, int flags, int fd, off_t ofs)
 }
 
 
-int munmap(void* start, size_t UNUSED(len))
+int munmap(void* start, size_t)
 {
 	// UnmapViewOfFile checks if start was returned by MapViewOfFile*;
 	// if not, it will fail.

@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -82,7 +82,7 @@ struct EmitterHasNoParticles
 	}
 };
 
-void CParticleManager::RenderSubmit(SceneCollector& collector, const CFrustum& UNUSED(frustum))
+void CParticleManager::RenderSubmit(SceneCollector& collector, const CFrustum&)
 {
 	PROFILE("submit unattached particles");
 

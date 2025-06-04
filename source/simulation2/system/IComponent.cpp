@@ -45,6 +45,6 @@ void IComponent::RegisterComponentTypeScriptWrapper(CComponentManager& mgr, EInt
 	mgr.RegisterComponentTypeScriptWrapper(iid, cid, alloc, dealloc, name, schema, classInit);
 }
 
-void IComponent::HandleMessage(const CMessage& UNUSED(msg), bool UNUSED(global))
+void IComponent::HandleMessage(const CMessage&, bool UNUSED(global))
 {
 }

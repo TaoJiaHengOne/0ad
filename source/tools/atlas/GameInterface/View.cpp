@@ -108,7 +108,7 @@ CSimulation2* AtlasViewActor::GetSimulation2()
 	return m_ActorViewer->GetSimulation2();
 }
 
-entity_id_t AtlasViewActor::GetEntityId(AtlasMessage::ObjectID UNUSED(obj))
+entity_id_t AtlasViewActor::GetEntityId(AtlasMessage::ObjectID)
 {
 	return m_ActorViewer->GetEntity();
 }

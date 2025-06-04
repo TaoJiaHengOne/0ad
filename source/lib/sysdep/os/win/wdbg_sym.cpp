@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -1092,7 +1092,7 @@ static Status dump_sym_enum(DWORD type_id, const u8* p, DumpState& state)
 
 //-----------------------------------------------------------------------------
 
-static Status dump_sym_function(DWORD UNUSED(type_id), const u8* UNUSED(p), DumpState& UNUSED(state))
+static Status dump_sym_function(DWORD UNUSED(type_id), const u8* UNUSED(p), DumpState&)
 {
 	return INFO::SYM_SUPPRESS_OUTPUT;
 }
@@ -1552,7 +1552,7 @@ done:
 //-----------------------------------------------------------------------------
 
 
-static Status dump_sym_vtable(DWORD UNUSED(type_id), const u8* UNUSED(p), DumpState& UNUSED(state))
+static Status dump_sym_vtable(DWORD UNUSED(type_id), const u8* UNUSED(p), DumpState&)
 {
 	// unsupported (vtable internals are undocumented; too much work).
 	return INFO::SYM_SUPPRESS_OUTPUT;

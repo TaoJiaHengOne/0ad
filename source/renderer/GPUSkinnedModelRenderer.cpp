@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -433,9 +433,8 @@ void GPUSkinnedModelModelRenderer::UpdateModelData(
 	}
 }
 
-void GPUSkinnedModelModelRenderer::UploadModelsData(
-	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
-	PS::span<CModel*> UNUSED(models))
+void GPUSkinnedModelModelRenderer::UploadModelsData(Renderer::Backend::IDeviceCommandContext*,
+	PS::span<CModel*>)
 {
 }
 
@@ -459,8 +458,8 @@ void GPUSkinnedModelModelRenderer::PrepareModelDef(
 }
 
 void GPUSkinnedModelModelRenderer::RenderModel(
-	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
-	Renderer::Backend::IShaderProgram* UNUSED(shader), CModel* model, CModelRData* data)
+	Renderer::Backend::IDeviceCommandContext* deviceCommandContext, Renderer::Backend::IShaderProgram*,
+	CModel* model, CModelRData* data)
 {
 	ModelRData* modelRData{static_cast<ModelRData*>(data)};
 

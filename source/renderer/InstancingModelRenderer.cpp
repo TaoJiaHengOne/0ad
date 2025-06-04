@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -257,16 +257,14 @@ CModelRData* InstancingModelRenderer::CreateModelData(const void* key, CModel* m
 	return new CModelRData(key);
 }
 
-void InstancingModelRenderer::UpdateModelsData(
-	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
-	PS::span<CModel*> UNUSED(models))
+void InstancingModelRenderer::UpdateModelsData(Renderer::Backend::IDeviceCommandContext*,
+	PS::span<CModel*>)
 {
 	// We have no per-CModel data
 }
 
-void InstancingModelRenderer::UploadModelsData(
-	Renderer::Backend::IDeviceCommandContext* UNUSED(deviceCommandContext),
-	PS::span<CModel*> UNUSED(models))
+void InstancingModelRenderer::UploadModelsData(Renderer::Backend::IDeviceCommandContext*,
+	PS::span<CModel*>)
 {
 	// Data uploaded once during creation as we don't update it dynamically.
 }
@@ -292,9 +290,8 @@ void InstancingModelRenderer::PrepareModelDef(
 
 
 // Render one model
-void InstancingModelRenderer::RenderModel(
-	Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
-	Renderer::Backend::IShaderProgram* UNUSED(shader), CModel* model, CModelRData* UNUSED(data))
+void InstancingModelRenderer::RenderModel(Renderer::Backend::IDeviceCommandContext* deviceCommandContext,
+	Renderer::Backend::IShaderProgram*, CModel* model, CModelRData*)
 {
 	const CModelDefPtr& mdldef = model->GetModelDef();
 
