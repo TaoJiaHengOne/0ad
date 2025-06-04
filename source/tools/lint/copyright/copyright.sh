@@ -11,6 +11,7 @@ while [ "$#" -gt 0 ]; do
 			;;
 		--to)
 			to_commitish=$2
+			git checkout --quiet "${to_commitish}"
 			shift
 			;;
 		-j*) ;;
@@ -32,9 +33,11 @@ if [ -n "${from_commitish}" ]; then
 fi
 
 if [ -n "${diff}" ]; then
-	git diff --name-status --no-renames "${diff}" |
-		awk '!/^D/{$1=""; printf "%s\0", substr($0,2)}' |
-		xargs -0 -L100 ./source/tools/lint/copyright/check_copyright_year.py
+	for sha in $(git rev-list "${diff}"); do
+		git diff-tree --no-commit-id --name-status -r "${sha}" |
+			awk '!/^D/{$1=""; printf "%s\0", substr($0,2)}' |
+			xargs -0 -L100 ./source/tools/lint/copyright/check_copyright_year.py
+	done
 else
 	echo "WARNING: running copyright linter without base commit, likely not what you want."
 	find . -type f -print0 |
