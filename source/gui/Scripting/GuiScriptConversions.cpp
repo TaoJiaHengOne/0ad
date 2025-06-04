@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 #include "gui/SettingTypes/CGUIColor.h"
 #include "gui/SettingTypes/CGUIList.h"
 #include "gui/SettingTypes/CGUISeries.h"
-#include "gui/SettingTypes/CGUISize.h"
 #include "gui/Scripting/JSInterface_GUIProxy.h"
 #include "lib/external_libraries/libsdl.h"
 #include "maths/Size2D.h"
@@ -192,16 +191,6 @@ template<> void Script::ToJSVal<CRect>(const ScriptRequest& rq, JS::MutableHandl
 		"right", val.right,
 		"top", val.top,
 		"bottom", val.bottom);
-}
-
-template<> void Script::ToJSVal<CGUISize>(const ScriptRequest& rq, JS::MutableHandleValue ret, const CGUISize& val)
-{
-	val.ToJSVal(rq, ret);
-}
-
-template<> bool Script::FromJSVal<CGUISize>(const ScriptRequest& rq, JS::HandleValue v, CGUISize& out)
-{
-	return out.FromJSVal(rq, v);
 }
 
 template<> void Script::ToJSVal<CGUIList>(const ScriptRequest& rq, JS::MutableHandleValue ret, const CGUIList& val)

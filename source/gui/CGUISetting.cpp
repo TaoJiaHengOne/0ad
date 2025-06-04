@@ -119,7 +119,6 @@ TYPE(CVector2D)
 TYPE(CStr)
 TYPE(CStrW)
 // TODO: make these inherit from CGUISimpleSetting directly.
-TYPE(CGUISize)
 TYPE(CGUIColor)
 TYPE(CGUISpriteInstance)
 TYPE(CGUIString)

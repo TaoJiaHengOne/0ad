@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -140,92 +140,5 @@ bool CGUISize::FromString(const CStr& Value)
 	percent.top =		percents[1];
 	percent.right =		percents[2];
 	percent.bottom =	percents[3];
-	return true;
-}
-
-void CGUISize::ToJSVal(const ScriptRequest& rq, JS::MutableHandleValue ret) const
-{
-	const ScriptInterface& scriptInterface = rq.GetScriptInterface();
-	ret.setObjectOrNull(scriptInterface.CreateCustomObject("GUISize"));
-
-	if (!ret.isObject())
-	{
-		ScriptException::Raise(rq, "CGUISize value is not an Object");
-		return;
-	}
-
-	JS::RootedObject obj(rq.cx, &ret.toObject());
-	if (!JS_InstanceOf(rq.cx, obj, &JSI_GUISize::JSI_class, nullptr))
-	{
-		ScriptException::Raise(rq, "CGUISize value is not a CGUISize class instance");
-		return;
-	}
-
-#define P(x, y, z)\
-	if (!Script::SetProperty(rq, ret, #z, x.y)) \
-	{ \
-		ScriptException::Raise(rq, "Could not SetProperty '%s'", #z); \
-		return; \
-	}
-	P(pixel, left, left);
-	P(pixel, top, top);
-	P(pixel, right, right);
-	P(pixel, bottom, bottom);
-	P(percent, left, rleft);
-	P(percent, top, rtop);
-	P(percent, right, rright);
-	P(percent, bottom, rbottom);
-#undef P
-}
-
-bool CGUISize::FromJSVal(const ScriptRequest& rq, JS::HandleValue v)
-{
-	if (v.isString())
-	{
-		CStrW str;
-		if (!Script::FromJSVal(rq, v, str))
-		{
-			LOGERROR("CGUISize could not read JS string");
-			return false;
-		}
-
-		if (!FromString(str.ToUTF8()))
-		{
-			LOGERROR("CGUISize could not parse JS string");
-			return false;
-		}
-		return true;
-	}
-
-	if (!v.isObject())
-	{
-		LOGERROR("CGUISize value is not an String, nor Object");
-		return false;
-	}
-
-	JS::RootedObject obj(rq.cx, &v.toObject());
-	if (!JS_InstanceOf(rq.cx, obj, &JSI_GUISize::JSI_class, nullptr))
-	{
-		LOGERROR("CGUISize value is not a CGUISize class instance");
-		return false;
-	}
-
-#define P(x, y, z) \
-	if (!Script::GetProperty(rq, v, #z, x.y))\
-	{\
-		LOGERROR("CGUISize could not get object property '%s'", #z);\
-		return false;\
-	}
-
-	P(pixel, left, left);
-	P(pixel, top, top);
-	P(pixel, right, right);
-	P(pixel, bottom, bottom);
-	P(percent, left, rleft);
-	P(percent, top, rtop);
-	P(percent, right, rright);
-	P(percent, bottom, rbottom);
-#undef P
-
 	return true;
 }

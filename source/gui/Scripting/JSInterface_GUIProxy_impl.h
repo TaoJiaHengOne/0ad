@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -30,6 +30,9 @@
 
 #include <string>
 #include <string_view>
+
+#ifndef INCLUDED_JSI_GUIPROXY_IMP
+#define INCLUDED_JSI_GUIPROXY_IMP
 
 template <typename T>
 JSI_GUIProxy<T>& JSI_GUIProxy<T>::Singleton()
@@ -319,3 +322,4 @@ bool JSI_GUIProxy<T>::delete_(JSContext* cx, JS::HandleObject proxy, JS::HandleI
 	LOGERROR("Only event handlers can be deleted from GUI objects!");
 	return result.fail(JSMSG_BAD_PROP_ID);
 }
+#endif // INCLUDED_JSI_GUIPROXY_IMP

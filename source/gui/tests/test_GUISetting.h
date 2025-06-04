@@ -21,8 +21,11 @@
 #include "graphics/FontMetrics.h"
 #include "gui/CGUI.h"
 #include "gui/CGUISetting.h"
+#include "gui/Scripting/JSInterface_CGUISize.h"
+#include "gui/Scripting/JSInterface_GUIProxy.h"
 #include "gui/CGUIText.h"
 #include "gui/ObjectBases/IGUIObject.h"
+#include "gui/SettingTypes/CGUISize.h"
 #include "gui/SettingTypes/CGUIString.h"
 #include "i18n/L10n.h"
 #include "ps/CLogger.h"
@@ -31,7 +34,11 @@
 #include "ps/ProfileViewer.h"
 #include "ps/VideoMode.h"
 #include "renderer/Renderer.h"
+#include "scriptinterface/Object.h"
+#include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
+#include "scriptinterface/ScriptRequest.h"
+#include "scriptinterface/ModuleLoader.h"
 
 #include <memory>
 #include <optional>
@@ -51,11 +58,23 @@ public:
 		TestGUIObject(CGUI& gui) : IGUIObject(gui) {}
 
 		void Draw(CCanvas2D&) {}
+		void UpdateCachedSize() {
+			haveUpdateCachedSize = true;
+			IGUIObject::UpdateCachedSize();
+		}
+
+		CGUISimpleSetting<CGUISize>* GetSizeSetting() const
+		{
+			return static_cast<CGUISimpleSetting<CGUISize>*>(m_Settings.at("size"));
+		}
+
+		bool haveUpdateCachedSize{false};
 	};
 
 	void setUp()
 	{
 		g_VFS = CreateVfs();
+		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.gui" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.minimal" / "", VFS_MOUNT_MUST_EXIST));
 		TS_ASSERT_OK(g_VFS->Mount(L"cache", DataDir() / "_testcache" / "", 0, VFS_MAX_PRIORITY));
 
@@ -105,5 +124,58 @@ public:
 		TS_ASSERT(object.SettingExists("A"));
 		object.SetSettingFromString("A", L"ValueB", false);
 		TS_ASSERT_EQUALS(*settingB, "ValueB");
+	}
+
+	void test_setting_cguisize()
+	{
+		CGUI gui{*g_ScriptContext};
+		gui.AddObjectTypes();
+		TestGUIObject object{gui};
+
+		CGUISimpleSetting<CGUISize>* setting{object.GetSizeSetting()};
+		object.SetSettingFromString("size", L"2 2 20 20", false);
+		object.haveUpdateCachedSize = false;
+
+		ScriptRequest rq{gui.GetScriptInterface()};
+		JS::RootedValue val(rq.cx);
+		val.setObject(*object.GetJSObject());
+		JS::RootedObject global(rq.cx, rq.glob);
+		JS_DefineProperty(rq.cx, global, "testObject", val, JSPROP_ENUMERATE);
+
+		// Lazy assigment.
+		TS_ASSERT(gui.GetScriptInterface()->LoadGlobalScriptFile(L"gui/settings/cguisize/lazyassign.js"));
+		TS_ASSERT_EQUALS(setting->GetMutable().pixel, (CRect{5, 2, 20, 20}));
+		TS_ASSERT_EQUALS(setting->GetMutable().percent, (CRect{0, 0, 0, 0}));
+		TS_ASSERT_EQUALS(object.haveUpdateCachedSize, false);
+
+		// Force update of cached size.
+		object.GetComputedSize();
+		object.haveUpdateCachedSize = false;
+
+		// Compound assignment operator.
+		TS_ASSERT(gui.GetScriptInterface()->LoadGlobalScriptFile(L"gui/settings/cguisize/compoundassignmentoperator.js"));
+		TS_ASSERT_EQUALS(setting->GetMutable().pixel, (CRect{10, 2, 20, 20}));
+		TS_ASSERT_EQUALS(setting->GetMutable().percent, (CRect{0, 0, 0, 0}));
+		TS_ASSERT_EQUALS(object.haveUpdateCachedSize, false);
+
+		// Force update of cached size.
+		object.GetComputedSize();
+		object.haveUpdateCachedSize = false;
+
+		// Object assignment.
+		TS_ASSERT(gui.GetScriptInterface()->LoadGlobalScriptFile(L"gui/settings/cguisize/objectassign.js"));
+		TS_ASSERT_EQUALS(setting->GetMutable().pixel, (CRect{10, 2, 20, 20}));
+		TS_ASSERT_EQUALS(setting->GetMutable().percent, (CRect{4, 0, 0, 20}));
+		TS_ASSERT_EQUALS(object.haveUpdateCachedSize, false);
+
+		// Force update of cached size.
+		object.GetComputedSize();
+		object.haveUpdateCachedSize = false;
+
+		// assign
+		TS_ASSERT(gui.GetScriptInterface()->LoadGlobalScriptFile(L"gui/settings/cguisize/assign.js"));
+		TS_ASSERT_EQUALS(setting->GetMutable().pixel, (CRect{3, 0, 0, 2}));
+		TS_ASSERT_EQUALS(setting->GetMutable().percent, (CRect{0, 0, 0, 0}));
+		TS_ASSERT_EQUALS(object.haveUpdateCachedSize, true);
 	}
 };

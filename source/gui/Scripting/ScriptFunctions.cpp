@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 #include "ScriptFunctions.h"
 
 #include "graphics/scripting/JSInterface_GameView.h"
+#include "gui/Scripting/JSInterface_CGUISize.h"
 #include "gui/Scripting/JSInterface_GUIManager.h"
 #include "gui/Scripting/JSInterface_GUISize.h"
 #include "i18n/scripting/JSInterface_L10n.h"
@@ -53,6 +54,7 @@ void GuiScriptingInit(ScriptInterface& scriptInterface)
 	ScriptRequest rq(scriptInterface);
 
 	JSI_GUISize::RegisterScriptClass(scriptInterface);
+	JSI_CGUISize::RegisterScriptClass(scriptInterface);
 	JSI_ConfigDB::RegisterScriptFunctions(rq);
 	JSI_Console::RegisterScriptFunctions(rq);
 	JSI_Debug::RegisterScriptFunctions(rq);

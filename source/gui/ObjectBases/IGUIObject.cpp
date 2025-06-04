@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -256,6 +256,8 @@ void IGUIObject::UpdateCachedSize()
 
 CRect IGUIObject::GetComputedSize()
 {
+	// Ensure the size is up to date before we use it.
+	m_Settings.at("size")->DispatchDelayedSettingChange();
 	UpdateCachedSize();
 	return m_CachedActualSize;
 }
@@ -563,4 +565,10 @@ void IGUIObject::DrawInArea(CCanvas2D& canvas, CRect& area)
 
 bool IGUIObject::IsHiddenOrGhostOrOutOfBoundaries() const {
 	return !m_IsInsideBoundaries || IsHiddenOrGhost();
+}
+
+void IGUIObject::DispatchDelayedSettingChanges()
+{
+	for (const auto& setting : m_Settings)
+		setting.second->DispatchDelayedSettingChange();
 }
