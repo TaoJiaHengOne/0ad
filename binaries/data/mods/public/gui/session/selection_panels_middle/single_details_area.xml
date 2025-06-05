@@ -39,10 +39,10 @@
 
 			<!-- Capture bar -->
 			<object name="captureSection">
-				<object size="0 0 100% 12" name="captureLabel" type="text" style="StatsTextLeft" ghost="true">
+				<object size="0 0 100% 14" name="captureLabel" type="text" style="StatsTextLeft" ghost="true">
 					<translatableAttribute id="tooltip">Capture points</translatableAttribute>
 				</object>
-				<object size="0 0 100% 12" name="captureStats" type="text" style="StatsTextRight" ghost="true"/>
+				<object size="0 0 100% 14" name="captureStats" type="text" style="StatsTextRight" ghost="true"/>
 				<object size="1 14 100% 21" name="capture" type="image">
 					<object type="image" sprite="barBorder" ghost="true" size="-1 -1 100%+1 100%+1"/>
 					<repeat count="9">
@@ -55,7 +55,7 @@
 
 			<!-- Health bar -->
 			<object name="healthSection">
-				<object size="0 0 100% 12" name="healthStats" type="text" style="StatsTextRight" ghost="true"/>
+				<object size="0 0 100% 14" name="healthStats" type="text" style="StatsTextRight" ghost="true"/>
 				<object size="1 14 100% 21" name="health" type="image" tooltip_style="sessionToolTip">
 					<object type="image" sprite="barBorder" ghost="true" size="-1 -1 100%+1 100%+1"/>
 					<object type="image" sprite="healthBackground" ghost="true"/>
@@ -69,8 +69,8 @@
 
 			<!-- Resource bar -->
 			<object name="resourceSection">
-				<object size="0 0 100% 12" name="resourceLabel" type="text" style="StatsTextLeft" ghost="true"/>
-				<object size="0 0 100% 12" name="resourceStats" type="text" style="StatsTextRight" ghost="true"/>
+				<object size="0 0 100% 14" name="resourceLabel" type="text" style="StatsTextLeft" ghost="true"/>
+				<object size="0 0 100% 14" name="resourceStats" type="text" style="StatsTextRight" ghost="true"/>
 				<object size="1 14 100% 21" name="resources" type="image">
 					<object type="image" sprite="barBorder" ghost="true" size="-1 -1 100%+1 100%+1"/>
 					<object type="image" sprite="resourceBackground" ghost="true"/>
