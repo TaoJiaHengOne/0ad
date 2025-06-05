@@ -4,7 +4,7 @@
 
 	<object type="image" style="TranslucentPanelThinBorder" size="8 100%-368 100%-8 100%-94">
 
-		<object name="productDescription" font="sans-14" type="text" textcolor="white" size="8 4 100%-8 100%-36" ghost="true" buffer_zone="5"/>
+		<object name="productDescription" font="sans-14" type="text" textcolor="white" size="8 8 100%-8 100%-36" ghost="true"/>
 
 		<object name="communityButtons">
 			<repeat count="10">

@@ -132,7 +132,7 @@ class TipDisplay
 		this.tipTitle.caption = tipText.shift();
 		this.scaleGuiElementsToFit();
 		this.tipText.caption = tipText.map(text =>
-			text && "[icon=\"BulletPoint\" displace=\"0 -3\"] " + text).join("\n\n");
+			text && "[icon=\"BulletPoint\"] " + text).join("\n\n");
 	}
 
 	updateTipImage()

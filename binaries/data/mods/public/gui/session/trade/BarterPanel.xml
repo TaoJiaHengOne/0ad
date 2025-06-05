@@ -30,7 +30,7 @@
 		</object>
 
 		<object name="barterHelp" type="button" size="100%-24 50%-12 100% 50%+12" style="StoneButton" tooltip_style="sessionToolTipBold" enabled="false">
-			<object type="image" size="20% 20% 80% 80%" sprite="iconInfoWhite" ghost="true"/>
+			<object type="image" size="20% 15% 80% 75%" sprite="iconInfoWhite" ghost="true"/>
 		</object>
 
 	</object>
