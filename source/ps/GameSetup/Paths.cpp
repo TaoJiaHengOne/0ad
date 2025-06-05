@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -140,13 +140,14 @@ Paths::Paths(const CmdLineArgs& args)
 		const OsPath xdgData   = XDG_Path("XDG_DATA_HOME",   home, home/".local/share/") / subdirectoryName;
 		const OsPath xdgConfig = XDG_Path("XDG_CONFIG_HOME", home, home/".config/"     ) / subdirectoryName;
 		const OsPath xdgCache  = XDG_Path("XDG_CACHE_HOME",  home, home/".cache/"      ) / subdirectoryName;
+		const OsPath xdgState  = XDG_Path("XDG_STATE_HOME",  home, home/".local/state/") / subdirectoryName;
 
 		// We don't make the game vs. user data distinction on Unix
 		m_gameData = xdgData/"";
 		m_userData = m_gameData;
 		m_cache  = xdgCache/"";
 		m_config = xdgConfig / "config"/"";
-		m_logs   = xdgConfig / "logs"/"";
+		m_logs   = xdgState  / "log"/"";
 
 #endif
 	}
