@@ -60,6 +60,7 @@ public:
 private:
 	CVector3D GetSmoothPivot(CCamera &camera) const;
 	void ResetCameraAngleZoom();
+	void ToggleBirdsEyeView();
 	void SetupCameraMatrixSmooth(CMatrix3D* orientation);
 	void SetupCameraMatrixSmoothRot(CMatrix3D* orientation);
 	void SetupCameraMatrixNonSmooth(CMatrix3D* orientation);
@@ -85,6 +86,11 @@ private:
 	* Whether to follow FollowEntity in first-person mode.
 	*/
 	bool m_FollowFirstPerson;
+
+	/**
+	* Whether the camera is in bird's eye view mode.
+	*/
+	bool m_BirdsEyeView;
 
 	// Settings
 	float m_ViewScrollSpeed;

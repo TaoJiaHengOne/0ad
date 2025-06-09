@@ -54,6 +54,7 @@ CCameraController::CCameraController(CCamera& camera)
 	  m_ConstrainCamera(true),
 	  m_FollowEntity(INVALID_ENTITY),
 	  m_FollowFirstPerson(false),
+	  m_BirdsEyeView(false),
 
 	  // Dummy values (these will be filled in by the config file)
 	  m_ViewScrollSpeed(0),
@@ -179,9 +180,9 @@ void CCameraController::Update(const float deltaRealTime)
 		m_RotateY.AddSmoothly(m_ViewRotateYSpeed * deltaRealTime);
 	if (HotkeyIsPressed("camera.rotate.ccw"))
 		m_RotateY.AddSmoothly(-m_ViewRotateYSpeed * deltaRealTime);
-	if (HotkeyIsPressed("camera.rotate.up"))
+	if (HotkeyIsPressed("camera.rotate.up") && !m_BirdsEyeView)
 		m_RotateX.AddSmoothly(-m_ViewRotateXSpeed * deltaRealTime);
-	if (HotkeyIsPressed("camera.rotate.down"))
+	if (HotkeyIsPressed("camera.rotate.down") && !m_BirdsEyeView)
 		m_RotateX.AddSmoothly(m_ViewRotateXSpeed * deltaRealTime);
 
 	float moveRightward = 0.f;
@@ -297,7 +298,12 @@ void CCameraController::Update(const float deltaRealTime)
 	}
 
 	if (m_ConstrainCamera)
-		m_RotateX.ClampSmoothly(DEGTORAD(m_ViewRotateXMin), DEGTORAD(m_ViewRotateXMax));
+	{
+		if (m_BirdsEyeView)
+			m_RotateX.ClampSmoothly(M_PI / 2, M_PI / 2);
+		else
+			m_RotateX.ClampSmoothly(DEGTORAD(m_ViewRotateXMin), DEGTORAD(m_ViewRotateXMax));
+	}
 
 	FocusHeight(true);
 
@@ -462,6 +468,9 @@ void CCameraController::SetCamera(const CVector3D& pos, float rotX, float rotY, 
 
 	// Break out of following mode so the camera really moves to the target
 	m_FollowEntity = INVALID_ENTITY;
+
+	// Leave bird's eye view
+	m_BirdsEyeView = false;
 }
 
 void CCameraController::MoveCameraTarget(const CVector3D& target)
@@ -508,6 +517,9 @@ void CCameraController::ResetCameraTarget(const CVector3D& target)
 
 	// Break out of following mode so the camera really moves to the target
 	m_FollowEntity = INVALID_ENTITY;
+
+	// Leave bird's eye view
+	m_BirdsEyeView = false;
 }
 
 void CCameraController::FollowEntity(entity_id_t entity, bool firstPerson)
@@ -542,6 +554,16 @@ void CCameraController::ResetCameraAngleZoom()
 	// Reset orientations to default
 	m_RotateX.SetValueSmoothly(DEGTORAD(m_ViewRotateXDefault));
 	m_RotateY.SetValueSmoothly(DEGTORAD(m_ViewRotateYDefault));
+
+	// Leave bird's eye view
+	m_BirdsEyeView = false;
+}
+
+void CCameraController::ToggleBirdsEyeView()
+{
+	m_BirdsEyeView = !m_BirdsEyeView;
+	float angle = m_BirdsEyeView ? M_PI / 2 : DEGTORAD(m_ViewRotateXDefault);
+	m_RotateX.SetValueSmoothly(angle);
 }
 
 void CCameraController::SetupCameraMatrixSmooth(CMatrix3D* orientation)
@@ -638,6 +660,11 @@ InReaction CCameraController::HandleEvent(const SDL_Event_* ev)
 		if (hotkey == "camera.reset")
 		{
 			ResetCameraAngleZoom();
+			return IN_HANDLED;
+		}
+		else if (hotkey == "camera.togglebirdseyeview")
+		{
+			ToggleBirdsEyeView();
 			return IN_HANDLED;
 		}
 		return IN_PASS;
