@@ -194,6 +194,12 @@ std::shared_ptr<CFont> CFontManager::LoadFont(CStrIntern fontName)
 		}
 	}
 
+	// Preload the common characters for visual quality.
+	// Common characters are: Latin, numbers, punctuation.
+	std::string_view glypshSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:!?\"'()[]{}<>-+=_@#$%^&*`~\\|/";
+	for (const char c : glypshSet)
+		font->GetGlyph(c);
+
 	m_Fonts[localeFontName] = font;
 	return font;
 }
