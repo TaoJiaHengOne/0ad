@@ -37,7 +37,7 @@ const configEslintBase = {
 		"no-empty": 1,
 		"no-extra-boolean-cast": 0,
 		"no-func-assign": 1,
-		"no-negated-in-lhs": 1,
+		"no-unsafe-negation": ["warn", { "enforceForOrderingRelations": true }],
 		"no-obj-calls": 1,
 		"no-unreachable": 1,
 		"no-use-before-define": ["error", "nofunc"],
