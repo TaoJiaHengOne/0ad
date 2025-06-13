@@ -22,64 +22,63 @@ const configIgnores = {
 };
 
 
-const configEslintBase = {
+const configEslintRecommended = {
 	"rules": {
-		"no-caller": 1,
-		"no-cond-assign": 1,
-
-		"no-constant-condition": ["error", {
-			"checkLoops": false,
-		}],
-
-		"no-dupe-args": 1,
-		"no-dupe-keys": 1,
-		"no-duplicate-case": 1,
-		"no-empty": 1,
-		"no-extra-boolean-cast": 0,
-		"no-func-assign": 1,
+		"no-class-assign": "warn",
+		"no-cond-assign": "warn",
+		"no-const-assign": "warn",
+		"no-constant-condition": ["error", { "checkLoops": false }],
+		"no-delete-var": "warn",
+		"no-dupe-args": "warn",
+		"no-dupe-class-members": "warn",
+		"no-dupe-keys": "warn",
+		"no-duplicate-case": "warn",
+		"no-empty": "warn",
+		"no-extra-boolean-cast": "off",
+		"no-func-assign": "warn",
+		"no-irregular-whitespace": "warn",
+		"no-obj-calls": "warn",
+		"no-redeclare": "off",
+		"no-self-assign": "warn",
+		"no-shadow-restricted-names": "warn",
+		"no-undef": "off",
+		"no-unreachable": "warn",
 		"no-unsafe-negation": ["warn", { "enforceForOrderingRelations": true }],
-		"no-obj-calls": 1,
-		"no-unreachable": 1,
+		"no-unused-labels": "warn",
+		"no-unused-vars": "off",
+		"use-isnan": "warn",
+		"valid-typeof": "warn",
+	}
+};
+
+
+const configEslintExtra = {
+	"rules": {
+		"block-scoped-var": "off",
+		"consistent-return": "warn",
+		"default-case": "warn",
+		"dot-notation": "warn",
+		"new-cap": "off",
+		"no-caller": "warn",
+		"no-else-return": "warn",
+		"no-invalid-this": "warn",
+		"no-label-var": "warn",
+		"no-loop-func": "off",
+		"no-multi-assign": "warn",
+		"no-new": "warn",
+		"no-return-assign": "warn",
+		"no-self-compare": "warn",
+		"no-shadow": "warn",
+		"no-undef-init": "warn",
+		"no-unmodified-loop-condition": "warn",
+		"no-unneeded-ternary": "warn",
+		"no-unused-expressions": "warn",
 		"no-use-before-define": ["error", "nofunc"],
-		"use-isnan": 1,
-		"valid-jsdoc": 0,
-		"valid-typeof": 1,
-		"block-scoped-var": 0,
-		"consistent-return": 1,
-		"default-case": 1,
-		"dot-notation": 1,
-		"no-else-return": 1,
-		"no-invalid-this": 1,
-		"no-loop-func": 0,
-
-		"no-new": 1,
-		"no-redeclare": 0,
-		"no-return-assign": 1,
-		"no-self-assign": 1,
-		"no-self-compare": 1,
-		"no-unmodified-loop-condition": 1,
-		"no-unused-expressions": 1,
-		"no-unused-labels": 1,
-		"no-useless-concat": 0,
-		"yoda": 1,
-		"no-delete-var": 1,
-		"no-label-var": 1,
-		"no-shadow-restricted-names": 1,
-		"no-shadow": 1,
-		"no-undef": 0,
-		"no-undef-init": 1,
-		"no-unused-vars": 0,
-
-
-		"new-cap": 0,
-		"no-multi-assign": 1,
-		"no-unneeded-ternary": 1,
-		"no-irregular-whitespace": 1,
-		"operator-assignment": 1,
-		"no-class-assign": 1,
-		"no-const-assign": 1,
-		"no-dupe-class-members": 1,
-		"prefer-const": 1,
+		"no-useless-concat": "off",
+		"operator-assignment": "warn",
+		"prefer-const": "warn",
+		"valid-jsdoc": "off",
+		"yoda": "warn",
 	}
 };
 
@@ -143,7 +142,8 @@ const configBracesRules = {
 };
 
 
-const configs = [configIgnores, configEslintBase];
+const configs = [configIgnores, configEslintRecommended];
+Object.assign(configs[1].rules, configEslintExtra.rules);
 configs[1].plugins = { ...configBracesRules.plugins };
 Object.assign(configs[1].rules, configBracesRules.rules);
 Object.assign(configs[1].plugins, configStylistic.plugins);
