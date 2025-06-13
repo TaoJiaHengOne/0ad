@@ -43,7 +43,7 @@ namespace
 {
 void ClearFromCache(const VfsPath& path)
 {
-#if OS_BSD
+#if OS_BSD && !(OS_MAC || OS_MACOSX)
 	TS_SKIP("On BSD hotload isn't implemented.");
 #endif
 
