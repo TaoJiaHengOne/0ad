@@ -45,7 +45,7 @@ const configEslintRecommended = {
 		"no-unreachable": "warn",
 		"no-unsafe-negation": ["warn", { "enforceForOrderingRelations": true }],
 		"no-unused-labels": "warn",
-		"no-unused-vars": "off",
+		/* "no-unused-vars": "warn", */
 		"use-isnan": "warn",
 		"valid-typeof": "warn",
 	}
