@@ -109,7 +109,10 @@ static void fsevent_callback(ConstFSEventStreamRef, void * UNUSED(clientCallBack
           g_QueuedDirs.push_back(DirWatchNotification( filename.string().c_str(), DirWatchNotification::Deleted ));
         else if ( eventType & kFSEventStreamEventFlagItemCreated )
           g_QueuedDirs.push_back(DirWatchNotification( filename.string().c_str(), DirWatchNotification::Created ));
-        else if ( eventType & kFSEventStreamEventFlagItemModified )
+        else if (eventType & (kFSEventStreamEventFlagItemModified |
+          kFSEventStreamEventFlagItemInodeMetaMod | kFSEventStreamEventFlagItemFinderInfoMod |
+          kFSEventStreamEventFlagItemChangeOwner | kFSEventStreamEventFlagItemXattrMod |
+          kFSEventStreamEventFlagItemCloned))
           g_QueuedDirs.push_back(DirWatchNotification( filename.string().c_str(), DirWatchNotification::Changed ));
       }
     }
