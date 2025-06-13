@@ -41,7 +41,7 @@ const configEslintRecommended = {
 		"no-redeclare": "warn",
 		"no-self-assign": "warn",
 		"no-shadow-restricted-names": "warn",
-		"no-undef": "off",
+		/* "no-undef": "warn", */
 		"no-unreachable": "warn",
 		"no-unsafe-negation": ["warn", { "enforceForOrderingRelations": true }],
 		"no-unused-labels": "warn",
