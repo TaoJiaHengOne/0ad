@@ -30672,7 +30672,7 @@
 		<Entity uid="6237">
 			<Template>units/spart/ship_arrow</Template>
 			<Player>2</Player>
-			<Position x="934.4372" z="400.35584"/>
+			<Position x="935.4372" z="400.35584"/>
 			<Orientation y="-0.52605"/>
 			<Actor seed="924"/>
 		</Entity>
@@ -30693,7 +30693,7 @@
 		<Entity uid="6240">
 			<Template>units/athen/ship_arrow</Template>
 			<Player>5</Player>
-			<Position x="938.22236" z="1128.07532"/>
+			<Position x="940.22236" z="1129.07532"/>
 			<Orientation y="2.35621"/>
 			<Actor seed="4236"/>
 		</Entity>

@@ -81203,14 +81203,14 @@
 		<Entity uid="16075">
 			<Template>units/kush/ship_scout</Template>
 			<Player>0</Player>
-			<Position x="1937.27222" z="1006.42133"/>
+			<Position x="1941.27222" z="1010.42133"/>
 			<Orientation y="-1.6437"/>
 			<Actor seed="62640"/>
 		</Entity>
 		<Entity uid="16076">
 			<Template>units/kush/ship_scout</Template>
 			<Player>0</Player>
-			<Position x="1921.01893" z="909.52625"/>
+			<Position x="1918.01893" z="902.52625"/>
 			<Orientation y="1.43442"/>
 			<Actor seed="41755"/>
 		</Entity>

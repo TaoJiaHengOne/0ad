@@ -42,6 +42,7 @@
 #include "renderer/WaterManager.h"
 #include "simulation2/Simulation2.h"
 #include "simulation2/components/ICmpObstruction.h"
+#include "simulation2/components/ICmpUnitMotion.h"
 #include "simulation2/components/ICmpOwnership.h"
 #include "simulation2/components/ICmpPosition.h"
 #include "simulation2/components/ICmpPlayer.h"
@@ -69,7 +70,12 @@ bool CheckEntityObstruction(entity_id_t ent)
 	CmpPtr<ICmpObstruction> cmpObstruction(*g_Game->GetSimulation2(), ent);
 	if (cmpObstruction)
 	{
-		ICmpObstruction::EFoundationCheck result = cmpObstruction->CheckFoundation("default");
+		std::string passClassName = "default";
+		CmpPtr<ICmpUnitMotion> cmpUnitMotion(*g_Game->GetSimulation2(), ent);
+		if (cmpUnitMotion)
+			passClassName = cmpUnitMotion->GetPassabilityClassName();
+
+		ICmpObstruction::EFoundationCheck result = cmpObstruction->CheckFoundation(passClassName);
 		if (result != ICmpObstruction::FOUNDATION_CHECK_SUCCESS)
 			return false;
 	}

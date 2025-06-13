@@ -23278,7 +23278,7 @@
 		<Entity uid="5170">
 			<Template>units/pirates/ship_scout</Template>
 			<Player>0</Player>
-			<Position x="991.45337" z="1261.83448"/>
+			<Position x="987.45337" z="1260.83448"/>
 			<Orientation y="-2.88268"/>
 			<Actor seed="57714"/>
 		</Entity>

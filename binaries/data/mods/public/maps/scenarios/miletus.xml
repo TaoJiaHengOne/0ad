@@ -267,25 +267,25 @@
 		<Entity uid="65">
 			<Template>units/athen/ship_fishing</Template>
 			<Player>1</Player>
-			<Position x="313.99878" z="106.94742"/>
+			<Position x="325.99878" z="97.94742"/>
 			<Orientation y="1.60703"/>
 		</Entity>
 		<Entity uid="66">
 			<Template>units/athen/ship_fishing</Template>
 			<Player>1</Player>
-			<Position x="339.35697" z="162.01983"/>
+			<Position x="345.55298" z="146.85743"/>
 			<Orientation y="2.40772"/>
 		</Entity>
 		<Entity uid="67">
 			<Template>units/athen/ship_fishing</Template>
 			<Player>1</Player>
-			<Position x="343.68882" z="166.46813"/>
+			<Position x="358.60004" z="160.28962"/>
 			<Orientation y="2.39055"/>
 		</Entity>
 		<Entity uid="68">
 			<Template>units/athen/ship_fishing</Template>
 			<Player>1</Player>
-			<Position x="313.93851" z="113.20711"/>
+			<Position x="330.32187" z="115.86803"/>
 			<Orientation y="1.76275"/>
 		</Entity>
 		<Entity uid="70">
@@ -1791,13 +1791,13 @@
 		<Entity uid="344">
 			<Template>units/athen/ship_fishing</Template>
 			<Player>1</Player>
-			<Position x="129.92458" z="457.09577"/>
+			<Position x="124.98847" z="474.15561"/>
 			<Orientation y="-0.62937"/>
 		</Entity>
 		<Entity uid="347">
 			<Template>units/athen/ship_fishing</Template>
 			<Player>1</Player>
-			<Position x="125.52878" z="453.59147"/>
+			<Position x="110.78371" z="463.38596"/>
 			<Orientation y="-0.65941"/>
 		</Entity>
 		<Entity uid="348">
