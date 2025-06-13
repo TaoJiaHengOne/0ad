@@ -102,7 +102,7 @@ GameSettings.prototype.Attributes.PlayerCiv = class PlayerCiv extends GameSettin
 	_set(playerIndex, value)
 	{
 		const map = this._getMapData(playerIndex);
-		if (!!map)
+		if (map)
 		{
 			this.values[playerIndex] = map;
 			this.locked[playerIndex] = true;

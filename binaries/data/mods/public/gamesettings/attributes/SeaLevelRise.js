@@ -16,7 +16,7 @@ GameSettings.prototype.Attributes.SeaLevelRise = class SeaLevelRise extends Game
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "SeaLevelRiseTime"))
+		if (this.getLegacySetting(attribs, "SeaLevelRiseTime"))
 			this.setValue(this.getLegacySetting(attribs, "SeaLevelRiseTime"));
 	}
 

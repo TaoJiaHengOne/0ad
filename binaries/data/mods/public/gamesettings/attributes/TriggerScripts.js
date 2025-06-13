@@ -16,7 +16,7 @@ GameSettings.prototype.Attributes.TriggerScripts = class TriggerScripts extends 
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "TriggerScripts"))
+		if (this.getLegacySetting(attribs, "TriggerScripts"))
 			this.customScripts = new Set(this.getLegacySetting(attribs, "TriggerScripts"));
 	}
 

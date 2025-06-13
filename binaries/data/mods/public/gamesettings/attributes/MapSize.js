@@ -15,7 +15,7 @@ GameSettings.prototype.Attributes.MapSize = class MapSize extends GameSetting
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "Size"))
+		if (this.getLegacySetting(attribs, "Size"))
 			this.setSize(this.getLegacySetting(attribs, "Size"));
 	}
 

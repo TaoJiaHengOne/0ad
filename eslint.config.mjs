@@ -34,7 +34,7 @@ const configEslintRecommended = {
 		"no-dupe-keys": "warn",
 		"no-duplicate-case": "warn",
 		"no-empty": "warn",
-		"no-extra-boolean-cast": "off",
+		"no-extra-boolean-cast": "warn",
 		"no-func-assign": "warn",
 		"no-irregular-whitespace": "warn",
 		"no-obj-calls": "warn",

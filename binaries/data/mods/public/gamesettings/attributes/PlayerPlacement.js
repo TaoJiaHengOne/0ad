@@ -15,7 +15,7 @@ GameSettings.prototype.Attributes.PlayerPlacement = class PlayerPlacement extend
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "PlayerPlacement"))
+		if (this.getLegacySetting(attribs, "PlayerPlacement"))
 			this.value = this.getLegacySetting(attribs, "PlayerPlacement");
 	}
 

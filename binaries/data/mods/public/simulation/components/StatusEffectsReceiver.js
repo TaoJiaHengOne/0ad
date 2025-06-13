@@ -68,7 +68,7 @@ StatusEffectsReceiver.prototype.AddStatus = function(baseCode, data, attacker = 
 			let temp;
 			do
 				temp = statusCode + "_" + i++;
-			while (!!this.activeStatusEffects[temp]);
+			while (this.activeStatusEffects[temp]);
 			statusCode = temp;
 		}
 	}

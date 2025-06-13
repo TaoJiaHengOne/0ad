@@ -22,7 +22,7 @@ AIGameSettingControls.AISelection = class extends AIGameSettingControlDropdown
 	{
 		const ai = g_GameSettings.playerAI.get(this.playerIndex);
 		this.setHidden(!ai);
-		if (!!ai)
+		if (ai)
 			this.setSelectedValue(ai.bot);
 		else
 			this.setSelectedValue(undefined);

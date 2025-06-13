@@ -20,7 +20,7 @@ class AIDescription
 	render()
 	{
 		let AI = g_GameSettings.playerAI.get(this.playerIndex);
-		if (!!AI)
+		if (AI)
 			AI = g_Settings.AIDescriptions.find(desc => desc.id == AI.bot);
 		this.aiDescription.caption = AI ? AI.data.description : this.NoAIDescription;
 	}

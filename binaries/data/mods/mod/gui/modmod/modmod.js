@@ -98,7 +98,7 @@ function loadMods()
 */
 function getMod(folder)
 {
-	return !!g_Mods[folder] ? g_Mods[folder] : g_FakeMod;
+	return g_Mods[folder] ? g_Mods[folder] : g_FakeMod;
 }
 
 function loadEnabledMods()
@@ -248,7 +248,7 @@ function disableMod()
 			break;
 		}
 
-	if (!!g_Mods[disabledMod])
+	if (g_Mods[disabledMod])
 		g_ModsDisabled.push(disabledMod);
 
 	// Remove mods that required the removed mod and cascade

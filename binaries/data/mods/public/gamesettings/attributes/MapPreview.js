@@ -21,7 +21,7 @@ GameSettings.prototype.Attributes.MapPreview = class MapPreview extends GameSett
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "mapPreview"))
+		if (this.getLegacySetting(attribs, "mapPreview"))
 			this.value = this.getLegacySetting(attribs, "mapPreview");
 	}
 

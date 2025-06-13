@@ -21,9 +21,9 @@ GameSettings.prototype.Attributes.Relic = class Relic extends GameSetting
 
 	fromInitAttributes(attribs)
 	{
-		if (!!this.getLegacySetting(attribs, "RelicCount"))
+		if (this.getLegacySetting(attribs, "RelicCount"))
 			this.setCount(this.getLegacySetting(attribs, "RelicCount"));
-		if (!!this.getLegacySetting(attribs, "RelicDuration"))
+		if (this.getLegacySetting(attribs, "RelicDuration"))
 			this.setDuration(this.getLegacySetting(attribs, "RelicDuration"));
 	}
 

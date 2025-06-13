@@ -336,7 +336,7 @@ AttackHelper.prototype.HandleAttackEffects = function(target, data, bonusMultipl
 	});
 
 	// We do not want an entity to get XP from active Status Effects.
-	if (!!data.attackData.StatusEffect)
+	if (data.attackData.StatusEffect)
 		return true;
 
 	const cmpPromotion = Engine.QueryInterface(data.attacker, IID_Promotion);
