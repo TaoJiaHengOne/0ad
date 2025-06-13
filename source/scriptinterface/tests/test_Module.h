@@ -18,6 +18,7 @@
 #include "lib/self_test.h"
 
 #include "lib/file/vfs/vfs.h"
+#include "lib/status.h"
 #include "lib/sysdep/dir_watch.h"
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
@@ -28,6 +29,9 @@
 #include "scriptinterface/ScriptContext.h"
 #include "scriptinterface/ScriptInterface.h"
 
+#if OS_MAC || OS_MACOSX
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 #if OS_LINUX
 #include <cstdlib>
 #endif
@@ -63,7 +67,18 @@ void ClearFromCache(const VfsPath& path)
 		throw std::runtime_error{"`touch` didn't work."};
 #endif
 
-	ReloadChangedFiles();
+	Status status{INFO::SKIPPED};
+	while (status == INFO::SKIPPED)
+	{
+		status = ReloadChangedFiles();
+#if OS_MAC || OS_MACOSX
+		// Console apps don't have a run loop, so we need to wait
+		// a bit for the file watcher to catch up.
+		CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.1, true);
+#endif
+	}
+
+	TS_ASSERT_OK(status);
 }
 
 bool AllowAllPredicate(const VfsPath&)

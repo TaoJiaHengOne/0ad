@@ -79,6 +79,10 @@ Status ReloadChangedFiles()
 
 	std::vector<DirWatchNotification> notifications;
 	RETURN_STATUS_IF_ERR(dir_watch_Poll(notifications));
+
+	if (notifications.empty())
+		return INFO::SKIPPED;
+
 	for(size_t i = 0; i < notifications.size(); i++)
 	{
 		if(!CanIgnore(notifications[i]))
