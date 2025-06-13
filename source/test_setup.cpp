@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -129,7 +129,7 @@ bool ts_str_contains(const std::wstring& str1, const std::wstring& str2)
 // available, so we use sys_ExecutablePathname.
 OsPath DataDir()
 {
-	return sys_ExecutablePathname().Parent()/".."/"data";
+	return sys_ExecutablePathname().Parent().Parent()/"data";
 }
 
 // Script-based testing setup:
