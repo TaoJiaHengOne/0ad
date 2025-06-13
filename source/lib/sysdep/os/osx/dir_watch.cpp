@@ -36,9 +36,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
 
+#include <mutex>
 #include <vector>
 
 static FSEventStreamRef g_Stream = NULL;
+static std::mutex g_QueuedDirsMutex;
 
 struct DirWatch
 {
@@ -96,6 +98,7 @@ static void fsevent_callback(ConstFSEventStreamRef, void * UNUSED(clientCallBack
       if ( ! isWatched )
         return;
 
+      std::lock_guard lock{g_QueuedDirsMutex};
       OsPath filename = Path( eventPath.string().c_str() );
 
       if ( eventType & kFSEventStreamEventFlagItemIsFile)
@@ -158,6 +161,7 @@ static void DeleteEventStream()
 
 Status dir_watch_Add(const OsPath& path, PDirWatch& dirWatch)
 {
+  std::lock_guard lock{g_QueuedDirsMutex};
   PDirWatch tmpDirWatch(new DirWatch);
   dirWatch.swap(tmpDirWatch);
   dirWatch->path = path;
@@ -188,6 +192,7 @@ Status dir_watch_Poll(DirWatchNotifications& notifications)
   }
   else
   {
+    std::lock_guard lock{g_QueuedDirsMutex};
     for ( DirWatchNotifications::iterator it = g_QueuedDirs.begin() ; it != g_QueuedDirs.end(); ++it)
       notifications.push_back(DirWatchNotification( *it ));
 
