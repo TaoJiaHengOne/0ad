@@ -30,6 +30,9 @@ var g_current_report = 0;
 var g_profile_path = null;
 var g_active_elements = [];
 
+// percentage of the y-axis to keep as empty space above the largest value
+const y_padding = 5;
+
 function save_as_file()
 {
 	$.ajax({
@@ -84,9 +87,6 @@ function draw_frequency_graph()
 
 	var x_scale = 0;
 	var y_scale = 0;
-	var padding = 10;
-
-	var item_nb = 0;
 
 	var tooltip_helper = {};
 
@@ -94,7 +94,6 @@ function draw_frequency_graph()
 	{
 		for (const rep in g_reports)
 		{
-			item_nb++;
 			const data = get_history_data(rep, g_main_thread, g_active_elements[typeI]);
 			const name = rep + "/" + g_active_elements[typeI];
 			if (document.getElementById('fulln').checked)
@@ -107,43 +106,38 @@ function draw_frequency_graph()
 				y_scale = data.max;
 		}
 	}
+
+	y_scale *= 1 + y_padding / 100;
+
 	let id = 0;
 	for (const type in series_data)
 	{
 		const colour = graph_colour(id);
 		const time_by_frame = series_data[type];
 		const p = 0;
-		let last_val = 0;
 
 		const nb = document.createElement("p");
 		nb.style.borderColor = colour;
 		nb.textContent = type + " - n=" + time_by_frame.length;
 		legend.appendChild(nb);
 
+		context.globalCompositeOperation = "lighter";
+		context.beginPath();
+		context.strokeStyle = colour;
+		context.lineWidth = 1;
+
 		for (let i = 0; i < time_by_frame.length; i++)
 		{
-			let x0 = i/time_by_frame.length*(canvas.width-padding*2) + padding;
-			if (i == 0)
-				x0 = 0;
-			let x1 = (i+1)/time_by_frame.length*(canvas.width-padding*2) + padding;
-			if (i == time_by_frame.length-1)
-				x1 = (time_by_frame.length-1)*canvas.width;
-
+			const x = i/time_by_frame.length*canvas.width;
 			const y = time_by_frame[i]/y_scale;
-			context.globalCompositeOperation = "lighter";
 
-			context.beginPath();
-			context.strokeStyle = colour;
-			context.lineWidth = 0.5;
-			context.moveTo(x0, canvas.height * (1 - last_val));
-			context.lineTo(x1, canvas.height * (1 - y));
-			context.stroke();
+			context.lineTo(x, canvas.height * (1 - y));
 
-			last_val = y;
-			if (!tooltip_helper[Math.floor(x0)])
-				tooltip_helper[Math.floor(x0)] = [];
-			tooltip_helper[Math.floor(x0)].push([y, type]);
+			if (!tooltip_helper[Math.floor(x)])
+				tooltip_helper[Math.floor(x)] = [];
+			tooltip_helper[Math.floor(x)].push([y, type]);
 		}
+		context.stroke();
 		id++;
 	}
 
@@ -199,8 +193,6 @@ function draw_history_graph()
 	var x_scale = 0;
 	var y_scale = 0;
 
-	var item_nb = 0;
-
 	var tooltip_helper = {};
 
 	for (const typeI in g_active_elements)
@@ -209,7 +201,6 @@ function draw_history_graph()
 		{
 			if (g_reports[rep].data().threads[g_main_thread].frames.length < frames_nb)
 				frames_nb = g_reports[rep].data().threads[g_main_thread].frames.length;
-			item_nb++;
 			const data = get_history_data(rep, g_main_thread, g_active_elements[typeI]);
 			if (!document.getElementById('smooth').value)
 				series_data[rep + "/" + g_active_elements[typeI]] = data.time_by_frame;
@@ -221,6 +212,7 @@ function draw_history_graph()
 	}
 	canvas.width = Math.max(frames_nb, 600);
 	x_scale = frames_nb / canvas.width;
+	y_scale *= 1 + y_padding / 100;
 	let id = 0;
 	for (const type in series_data)
 	{
@@ -232,36 +224,25 @@ function draw_history_graph()
 		legend.appendChild(legend_item);
 
 		const time_by_frame = series_data[type];
-		let last_val = 0;
+
+		context.beginPath();
+		context.globalCompositeOperation = "lighten";
+		context.strokeStyle = colour;
+		context.lineWidth = 0.75;
+
 		for (let i = 0; i < frames_nb; i++)
 		{
 			const smoothed_time = time_by_frame[i];// smooth_1D(time_by_frame.slice(0), i, 3);
 
 			const y = smoothed_time/y_scale;
 
-			if (item_nb === 1)
-			{
-				context.beginPath();
-				context.fillStyle = colour;
-				context.fillRect(i/x_scale, canvas.height, 1/x_scale, -y*canvas.height);
-			}
-			else
-			{
-				if (i == frames_nb-1)
-					continue;
-				context.globalCompositeOperation = "lighten";
-				context.beginPath();
-				context.strokeStyle = colour;
-				context.lineWidth = 0.5;
-				context.moveTo(i/x_scale, canvas.height * (1 - last_val));
-				context.lineTo((i+1)/x_scale, canvas.height * (1 - y));
-				context.stroke();
-			}
-			last_val = y;
+			context.lineTo(i/x_scale, canvas.height * (1 - y));
+
 			if (!tooltip_helper[Math.floor(i/x_scale)])
 				tooltip_helper[Math.floor(i/x_scale)] = [];
 			tooltip_helper[Math.floor(i/x_scale)].push([y, type]);
 		}
+		context.stroke();
 		id++;
 	}
 
