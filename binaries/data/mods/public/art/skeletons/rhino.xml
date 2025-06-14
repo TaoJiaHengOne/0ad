@@ -8,7 +8,7 @@
 							<bone name="ear_L"></bone>
 							<bone name="ear_R"></bone>
 						</bone>
-					</bone>				
+					</bone>
 					<bone name="shoulder_L">
 						<bone name="leg_upper_L">
 							<bone name="leg_L">
@@ -24,10 +24,10 @@
 						</bone>
 					</bone>
 				</bone>
-				<bone name="Belly"></bone>	
-			</bone>		
+				<bone name="Belly"></bone>
+			</bone>
 			<bone name="tail1">
-				<bone name="tail2"></bone>			    
+				<bone name="tail2"></bone>
 			</bone>
 			<bone name="thigh_L">
 				<bone name="leg_back_L">
@@ -38,7 +38,7 @@
 				<bone name="leg_back_R">
 					<bone name="foot_back_R"></bone>
 				</bone>
-			</bone>			
+			</bone>
 		</bone>
 	</standard_skeleton>
 
@@ -52,7 +52,7 @@
 							<bone name="ear_L"><target>ear_L</target></bone>
 							<bone name="ear_R"><target>ear_R</target></bone>
 						</bone>
-					</bone>				
+					</bone>
 					<bone name="shoulder_L"><target>shoulder_L</target>
 						<bone name="leg_upper_L"><target>leg_upper_L</target>
 							<bone name="leg_L"><target>leg_L</target>
@@ -68,10 +68,10 @@
 						</bone>
 					</bone>
 				</bone>
-				<bone name="Belly"><target>Belly</target></bone>	
-			</bone>		
+				<bone name="Belly"><target>Belly</target></bone>
+			</bone>
 			<bone name="tail1"><target>tail1</target>
-				<bone name="tail2"><target>tail2</target></bone>			    
+				<bone name="tail2"><target>tail2</target></bone>
 			</bone>
 			<bone name="thigh_L"><target>thigh_L</target>
 				<bone name="leg_back_L"><target>leg_back_L</target>
@@ -82,7 +82,7 @@
 				<bone name="leg_back_R"><target>leg_back_R</target>
 					<bone name="foot_back_R"><target>foot_back_R</target></bone>
 				</bone>
-			</bone>			
+			</bone>
 		</bone>
 	</skeleton>
 </skeletons>

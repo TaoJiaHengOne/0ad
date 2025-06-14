@@ -109,7 +109,7 @@ mask
 1102  PSERROR_Sec1_Sec1_Err2
 2***  PSERROR_Sec2
 2001  PSERROR_Sec2_     Err1
-            
+
 ...so split into three sections (0 if null) plus final code...
 
 =cut

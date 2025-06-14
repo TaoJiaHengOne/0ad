@@ -6,7 +6,7 @@
 			<bone name="weapon"></bone>
 		</bone>
 	</standard_skeleton>
- 
+
 	<skeleton title="Two Wheel Vehicle" target="twowheel">
 		<identifier>
 			<root>TwoWheeler</root>

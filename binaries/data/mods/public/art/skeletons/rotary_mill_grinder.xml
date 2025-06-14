@@ -8,8 +8,8 @@
 			<bone name="donkey">
 				<bone name="prop_donkey001"></bone>
 				<bone name="prop_donkey002"></bone>
-			</bone>	  
-		</bone>		
+			</bone>
+		</bone>
 	</standard_skeleton>
 	<skeleton title="grinder" target="grinder">
 		<identifier><root>grinder</root></identifier>
@@ -21,7 +21,7 @@
 			<bone name="donkey"><target>donkey</target>
 				<bone name="prop_donkey001"><target>prop_donkey001</target></bone>
 				<bone name="prop_donkey002"><target>prop_donkey001</target></bone>
-			</bone>	  	  
+			</bone>
 		</bone>
-	</skeleton>	
+	</skeleton>
 </skeletons>

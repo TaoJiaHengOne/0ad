@@ -347,7 +347,7 @@ bool CModel::SetAnimation(CSkeletonAnim* anim, bool once)
 		{
 			LOGERROR("Mismatch between model's skeleton and animation's skeleton (%s.dae has %lu model bones while the animation %s has %lu animation keys.)",
 				m_pModelDef->GetName().string8().c_str() ,
-				static_cast<unsigned long>(m_pModelDef->GetNumBones()), 
+				static_cast<unsigned long>(m_pModelDef->GetNumBones()),
 				anim->m_Name.c_str(),
 				static_cast<unsigned long>(anim->m_AnimDef->GetNumKeys()));
 			return false;

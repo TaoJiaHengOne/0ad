@@ -3,7 +3,7 @@
   <!-- Sets limit on the number of same turns moves we will process -->
   <!-- Setting the value to 0 disable this functionality -->
   <MaxSameTurnMoves>64</MaxSameTurnMoves>
-  
+
   <PassabilityClasses>
 
     <!-- Unit pathfinding classes: -->
@@ -32,7 +32,7 @@
     </building-shore>
 
   </PassabilityClasses>
-  
+
   <!--
     Warning: Movement costs are a subtle tradeoff between
     pathfinding accuracy and computation cost. Be extremely

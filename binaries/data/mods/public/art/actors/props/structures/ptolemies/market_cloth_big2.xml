@@ -19,7 +19,7 @@
        <texture file="props/stall_big_cloth_spec.png" name="specTex"/>
        <texture file="structural/ao/ptol_market.png" name="aoTex"/>
       </textures>
-    </variant>	  
+    </variant>
     <variant frequency="1" name="ptol_market_cloth_big stripes2">
       <mesh>props/ptol_market_cloth_big2.dae</mesh>
       <textures>

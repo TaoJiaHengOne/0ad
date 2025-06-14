@@ -69,6 +69,6 @@ push-so:
 	${TOOLCHAIN}/bin/arm-linux-androideabi-strip libs/armeabi/${LIBPYRO}
 	${ADB} push libs/armeabi/${LIBPYRO} /sdcard/
 	${ADB} shell su -c 'cp /sdcard/${LIBPYRO} /data/local && chmod 777 /data/local/${LIBPYRO}'
-	
+
 clean:
 	rm -rf bin gen lib libs obj

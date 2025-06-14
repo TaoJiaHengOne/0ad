@@ -1,5 +1,5 @@
 <skeletons>
-	<standard_skeleton title="Six Wheel Vehicle" id="sixwheel"> 
+	<standard_skeleton title="Six Wheel Vehicle" id="sixwheel">
 		<bone name="sixwheel">
 			<bone name="l_back"></bone>
 			<bone name="l_mid"></bone>

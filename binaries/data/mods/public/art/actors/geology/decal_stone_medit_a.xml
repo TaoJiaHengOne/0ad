@@ -12,7 +12,7 @@
       <textures><texture file="gaia/decal_stone_medit_01.dds" name="baseTex"/>
 	  <texture file="gaia/decal_stone_medit_01_spec.png" name="specTex"/>
 	  <texture file="gaia/decal_stone_medit_01_norm.png" name="normTex"/>
-	  
+
 	  </textures>
     </variant>
     <variant frequency="1" name="decal_02">

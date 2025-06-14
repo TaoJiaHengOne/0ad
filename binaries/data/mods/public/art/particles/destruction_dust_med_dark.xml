@@ -3,7 +3,7 @@
 
     <texture>art/textures/particles/smoke_256a.png</texture>
     <blend mode="over"/>
-	
+
     <constant name="emissionrate" value="15.0"/>
     <uniform name="lifetime" min="15.0" max="25.0"/>
 
@@ -21,7 +21,7 @@
     <uniform name="size" min="5.0" max="17.5"/>
 
     <force y="-0.25"/>
-	
+
     <uniform name="color.r" min="0.4" max="0.8"/>
     <copy name="color.g" from="color.r"/>
     <copy name="color.b" from="color.r"/>

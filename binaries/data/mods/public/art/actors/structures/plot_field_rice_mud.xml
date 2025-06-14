@@ -8,7 +8,7 @@
         <texture file="gaia/tropic_cliff_mud_spec.png" name="specTex"/>
       </textures>
     </variant>
-  </group>	
+  </group>
   <group>
     <variant name="a">
       <decal angle="0" depth="26" offsetx="0" offsetz="0" width="26"/>
@@ -22,6 +22,6 @@
     <variant name="d">
       <decal angle="0" depth="-26" offsetx="0" offsetz="0" width="-26"/>
     </variant>
-  </group>		
+  </group>
   <material>terrain_norm_spec.xml</material>
 </actor>

@@ -1,5 +1,5 @@
 // Slightly modified version of weldmesh, by Wildfire Games, for 0 A.D.
-// 
+//
 // Motivation for changes:
 //  * Fix build on *BSD (including malloc.h produces an error)
 
@@ -37,7 +37,7 @@
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 #include <stdlib.h>  /* BSD-based OSes get their malloc stuff through here */
 #else
-#include <malloc.h> 
+#include <malloc.h>
 #endif
 
 static void MergeVertsFast(int * piCurNrUniqueVertices, int * piRemapTable, float * pfVertexDataOut, int * piVertexIDs,
@@ -128,7 +128,7 @@ static void MergeVertsFast(int * piCurNrUniqueVertices, int * piRemapTable, floa
 					iFound = iAllSame;
 					if(iFound==0) ++l2;
 				}
-				
+
 				// generate new entry
 				if(iFound==0)
 				{

@@ -12,7 +12,7 @@ vec3 InstancingNormal(vec3 normal)
 	tmp.x = dot(vec3(Instancing1), normal);
 	tmp.y = dot(vec3(Instancing2), normal);
 	tmp.z = dot(vec3(Instancing3), normal);
-	
+
 	return tmp;
 }
 
@@ -24,6 +24,6 @@ vec4 InstancingPosition(vec4 position)
 	tmp.x = dot(Instancing1, position);
 	tmp.y = dot(Instancing2, position);
 	tmp.z = dot(Instancing3, position);
-	
+
 	return vec4(tmp, 1.0);
 }

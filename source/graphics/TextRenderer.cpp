@@ -207,7 +207,7 @@ void CTextRenderer::Render(
 	const std::string debugFontBoxColor{ g_ConfigDB.Get("fonts.debugBoxColor", std::string{"128 0 128"})};
 	CColor debugBoxColor;
 	debugBoxColor.ParseString(debugFontBoxColor.c_str());
-	
+
 	// Try to merge non-consecutive batches that share the same font/color/translate:
 	// sort the batch list by font, then merge the runs of adjacent compatible batches
 	m_Batches.sort(SBatchCompare());
@@ -252,7 +252,7 @@ void CTextRenderer::Render(
 		}
 
 		CColor boxColor;
-		
+
 		// ALPHA-only textures will have .rgb sampled as 0, so we need to
 		// replace it with white (but not affect RGBA textures)
 		if (!debugFontBox && batch.font->HasRGB())

@@ -11,7 +11,7 @@ from itertools import cycle as itertools_cycle
 register = template.Library()
 
 
-   
+
 class SafeCycleNode(Node):
     def __init__(self, cyclevars, variable_name=None):
         self.cyclevars = cyclevars

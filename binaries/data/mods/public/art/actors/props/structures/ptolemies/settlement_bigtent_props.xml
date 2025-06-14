@@ -11,6 +11,6 @@
 		   <texture file="structural/ao/ptol_settlement.png" name="aoTex"/>
 	    </textures>
     </variant>
-  </group>    
+  </group>
   <material>player_trans_ao_parallax_spec.xml</material>
 </actor>

@@ -13,17 +13,17 @@
                             <bone name="sling_rope_10">
                               <bone name="sling_rope_11">
                                 <bone name="sling"></bone>
-                              </bone>            
+                              </bone>
                             </bone>
                           </bone>
                         </bone>
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
           <bone name="weapon_rope_2"></bone>
-          <bone name="weapon_pulley"></bone>  
+          <bone name="weapon_pulley"></bone>
         </bone>
         <bone name="weapon_rope_1"></bone>
         <bone name="weapon_weight">
@@ -36,9 +36,9 @@
                 <bone name="rope_R_4">
                   <bone name="rope_R_5">
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
           <bone name="rope_M_1">
             <bone name="rope_M_2">
@@ -46,9 +46,9 @@
                 <bone name="rope_M_4">
                   <bone name="rope_M_5">
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
           <bone name="rope_L_1">
             <bone name="rope_L_2">
@@ -56,9 +56,9 @@
                 <bone name="rope_L_4">
                   <bone name="rope_L_5">
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
         </bone>
       </bone>
@@ -93,17 +93,17 @@
                             <bone name="Tb_sling_rope_10"><target>sling_rope_10</target>
                               <bone name="Tb_sling_rope_11"><target>sling_rope_11</target>
                                 <bone name="Tb_sling"><target>sling</target></bone>
-                              </bone>            
+                              </bone>
                             </bone>
                           </bone>
                         </bone>
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
           <bone name="Tb_weapon_rope_2"><target>weapon_rope_2</target></bone>
-          <bone name="Tb_weapon_pulley"><target>weapon_pulley</target></bone>  
+          <bone name="Tb_weapon_pulley"><target>weapon_pulley</target></bone>
         </bone>
         <bone name="Tb_weapon_rope_1"><target>weapon_rope_1</target></bone>
         <bone name="Tb_weapon_weight"><target>weapon_weight</target>
@@ -116,9 +116,9 @@
                 <bone name="Tb_rope_R_4"><target>rope_R_4</target>
                   <bone name="Tb_rope_R_5"><target>rope_R_5</target>
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
           <bone name="Tb_rope_M_1"><target>rope_M_1</target>
             <bone name="Tb_rope_M_2"><target>rope_M_2</target>
@@ -126,9 +126,9 @@
                 <bone name="Tb_rope_M_4"><target>rope_M_4</target>
                   <bone name="Tb_rope_M_5"><target>rope_M_5</target>
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
           <bone name="Tb_rope_L_1"><target>rope_L_1</target>
             <bone name="Tb_rope_L_2"><target>rope_L_2</target>
@@ -136,9 +136,9 @@
                 <bone name="Tb_rope_L_4"><target>rope_L_4</target>
                   <bone name="Tb_rope_L_5"><target>rope_L_5</target>
                   </bone>
-                </bone>  
-              </bone>    
-            </bone>      
+                </bone>
+              </bone>
+            </bone>
           </bone>
         </bone>
       </bone>

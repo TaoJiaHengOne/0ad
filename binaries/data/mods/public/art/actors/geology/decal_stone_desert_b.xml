@@ -20,7 +20,7 @@
 	  <texture file="gaia/decal_stone_desert_02.dds" name="baseTex"/>
 	  <texture file="gaia/decal_stone_desert_02_spec.png" name="specTex"/>
 	  <texture file="gaia/decal_stone_desert_02_norm.png" name="normTex"/>
-	  
+
 	  </textures>
     </variant>
   </group>

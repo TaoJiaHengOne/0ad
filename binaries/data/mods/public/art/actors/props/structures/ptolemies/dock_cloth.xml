@@ -19,7 +19,7 @@
        <texture file="props/stall_big_cloth_spec.png" name="specTex"/>
        <texture file="structural/ao/ptol_dock.png" name="aoTex"/>
       </textures>
-    </variant>	  
+    </variant>
     <variant frequency="1" name="ptolemaic dock cloth stripes2">
       <mesh>props/ptol_dock_cloth.dae</mesh>
       <textures>

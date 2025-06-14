@@ -5,7 +5,7 @@
     <variant frequency="1" name="bucket">
       <mesh>props/hele_corral_water.dae</mesh>
       <textures>
-<texture file="props/structs_nature.png" name="baseTex"/>        
+<texture file="props/structs_nature.png" name="baseTex"/>
 </textures>
     </variant>
   </group>

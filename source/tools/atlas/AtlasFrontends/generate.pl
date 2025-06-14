@@ -18,5 +18,5 @@ for my $p (@progs) {
 			s/\$\$([A-Z_]+)\$\$/ $p->{$1} /eg;
 			print OUT;
 		}
-	}	
+	}
 }

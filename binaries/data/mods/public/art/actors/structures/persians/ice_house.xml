@@ -10,9 +10,9 @@
       <textures>
         <texture file="structural/pers_struct.png" name="baseTex"/>
         <texture file="structural/pers_struct_norm.png" name="normTex"/>
-        <texture file="structural/pers_struct_spec.png" name="specTex"/>        
+        <texture file="structural/pers_struct_spec.png" name="specTex"/>
         <texture file="structural/ao/pers_ice_house_01.png" name="aoTex"/>
-      </textures>      
+      </textures>
     </variant>
     <variant frequency="1" name="Persian_Yakhchal_02">
       <mesh>structural/pers_ice_house_02.dae</mesh>
@@ -22,9 +22,9 @@
       <textures>
         <texture file="structural/pers_struct.png" name="baseTex"/>
         <texture file="structural/pers_struct_norm.png" name="normTex"/>
-        <texture file="structural/pers_struct_spec.png" name="specTex"/>        
+        <texture file="structural/pers_struct_spec.png" name="specTex"/>
         <texture file="structural/ao/pers_ice_house_02.png" name="aoTex"/>
-      </textures>      
+      </textures>
     </variant>
     <variant frequency="1" name="Persian_Yakhchal_03">
       <mesh>structural/pers_ice_house_03.dae</mesh>
@@ -34,9 +34,9 @@
       <textures>
         <texture file="structural/pers_struct.png" name="baseTex"/>
         <texture file="structural/pers_struct_norm.png" name="normTex"/>
-        <texture file="structural/pers_struct_spec.png" name="specTex"/>        
+        <texture file="structural/pers_struct_spec.png" name="specTex"/>
         <texture file="structural/ao/pers_ice_house_03.png" name="aoTex"/>
-      </textures>      
+      </textures>
     </variant>
     <variant frequency="1" name="Persian_Yakhchal_04">
       <mesh>structural/pers_ice_house_04.dae</mesh>
@@ -46,9 +46,9 @@
       <textures>
         <texture file="structural/pers_struct.png" name="baseTex"/>
         <texture file="structural/pers_struct_norm.png" name="normTex"/>
-        <texture file="structural/pers_struct_spec.png" name="specTex"/>        
+        <texture file="structural/pers_struct_spec.png" name="specTex"/>
         <texture file="structural/ao/pers_ice_house_04.png" name="aoTex"/>
-      </textures>      
+      </textures>
     </variant>
     <variant frequency="1" name="Persian_Yakhchal_05">
       <mesh>structural/pers_ice_house_05.dae</mesh>
@@ -58,9 +58,9 @@
       <textures>
         <texture file="structural/pers_struct.png" name="baseTex"/>
         <texture file="structural/pers_struct_norm.png" name="normTex"/>
-        <texture file="structural/pers_struct_spec.png" name="specTex"/>        
+        <texture file="structural/pers_struct_spec.png" name="specTex"/>
         <texture file="structural/ao/pers_ice_house_05.png" name="aoTex"/>
-      </textures>      
+      </textures>
     </variant>
     <variant frequency="1" name="Persian_Yakhchal_06">
       <mesh>structural/pers_ice_house_06.dae</mesh>
@@ -70,9 +70,9 @@
       <textures>
         <texture file="structural/pers_struct.png" name="baseTex"/>
         <texture file="structural/pers_struct_norm.png" name="normTex"/>
-        <texture file="structural/pers_struct_spec.png" name="specTex"/>        
+        <texture file="structural/pers_struct_spec.png" name="specTex"/>
         <texture file="structural/ao/pers_ice_house_06.png" name="aoTex"/>
-      </textures>      
+      </textures>
     </variant>
   </group>
   <group>

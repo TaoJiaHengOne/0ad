@@ -45,7 +45,7 @@
 			</bone>
 		</bone>
 	</standard_skeleton>
-	
+
 	<skeleton title="BlenderCrocodile" target="Crocodile">
 		<identifier><root>crocodile</root></identifier>
 		<bone name="Main"><target>Main</target>

@@ -5,7 +5,7 @@
     <variant>
       <animations>
         <animation file="mechanical/celt_rotary_mill_grinder.dae" name="idle" speed="25"/>
-      </animations>	
+      </animations>
       <mesh>props/celt_rotary_mill_grinder.dae</mesh>
       <textures>
 	    <texture file="structural/celt_struct.dds" name="baseTex"/>

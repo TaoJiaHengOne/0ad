@@ -26,7 +26,7 @@
 						</bone>
 					</bone>
 					<bone name="chest"></bone>
-				
+
 					<bone name="FrontShoulder_L">
 						<bone name="FrontLeg1_L">
 							<bone name="FrontLeg2_L">
@@ -46,15 +46,15 @@
 						</bone>
 					</bone>
 				</bone>
-				<bone name="belly"></bone>	
-				
-			</bone>		
+				<bone name="belly"></bone>
+
+			</bone>
 			<bone name="Tail1">
 				<bone name="Tail2">
 					<bone name="Tail3">
 						<bone name="Tail4">
-							<bone name="Tail5"></bone>	
-						</bone>			    
+							<bone name="Tail5"></bone>
+						</bone>
 			        </bone>
 			    </bone>
 			</bone>
@@ -71,7 +71,7 @@
 						<bone name="BackToe_R"></bone>
 					</bone>
 				</bone>
-			</bone>			
+			</bone>
 		</bone>
 	</standard_skeleton>
 
@@ -103,7 +103,7 @@
 						</bone>
 					</bone>
 					<bone name="chest"><target>chest</target></bone>
-				
+
 					<bone name="FrontShoulder_L"><target>FrontShoulder_L</target>
 						<bone name="FrontLeg1_L"><target>FrontLeg1_L</target>
 							<bone name="FrontLeg2_L"><target>FrontLeg2_L</target>
@@ -123,15 +123,15 @@
 						</bone>
 					</bone>
 				</bone>
-				<bone name="belly"><target>belly</target></bone>	
-				
-			</bone>		
+				<bone name="belly"><target>belly</target></bone>
+
+			</bone>
 			<bone name="Tail1"><target>Tail1</target>
 				<bone name="Tail2"><target>Tail2</target>
 					<bone name="Tail3"><target>Tail3</target>
 						<bone name="Tail4"><target>Tail4</target>
-							<bone name="Tail5"><target>Tail5</target></bone>	
-						</bone>			    
+							<bone name="Tail5"><target>Tail5</target></bone>
+						</bone>
 			        </bone>
 			    </bone>
 			</bone>
@@ -148,7 +148,7 @@
 						<bone name="BackToe_R"><target>BackToe_R</target></bone>
 					</bone>
 				</bone>
-			</bone>			
+			</bone>
 		</bone>
 	</skeleton>
 </skeletons>

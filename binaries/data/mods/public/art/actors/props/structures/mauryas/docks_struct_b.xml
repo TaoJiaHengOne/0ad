@@ -9,7 +9,7 @@
 	  <texture file="structural/maur_struct_b_spec.png" name="specTex"/>
 	  <texture file="structural/maur_struct_b_norm.png" name="normTex"/>
       <texture file="structural/ao/maur_docks_ao.png" name="aoTex"/>
-		
+
     </textures>
     </variant>
   </group>

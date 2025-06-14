@@ -77,7 +77,7 @@ vec3 sharpen(sampler2D tex)
 
     // Smooth minimum distance to signal limit divided by smooth max.
     vec3 rcpMRGB = 1.0 / (mxRGB);
-    vec3 ampRGB = saturate(min(mnRGB, 2.0 - mxRGB) * rcpMRGB);    
+    vec3 ampRGB = saturate(min(mnRGB, 2.0 - mxRGB) * rcpMRGB);
 
     // Shaping amount of sharpening.
     ampRGB = sqrt(ampRGB);
@@ -89,7 +89,7 @@ vec3 sharpen(sampler2D tex)
 
     //                          0 w 0
     //  Filter shape:           w 1 w
-    //                          0 w 0  
+    //                          0 w 0
     vec3 outColor = saturate(((b + d + f + h) * wRGB + e) * rcpWeightRGB);
 
     return outColor;

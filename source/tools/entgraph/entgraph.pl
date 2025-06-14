@@ -23,14 +23,14 @@ for my $f (@xml) {
 
 	my $parent;
 	$parent = $1 if $data =~ /Parent="(.*?)"/;
-	
+
 	my ($upgrade, $rank);
 	$upgrade = $1 if $data =~ /<Entity>\s*(.*?)\s*</s;
 	$rank = $1 if $data =~ /Up.*rank="(.*?)"/s;
 
 	my $actor;
 	$actor = $1 if $data =~ /<Actor>\s*(.*?)\s*</;
-	
+
 	undef $upgrade unless defined $upgrade and length $upgrade;
 
 	$nodes{$parent} ||= {} if defined $parent;

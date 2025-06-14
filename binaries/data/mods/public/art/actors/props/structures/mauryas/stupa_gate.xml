@@ -8,8 +8,8 @@
 	  <texture file="structural/stupa_gate.png" name="baseTex"/>
 	  <texture file="structural/stupa_gate_spec.png" name="specTex"/>
 	  <texture file="structural/stupa_gate_norm.png" name="normTex"/>
-	  
-	  
+
+
 	  </textures>
     </variant>
   </group>

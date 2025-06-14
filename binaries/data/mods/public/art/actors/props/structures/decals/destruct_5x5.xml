@@ -6,7 +6,7 @@
       <textures>
         <texture file="props/decal_destruct_large.png" name="baseTex"/>
         <texture file="props/decal_destruct_large_norm.png" name="normTex"/>
-        <texture file="props/decal_destruct_large_spec.png" name="specTex"/>      
+        <texture file="props/decal_destruct_large_spec.png" name="specTex"/>
       </textures>
     </variant>
   </group>

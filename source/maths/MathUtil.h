@@ -41,7 +41,7 @@ inline T Clamp(T value, T min, T max)
 template<typename T>
 inline T SmoothStep(T edge0, T edge1, T value)
 {
-	value = Clamp<T>((value - edge0) / (edge1 - edge0), 0, 1); 
+	value = Clamp<T>((value - edge0) / (edge1 - edge0), 0, 1);
 	return value * value * (3 - 2 * value);
 }
 

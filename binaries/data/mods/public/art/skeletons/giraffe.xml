@@ -1,5 +1,5 @@
 <skeletons>
-	<standard_skeleton title="GiraffeBones" id="giraffe"> 
+	<standard_skeleton title="GiraffeBones" id="giraffe">
 		<bone name="main_pelvis">
 			<bone name="left_r_pelvis_upper">
 				<bone name="left_r_leg_top">
@@ -49,7 +49,7 @@
 						</bone>
 					</bone>
 				</bone>
-			</bone> 
+			</bone>
 			<bone name="tail_01">
 				<bone name="tail_02">
 					<bone name="tail_03"></bone>
@@ -111,7 +111,7 @@
 						</bone>
 					</bone>
 				</bone>
-			</bone> 
+			</bone>
 			<bone name="tail_01"><target>tail_01</target>
 				<bone name="tail_02"><target>tail_02</target>
 					<bone name="tail_03"><target>tail_03</target></bone>

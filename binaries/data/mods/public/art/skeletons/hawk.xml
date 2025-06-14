@@ -15,7 +15,7 @@
 			</bone>
 		</bone>
 	</standard_skeleton>
-	
+
 	<skeleton title="BlenderHawk" target="hawk">
 		<identifier><root>BlenderHawk</root></identifier>
 		<bone name="Body"><target>Body</target>

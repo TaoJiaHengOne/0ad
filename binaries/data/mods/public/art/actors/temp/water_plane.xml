@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <actor version="1">
-	
+
 	<group>
 		<variant frequency="100" name="water_plane">
 			<animations/>
@@ -12,5 +12,5 @@
 		</variant>
 	</group>
 	<material>player_water.xml</material>
-	
+
 </actor>

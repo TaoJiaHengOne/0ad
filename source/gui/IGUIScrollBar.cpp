@@ -148,7 +148,7 @@ void IGUIScrollBar::HandleMessage(SGUIMessage& Message)
 			if (GetOuterRect().PointInside(mouse))
 			{
 				SetScrollPlentyFromMousePos(mouse);
-				
+
 				// Simulate mouse movement to see if bar now is hovered
 				SGUIMessage msg(GUIM_MOUSE_MOTION);
 				HandleMessage(msg);

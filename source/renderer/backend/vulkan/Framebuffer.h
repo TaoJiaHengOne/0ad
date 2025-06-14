@@ -73,7 +73,7 @@ private:
 		SColorAttachment* colorAttachment, SDepthStencilAttachment* depthStencilAttachment);
 
 	CFramebuffer() = default;
-	
+
 	CDevice* m_Device = nullptr;
 
 	DeviceObjectUID m_UID{INVALID_DEVICE_OBJECT_UID};

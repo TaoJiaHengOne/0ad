@@ -19,7 +19,7 @@
 
 #include "third_party/encryption/pkcs5_pbkdf2.h"
 
-class TestEncryptionPkcs5Pbkd2 : public CxxTest::TestSuite 
+class TestEncryptionPkcs5Pbkd2 : public CxxTest::TestSuite
 {
 public:
 	void test_pkcs5_pbkd2()

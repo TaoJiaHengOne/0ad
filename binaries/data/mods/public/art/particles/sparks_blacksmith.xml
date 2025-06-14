@@ -6,7 +6,7 @@
 
     <constant name="emissionrate" value="3.0"/>
     <uniform name="lifetime" min="2.0" max="6.0"/>
-	
+
 	<constant name="position.y" value="2.0"/>
 
     <uniform name="angle" min="-0.5" max="0.5"/>

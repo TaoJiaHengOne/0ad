@@ -19,7 +19,7 @@
 			</bone>
 		</bone>
 	</standard_skeleton>
-	
+
 	<skeleton title="BlenderSimpleShark" target="BlenderSimpleShark">
 		<identifier><root>Shark</root></identifier>
 		<bone name="Head"><target>Head</target>

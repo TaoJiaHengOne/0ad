@@ -8,7 +8,7 @@
 			<bone name="Weapon"></bone>
 		</bone>
 	</standard_skeleton>
- 
+
 	<skeleton title="Four Wheel Ram" target="Ram">
 		<identifier>
 			<root>FourWheelRam</root>

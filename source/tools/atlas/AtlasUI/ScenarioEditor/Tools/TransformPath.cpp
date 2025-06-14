@@ -72,7 +72,7 @@ public:
 		}
 	}
 	Waiting;
-	
+
 	struct sWaitingAxis : public State
 	{
 		bool OnMouse(TransformPath* obj, wxMouseEvent& evt)

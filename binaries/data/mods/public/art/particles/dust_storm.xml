@@ -8,7 +8,7 @@
 
     <constant name="emissionrate" value="2.0"/>
     <uniform name="lifetime" min="15.0" max="30.0"/>
-	
+
 	<uniform name="position.x" min="-50.0" max="50.0"/>
     <uniform name="position.z" min="-50.0" max="50.0"/>
     <constant name="position.y" value="3.0"/>

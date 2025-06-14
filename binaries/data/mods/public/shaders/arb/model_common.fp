@@ -135,7 +135,7 @@ TEX tex, v_tex, texture[0], 2D;
     MAD temp.rgb, sundiffuse, shadow.x, ambient;
     MUL color.rgb, texdiffuse, temp;
   #endif
-  
+
 #else
   #if USE_SPECULAR
     MAD temp.rgb, fragment.color, 2.0, ambient;

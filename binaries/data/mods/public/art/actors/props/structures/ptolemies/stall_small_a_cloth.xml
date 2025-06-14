@@ -19,7 +19,7 @@
        <texture file="props/stall_small_a_cloth_spec.png" name="specTex"/>
        <texture file="structural/ao/stall_small_a.png" name="aoTex"/>
       </textures>
-    </variant>	
+    </variant>
     <variant frequency="1" name="stall_cloth stripes 2">
       <mesh>props/stall_small_a_cloth.dae</mesh>
       <textures>
@@ -28,7 +28,7 @@
        <texture file="props/stall_small_a_cloth_spec.png" name="specTex"/>
        <texture file="structural/ao/stall_small_a.png" name="aoTex"/>
       </textures>
-    </variant>		
+    </variant>
   </group>
   <material>player_trans_ao_parallax_spec.xml</material>
 </actor>

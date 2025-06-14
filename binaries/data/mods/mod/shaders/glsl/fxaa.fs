@@ -277,7 +277,7 @@ vec4 FxaaPixelShader(
     //   0.333 - too little (faster)
     //   0.250 - low quality
     //   0.166 - default
-    //   0.125 - high quality 
+    //   0.125 - high quality
     //   0.063 - overkill (slower)
     float fxaaQualityEdgeThreshold,
     //

@@ -17,7 +17,7 @@
        <texture file="props/helmet/ptol_romanized_norm.png" name="normTex"/>
        <texture file="props/helmet/ptol_romanized_spec.png" name="specTex"/>
     </textures>
-   </variant>   
+   </variant>
   </group>
   <material>player_trans_parallax_spec.xml</material>
 </actor>

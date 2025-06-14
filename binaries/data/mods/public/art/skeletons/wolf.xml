@@ -44,7 +44,7 @@
 						</bone>
 					</bone>
 				</bone>
-			</bone>				
+			</bone>
 			<bone name="Bone_012"></bone>
 		<bone name="BackLeg1_L">
 			<bone name="BackLeg2_L">
@@ -107,7 +107,7 @@
 						</bone>
 					</bone>
 				</bone>
-			</bone>				
+			</bone>
 			<bone name="Bone_012"><target>Bone_012</target></bone>
 		<bone name="BackLeg1_L"><target>BackLeg1_L</target>
 			<bone name="BackLeg2_L"><target>BackLeg2_L</target>

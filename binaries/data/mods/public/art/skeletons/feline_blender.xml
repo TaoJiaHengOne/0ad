@@ -11,7 +11,7 @@
 					<bone name="chest">
 						<bone name="neck_1">
 							<bone name="neck_2">
-								
+
 							</bone>
 						</bone>
 						<bone name="leg_front_top_R">
@@ -82,8 +82,8 @@
 					<bone name="chest"><target>chest</target>
 						<bone name="neck_1"><target>neck_1</target>
 							<bone name="neck_2"><target>neck_2</target>
-								
-								
+
+
 							</bone>
 						</bone>
 						<bone name="leg_front_top_R"><target>leg_front_top_R</target>

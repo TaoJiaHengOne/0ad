@@ -1,7 +1,7 @@
 <skeletons>
 
 	<standard_skeleton title="pers_tower" id="pers_tower">
- 
+
 		<bone name="Foot">
 
 			<bone name="wheel_front"></bone>
