@@ -216,37 +216,44 @@ ModifiersManager.prototype.OnGlobalOwnershipChanged = function(msg)
 	for (const propName of this.cachedValues.keys())
 		this.InvalidateCache(propName, msg.entity);
 
-	const owner = QueryOwnerEntityID(msg.entity);
-	if (!owner)
-		return;
-
 	const cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
 	if (!cmpIdentity)
 		return;
-
 	const classes = cmpIdentity.GetClassesList();
+
+	const cmpPlayerManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
+	const oldOwner = cmpPlayerManager.GetPlayerByID(msg.from);
+	const newOwner = cmpPlayerManager.GetPlayerByID(msg.to);
 
 	// Warn entities that our values have changed.
 	// Local modifiers will be added by the relevant components, so no need to check for them here.
 	const modifiedComponents = {};
-	const playerModifs = this.modifiersStorage.GetAllItems(owner);
-	for (const propertyName in playerModifs)
-	{
-		// We only need to find one one tech per component for a match.
-		const component = propertyName.split("/")[0];
-		// Only inform if the modifier actually applies to the entity as an optimisation.
-		// TODO: would it be better to call FetchModifiedProperty here and compare values?
-		playerModifs[propertyName].forEach(item => item.value.forEach(modif => {
-			if (!DoesModificationApply(modif, classes))
-				return;
-			if (!modifiedComponents[component])
-				modifiedComponents[component] = [];
-			modifiedComponents[component].push(propertyName);
-		}));
-	}
+	const fetchPlayerModifiedValueNames = (owner) => {
+		if (!owner)
+			return;
+		const playerModifs = this.modifiersStorage.GetAllItems(owner);
+		for (const propertyName in playerModifs)
+		{
+			// We only need to find one one tech per component for a match.
+			const component = propertyName.split("/")[0];
+			// Only inform if the modifier actually applies to the entity as an optimisation.
+			// TODO: would it be better to call FetchModifiedProperty here and compare values?
+			playerModifs[propertyName].forEach(item => item.value.forEach(modif => {
+				if (!DoesModificationApply(modif, classes))
+					return;
+				if (!modifiedComponents[component])
+					modifiedComponents[component] = new Set();
+				modifiedComponents[component].add(propertyName);
+			}));
+		}
+	};
+
+	// We'll assume these are always different.
+	fetchPlayerModifiedValueNames(oldOwner);
+	fetchPlayerModifiedValueNames(newOwner);
 
 	for (const component in modifiedComponents)
-		Engine.PostMessage(msg.entity, MT_ValueModification, { "entities": [msg.entity], "component": component, "valueNames": modifiedComponents[component] });
+		Engine.PostMessage(msg.entity, MT_ValueModification, { "entities": [msg.entity], "component": component, "valueNames": Array.from(modifiedComponents[component]) });
 };
 
 /**

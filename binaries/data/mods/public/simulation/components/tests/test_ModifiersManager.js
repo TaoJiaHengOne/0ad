@@ -2,6 +2,7 @@ Engine.LoadComponentScript("interfaces/ModifiersManager.js");
 Engine.LoadComponentScript("ModifiersManager.js");
 Engine.LoadHelperScript("Player.js");
 Engine.LoadHelperScript("ValueModification.js");
+Engine.LoadComponentScript("interfaces/Health.js");
 
 let cmpModifiersManager = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager", {});
 cmpModifiersManager.Init();
@@ -155,3 +156,94 @@ AddMock(5, IID_Ownership, {
 	"GetOwner": () => PLAYER_ID_FOR_TEST + 1
 });
 TS_ASSERT_EQUALS(ApplyValueModificationsToEntity("Test_D", 10, 5), 16);
+
+// Test: Entity changes owner from player 2 (HP modifier) to player 3 (Vision modifier)
+(function Test_OwnerChange_ModifierSwitch() {
+	const PLAYER2_ID = 2;
+	const PLAYER3_ID = 3;
+	const PLAYER2_ENTITY = 20;
+	const PLAYER3_ENTITY = 21;
+	const TEST_ENTITY = 30;
+
+	const baseHp = 100;
+	const baseVision = 20;
+
+	// Set up mocks for both players
+	AddMock(SYSTEM_ENTITY, IID_PlayerManager, {
+		"GetPlayerByID": (a) => a === PLAYER2_ID ? PLAYER2_ENTITY : PLAYER3_ENTITY
+	});
+	AddMock(PLAYER2_ENTITY, IID_Player, {
+		"GetPlayerID": () => PLAYER2_ID
+	});
+	AddMock(PLAYER3_ENTITY, IID_Player, {
+		"GetPlayerID": () => PLAYER3_ID
+	});
+	AddMock(TEST_ENTITY, IID_Ownership, {
+		"GetOwner": () => PLAYER2_ID
+	});
+	AddMock(TEST_ENTITY, IID_Identity, {
+		"GetClassesList": () => "Unit"
+	});
+	// These components cache the values, so we need to mock the message passing.
+	let cachedHp = baseHp;
+	AddMock(TEST_ENTITY, IID_Health, {
+		"GetHitPoints": () => cachedHp,
+	});
+	let cachedVision = baseVision;
+	AddMock(TEST_ENTITY, IID_Vision, {
+		"GetRange": () => cachedVision
+	});
+	const oldPostMessage = Engine.PostMessage;
+	const oldBroadcastMessage = Engine.BroadcastMessage;
+	Engine.PostMessage = function(ent, iid, message)
+	{
+		if (message.component === "HP")
+			cachedHp = ApplyValueModificationsToEntity("HP", baseHp, TEST_ENTITY);
+		else if (message.component === "Vision")
+			cachedVision = ApplyValueModificationsToEntity("Vision", baseVision, TEST_ENTITY);
+		else
+			throw new Error("Unexpected component: " + message.component);
+	};
+	Engine.BroadcastMessage = function(iid, message)
+	{
+		if (message.component === "HP")
+			cachedHp = ApplyValueModificationsToEntity("HP", baseHp, TEST_ENTITY);
+		else if (message.component === "Vision")
+			cachedVision = ApplyValueModificationsToEntity("Vision", baseVision, TEST_ENTITY);
+		else
+			throw new Error("Unexpected component: " + message.component);
+	};
+	// Initialize ModifiersManager
+	const cmp = ConstructComponent(SYSTEM_ENTITY, "ModifiersManager", {});
+	cmp.Init();
+
+	cmp.OnGlobalPlayerEntityChanged({ "player": PLAYER2_ID, "from": INVALID_PLAYER, "to": PLAYER2_ENTITY });
+	cmp.OnGlobalPlayerEntityChanged({ "player": PLAYER3_ID, "from": INVALID_PLAYER, "to": PLAYER3_ENTITY });
+
+	// Player 2 gets HP modifier
+	cmp.AddModifier("HP", "HP_mod", [{ "affects": ["Unit"], "add": 50 }], PLAYER2_ENTITY);
+	// Player 3 gets Vision modifier
+	cmp.AddModifier("Vision", "Vision_mod", [{ "affects": ["Unit"], "add": 10 }], PLAYER3_ENTITY);
+
+	// Should have HP modified, not Vision
+	TS_ASSERT_EQUALS(ApplyValueModificationsToEntity("HP", baseHp, TEST_ENTITY), 150);
+	TS_ASSERT_EQUALS(ApplyValueModificationsToEntity("Vision", baseVision, TEST_ENTITY), 20);
+	TS_ASSERT_EQUALS(Engine.QueryInterface(TEST_ENTITY, IID_Health).GetHitPoints(), 150);
+	TS_ASSERT_EQUALS(Engine.QueryInterface(TEST_ENTITY, IID_Vision).GetRange(), 20);
+
+	// Change owner to player 3
+	AddMock(TEST_ENTITY, IID_Ownership, {
+		"GetOwner": () => PLAYER3_ID
+	});
+	cmp.OnGlobalOwnershipChanged({ "entity": TEST_ENTITY, "from": PLAYER2_ID, "to": PLAYER3_ID });
+
+	// Now should have Vision modified, not HP
+	TS_ASSERT_EQUALS(ApplyValueModificationsToEntity("HP", baseHp, TEST_ENTITY), 100);
+	TS_ASSERT_EQUALS(ApplyValueModificationsToEntity("Vision", baseVision, TEST_ENTITY), 30);
+	TS_ASSERT_EQUALS(Engine.QueryInterface(TEST_ENTITY, IID_Health).GetHitPoints(), 100);
+	TS_ASSERT_EQUALS(Engine.QueryInterface(TEST_ENTITY, IID_Vision).GetRange(), 30);
+
+	// Cleanup
+	Engine.PostMessage = oldPostMessage;
+	Engine.BroadcastMessage = oldBroadcastMessage;
+})();
