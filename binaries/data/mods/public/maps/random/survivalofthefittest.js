@@ -28,7 +28,7 @@ export function* generateMap(mapSettings)
 	const aRockMedium = g_Decoratives.rockMedium;
 	const aBushMedium = g_Decoratives.bushMedium;
 	const aBushSmall = g_Decoratives.bushSmall;
-	const aWaypointFlag = "actor|props/special/common/waypoint_flag.xml";
+	const aWaypointFlag = "actor|props/special/common/waypoint_flag_factions.xml";
 
 	const pForest1 = [
 		tForestFloor2 + TERRAIN_SEPARATOR + oTree1,

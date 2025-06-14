@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -17,7 +17,9 @@
 
 #include "precompiled.h"
 #include "CCmpRallyPointRenderer.h"
+#include "ICmpIdentity.h"
 
+#include "ps/algorithm.h"
 #include "ps/Profile.h"
 #include "simulation2/components/ICmpRangeManager.h"
 #include "simulation2/helpers/Los.h"
@@ -218,69 +220,71 @@ void CCmpRallyPointRenderer::UpdateMessageSubscriptions()
 	GetSimContext().GetComponentManager().DynamicSubscriptionNonsync(MT_RenderSubmit, this, m_Displayed && IsSet());
 }
 
+void CCmpRallyPointRenderer::CreateMarkerEntity(size_t index, player_id_t ownerId)
+{
+	if (m_MarkerTemplate.empty() || ownerId == INVALID_PLAYER)
+		return;
+
+	CmpPtr<ICmpPlayerManager> cmpPlayerManager(GetSystemEntity());
+	if (!cmpPlayerManager)
+		return;
+
+	CmpPtr<ICmpPlayer> cmpPlayer(GetSimContext(), cmpPlayerManager->GetPlayerByID(ownerId));
+	if (!cmpPlayer)
+		return;
+
+	CmpPtr<ICmpIdentity> cmpIdentity(GetSimContext(), cmpPlayer->GetEntityId());
+	if (!cmpIdentity)
+		return;
+
+	// Create a copy we do not want to alter the marker template.
+	std::wstring markerTemplate = m_MarkerTemplate;
+	PS::ReplaceSubrange(markerTemplate, L"{civ}", cmpIdentity->GetCiv());
+
+	CComponentManager& componentMgr = GetSimContext().GetComponentManager();
+	entity_id_t newMarker = componentMgr.AllocateNewLocalEntity();
+
+	if (newMarker != INVALID_ENTITY)
+		newMarker = componentMgr.AddEntity(markerTemplate, newMarker);
+
+	m_MarkerEntityIds[index] = newMarker;
+}
+
 void CCmpRallyPointRenderer::UpdateMarkers()
 {
 	player_id_t previousOwner = m_LastOwner;
+	CmpPtr<ICmpOwnership> cmpOwnership(GetEntityHandle());
+	const player_id_t ownerId{cmpOwnership ? cmpOwnership->GetOwner() : 0};
+
 	for (size_t i = 0; i < m_RallyPoints.size(); ++i)
 	{
 		if (i >= m_MarkerEntityIds.size())
 			m_MarkerEntityIds.push_back(INVALID_ENTITY);
 
 		if (m_MarkerEntityIds[i] == INVALID_ENTITY)
-		{
-			// No marker exists yet, create one first
-			CComponentManager& componentMgr = GetSimContext().GetComponentManager();
+			CreateMarkerEntity(i, ownerId);
 
-			// Allocate a new entity for the marker
-			if (!m_MarkerTemplate.empty())
-			{
-				m_MarkerEntityIds[i] = componentMgr.AllocateNewLocalEntity();
-				if (m_MarkerEntityIds[i] != INVALID_ENTITY)
-					m_MarkerEntityIds[i] = componentMgr.AddEntity(m_MarkerTemplate, m_MarkerEntityIds[i]);
-			}
-		}
-
-		// The marker entity should be valid at this point, otherwise something went wrong trying to allocate it
 		if (m_MarkerEntityIds[i] == INVALID_ENTITY)
+		{
 			LOGERROR("Failed to create rally point marker entity");
+			continue;
+		}
 
 		CmpPtr<ICmpPosition> markerCmpPosition(GetSimContext(), m_MarkerEntityIds[i]);
 		if (markerCmpPosition)
 		{
 			if (m_Displayed && IsSet())
-			{
 				markerCmpPosition->MoveTo(m_RallyPoints[i].X, m_RallyPoints[i].Y);
-			}
 			else
-			{
 				markerCmpPosition->MoveOutOfWorld();
-			}
 		}
 
-		// Set rally point flag selection based on player civilization
-		CmpPtr<ICmpOwnership> cmpOwnership(GetEntityHandle());
-		if (!cmpOwnership)
-			continue;
-
-		player_id_t ownerId = cmpOwnership->GetOwner();
 		if (ownerId == INVALID_PLAYER || (ownerId == previousOwner && m_LastMarkerCount >= i))
 			continue;
 
 		m_LastOwner = ownerId;
-		CmpPtr<ICmpPlayerManager> cmpPlayerManager(GetSystemEntity());
-		// cmpPlayerManager should not be null as long as this method is called on-demand instead of at Init() time
-		// (we can't rely on component initialization order in Init())
-		if (!cmpPlayerManager)
-			continue;
-
-		CmpPtr<ICmpIdentity> cmpIdentity(GetSimContext(), cmpPlayerManager->GetPlayerByID(ownerId));
-		if (!cmpIdentity)
-			continue;
-
-		CmpPtr<ICmpVisual> cmpVisualActor(GetSimContext(), m_MarkerEntityIds[i]);
-		if (cmpVisualActor)
-			cmpVisualActor->SetVariant("civ", CStrW(cmpIdentity->GetCiv()).ToUTF8());
 	}
+
 	m_LastMarkerCount = m_RallyPoints.size() - 1;
 }
 

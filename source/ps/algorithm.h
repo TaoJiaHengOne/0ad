@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -18,6 +18,10 @@
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
 
+#include <algorithm>
+#include <string>
+#include <string_view>
+
 namespace PS
 {
 /**
@@ -34,6 +38,27 @@ bool contains(Range&& range, const T& value)
 			return elem == value;
 		});
 }
+
+/**
+ * @brief Replaces all occurrences of a substring within a string with a given value.
+ *
+ * This function searches the input string `base` for all instances of the specified
+ * `tag` and replaces them with the provided `value`. The replacement is performed
+ * in-place and modifies the original string.
+ *
+ * @param base The string in which to perform replacements. Modified in-place.
+ * @param tag The substring to search for (e.g., a placeholder like L"{civ}").
+ * @param value The string to replace each occurrence of `tag` with.
+ */
+inline void ReplaceSubrange(std::wstring& base, std::wstring_view tag, std::wstring_view value)
+{
+	size_t pos = 0;
+	while ((pos = base.find(tag, pos)) != std::wstring::npos)
+	{
+		base.replace(pos, tag.length(), value);
+		pos += value.length();
+	}
 }
 
+} // namespace PS
 #endif // ALGORITHM_H

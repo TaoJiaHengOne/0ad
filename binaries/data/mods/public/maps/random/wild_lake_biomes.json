@@ -272,7 +272,7 @@
 	"campEntities": [
 		"gaia/treasure/metal",
 		"gaia/treasure/standing_stone",
-		"actor|props/special/common/waypoint_flag.xml",
+		"actor|props/special/common/waypoint_flag_factions.xml",
 		"actor|props/special/eyecandy/barrel_a.xml",
 		"actor|props/special/eyecandy/basket_celt_a.xml",
 		"actor|props/special/eyecandy/crate_a.xml",

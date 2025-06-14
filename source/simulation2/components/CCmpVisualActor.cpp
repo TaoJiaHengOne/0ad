@@ -27,6 +27,8 @@
 #include "ICmpIdentity.h"
 #include "ICmpMirage.h"
 #include "ICmpOwnership.h"
+#include "ICmpPlayer.h"
+#include "ICmpPlayerManager.h"
 #include "ICmpPosition.h"
 #include "ICmpTemplateManager.h"
 #include "ICmpTerrain.h"
@@ -47,6 +49,7 @@
 #include "maths/Frustum.h"
 #include "maths/Matrix3D.h"
 #include "maths/Vector3D.h"
+#include "ps/algorithm.h"
 #include "ps/CLogger.h"
 #include "ps/GameSetup/Config.h"
 #include "renderer/Scene.h"
@@ -560,7 +563,7 @@ public:
 	}
 
 private:
-	// Replace {phenotype} with the correct value in m_ActorName
+	// Replace {phenotype} and {civ} with the correct value in m_ActorName
 	void ParseActorName(std::wstring base);
 
 	/// Helper function shared by component init and actor reloading
@@ -583,18 +586,13 @@ REGISTER_COMPONENT_TYPE(VisualActor)
 void CCmpVisualActor::ParseActorName(std::wstring base)
 {
 	CmpPtr<ICmpIdentity> cmpIdentity(GetEntityHandle());
-	const std::wstring pattern = L"{phenotype}";
 	if (cmpIdentity)
 	{
-		size_t pos = base.find(pattern);
-		while (pos != std::string::npos)
-		{
-			base.replace(pos, pattern.size(),  cmpIdentity->GetPhenotype());
-			pos = base.find(pattern, pos + pattern.size());
-		}
+		PS::ReplaceSubrange(base, L"{phenotype}", cmpIdentity->GetPhenotype());
+		PS::ReplaceSubrange(base, L"{civ}", cmpIdentity->GetCiv());
 	}
 
-	m_ActorName = base;
+	m_ActorName = std::move(base);
 }
 
 void CCmpVisualActor::InitModel()

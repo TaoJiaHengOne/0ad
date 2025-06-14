@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
 * This file is part of 0 A.D.
 *
 * 0 A.D. is free software: you can redistribute it and/or modify
@@ -193,6 +193,14 @@ private:
 	 * flag changes, or the ownership of the entity changes.
 	 */
 	void UpdateMarkers();
+
+	/**
+	 * @brief Creates a rally point marker entity for the specified index and owner.
+	 *
+	 * @param index The index in the rally point list for which to create a marker.
+	 * @param ownerId The ID of the player who currently owns the entity.
+	 */
+	void CreateMarkerEntity(size_t index, player_id_t ownerId);
 
 	/**
 	 * Recomputes all the full paths from this entity to the rally point and from the rally point to the next, and does all the necessary

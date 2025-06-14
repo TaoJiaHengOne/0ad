@@ -161,7 +161,7 @@ export function* generateMap()
 			"units/gaul/infantry_slinger_b",
 			"units/gaul/infantry_javelineer_b",
 			"units/gaul/champion_fanatic",
-			"actor|props/special/common/waypoint_flag.xml",
+			"actor|props/special/common/waypoint_flag_factions.xml",
 			"actor|props/special/eyecandy/barrel_a.xml",
 			"actor|props/special/eyecandy/basket_celt_a.xml",
 			"actor|props/special/eyecandy/crate_a.xml",

@@ -340,22 +340,32 @@ class CheckRefs:
                     and entity.find("VisualActor").find("Actor") is not None
                     and entity.find("Identity") is not None
                 ):
-                    phenotype_tag = entity.find("Identity").find("Phenotype")
-                    phenotypes = (
-                        phenotype_tag.text.split()
-                        if (phenotype_tag is not None and phenotype_tag.text)
-                        else ["default"]
-                    )
+                    cmp_identity = entity.find("Identity")
+
                     actor = entity.find("VisualActor").find("Actor")
-                    if "{phenotype}" in actor.text:
-                        for phenotype in phenotypes:
-                            # See simulation2/components/CCmpVisualActor.cpp and Identity.js
-                            # for explanation.
-                            actor_path = actor.text.replace("{phenotype}", phenotype)
-                            self.deps.append((fp, Path(f"art/actors/{actor_path}")))
+                    if cmp_identity is not None:
+                        actor_path = actor.text
+                        if "{civ}" in actor_path:
+                            civ_tag = cmp_identity.find("Civ")
+                            civ = civ_tag.text if civ_tag is not None else "gaia"
+                            actor_path = actor_path.replace("{civ}", civ)
+
+                        if "{phenotype}" in actor_path:
+                            phenotype_tag = cmp_identity.find("Phenotype")
+                            phenotypes = (
+                                phenotype_tag.text.split()
+                                if (phenotype_tag is not None and phenotype_tag.text)
+                                else ["default"]
+                            )
+                            for phenotype in phenotypes:
+                                # See simulation2/components/CCmpVisualActor.cpp and Identity.js
+                                # for explanation.
+                                phenotype_path = actor_path.replace("{phenotype}", phenotype)
+                                self.deps.append((fp, Path(f"art/actors/{phenotype_path}")))
                     else:
                         actor_path = actor.text
                         self.deps.append((fp, Path(f"art/actors/{actor_path}")))
+
                     foundation_actor = entity.find("VisualActor").find("FoundationActor")
                     if foundation_actor is not None:
                         self.deps.append((fp, Path(f"art/actors/{foundation_actor.text}")))
