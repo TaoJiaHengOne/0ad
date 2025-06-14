@@ -48,7 +48,7 @@ AIInterface.prototype.Serialize = function()
 	const state = {};
 	for (var key in this)
 	{
-		if (!this.hasOwnProperty(key))
+		if (!Object.hasOwn(this, key))
 			continue;
 		if (typeof this[key] == "function")
 			continue;
@@ -63,7 +63,7 @@ AIInterface.prototype.Deserialize = function(data)
 {
 	for (const key in data)
 	{
-		if (!data.hasOwnProperty(key))
+		if (!Object.hasOwn(data, key))
 			continue;
 		this[key] = data[key];
 	}

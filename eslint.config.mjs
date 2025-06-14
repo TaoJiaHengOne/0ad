@@ -61,6 +61,7 @@ const configEslintRecommended = {
 		"no-nonoctal-decimal-escape": "warn",
 		"no-obj-calls": "warn",
 		"no-octal": "warn",
+		"no-prototype-builtins": "warn",
 		"no-redeclare": "warn",
 		"no-regex-spaces": "warn",
 		"no-self-assign": "warn",

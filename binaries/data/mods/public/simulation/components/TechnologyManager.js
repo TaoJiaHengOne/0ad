@@ -183,7 +183,7 @@ TechnologyManager.prototype.Technology.prototype.Serialize = function()
 {
 	const result = {};
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 	return result;
 };
@@ -227,7 +227,7 @@ TechnologyManager.prototype.Serialize = function()
 {
 	const result = {};
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 
 	result.researchQueued = [];

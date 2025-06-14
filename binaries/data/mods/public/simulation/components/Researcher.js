@@ -129,7 +129,7 @@ Researcher.prototype.Item.prototype.Serialize = function(id)
 		"id": id
 	};
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 	return result;
 };

@@ -30,7 +30,7 @@ Player.prototype.Serialize = function()
 {
 	const state = {};
 	for (const key in this)
-		if (this.hasOwnProperty(key))
+		if (Object.hasOwn(this, key))
 			state[key] = this[key];
 
 	// Modified by GUI, so don't serialise.

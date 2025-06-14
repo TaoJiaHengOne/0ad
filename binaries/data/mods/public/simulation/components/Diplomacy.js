@@ -19,7 +19,7 @@ Diplomacy.prototype.Serialize = function()
 {
 	const state = {};
 	for (const key of this.SerializableAttributes)
-		if (this.hasOwnProperty(key))
+		if (Object.hasOwn(this, key))
 			state[key] = this[key];
 
 	return state;

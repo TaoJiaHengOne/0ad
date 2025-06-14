@@ -202,7 +202,7 @@ ProductionQueue.prototype.Item.prototype.Serialize = function()
 {
 	const result = {};
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 	return result;
 };
@@ -236,7 +236,7 @@ ProductionQueue.prototype.Serialize = function()
 		result.queue.push(item.Serialize());
 
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 
 	return result;

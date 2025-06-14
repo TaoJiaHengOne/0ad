@@ -406,7 +406,7 @@ Trainer.prototype.Item.prototype.Serialize = function(id)
 		"id": id
 	};
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 	return result;
 };
@@ -441,7 +441,7 @@ Trainer.prototype.Serialize = function()
 		"queue": queue
 	};
 	for (const att of this.SerializableAttributes)
-		if (this.hasOwnProperty(att))
+		if (Object.hasOwn(this, att))
 			result[att] = this[att];
 
 	return result;
