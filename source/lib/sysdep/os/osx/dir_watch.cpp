@@ -135,7 +135,7 @@ static FSEventStreamRef CreateEventStream( DirWatchMap path )
     FSEventStreamContext *callbackInfo = NULL;
 
     FSEventStreamRef stream = FSEventStreamCreate(NULL, &fsevent_callback, callbackInfo, pathsToWatch,
-        kFSEventStreamEventIdSinceNow, 1.0, kFSEventStreamCreateFlagFileEvents );
+        kFSEventStreamEventIdSinceNow, 0.1, kFSEventStreamCreateFlagFileEvents );
 
     CFRelease( pathsToWatch );
     free( pathLists );
