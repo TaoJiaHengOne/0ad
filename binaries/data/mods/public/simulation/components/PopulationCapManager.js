@@ -152,11 +152,12 @@ PopulationCapManager.prototype.OnGlobalPlayerDefeated = function(msg)
 	switch(this.popCapType)
 	{
 	case CAPTYPE_TEAM_POPULATION:
+	{
 		const team = QueryPlayerIDInterface(msg.playerId, IID_Diplomacy).GetTeam();
 		if (team != -1)
 			this.RedistributeTeamPopCap(team);
 		break;
-
+	}
 	case CAPTYPE_WORLD_POPULATION:
 		this.RedistributeWorldPopCap();
 		break;

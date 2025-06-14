@@ -28,6 +28,7 @@ const configEslintRecommended = {
 		"for-direction": "warn",
 		"getter-return": "warn",
 		"no-async-promise-executor": "warn",
+		"no-case-declarations": "warn",
 		"no-class-assign": "warn",
 		"no-compare-neg-zero": "warn",
 		"no-cond-assign": "warn",

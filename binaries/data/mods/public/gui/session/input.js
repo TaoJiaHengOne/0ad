@@ -523,6 +523,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 	switch (inputState)
 	{
 	case INPUT_BANDBOXING:
+	{
 		const bandbox = Engine.GetGUIObjectByName("bandbox");
 		switch (ev.type)
 		{
@@ -570,6 +571,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 		default:
 			return false;
 		}
+	}
 
 	case INPUT_UNIT_POSITION:
 		switch (ev.type)
@@ -662,6 +664,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 		switch (ev.type)
 		{
 		case "mousemotion":
+		{
 			placementSupport.wallEndPosition = Engine.GetTerrainAtScreenPoint(ev.x, ev.y);
 
 			// Update the structure placement preview, and by extension, the list of snapping candidate entities for both (!)
@@ -686,7 +689,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 			}
 
 			return false;
-
+		}
 		case "mousebuttondown":
 			if (ev.button == SDL_BUTTON_LEFT)
 			{
@@ -730,6 +733,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 		switch (ev.type)
 		{
 		case "mousemotion":
+		{
 			if (g_DragStart.distanceTo(ev) >= Math.square(getMaxDragDelta()))
 				// Rotate in the direction of the cursor.
 				placementSupport.angle = placementSupport.position.horizAngleTo(Engine.GetTerrainAtScreenPoint(ev.x, ev.y));
@@ -754,7 +758,7 @@ function handleInputBeforeGui(ev, hoveredObject)
 
 			updateBuildingPlacementPreview();
 			return false;
-
+		}
 		case "mousebuttonup":
 			if (ev.button == SDL_BUTTON_LEFT)
 			{
@@ -828,6 +832,7 @@ function handleInputAfterGui(ev)
 		switch (ev.type)
 		{
 		case "mousemotion":
+		{
 			const ent = Engine.PickEntityAtPoint(ev.x, ev.y);
 			if (ent != INVALID_ENTITY)
 				g_Selection.setHighlightList([ent]);
@@ -835,7 +840,7 @@ function handleInputAfterGui(ev)
 				g_Selection.setHighlightList([]);
 
 			return false;
-
+		}
 		case "mousebuttondown":
 			if (Engine.HotkeyIsPressed("session.flare") && !g_IsReplay)
 			{
@@ -891,6 +896,7 @@ function handleInputAfterGui(ev)
 		switch (ev.type)
 		{
 		case "mousemotion":
+		{
 			const ent = Engine.PickEntityAtPoint(ev.x, ev.y);
 			if (ent != INVALID_ENTITY)
 				g_Selection.setHighlightList([ent]);
@@ -898,7 +904,7 @@ function handleInputAfterGui(ev)
 				g_Selection.setHighlightList([]);
 
 			return false;
-
+		}
 		case "mousebuttondown":
 			if (ev.button == SDL_BUTTON_LEFT && preSelectedAction != ACTION_NONE)
 			{
@@ -932,6 +938,7 @@ function handleInputAfterGui(ev)
 		switch (ev.type)
 		{
 		case "mousemotion":
+		{
 			if (g_DragStart.distanceTo(ev) >= getMaxDragDelta())
 			{
 				inputState = INPUT_BANDBOXING;
@@ -944,7 +951,7 @@ function handleInputAfterGui(ev)
 			else
 				g_Selection.setHighlightList([]);
 			return false;
-
+		}
 		case "mousebuttonup":
 			if (ev.button == SDL_BUTTON_LEFT)
 			{
@@ -1124,7 +1131,7 @@ function handleInputAfterGui(ev)
 			return false;
 
 		case "hotkeydown":
-
+		{
 			const rotation_step = Math.PI / 12; // 24 clicks make a full rotation
 
 			switch (ev.hotkey)
@@ -1140,7 +1147,7 @@ function handleInputAfterGui(ev)
 			default:
 				return false;
 			}
-
+		}
 		default:
 			return false;
 		}
@@ -1629,6 +1636,7 @@ function performGroup(action, groupId)
 	case "snap":
 	case "select":
 	case "add":
+	{
 		const toSelect = [];
 		g_Groups.update();
 		for (const ent in g_Groups.groups[groupId].ents)
@@ -1647,6 +1655,7 @@ function performGroup(action, groupId)
 				Engine.CameraMoveTo(position.x, position.z);
 		}
 		break;
+	}
 	case "save":
 	case "breakUp":
 		g_Groups.groups[groupId].reset();

@@ -251,11 +251,13 @@ function resizeGUIObjectToCaption(object, align, margin = {})
 			objectSize.left = object.size.right - width;
 			break;
 		case "center":
+		{
 			const oldWidth = object.size.right - object.size.left;
 			const widthDiff = width - oldWidth;
 			objectSize.right = object.size.right + (widthDiff / 2);
 			objectSize.left = object.size.left - (widthDiff / 2);
 			break;
+		}
 		default:
 		}
 	}

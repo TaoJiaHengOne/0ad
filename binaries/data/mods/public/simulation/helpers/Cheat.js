@@ -35,12 +35,14 @@ function Cheat(input)
 		return;
 	}
 	case "convertunit":
+	{
 		if (isNaN(input.parameter))
 			return;
 		const playerID = (input.parameter > -1 && QueryPlayerIDInterface(input.parameter) || cmpPlayer).GetPlayerID();
 		for (const ent of input.selected)
 			Engine.QueryInterface(ent, IID_Ownership)?.SetOwner(playerID);
 		return;
+	}
 	case "killunits":
 		for (const ent of input.selected)
 		{
@@ -188,6 +190,7 @@ function Cheat(input)
 			Cheat({ "player": input.player, "action": "changephase", "selected": input.selected });
 		return;
 	case "playRetro":
+	{
 		const play = input.parameter.toLowerCase() != "off";
 		cmpGuiInterface.PushNotification({
 			"type": "play-tracks",
@@ -196,7 +199,7 @@ function Cheat(input)
 			"players": [input.player]
 		});
 		return;
-
+	}
 	default:
 		warn("Cheat '" + input.action + "' is not implemented");
 		return;

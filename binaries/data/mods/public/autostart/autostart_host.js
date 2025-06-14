@@ -38,6 +38,7 @@ class AutoStartHost
 			switch (message.type)
 			{
 			case "players":
+			{
 				this.playerAssignments = message.newAssignments;
 				Engine.SendNetworkReady(2);
 				let max = 0;
@@ -48,6 +49,7 @@ class AutoStartHost
 						Engine.AssignNetworkPlayer(++max, uid);
 				}
 				break;
+			}
 			case "ready":
 				this.playerAssignments[message.guid].status = message.status;
 				break;
