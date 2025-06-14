@@ -49,6 +49,7 @@ const configEslintRecommended = {
 		"no-empty-static-block": "warn",
 		"no-ex-assign": "warn",
 		"no-extra-boolean-cast": "warn",
+		"no-fallthrough": "warn",
 		"no-func-assign": "warn",
 		"no-global-assign": "warn",
 		"no-import-assign": "warn",

@@ -188,7 +188,7 @@ ChatMessageFormatSimulation.flare = class
 		case "observer":
 			if (!g_IsObserver)
 				return "";
-
+			break;
 		default:
 			break;
 		}
