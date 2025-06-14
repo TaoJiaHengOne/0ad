@@ -67,7 +67,7 @@ function escapeText(text)
 
 function unescapeText(text)
 {
-	return text.replace(/\\\\/g, "\\").replace(/\\\[/g, "\[");
+	return text.replace(/\\\\/g, "\\").replace(/\\\[/g, "[");
 }
 
 /**

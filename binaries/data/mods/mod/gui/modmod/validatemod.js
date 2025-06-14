@@ -38,7 +38,7 @@ const g_ModProperties = {
 /**
  * Tests if the string only contains alphanumeric characters and _ -
  */
-const g_RegExpName = /[a-zA-Z0-9\-\_]+/;
+const g_RegExpName = /[a-zA-Z0-9\-_]+/;
 
 /**
  * Tests if the version string consists only of numbers and at most two periods.

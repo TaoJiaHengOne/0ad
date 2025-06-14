@@ -79,6 +79,7 @@ const configEslintRecommended = {
 		/* "no-unused-vars": "warn", */
 		"no-useless-backreference": "warn",
 		"no-useless-catch": "warn",
+		"no-useless-escape": "warn",
 		"no-with": "warn",
 		"use-isnan": "warn",
 		"valid-typeof": "warn",

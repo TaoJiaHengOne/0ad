@@ -20,7 +20,7 @@ var g_BuddyListDelimiter = ",";
  */
 function splitRatingFromNick(playerName)
 {
-	const result = /^(\S+)\ \((\d+)\)$/g.exec(playerName);
+	const result = /^(\S+) \((\d+)\)$/g.exec(playerName);
 	return { "nick": result ? result[1] : playerName, "rating": result ? +result[2] : "" };
 }
 
