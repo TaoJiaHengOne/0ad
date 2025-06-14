@@ -181,14 +181,14 @@ function FSM(spec)
 		fsm.states[path.join(".")] = state;
 
 		var newhandlers = {};
-		for (var e in handlers)
+		for (const e in handlers)
 			newhandlers[e] = handlers[e];
 
 		state._name = path.join(".");
 		state._parent = path.slice(0, -1).join(".");
 		state._refs = {};
 
-		for (var key in node)
+		for (const key in node)
 		{
 			if (key === "enter" || key === "leave")
 			{
@@ -207,10 +207,10 @@ function FSM(spec)
 			}
 		}
 
-		for (var e in newhandlers)
+		for (const e in newhandlers)
 			state[e] = newhandlers[e];
 
-		for (var key in node)
+		for (const key in node)
 		{
 			if (key.match(/^[A-Z]+$/))
 			{
@@ -343,7 +343,7 @@ FSM.prototype.SwitchToNextState = function(obj, nextStateName)
 	if (equalPrefix > 0 && equalPrefix === toState.length)
 		--equalPrefix;
 
-	for (var i = fromState.length-1; i >= equalPrefix; --i)
+	for (let i = fromState.length-1; i >= equalPrefix; --i)
 	{
 		var leave = this.states[fromState[i]].leave;
 		if (leave)
@@ -357,7 +357,7 @@ FSM.prototype.SwitchToNextState = function(obj, nextStateName)
 		}
 	}
 
-	for (var i = equalPrefix; i < toState.length; ++i)
+	for (let i = equalPrefix; i < toState.length; ++i)
 	{
 		var enter = this.states[toState[i]].enter;
 		if (enter)

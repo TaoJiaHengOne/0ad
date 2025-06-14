@@ -379,14 +379,14 @@ TechnologyManager.prototype.OnGlobalOwnershipChanged = function(msg)
 	var playerID = (Engine.QueryInterface(this.entity, IID_Player)).GetPlayerID();
 	if (msg.to == playerID)
 	{
-		var cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-		var template = cmpTemplateManager.GetCurrentTemplateName(msg.entity);
+		const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+		const template = cmpTemplateManager.GetCurrentTemplateName(msg.entity);
 
-		var cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
+		const cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
 		if (!cmpIdentity)
 			return;
 
-		var classes = cmpIdentity.GetClassesList();
+		const classes = cmpIdentity.GetClassesList();
 		// don't use foundations for the class counts but check if techs apply (e.g. health increase)
 		if (!Engine.QueryInterface(msg.entity, IID_Foundation))
 		{
@@ -403,16 +403,16 @@ TechnologyManager.prototype.OnGlobalOwnershipChanged = function(msg)
 	}
 	if (msg.from == playerID)
 	{
-		var cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
-		var template = cmpTemplateManager.GetCurrentTemplateName(msg.entity);
+		const cmpTemplateManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_TemplateManager);
+		const template = cmpTemplateManager.GetCurrentTemplateName(msg.entity);
 
 		// don't use foundations for the class counts
 		if (!Engine.QueryInterface(msg.entity, IID_Foundation))
 		{
-			var cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
+			const cmpIdentity = Engine.QueryInterface(msg.entity, IID_Identity);
 			if (cmpIdentity)
 			{
-				var classes = cmpIdentity.GetClassesList();
+				const classes = cmpIdentity.GetClassesList();
 				for (const cls of classes)
 				{
 					this.classCounts[cls] -= 1;

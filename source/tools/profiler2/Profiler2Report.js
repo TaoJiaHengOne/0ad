@@ -205,7 +205,7 @@ class Profiler2Report
 		var last_frame_time_start;
 
 		var stack = [];
-		for (var i = 0; i < data.length; ++i)
+		for (let i = 0; i < data.length; ++i)
 		{
 			if (data[i][0] == this.ITEM_EVENT && data[i][2] == '__framestart')
 			{
@@ -224,7 +224,7 @@ class Profiler2Report
 		}
 		if (range.numframes)
 		{
-			for (var i = data.length - 1; i > 0; --i)
+			for (let i = data.length - 1; i > 0; --i)
 			{
 				if (data[i][0] == this.ITEM_EVENT && data[i][2] == '__framestart')
 				{
@@ -234,7 +234,7 @@ class Profiler2Report
 			}
 
 			var framesfound = 0;
-			for (var i = end - 1; i > 0; --i)
+			for (let i = end - 1; i > 0; --i)
 			{
 				if (data[i][0] == this.ITEM_EVENT && data[i][2] == '__framestart')
 				{
@@ -249,10 +249,10 @@ class Profiler2Report
 		}
 		else if (range.seconds)
 		{
-			var end = data.length - 1;
-			for (var i = end; i > 0; --i)
+			end = data.length - 1;
+			for (let i = end; i > 0; --i)
 			{
-				var type = data[i][0];
+				const type = data[i][0];
 				if (type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE)
 				{
 					tmax = data[i][1];
@@ -261,9 +261,9 @@ class Profiler2Report
 			}
 			tmin = tmax - range.seconds;
 
-			for (var i = end; i > 0; --i)
+			for (let i = end; i > 0; --i)
 			{
-				var type = data[i][0];
+				const type = data[i][0];
 				if ((type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE) && data[i][1] < tmin)
 					break;
 				start = i;
@@ -276,9 +276,9 @@ class Profiler2Report
 			tmin = range.tmin;
 			tmax = range.tmax;
 
-			for (var i = data.length-1; i > 0; --i)
+			for (let i = data.length-1; i > 0; --i)
 			{
-				var type = data[i][0];
+				const type = data[i][0];
 				if ((type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE) && data[i][1] < tmax)
 				{
 					end = i;
@@ -286,9 +286,9 @@ class Profiler2Report
 				}
 			}
 
-			for (var i = end; i > 0; --i)
+			for (let i = end; i > 0; --i)
 			{
-				var type = data[i][0];
+				const type = data[i][0];
 				if ((type == this.ITEM_EVENT || type == this.ITEM_ENTER || type == this.ITEM_LEAVE) && data[i][1] < tmin)
 					break;
 				start = i;
@@ -314,29 +314,30 @@ class Profiler2Report
 		var events = [];
 
 		// Read events for the entire data period (not just start..end)
-		var lastWasEvent = false;
-		for (var i = 0; i < data.length; ++i)
 		{
-			if (data[i][0] == this.ITEM_EVENT)
+			let lastWasEvent = false;
+			for (let i = 0; i < data.length; ++i)
 			{
-				events.push({ 't': data[i][1], 'id': data[i][2] });
-				lastWasEvent = true;
-			}
-			else if (data[i][0] == this.ITEM_ATTRIBUTE)
-			{
-				if (lastWasEvent)
+				if (data[i][0] == this.ITEM_EVENT)
 				{
-					if (!events[events.length-1].attrs)
-						events[events.length-1].attrs = [];
-					events[events.length-1].attrs.push(data[i][1]);
+					events.push({ 't': data[i][1], 'id': data[i][2] });
+					lastWasEvent = true;
+				}
+				else if (data[i][0] == this.ITEM_ATTRIBUTE)
+				{
+					if (lastWasEvent)
+					{
+						if (!events[events.length-1].attrs)
+							events[events.length-1].attrs = [];
+						events[events.length-1].attrs.push(data[i][1]);
+					}
+				}
+				else
+				{
+					lastWasEvent = false;
 				}
 			}
-			else
-			{
-				lastWasEvent = false;
-			}
 		}
-
 
 		var intervals = [];
 		var intervals_by_type = {};
@@ -346,7 +347,7 @@ class Profiler2Report
 		var lastT = 0;
 		var lastWasEvent = false;
 
-		for (var i = start; i <= end; ++i)
+		for (let i = start; i <= end; ++i)
 		{
 			if (data[i][0] == this.ITEM_EVENT)
 			{

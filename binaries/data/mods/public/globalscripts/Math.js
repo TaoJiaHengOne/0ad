@@ -176,10 +176,11 @@ Math.square = function(x)
  */
 Math.exp = function(x)
 {
+	let iPart;
 	if (x < 0)
-		var iPart = 1/Math.intPow(Math.E, -Math.floor(x));
+		iPart = 1/Math.intPow(Math.E, -Math.floor(x));
 	else
-		var iPart = Math.intPow(Math.E, Math.floor(x));
+		iPart = Math.intPow(Math.E, Math.floor(x));
 
 	if (x === Math.floor(x))
 		// no need to loop if we know the answer
@@ -226,9 +227,10 @@ Math.log = function(x)
 	// when implemented in C, just count the number of bits before the fraction
 	// without leading zeros. This may be negative.
 	var log = 0;
+	let i;
 	if (x >= 1)
 	{
-		for (var i = 1; i <= x; i *= 2)
+		for (i = 1; i <= x; i *= 2)
 			log++;
 
 		log--;
@@ -236,7 +238,7 @@ Math.log = function(x)
 	}
 	else
 	{
-		for (var i = 1; i > x; i /= 2)
+		for (i = 1; i > x; i /= 2)
 			log--;
 	}
 	// now lb(x) = log + lb(y) with y = x/i. So y \in [1,2)
@@ -297,14 +299,14 @@ Math.intPow = function(x, y)
 
 	var result = 1;
 
-	var i = binary.length;
+	var l = binary.length;
 
 	while (y > 0)
 	{
-		if (binary[--i] <= y)
+		if (binary[--l] <= y)
 		{
-			result *= powers[i];
-			y -= binary[i];
+			result *= powers[l];
+			y -= binary[l];
 		}
 	}
 	// error margin = 0 (default JS error)

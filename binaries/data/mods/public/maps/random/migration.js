@@ -187,25 +187,27 @@ export function* generateMap(mapSettings)
 	yield 34;
 
 	g_Map.log("Creating forests");
-	var [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
-	var types = [
-		[[tForestFloor2, tMainTerrain, pForest1], [tForestFloor2, pForest1]],
-		[[tForestFloor1, tMainTerrain, pForest2], [tForestFloor1, pForest2]]
-	];
+	{
+		const [forestTrees, stragglerTrees] = getTreeCounts(...rBiomeTreeCount(1));
+		const types = [
+			[[tForestFloor2, tMainTerrain, pForest1], [tForestFloor2, pForest1]],
+			[[tForestFloor1, tMainTerrain, pForest2], [tForestFloor1, pForest2]]
+		];
 
-	var size = forestTrees / (scaleByMapSize(2, 8) * numPlayers) *
-		(currentBiome() == "generic/savanna" ? 2 : 1);
+		const size = forestTrees / (scaleByMapSize(2, 8) * numPlayers) *
+			(currentBiome() == "generic/savanna" ? 2 : 1);
 
-	var num = Math.floor(size / types.length);
-	for (const type of types)
-		createAreas(
-			new ClumpPlacer(forestTrees / num, 0.1, 0.1, Infinity),
-			[
-				new LayeredPainter(type, [2]),
-				new TileClassPainter(clForest)
-			],
-			[avoidClasses(clForest, 10, clHill, 2), stayClasses(clLand, 7)],
-			num);
+		const num = Math.floor(size / types.length);
+		for (const type of types)
+			createAreas(
+				new ClumpPlacer(forestTrees / num, 0.1, 0.1, Infinity),
+				[
+					new LayeredPainter(type, [2]),
+					new TileClassPainter(clForest)
+				],
+				[avoidClasses(clForest, 10, clHill, 2), stayClasses(clLand, 7)],
+				num);
+	}
 	yield 38;
 
 	g_Map.log("Creating dirt patches");

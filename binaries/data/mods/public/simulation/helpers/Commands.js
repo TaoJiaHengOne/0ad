@@ -1047,10 +1047,10 @@ function GetDockAngle(template, x, z)
 	 *	6. Calculate angle using average of sequence
 	 */
 	const numPoints = 16;
-	for (var dist = 0; dist < 4; ++dist)
+	for (let dist = 0; dist < 4; ++dist)
 	{
 		var waterPoints = [];
-		for (var i = 0; i < numPoints; ++i)
+		for (let i = 0; i < numPoints; ++i)
 		{
 			var angle = (i/numPoints)*2*Math.PI;
 			var d = halfSize*(dist+1);
@@ -1064,9 +1064,9 @@ function GetDockAngle(template, x, z)
 		var length = waterPoints.length;
 		if (!length)
 			continue;
-		for (var i = 0; i < length; ++i)
+		for (let i = 0; i < length; ++i)
 		{
-			var count = 0;
+			let count = 0;
 			for (let j = 0; j < length - 1; ++j)
 			{
 				if ((waterPoints[(i + j) % length] + 1) % numPoints == waterPoints[(i + j + 1) % length])
@@ -1076,9 +1076,9 @@ function GetDockAngle(template, x, z)
 			}
 			consec[i] = count;
 		}
-		var start = 0;
-		var count = 0;
-		for (var c in consec)
+		let start = 0;
+		let count = 0;
+		for (const c in consec)
 		{
 			if (consec[c] > count)
 			{
@@ -1191,7 +1191,7 @@ function TryConstructBuilding(player, cmpPlayer, controlAllUnits, cmd)
 			if (g_DebugCommands)
 				warn("Invalid command: build restrictions check failed with '"+ret.message+"' for player "+player+": "+uneval(cmd));
 
-			var cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+			const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 			ret.players = [player];
 			cmpGuiInterface.PushNotification(ret);
 
@@ -1224,7 +1224,7 @@ function TryConstructBuilding(player, cmpPlayer, controlAllUnits, cmd)
 		if (g_DebugCommands)
 			warn("Invalid command: required technology check failed for player "+player+": "+uneval(cmd));
 
-		var cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
+		const cmpGuiInterface = Engine.QueryInterface(SYSTEM_ENTITY, IID_GuiInterface);
 		cmpGuiInterface.PushNotification({
 			"type": "text",
 			"players": [player],
@@ -1379,7 +1379,7 @@ function TryConstructWall(player, cmpPlayer, controlAllUnits, cmd)
 	var pieces = clone(cmd.pieces);
 	for (; i < pieces.length; ++i)
 	{
-		var piece = pieces[i];
+		const piece = pieces[i];
 
 		// All wall pieces after the first must be queued.
 		if (i > 0 && !queued)
@@ -1475,9 +1475,9 @@ function TryConstructWall(player, cmpPlayer, controlAllUnits, cmd)
 		lastTowerControlGroup = cmpSnappedEndObstruction.GetControlGroup();
 	}
 
-	for (var j = lastBuiltPieceIndex; j >= 0; --j)
+	for (let j = lastBuiltPieceIndex; j >= 0; --j)
 	{
-		var piece = pieces[j];
+		const piece = pieces[j];
 
 		if (!piece.ent)
 		{

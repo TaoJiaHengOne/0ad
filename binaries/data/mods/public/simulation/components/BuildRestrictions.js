@@ -104,7 +104,7 @@ BuildRestrictions.prototype.CheckPlacement = function()
 	if (!cmpPlayer.IsAI())
 	{
 		// Check whether it's in a visible or fogged region
-		var cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 		var cmpOwnership = Engine.QueryInterface(this.entity, IID_Ownership);
 		if (!cmpRangeManager || !cmpOwnership)
 			return result; // Fail
@@ -141,14 +141,15 @@ BuildRestrictions.prototype.CheckPlacement = function()
 		return result; // Fail
 
 
+	let ret;
 	if (this.template.Category == "Wall")
 	{
 		// for walls, only test the center point
-		var ret = cmpObstruction.CheckFoundation(passClassName, true);
+		ret = cmpObstruction.CheckFoundation(passClassName, true);
 	}
 	else
 	{
-		var ret = cmpObstruction.CheckFoundation(passClassName, false);
+		ret = cmpObstruction.CheckFoundation(passClassName, false);
 	}
 
 	if (ret !== "success")
@@ -252,7 +253,7 @@ BuildRestrictions.prototype.CheckPlacement = function()
 	// Check distance restriction
 	if (this.template.Distance)
 	{
-		var cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
+		const cmpRangeManager = Engine.QueryInterface(SYSTEM_ENTITY, IID_RangeManager);
 		var cat = this.template.Distance.FromClass;
 
 		var filter = function(id)

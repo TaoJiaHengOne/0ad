@@ -4197,7 +4197,7 @@ UnitAI.prototype.UpdateWorkOrders = function(type)
 		var cmpUnitAI = Engine.QueryInterface(this.formationController, IID_UnitAI);
 		if (cmpUnitAI)
 		{
-			for (var i = 0; i < cmpUnitAI.orderQueue.length; ++i)
+			for (let i = 0; i < cmpUnitAI.orderQueue.length; ++i)
 			{
 				if (isWorkType(cmpUnitAI.orderQueue[i].type))
 				{
@@ -4209,7 +4209,7 @@ UnitAI.prototype.UpdateWorkOrders = function(type)
 	}
 
 	// If nothing found, take the unit orders
-	for (var i = 0; i < this.orderQueue.length; ++i)
+	for (let i = 0; i < this.orderQueue.length; ++i)
 	{
 		if (isWorkType(this.orderQueue[i].type))
 		{

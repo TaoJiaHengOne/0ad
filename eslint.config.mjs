@@ -38,7 +38,7 @@ const configEslintRecommended = {
 		"no-func-assign": "warn",
 		"no-irregular-whitespace": "warn",
 		"no-obj-calls": "warn",
-		"no-redeclare": "off",
+		"no-redeclare": "warn",
 		"no-self-assign": "warn",
 		"no-shadow-restricted-names": "warn",
 		"no-undef": "off",
