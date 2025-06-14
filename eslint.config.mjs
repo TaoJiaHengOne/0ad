@@ -54,16 +54,13 @@ const configEslintRecommended = {
 
 const configEslintExtra = {
 	"rules": {
-		"block-scoped-var": "off",
 		"consistent-return": "warn",
 		"default-case": "warn",
 		"dot-notation": "warn",
-		"new-cap": "off",
 		"no-caller": "warn",
 		"no-else-return": "warn",
 		"no-invalid-this": "warn",
 		"no-label-var": "warn",
-		"no-loop-func": "off",
 		"no-multi-assign": "warn",
 		"no-new": "warn",
 		"no-return-assign": "warn",
@@ -74,10 +71,8 @@ const configEslintExtra = {
 		"no-unneeded-ternary": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": ["error", "nofunc"],
-		"no-useless-concat": "off",
 		"operator-assignment": "warn",
 		"prefer-const": "warn",
-		"valid-jsdoc": "off",
 		"yoda": "warn",
 	}
 };
