@@ -20,18 +20,18 @@
 
 // Various functions used by several of the tiles.
 
+const phi = (1 + Math.sqrt(5)) / 2;
+
 function new_colour(id)
 {
-	var hs = [0, 1/3, 2/3, 1/4, 2/4, 3/4, 1/5, 3/5, 2/5, 4/5];
-	var ss = [1, 0.5];
-	var ls = [0.8, 0.6, 0.9, 0.7];
-	return "hsl(" + hs[id % hs.length] * 360 + "," + ss[Math.floor(id / hs.length) % ss.length] * 100 + "%, " + ls[Math.floor(id / (hs.length*ss.length)) % ls.length] * 100 + "%)";
+	const hs = (id * phi) % 1 * 360;
+	return "hsl(" + hs + ", 100%, 70%)";
 }
 
 function graph_colour(id)
 {
-	var hs = [0, 1/3, 2/3, 2/4, 3/4, 1/5, 3/5, 2/5, 4/5];
-	return "hsl(" + hs[id % hs.length] * 360 + ", 70%, 50%)";
+	const hs = (id * phi) % 1 * 360;
+	return "hsl(" + hs + ", 70%, 50%)";
 }
 
 function concat_events(data)
