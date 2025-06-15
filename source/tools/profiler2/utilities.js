@@ -20,50 +20,18 @@
 
 // Various functions used by several of the tiles.
 
-function hslToRgb(h, s, l, a)
-{
-	var r, g, b;
-
-	if (s == 0)
-	{
-		r = l;
-		g = l;
-		b = l;
-	}
-	else
-	{
-		function hue2rgb(p, q, t)
-		{
-			if (t < 0) t += 1;
-			if (t > 1) t -= 1;
-			if (t < 1/6) return p + (q - p) * 6 * t;
-			if (t < 1/2) return q;
-			if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-			return p;
-		}
-
-		var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-		var p = 2 * l - q;
-		r = hue2rgb(p, q, h + 1/3);
-		g = hue2rgb(p, q, h);
-		b = hue2rgb(p, q, h - 1/3);
-	}
-
-	return 'rgba(' + Math.floor(r * 255) + ',' + Math.floor(g * 255) + ',' + Math.floor(b * 255) + ',' + a + ')';
-}
-
 function new_colour(id)
 {
 	var hs = [0, 1/3, 2/3, 1/4, 2/4, 3/4, 1/5, 3/5, 2/5, 4/5];
 	var ss = [1, 0.5];
 	var ls = [0.8, 0.6, 0.9, 0.7];
-	return hslToRgb(hs[id % hs.length], ss[Math.floor(id / hs.length) % ss.length], ls[Math.floor(id / (hs.length*ss.length)) % ls.length], 1);
+	return "hsl(" + hs[id % hs.length] * 360 + "," + ss[Math.floor(id / hs.length) % ss.length] * 100 + "%, " + ls[Math.floor(id / (hs.length*ss.length)) % ls.length] * 100 + "%)";
 }
 
 function graph_colour(id)
 {
 	var hs = [0, 1/3, 2/3, 2/4, 3/4, 1/5, 3/5, 2/5, 4/5];
-	return hslToRgb(hs[id % hs.length], 0.7, 0.5, 1);
+	return "hsl(" + hs[id % hs.length] * 360 + ", 70%, 50%)";
 }
 
 function concat_events(data)
