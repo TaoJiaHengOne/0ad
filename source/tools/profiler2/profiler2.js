@@ -121,7 +121,7 @@ function draw_frequency_graph()
 		nb.textContent = type + " - n=" + time_by_frame.length;
 		legend.appendChild(nb);
 
-		context.globalCompositeOperation = "lighter";
+		context.globalCompositeOperation = "exclusion";
 		context.beginPath();
 		context.strokeStyle = colour;
 		context.lineWidth = 1;
@@ -226,7 +226,7 @@ function draw_history_graph()
 		const time_by_frame = series_data[type];
 
 		context.beginPath();
-		context.globalCompositeOperation = "lighten";
+		context.globalCompositeOperation = "exclusion";
 		context.strokeStyle = colour;
 		context.lineWidth = 0.75;
 
