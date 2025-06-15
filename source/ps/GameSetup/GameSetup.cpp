@@ -151,6 +151,14 @@ void MountMods(const Paths& paths, const std::vector<CStr>& mods)
 			g_VFS->Mount(L"", modPath / modName / "", baseFlags, priority);
 		else
 			g_VFS->Mount(L"", modUserPath / modName / "", userFlags, priority);
+
+		// If mod have a config/<modName>.cfg, load the configuration.
+		VfsPath modConfigPath{fmt::format("config/{}.cfg", mods[i].c_str())};
+		if (!VfsFileExists(modConfigPath))
+			continue;
+
+		g_ConfigDB.SetConfigFile(CFG_MOD, modConfigPath);
+		g_ConfigDB.Reload(CFG_MOD);
 	}
 
 	// Mount the user mod last. In dev copy, mount it with a low priority. Otherwise, make it writable.

@@ -310,6 +310,9 @@ bool CConfigDB::Reload(EConfigNamespace ns)
 	}
 
 	TConfigMap newMap;
+	if (ns == CFG_MOD)
+		newMap.swap(m_Map[CFG_MOD]);
+
 	char *filebuf = (char*)buffer.get();
 	char *filebufend = filebuf+buflen;
 

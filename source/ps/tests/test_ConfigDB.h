@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -32,8 +32,9 @@ public:
 	void setUp()
 	{
 		g_VFS = CreateVfs();
-		TS_ASSERT_OK(g_VFS->Mount(L"config", DataDir() / "_testconfig" / ""));
 
+		TS_ASSERT_OK(g_VFS->Mount(L"", DataDir() / "mods" / "_test.mods" / "", VFS_MOUNT_MUST_EXIST));
+		TS_ASSERT_OK(g_VFS->Mount(L"config", DataDir() / "_testconfig" / "", 0, VFS_MAX_PRIORITY));
 		configDB = std::make_unique<CConfigDB>();
 	}
 
@@ -84,5 +85,57 @@ public:
 			// Empty config values don't overwrite
 			TS_ASSERT_EQUALS(res, 3);
 		}
+	}
+
+	void test_setting_mods()
+	{
+		configDB->SetConfigFile(CFG_DEFAULT, "config/start.cfg");
+		configDB->Reload(CFG_DEFAULT);
+		TS_ASSERT_EQUALS(configDB->Get("a", 0, CFG_MOD), 1);
+		TS_ASSERT_EQUALS(configDB->Get("b", 0, CFG_MOD), 2);
+		TS_ASSERT_EQUALS(configDB->Get("c", 0, CFG_MOD), 3);
+		TS_ASSERT_EQUALS(configDB->Get("d", 0, CFG_MOD), 4);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.e", 0, CFG_MOD), 5);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.f", 0, CFG_MOD), 6);
+
+		configDB->SetConfigFile(CFG_MOD, "config/moda.cfg");
+		configDB->Reload(CFG_MOD);
+		TS_ASSERT_EQUALS(configDB->Get("a", 0, CFG_MOD), 10);
+		TS_ASSERT_EQUALS(configDB->Get("b", 0, CFG_MOD), 2);
+		TS_ASSERT_EQUALS(configDB->Get("c", 0, CFG_MOD), 3);
+		TS_ASSERT_EQUALS(configDB->Get("d", 0, CFG_MOD), 4);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.e", 0, CFG_MOD), 5);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.f", 0, CFG_MOD), 6);
+		TS_ASSERT_EQUALS(configDB->Get("atext", std::string{}, CFG_MOD), "dummy");
+
+		configDB->SetConfigFile(CFG_MOD, "config/modb.cfg");
+		configDB->Reload(CFG_MOD);
+		TS_ASSERT_EQUALS(configDB->Get("a", 0, CFG_MOD), 10);
+		TS_ASSERT_EQUALS(configDB->Get("b", 0, CFG_MOD), 10);
+		TS_ASSERT_EQUALS(configDB->Get("c", 0, CFG_MOD), 3);
+		TS_ASSERT_EQUALS(configDB->Get("d", 0, CFG_MOD), 4);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.e", 0, CFG_MOD), 5);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.f", 0, CFG_MOD), 6);
+		TS_ASSERT_EQUALS(configDB->Get("atext", std::string{}, CFG_MOD), "dummy");
+
+		configDB->SetConfigFile(CFG_MOD, "config/modscoped.cfg");
+		configDB->Reload(CFG_MOD);
+		TS_ASSERT_EQUALS(configDB->Get("a", 0, CFG_MOD), 10);
+		TS_ASSERT_EQUALS(configDB->Get("b", 0, CFG_MOD), 10);
+		TS_ASSERT_EQUALS(configDB->Get("c", 0, CFG_MOD), 3);
+		TS_ASSERT_EQUALS(configDB->Get("d", 0, CFG_MOD), 4);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.e", 0, CFG_MOD), 10);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.f", 0, CFG_MOD), 6);
+		TS_ASSERT_EQUALS(configDB->Get("atext", std::string{}, CFG_MOD), "dummy");
+
+		configDB->SetConfigFile(CFG_MOD, "config/modreplace.cfg");
+		configDB->Reload(CFG_MOD);
+		TS_ASSERT_EQUALS(configDB->Get("a", 0, CFG_MOD), 8);
+		TS_ASSERT_EQUALS(configDB->Get("b", 0, CFG_MOD), 8);
+		TS_ASSERT_EQUALS(configDB->Get("c", 0, CFG_MOD), 8);
+		TS_ASSERT_EQUALS(configDB->Get("d", 0, CFG_MOD), 4);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.e", 0, CFG_MOD), 8);
+		TS_ASSERT_EQUALS(configDB->Get("scoped.f", 0, CFG_MOD), 6);
+		TS_ASSERT_EQUALS(configDB->Get("atext", std::string{}, CFG_MOD), "dummyreplaced");
 	}
 };
