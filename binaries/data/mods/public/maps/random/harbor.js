@@ -1,6 +1,11 @@
+import { addAnimals, addBerries, addBluffs, addDecoration, addFish, addForests, addHills, addLayeredPatches,
+	addMetal, addMountains, addPlateaus, addProps, addStone, addStragglerTrees } from
+	"maps/random/rmgen2/gaia.js";
+import { addElements, allAmounts, allMixes, allSizes, createBases, initTileClasses } from
+	"maps/random/rmgen2/setup.js";
+
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
-Engine.LoadLibrary("rmgen2");
 Engine.LoadLibrary("rmbiome");
 
 export function* generateMap(mapSettings)
@@ -61,8 +66,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.spine, 4
 			],
 			"stay": [g_TileClasses.water, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["tons"]
 		}
 	]);
@@ -81,8 +86,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.water, 2
 			],
 			"sizes": ["tiny", "small"],
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addMountains,
@@ -96,8 +101,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.water, 15
 			],
 			"sizes": ["small"],
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addPlateaus,
@@ -111,8 +116,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.water, 15
 			],
 			"sizes": ["small"],
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addBluffs,
@@ -127,8 +132,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.water, 15
 			],
 			"sizes": ["normal"],
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"mixes": allMixes,
+			"amounts": allAmounts
 		}
 	]));
 	yield 60;
@@ -207,9 +212,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.spine, 2,
 				g_TileClasses.water, 3
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addAnimals,
@@ -225,9 +230,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.spine, 2,
 				g_TileClasses.water, 3
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addStragglerTrees,
@@ -243,9 +248,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.spine, 2,
 				g_TileClasses.water, 5
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		}
 	]));
 

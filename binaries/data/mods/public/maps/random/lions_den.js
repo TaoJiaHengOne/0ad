@@ -1,6 +1,10 @@
+import { addAnimals, addBerries, addDecoration, addForests, addLayeredPatches, addMetal, addProps, addStone,
+	addStragglerTrees } from "maps/random/rmgen2/gaia.js";
+import { addElements, allAmounts, allMixes, allSizes, createBases, initTileClasses } from
+	"maps/random/rmgen2/setup.js";
+
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
-Engine.LoadLibrary("rmgen2");
 Engine.LoadLibrary("rmbiome");
 
 export function* generateMap(mapSettings)
@@ -167,7 +171,7 @@ export function* generateMap(mapSettings)
 			"stay": [g_TileClasses.valley, 7],
 			"sizes": ["normal"],
 			"mixes": ["same"],
-			"amounts": g_AllAmounts
+			"amounts": allAmounts
 		},
 		{
 			"func": addStone,
@@ -199,7 +203,7 @@ export function* generateMap(mapSettings)
 			"stay": [g_TileClasses.valley, 7],
 			"sizes": ["normal"],
 			"mixes": ["same"],
-			"amounts": g_AllAmounts
+			"amounts": allAmounts
 		},
 		{
 			"func": addForests,
@@ -248,8 +252,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 10
 			],
 			"stay": [g_TileClasses.settlement, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["tons"]
 		},
 		{
@@ -265,9 +269,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.step, 5
 			],
 			"stay": [g_TileClasses.valley, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addAnimals,
@@ -280,8 +284,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 1
 			],
 			"stay": [g_TileClasses.settlement, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["tons"]
 		},
 		{
@@ -297,9 +301,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.step, 5
 			],
 			"stay": [g_TileClasses.valley, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addStragglerTrees,
@@ -312,8 +316,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 3
 			],
 			"stay": [g_TileClasses.settlement, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["tons"]
 		},
 		{
@@ -329,8 +333,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.step, 5
 			],
 			"stay": [g_TileClasses.valley, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["normal", "many", "tons"]
 		},
 		{

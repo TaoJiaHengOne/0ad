@@ -16,9 +16,12 @@
  * No further changes should be applied to the image to keep it easily interchangeable.
  */
 
+import { addAnimals, addDecoration, addFish, addForests, addLayeredPatches, addMetal, addStone,
+	addStragglerTrees } from "maps/random/rmgen2/gaia.js";
+import { addElements, createBases, initTileClasses } from "maps/random/rmgen2/setup.js";
+
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
-Engine.LoadLibrary("rmgen2");
 Engine.LoadLibrary("rmbiome");
 
 export function* generateMap(mapSettings)

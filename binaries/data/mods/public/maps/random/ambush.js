@@ -1,6 +1,11 @@
+import { addAnimals, addBerries, addBluffs, addDecoration, addForests, addHills, addLayeredPatches,
+	addMetal, addStone, addStragglerTrees, createBluffsPassages, markPlayerAvoidanceArea } from
+	"maps/random/rmgen2/gaia.js";
+import { addElements, createBases, initTileClasses, playerbaseTypes } from "maps/random/rmgen2/setup.js";
+
+
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
-Engine.LoadLibrary("rmgen2");
 Engine.LoadLibrary("rmbiome");
 
 export function* generateMap(mapSettings)
@@ -28,7 +33,7 @@ export function* generateMap(mapSettings)
 				fractionToTiles(randFloat(0.08, 0.1)),
 				randomAngle(),
 				undefined),
-			g_PlayerbaseTypes[mapSettings.PlayerPlacement].walls);
+			playerbaseTypes[mapSettings.PlayerPlacement].walls);
 
 	if (!isNomad())
 		markPlayerAvoidanceArea(playerPosition, defaultPlayerBaseRadius());

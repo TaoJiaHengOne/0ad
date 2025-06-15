@@ -1,6 +1,11 @@
+import { addAnimals, addBerries, addBluffs, addDecoration, addForests, addHills, addLakes, addMetal,
+	addMountains, addLayeredPatches, addPlateaus, addStone, addStragglerTrees, addValleys } from
+	"maps/random/rmgen2/gaia.js";
+import { addElements, allAmounts, allMixes, allSizes, createBases, playerbaseTypes, initTileClasses } from
+	"maps/random/rmgen2/setup.js";
+
 Engine.LoadLibrary("rmgen");
 Engine.LoadLibrary("rmgen-common");
-Engine.LoadLibrary("rmgen2");
 Engine.LoadLibrary("rmbiome");
 
 export function* generateMap(mapSettings)
@@ -30,7 +35,7 @@ export function* generateMap(mapSettings)
 				fractionToTiles(randFloat(0.08, 0.1)),
 				randomAngle(),
 				undefined),
-			g_PlayerbaseTypes[mapSettings.PlayerPlacement].walls);
+			playerbaseTypes[mapSettings.PlayerPlacement].walls);
 	}
 	yield 40;
 
@@ -47,9 +52,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.valley, 5,
 				g_TileClasses.water, 7
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addHills,
@@ -62,9 +67,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.valley, 2,
 				g_TileClasses.water, 2
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addMountains,
@@ -76,9 +81,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.valley, 10,
 				g_TileClasses.water, 15
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addPlateaus,
@@ -91,9 +96,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.valley, 10,
 				g_TileClasses.water, 15
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		}
 	];
 
@@ -110,8 +115,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.water, 25
 			],
 			"sizes": ["small"],
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"mixes": allMixes,
+			"amounts": allAmounts
 		});
 
 	if (randElevation > 20)
@@ -127,9 +132,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.valley, 15,
 				g_TileClasses.water, 10
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		});
 
 	addElements(shuffleArray(features));
@@ -184,7 +189,7 @@ export function* generateMap(mapSettings)
 			],
 			"sizes": ["normal"],
 			"mixes": ["same"],
-			"amounts": g_AllAmounts
+			"amounts": allAmounts
 		},
 		{
 			"func": addStone,
@@ -201,7 +206,7 @@ export function* generateMap(mapSettings)
 			],
 			"sizes": ["normal"],
 			"mixes": ["same"],
-			"amounts": g_AllAmounts
+			"amounts": allAmounts
 		},
 		{
 			"func": addForests,
@@ -216,8 +221,8 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 3,
 				g_TileClasses.water, 2
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["few", "normal", "many", "tons"]
 		}
 	]));
@@ -237,9 +242,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 10,
 				g_TileClasses.water, 3
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addAnimals,
@@ -254,9 +259,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 2,
 				g_TileClasses.water, 3
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		},
 		{
 			"func": addStragglerTrees,
@@ -271,9 +276,9 @@ export function* generateMap(mapSettings)
 				g_TileClasses.rock, 2,
 				g_TileClasses.water, 5
 			],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		}
 	]));
 	yield 90;

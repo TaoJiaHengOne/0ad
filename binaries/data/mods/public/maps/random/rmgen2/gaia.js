@@ -1,3 +1,5 @@
+import { addElements, allAmounts, allMixes, allSizes } from "maps/random/rmgen2/setup.js";
+
 var g_Props = {
 	"barrels": "actor|props/special/eyecandy/barrels_buried.xml",
 	"crate": "actor|props/special/eyecandy/crate_a.xml",
@@ -9,7 +11,7 @@ var g_Props = {
 /**
  * Prevent circular patterns around the CC by marking a random chain of circles there to be ignored by bluffs.
  */
-function markPlayerAvoidanceArea(playerPosition, radius)
+export function markPlayerAvoidanceArea(playerPosition, radius)
 {
 	for (const position of playerPosition)
 		createArea(
@@ -28,7 +30,7 @@ function markPlayerAvoidanceArea(playerPosition, radius)
  * Paints a ramp from the given positions to t
  * Bluffs might surround playerbases either entirely or unfairly.
  */
-function createBluffsPassages(playerPosition)
+export function createBluffsPassages(playerPosition)
 {
 	g_Map.log("Creating passages towards the center");
 	for (const position of playerPosition)
@@ -82,7 +84,7 @@ function createBluffsPassages(playerPosition)
  * @param {number} fill - size of map to fill (1.5 would be 150% of normal)
  * @param {number} baseHeight - elevation of the floor, making the bluff reachable
  */
-function addBluffs(constraint, size, deviation, fill, baseHeight)
+export function addBluffs(constraint, size, deviation, fill, baseHeight)
 {
 	g_Map.log("Creating bluffs");
 
@@ -191,9 +193,9 @@ function addBluffs(constraint, size, deviation, fill, baseHeight)
 				g_TileClasses.water, 2
 			],
 			"stay": [g_TileClasses.bluff, 3],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
-			"amounts": g_AllAmounts
+			"sizes": allSizes,
+			"mixes": allMixes,
+			"amounts": allAmounts
 		}
 	]);
 
@@ -261,8 +263,8 @@ function addBluffs(constraint, size, deviation, fill, baseHeight)
 				g_TileClasses.water, 2
 			],
 			"stay": [g_TileClasses.bluff, 6],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["normal", "many", "tons"]
 		},
 		{
@@ -313,8 +315,8 @@ function addBluffs(constraint, size, deviation, fill, baseHeight)
 				g_TileClasses.water, 5
 			],
 			"stay": [g_TileClasses.bluff, 6],
-			"sizes": savanna ? ["big"] : g_AllSizes,
-			"mixes": savanna ? ["varied"] : g_AllMixes,
+			"sizes": savanna ? ["big"] : allSizes,
+			"mixes": savanna ? ["varied"] : allMixes,
 			"amounts": savanna ? ["tons"] : ["normal", "many", "tons"]
 		},
 		{
@@ -329,8 +331,8 @@ function addBluffs(constraint, size, deviation, fill, baseHeight)
 				g_TileClasses.water, 3
 			],
 			"stay": [g_TileClasses.bluff, 6],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["normal", "many", "tons"]
 		},
 		{
@@ -345,8 +347,8 @@ function addBluffs(constraint, size, deviation, fill, baseHeight)
 				g_TileClasses.water, 3
 			],
 			"stay": [g_TileClasses.bluff, 6],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["normal", "many", "tons"]
 		}
 	]));
@@ -355,7 +357,7 @@ function addBluffs(constraint, size, deviation, fill, baseHeight)
 /**
  * Add grass, rocks and bushes.
  */
-function addDecoration(constraint, size, deviation, fill)
+export function addDecoration(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating decoration");
 
@@ -471,7 +473,7 @@ function addElevation(constraint, el)
 /**
  * Create rolling hills.
  */
-function addHills(constraint, size, deviation, fill)
+export function addHills(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating hills");
 
@@ -499,7 +501,7 @@ function addHills(constraint, size, deviation, fill)
 /**
  * Create random lakes with fish in it.
  */
-function addLakes(constraint, size, deviation, fill)
+export function addLakes(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating lakes");
 
@@ -539,8 +541,8 @@ function addLakes(constraint, size, deviation, fill)
 				g_TileClasses.player, 8
 			],
 			"stay": [g_TileClasses.water, 7],
-			"sizes": g_AllSizes,
-			"mixes": g_AllMixes,
+			"sizes": allSizes,
+			"mixes": allMixes,
 			"amounts": ["normal", "many", "tons"]
 		}
 	]);
@@ -555,7 +557,7 @@ function addLakes(constraint, size, deviation, fill)
 /**
  * Universal function to create layered patches.
  */
-function addLayeredPatches(constraint, size, deviation, fill)
+export function addLayeredPatches(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating layered patches");
 
@@ -596,7 +598,7 @@ function addLayeredPatches(constraint, size, deviation, fill)
 /**
  * Create steep mountains.
  */
-function addMountains(constraint, size, deviation, fill)
+export function addMountains(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating mountains");
 
@@ -619,7 +621,7 @@ function addMountains(constraint, size, deviation, fill)
 /**
  * Create plateaus.
  */
-function addPlateaus(constraint, size, deviation, fill)
+export function addPlateaus(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating plateaus");
 
@@ -699,7 +701,7 @@ function addPlateaus(constraint, size, deviation, fill)
 /**
  * Place less usual decoratives like barrels or crates.
  */
-function addProps(constraint, size, deviation, fill)
+export function addProps(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating rare actors");
 
@@ -740,7 +742,7 @@ function addProps(constraint, size, deviation, fill)
 	createObjectGroupsDeprecated(new SimpleGroup([trees], true), 0, constraint, counts[0] * 5 * fill, 5);
 }
 
-function addValleys(constraint, size, deviation, fill, baseHeight)
+export function addValleys(constraint, size, deviation, fill, baseHeight)
 {
 	if (baseHeight < 6)
 		return;
@@ -792,7 +794,7 @@ function addValleys(constraint, size, deviation, fill, baseHeight)
 /**
  * Create huntable animals.
  */
-function addAnimals(constraint, size, deviation, fill)
+export function addAnimals(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating animals");
 
@@ -812,7 +814,7 @@ function addAnimals(constraint, size, deviation, fill)
 			50);
 }
 
-function addBerries(constraint, size, deviation, fill)
+export function addBerries(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating berries");
 
@@ -826,7 +828,7 @@ function addBerries(constraint, size, deviation, fill)
 		40);
 }
 
-function addFish(constraint, size, deviation, fill)
+export function addFish(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating fish");
 
@@ -846,7 +848,7 @@ function addFish(constraint, size, deviation, fill)
 			50);
 }
 
-function addForests(constraint, size, deviation, fill)
+export function addForests(constraint, size, deviation, fill)
 {
 	if (currentBiome() == "generic/savanna")
 		return;
@@ -897,7 +899,7 @@ function addForests(constraint, size, deviation, fill)
 	}
 }
 
-function addMetal(constraint, size, deviation, fill)
+export function addMetal(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating metal mines");
 
@@ -910,7 +912,7 @@ function addMetal(constraint, size, deviation, fill)
 		100);
 }
 
-function addSmallMetal(constraint, size, mixes, amounts)
+export function addSmallMetal(constraint, size, mixes, amounts)
 {
 	g_Map.log("Creating small metal mines");
 
@@ -926,7 +928,7 @@ function addSmallMetal(constraint, size, mixes, amounts)
 /**
  * Create stone mines.
  */
-function addStone(constraint, size, deviation, fill)
+export function addStone(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating stone mines");
 
@@ -954,7 +956,7 @@ function addStone(constraint, size, deviation, fill)
 /**
  * Create straggler trees.
  */
-function addStragglerTrees(constraint, size, deviation, fill)
+export function addStragglerTrees(constraint, size, deviation, fill)
 {
 	g_Map.log("Creating straggler trees");
 
