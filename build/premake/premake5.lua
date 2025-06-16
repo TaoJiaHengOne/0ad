@@ -250,13 +250,6 @@ function project_set_build_flags()
 		defines { "CONFIG2_MINIUPNPC=0" }
 	end
 
-	-- Enable C++17 standard.
-	filter "action:vs*"
-		buildoptions { "/std:c++17" }
-	filter "action:not vs*"
-		buildoptions { "-std=c++17" }
-	filter {}
-
 	-- various platform-specific build flags
 	if os.istarget("windows") then
 
@@ -437,6 +430,7 @@ function project_create(project_name, target_type)
 
 	project(project_name)
 	language "C++"
+	cppdialect "C++17"
 	kind(target_type)
 
 	filter "action:vs2017"
