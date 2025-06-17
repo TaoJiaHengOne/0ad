@@ -67,6 +67,7 @@ const configEslintRecommended = {
 		"no-self-assign": "warn",
 		"no-setter-return": "warn",
 		"no-shadow-restricted-names": "warn",
+		"no-sparse-arrays": "warn",
 		"no-this-before-super": "warn",
 		/* "no-undef": "warn", */
 		"no-unexpected-multiline": "warn",
