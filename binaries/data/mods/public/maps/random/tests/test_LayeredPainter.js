@@ -15,6 +15,8 @@ export function* generateMap()
 	g_MapSettings = { "Size": 512 };
 	globalThis.g_Map = new RandomMap(0, "blackness");
 
+	yield 50;
+
 	const min = new Vector2D(4, 4);
 	const max = new Vector2D(10, 10);
 

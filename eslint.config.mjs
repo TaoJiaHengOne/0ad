@@ -82,6 +82,7 @@ const configEslintRecommended = {
 		"no-useless-escape": "warn",
 		"no-with": "warn",
 		"use-isnan": "warn",
+		"require-yield": "warn",
 		"valid-typeof": "warn",
 	}
 };

@@ -5,6 +5,8 @@ export function* generateMap()
 {
 	globalThis.g_Map = new RandomMap(0, "grass1");
 
+	yield 50;
+
 	/**
 	 * Demonstration code for wall placement.
 	 *

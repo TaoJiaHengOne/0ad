@@ -47,6 +47,8 @@ export function* generateMap()
 		TS_ASSERT(area.contains(new Vector2D(0, 0)));
 	}
 
+	yield 50;
+
 	{
 		// Contains points outside map disk range on CircularMap
 		g_MapSettings = { "Size": 512, "CircularMap": true };

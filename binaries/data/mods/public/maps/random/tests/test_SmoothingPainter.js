@@ -21,6 +21,8 @@ export function* generateMap()
 	const minHeight = 20;
 	const maxHeight = 25;
 
+	yield 50;
+
 	// Test SmoothingPainter
 	{
 		globalThis.g_Map = new RandomMap(0, "blackness");

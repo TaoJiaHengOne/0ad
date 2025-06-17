@@ -15,6 +15,8 @@ export function* generateMap()
 	g_MapSettings = { "Size": 512 };
 	globalThis.g_Map = new RandomMap(0, "blackness");
 
+	yield 50;
+
 	// Test that that it checks by value, not by reference
 	{
 		const tileClass = new TileClass(2);
