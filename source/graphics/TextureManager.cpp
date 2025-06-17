@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -792,11 +792,11 @@ public:
 	 */
 	CTextureConverter::Settings GetConverterSettings(const CTexturePtr& texture)
 	{
-		fs::wpath srcPath = texture->m_Properties.m_Path.string();
+		boost::filesystem::path srcPath = texture->m_Properties.m_Path.string();
 
 		std::vector<CTextureConverter::SettingsFile*> files;
 		VfsPath p;
-		for (fs::wpath::iterator it = srcPath.begin(); it != srcPath.end(); ++it)
+		for (boost::filesystem::path::iterator it = srcPath.begin(); it != srcPath.end(); ++it)
 		{
 			VfsPath settingsPath = p / "textures.xml";
 			m_HotloadFiles[settingsPath].insert(texture);

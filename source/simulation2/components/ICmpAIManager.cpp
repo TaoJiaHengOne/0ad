@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -60,8 +60,8 @@ public:
 		ScriptRequest rq(self->m_ScriptInterface);
 
 		// Extract the 3rd component of the path (i.e. the directory after simulation/ai/)
-		fs::wpath components = pathname.string();
-		fs::wpath::iterator it = components.begin();
+		boost::filesystem::path components = pathname.string();
+		boost::filesystem::path::iterator it = components.begin();
 		std::advance(it, 2);
 		std::wstring dirname = GetWstringFromWpath(*it);
 

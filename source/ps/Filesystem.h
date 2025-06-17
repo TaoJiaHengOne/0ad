@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 #include "lib/file/vfs/vfs_util.h"
 #include "ps/CStrForward.h"
 #include "ps/Errors.h"
+
+#include <boost/filesystem.hpp>
 
 extern PIVFS g_VFS;
 
@@ -57,7 +59,7 @@ extern Status ReloadChangedFiles();
 /**
  * Helper function to handle API differences between Boost Filesystem v2 and v3
  */
-std::wstring GetWstringFromWpath(const fs::wpath& path);
+std::wstring GetWstringFromWpath(const boost::filesystem::path& path);
 
 ERROR_GROUP(CVFSFile);
 ERROR_TYPE(CVFSFile, LoadFailed);

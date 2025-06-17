@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -97,7 +97,7 @@ Status ReloadChangedFiles()
 	return INFO::OK;
 }
 
-std::wstring GetWstringFromWpath(const fs::wpath& path)
+std::wstring GetWstringFromWpath(const boost::filesystem::path& path)
 {
 #if BOOST_FILESYSTEM_VERSION == 3
 	return path.wstring();

@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -210,9 +210,9 @@ Status RenameFile(const OsPath& path, const OsPath& newPath)
 
 	try
 	{
-		fs::rename(fs::path(path.string()), fs::path(newPath.string()));
+		boost::filesystem::rename(boost::filesystem::path(path.string()), boost::filesystem::path(newPath.string()));
 	}
-	catch (fs::filesystem_error& err)
+	catch (boost::filesystem::filesystem_error& err)
 	{
 		debug_printf("RenameFile: failed to rename %s to %s.\n%s\n", path.string8().c_str(), path.string8().c_str(), err.what());
 		return ERR::EXCEPTION;
@@ -231,14 +231,14 @@ Status CopyFile(const OsPath& path, const OsPath& newPath, bool override_if_exis
 	{
 		if(override_if_exists)
 #if BOOST_VERSION >=107400
-			fs::copy_file(fs::path(path.string()), fs::path(newPath.string()), boost::filesystem::copy_options::overwrite_existing);
+			boost::filesystem::copy_file(boost::filesystem::path(path.string()), boost::filesystem::path(newPath.string()), boost::filesystem::copy_options::overwrite_existing);
 #else
-			fs::copy_file(fs::path(path.string()), fs::path(newPath.string()), boost::filesystem::copy_option::overwrite_if_exists);
+			boost::filesystem::copy_file(boost::filesystem::path(path.string()), boost::filesystem::path(newPath.string()), boost::filesystem::copy_option::overwrite_if_exists);
 #endif
 		else
-			fs::copy_file(fs::path(path.string()), fs::path(newPath.string()));
+			boost::filesystem::copy_file(boost::filesystem::path(path.string()), boost::filesystem::path(newPath.string()));
 	}
-	catch(fs::filesystem_error& err)
+	catch(boost::filesystem::filesystem_error& err)
 	{
 		debug_printf("CopyFile: failed to copy %s to %s.\n%s\n", path.string8().c_str(), path.string8().c_str(), err.what());
 		return ERR::EXCEPTION;
