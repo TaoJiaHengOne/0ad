@@ -23,6 +23,7 @@
 #include "simulation2/system/CmpPtr.h"
 #include "simulation2/system/Components.h"
 
+#include <memory>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -277,7 +278,7 @@ public:
 	std::string GetAIData();
 
 private:
-	CSimulation2Impl* m;
+	const std::unique_ptr<CSimulation2Impl> m;
 };
 
 #endif // INCLUDED_SIMULATION2

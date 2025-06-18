@@ -619,14 +619,11 @@ void CSimulation2Impl::DumpState()
 ////////////////////////////////////////////////////////////////
 
 CSimulation2::CSimulation2(CUnitManager* unitManager, ScriptContext& cx, CTerrain* terrain) :
-	m(new CSimulation2Impl(unitManager, cx, terrain))
+	m(std::make_unique<CSimulation2Impl>(unitManager, cx, terrain))
 {
 }
 
-CSimulation2::~CSimulation2()
-{
-	delete m;
-}
+CSimulation2::~CSimulation2() = default;
 
 // Forward all method calls to the appropriate CSimulation2Impl/CComponentManager methods:
 
