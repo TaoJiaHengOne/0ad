@@ -23,6 +23,8 @@
 #include "ScriptExtraHeaders.h" // for typed arrays
 
 #include <limits>
+#include <optional>
+#include <type_traits>
 #include <vector>
 
 namespace Script
@@ -31,6 +33,21 @@ namespace Script
  * Convert a JS::Value to a C++ type. (This might trigger GC.)
  */
 template<typename T> bool FromJSVal(const ScriptRequest& rq, const JS::HandleValue val, T& ret);
+
+template<typename T>
+bool FromJSVal(const ScriptRequest& rq, JS::HandleValue v, std::optional<T>& out)
+{
+	if (v.isNullOrUndefined())
+	{
+		out = std::nullopt;
+		return true;
+	}
+	T value;
+	if (!FromJSVal(rq, v, value))
+		return false;
+	out = std::move(value);
+	return true;
+}
 
 /**
  * Convert a C++ type to a JS::Value. (This might trigger GC. The return
