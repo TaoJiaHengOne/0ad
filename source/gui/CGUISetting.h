@@ -21,6 +21,7 @@
 #include "ps/CStr.h"
 #include "scriptinterface/ScriptForward.h"
 
+#include <utility>
 
 class IGUIObject;
 
