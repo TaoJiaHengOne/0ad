@@ -250,7 +250,7 @@ private:
 			if constexpr (!std::is_same_v<R, IgnoreResult_t>)
 			{
 				if (success)
-					Script::FromJSVal(rq, jsRet, ret);
+					success = Script::FromJSVal(rq, jsRet, ret);
 			}
 			else
 				UNUSED2(ret); // VS2017 complains.
