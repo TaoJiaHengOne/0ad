@@ -52,6 +52,6 @@ class MatchSettingsDialog
 		this.matchSettingsPlayerstate.hidden = isActive;
 		this.matchSettingsPlayerstate.caption = g_PlayerStateMessages[playerState] || "";
 
-		this.gameDescription.size.top = (isActive ? this.objectivesTitle : this.objectivesPlayerstate).size.bottom;
+		this.gameDescription.size.top = (isActive ? this.matchSettingsTitle : this.matchSettingsPlayerstate).size.bottom;
 	}
 }
