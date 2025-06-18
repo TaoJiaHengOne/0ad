@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,7 +27,13 @@
 #ifndef INCLUDED_STREAM
 #define INCLUDED_STREAM
 
+#include "lib/code_annotation.h"
+#include "lib/debug.h"
 #include "lib/file/archive/codec.h"
+#include "lib/types.h"
+
+#include <cstddef>
+#include <memory>
 
 // note: this is similar in function to std::vector, but we don't need
 // iterators etc. and would prefer to avoid initializing each byte.

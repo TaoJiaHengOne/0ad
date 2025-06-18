@@ -27,7 +27,10 @@
 #ifndef INCLUDED_BYTE_ORDER
 #define INCLUDED_BYTE_ORDER
 
-#include "lib/sysdep/cpu.h"
+#include "lib/sysdep/compiler.h"
+#include "lib/types.h"
+
+#include <cstddef>
 
 // detect byte order via predefined macros.
 #ifndef BYTE_ORDER

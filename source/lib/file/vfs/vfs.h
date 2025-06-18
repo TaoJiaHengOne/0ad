@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -28,8 +28,16 @@
 #ifndef INCLUDED_VFS
 #define INCLUDED_VFS
 
+#include "lib/debug.h"
 #include "lib/file/file_system.h"	// CFileInfo
 #include "lib/file/vfs/vfs_path.h"
+#include "lib/os_path.h"
+#include "lib/types.h"
+
+#include <cstddef>
+#include <limits>
+#include <memory>
+#include <string>
 
 constexpr size_t VFS_MIN_PRIORITY = 0;
 constexpr size_t VFS_MAX_PRIORITY = std::numeric_limits<size_t>::max();

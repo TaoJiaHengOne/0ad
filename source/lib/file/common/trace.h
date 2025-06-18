@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -35,7 +35,13 @@
 #ifndef INCLUDED_TRACE
 #define INCLUDED_TRACE
 
+#include "lib/debug.h"
 #include "lib/os_path.h"
+#include "lib/path.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 // stores information about an IO event.
 class TraceEntry

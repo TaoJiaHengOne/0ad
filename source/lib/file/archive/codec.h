@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -28,6 +28,12 @@
 
 #ifndef INCLUDED_CODEC
 #define INCLUDED_CODEC
+
+#include "lib/status.h"
+#include "lib/types.h"
+
+#include <cstddef>
+#include <memory>
 
 #define CODEC_COMPUTE_CHECKSUM 1
 

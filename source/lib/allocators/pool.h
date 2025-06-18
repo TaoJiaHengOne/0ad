@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,8 +27,15 @@
 #ifndef INCLUDED_ALLOCATORS_POOL
 #define INCLUDED_ALLOCATORS_POOL
 
-#include "lib/bits.h"	// ROUND_UP
 #include "lib/allocators/allocator_policies.h"
+#include "lib/allocators/freelist.h"
+#include "lib/bits.h"	// ROUND_UP
+#include "lib/code_annotation.h"
+#include "lib/debug.h"
+#include "lib/status.h"
+
+#include <cstddef>
+#include <cstdint>
 
 namespace Allocators {
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,7 +27,10 @@
 #ifndef INCLUDED_ALLOCATORS_DYNARRAY
 #define INCLUDED_ALLOCATORS_DYNARRAY
 
-#include "lib/posix/posix_mman.h"	// PROT_*
+#include "lib/debug.h"
+#include "lib/types.h"
+
+#include <cstddef>
 
 /**
  * provides a memory range that can be expanded but doesn't waste

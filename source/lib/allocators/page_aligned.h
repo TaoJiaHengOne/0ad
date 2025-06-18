@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,7 +23,11 @@
 #ifndef INCLUDED_ALLOCATORS_PAGE_ALIGNED
 #define INCLUDED_ALLOCATORS_PAGE_ALIGNED
 
-#include "lib/posix/posix_mman.h"	// PROT_*
+#include "lib/posix/posix_mman.h"        // PROT_*
+#include "lib/debug.h"
+#include "lib/types.h"
+
+#include <cstddef>
 
 // very thin wrapper on top of sys/mman.h that makes the intent more obvious
 // (its commit/decommit semantics are difficult to tell apart)

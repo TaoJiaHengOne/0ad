@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,7 +27,9 @@
 #ifndef INCLUDED_FILE_STATS
 #define INCLUDED_FILE_STATS
 
-#include "lib/posix/posix_aio.h"	// LIO_READ, LIO_WRITE
+#include "lib/code_annotation.h"
+
+#include <sys/types.h>
 
 #define FILE_STATS_ENABLED 0
 

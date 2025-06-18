@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,9 +27,17 @@
 #ifndef INCLUDED_ARCHIVE
 #define INCLUDED_ARCHIVE
 
-#include "lib/file/file_system.h"	// FileInfo
 #include "lib/file/common/file_loader.h"
+#include "lib/file/file_system.h"	// FileInfo
 #include "lib/file/vfs/vfs_path.h"
+#include "lib/os_path.h"
+#include "lib/path.h"
+#include "lib/status.h"
+#include "lib/types.h"
+
+#include <cstdint>
+#include <memory>
+#include <time.h>
 
 // rationale: this module doesn't build a directory tree of the entries
 // within an archive. that task is left to the VFS; here, we are only

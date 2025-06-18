@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,7 +24,12 @@
 #define INCLUDED_ALLOCATORS_SHARED_PTR
 
 #include "lib/alignment.h"
+#include "lib/debug.h"
 #include "lib/sysdep/rtl.h" // rtl_AllocateAligned
+#include "lib/types.h"
+
+#include <cstddef>
+#include <memory>
 
 struct DummyDeleter
 {
