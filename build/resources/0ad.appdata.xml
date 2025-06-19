@@ -40,6 +40,19 @@
   <url type="translate">https://gitea.wildfiregames.com/0ad/0ad/wiki/Localization</url>
   <url type="donation">https://play0ad.com/community/donate/</url>
   <releases>
+    <release version="0.27.1" date="2025-06-20">
+        <url type="details">https://play0ad.com/patch-release-27-1-for-0-a-d/</url>
+        <description>
+            <p>Wildfire Games proudly announces the first "patch release" of 0 A.D., 0.27.1 for Alpha 27: "Agni".</p>
+            <ul>
+                <li>Critical performance fixes.</li>
+                <li>Graphics fixes for GPU Skinning and Vulkan Renderer.</li>
+                <li>Fix changing perspective in replays.</li>
+                <li>Port Forwarding and Multiplayer Lobby password fixes.</li>
+                <li>Various crash fixes, build fixes for Linux.</li>
+            </ul>
+        </description>
+    </release>
     <release version="0.27.0" date="2025-01-30">
         <url type="details">https://play0ad.com/new-release-0-a-d-alpha-27-agni/</url>
         <description>

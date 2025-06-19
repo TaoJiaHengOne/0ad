@@ -72,6 +72,7 @@ Before moving on with Full Freeze, make sure that:
 
 ### Full Freeze
 
+- [ ] [Update appdata.xml](wiki/ReleaseProcess#update-appdataxml)
 - [ ] [Freeze Jenkins](wiki/ReleaseProcess#freeze-jenkins)
 - [ ] [Confirm full freeze](wiki/ReleaseProcess#confirm-full-freeze)
 - [ ] [Announce Release Candidates](wiki/ReleaseProcess#announce-release-candidates)
