@@ -1,4 +1,4 @@
-/* Copyright (C) 2024 Wildfire Games.
+/* Copyright (C) 2025 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -65,79 +65,6 @@ static Status LibErrorFromVorbis(int err)
 		return ERR::FAIL;
 	}
 }
-
-
-//-----------------------------------------------------------------------------
-
-class VorbisFileAdapter
-{
-public:
-	VorbisFileAdapter(const PFile& openedFile)
-		: file(openedFile)
-		, size(FileSize(openedFile->Pathname()))
-		, offset(0)
-	{
-	}
-
-	static size_t Read(void* bufferToFill, size_t itemSize, size_t numItems, void* context)
-	{
-		VorbisFileAdapter* adapter = static_cast<VorbisFileAdapter*>(context);
-		const off_t sizeRequested = numItems*itemSize;
-		const off_t sizeRemaining = adapter->size - adapter->offset;
-		const size_t sizeToRead = (size_t)std::min(sizeRequested, sizeRemaining);
-
-		io::Operation op(*adapter->file.get(), bufferToFill, sizeToRead, adapter->offset);
-		if(io::Run(op) == INFO::OK)
-		{
-			adapter->offset += sizeToRead;
-			return sizeToRead;
-		}
-
-		errno = EIO;
-		return 0;
-	}
-
-	static int Seek(void* context, ogg_int64_t offset, int whence)
-	{
-		VorbisFileAdapter* adapter = static_cast<VorbisFileAdapter*>(context);
-
-		off_t origin = 0;
-		switch(whence)
-		{
-		case SEEK_SET:
-			origin = 0;
-			break;
-		case SEEK_CUR:
-			origin = adapter->offset;
-			break;
-		case SEEK_END:
-			origin = adapter->size+1;
-			break;
-			NODEFAULT;
-		}
-
-		adapter->offset = Clamp(off_t(origin+offset), off_t(0), adapter->size);
-		return 0;
-	}
-
-	static int Close(void* context)
-	{
-		VorbisFileAdapter* adapter = static_cast<VorbisFileAdapter*>(context);
-		adapter->file.reset();
-		return 0;	// return value is ignored
-	}
-
-	static long Tell(void* context)
-	{
-		VorbisFileAdapter* adapter = static_cast<VorbisFileAdapter*>(context);
-		return adapter->offset;
-	}
-
-private:
-	PFile file;
-	off_t size;
-	off_t offset;
-};
 
 //-----------------------------------------------------------------------------
 
@@ -314,17 +241,6 @@ private:
 
 
 //-----------------------------------------------------------------------------
-
-Status OpenOggStream(const OsPath& pathname, OggStreamPtr& stream)
-{
-	PFile file(new File);
-    RETURN_STATUS_IF_ERR(file->Open(pathname, L'r'));
-
-	std::shared_ptr<OggStreamImpl<VorbisFileAdapter>> tmp = std::make_shared<OggStreamImpl<VorbisFileAdapter>>(VorbisFileAdapter(file));
-	RETURN_STATUS_IF_ERR(tmp->Open());
-	stream = tmp;
-	return INFO::OK;
-}
 
 Status OpenOggNonstream(const PIVFS& vfs, const VfsPath& pathname, OggStreamPtr& stream)
 {
