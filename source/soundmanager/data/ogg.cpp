@@ -30,6 +30,7 @@
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
 
+#include <stdexcept>
 
 static Status LibErrorFromVorbis(int err)
 {
@@ -142,10 +143,11 @@ class OggStreamImpl : public OggStream
 {
 public:
 	OggStreamImpl(const Adapter& adapter)
-		: adapter(adapter)
+		: adapter(adapter),
+		m_fileEOF(false),
+		info(nullptr)
 	{
-		m_fileEOF = false;
-		info = NULL;
+		Open();
 	}
 
 	Status Close()
@@ -153,35 +155,6 @@ public:
 		ov_clear( &vf );
 
 		return 0;
-	}
-
-	Status Open()
-	{
-		ov_callbacks callbacks;
-		callbacks.read_func = Adapter::Read;
-		callbacks.close_func = Adapter::Close;
-		callbacks.seek_func = Adapter::Seek;
-		callbacks.tell_func = Adapter::Tell;
-		const int ret = ov_open_callbacks(&adapter, &vf, 0, 0, callbacks);
-		switch (ret)
-		{
-			case 0:
-				break;
-			case OV_EBADHEADER:
-			case OV_EREAD:
-			case OV_ENOTVORBIS:
-			case OV_EVERSION:
-				return LibErrorFromVorbis(ret);
-			default:
-				WARN_RETURN(LibErrorFromVorbis(ret));
-		}
-
-		const int link = -1;	// retrieve info for current bitstream
-		info = ov_info(&vf, link);
-		if(!info)
-			WARN_RETURN(ERR::INVALID_HANDLE);
-
-		return INFO::OK;
 	}
 
 	virtual ALenum Format()
@@ -233,6 +206,34 @@ public:
 	}
 
 private:
+	void Open()
+	{
+		ov_callbacks callbacks;
+		callbacks.read_func = Adapter::Read;
+		callbacks.close_func = Adapter::Close;
+		callbacks.seek_func = Adapter::Seek;
+		callbacks.tell_func = Adapter::Tell;
+		const int ret{ov_open_callbacks(&adapter, &vf, 0, 0, callbacks)};
+		switch (ret)
+		{
+			case 0:
+				break;
+			case OV_EBADHEADER:
+			case OV_EREAD:
+			case OV_ENOTVORBIS:
+			case OV_EVERSION:
+				throw std::runtime_error(fmt::format("Failed to open Ogg Vorbis file: {}", LibErrorFromVorbis(ret)));
+			default:
+				throw std::runtime_error(fmt::format("Unknown error opening Ogg Vorbis file: {}", LibErrorFromVorbis(ret)));
+		}
+
+		// Retrieve info for current bitstream.
+		const int link{-1};
+		info = ov_info(&vf, link);
+		if(!info)
+			DEBUG_WARN_ERR(ERR::INVALID_HANDLE);
+	}
+
 	Adapter adapter;
 	OggVorbis_File vf;
 	vorbis_info* info;
@@ -248,10 +249,17 @@ Status OpenOggNonstream(const PIVFS& vfs, const VfsPath& pathname, OggStreamPtr&
 	size_t size;
 	RETURN_STATUS_IF_ERR(vfs->LoadFile(pathname, contents, size));
 
-	std::shared_ptr<OggStreamImpl<VorbisBufferAdapter>> tmp = std::make_shared<OggStreamImpl<VorbisBufferAdapter>>(VorbisBufferAdapter(contents, size));
-	RETURN_STATUS_IF_ERR(tmp->Open());
-	stream = tmp;
-	return INFO::OK;
+	try
+	{
+		std::shared_ptr<OggStreamImpl<VorbisBufferAdapter>> tmp{std::make_shared<OggStreamImpl<VorbisBufferAdapter>>(VorbisBufferAdapter(contents, size))};
+		stream = tmp;
+		return INFO::OK;
+	}
+	catch(const std::runtime_error& e)
+	{
+		LOGERROR(e.what());
+		return ERR::IO;
+	}
 }
 
 #endif	// CONFIG2_AUDIO
