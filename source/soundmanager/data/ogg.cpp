@@ -185,29 +185,36 @@ public:
 
 	virtual Status GetNextChunk(u8* buffer, size_t size)
 	{
-		// we may have to call ov_read multiple times because it
-		// treats the buffer size "as a limit and not a request"
+		// We may have to call ov_read multiple times because it
+		// treats the buffer size "as a limit and not a request".
 		size_t bytesRead{0};
-		for(;;)
+		while (bytesRead < size)
 		{
-			const int isBigEndian{(BYTE_ORDER == BIG_ENDIAN)};
-			const int wordSize{sizeof(i16)};
-			const int isSigned{1};
-			int bitstream;	// unused
-			const int ret{static_cast<int>(ov_read(&m_VorbisFile, (char*)buffer+bytesRead, int(size-bytesRead), isBigEndian, wordSize, isSigned, &bitstream))};
-			if(ret == 0) {	// EOF
+			constexpr int isBigEndian{(BYTE_ORDER == BIG_ENDIAN)};
+			constexpr int wordSize{sizeof(i16)};
+			constexpr int isSigned{1};
+			// Unused.
+			int bitstream;
+			const int ret{static_cast<int>(ov_read(
+				&m_VorbisFile,
+				reinterpret_cast<char*>(buffer + bytesRead),
+				static_cast<int>(size - bytesRead),
+				isBigEndian,
+				wordSize,
+				isSigned,
+				&bitstream
+			))};
+			if(ret == 0) {
 				m_FileEOF = true;
-				return (Status)bytesRead;
+				return static_cast<Status>(bytesRead);
 			}
-			else if(ret < 0)
+
+			if(ret < 0)
 				WARN_RETURN(LibErrorFromVorbis(ret));
-			else	// success
-			{
-				bytesRead += ret;
-				if(bytesRead == size)
-					return (Status)bytesRead;
-			}
+
+			bytesRead += static_cast<size_t>(ret);
 		}
+		return static_cast<Status>(bytesRead);
 	}
 
 private:
