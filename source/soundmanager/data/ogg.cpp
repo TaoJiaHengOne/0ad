@@ -81,11 +81,11 @@ public:
 
 	static size_t Read(void* bufferToFill, size_t itemSize, size_t numItems, void* context)
 	{
-		VorbisBufferAdapter* adapter = static_cast<VorbisBufferAdapter*>(context);
+		VorbisBufferAdapter* adapter{static_cast<VorbisBufferAdapter*>(context)};
 
-		const off_t sizeRequested = numItems*itemSize;
-		const off_t sizeRemaining = adapter->size - adapter->offset;
-		const size_t sizeToRead = (size_t)std::min(sizeRequested, sizeRemaining);
+		const off_t sizeRequested{static_cast<off_t>(numItems * itemSize)};
+		const off_t sizeRemaining{adapter->size - adapter->offset};
+		const size_t sizeToRead{static_cast<size_t>(std::min(sizeRequested, sizeRemaining))};
 
 		memcpy(bufferToFill, adapter->buffer.get() + adapter->offset, sizeToRead);
 
@@ -95,9 +95,9 @@ public:
 
 	static int Seek(void* context, ogg_int64_t offset, int whence)
 	{
-		VorbisBufferAdapter* adapter = static_cast<VorbisBufferAdapter*>(context);
+		VorbisBufferAdapter* adapter{static_cast<VorbisBufferAdapter*>(context)};
 
-		off_t origin = 0;
+		off_t origin{0};
 		switch(whence)
 		{
 		case SEEK_SET:
@@ -118,14 +118,14 @@ public:
 
 	static int Close(void* context)
 	{
-		VorbisBufferAdapter* adapter = static_cast<VorbisBufferAdapter*>(context);
+		VorbisBufferAdapter* adapter{static_cast<VorbisBufferAdapter*>(context)};
 		adapter->buffer.reset();
 		return 0;	// return value is ignored
 	}
 
 	static long Tell(void* context)
 	{
-		VorbisBufferAdapter* adapter = static_cast<VorbisBufferAdapter*>(context);
+		VorbisBufferAdapter* adapter{static_cast<VorbisBufferAdapter*>(context)};
 		return adapter->offset;
 	}
 
@@ -152,7 +152,7 @@ public:
 
 	Status Close()
 	{
-		ov_clear( &vf );
+		ov_clear(&vf);
 
 		return 0;
 	}
@@ -173,7 +173,7 @@ public:
 
 	virtual Status ResetFile()
 	{
-	    ov_time_seek( &vf, 0 );
+	    ov_time_seek(&vf, 0);
 	    m_fileEOF = false;
 		return INFO::OK;
 	}
@@ -182,14 +182,14 @@ public:
 	{
 		// we may have to call ov_read multiple times because it
 		// treats the buffer size "as a limit and not a request"
-		size_t bytesRead = 0;
+		size_t bytesRead{0};
 		for(;;)
 		{
-			const int isBigEndian = (BYTE_ORDER == BIG_ENDIAN);
-			const int wordSize = sizeof(i16);
-			const int isSigned = 1;
+			const int isBigEndian{(BYTE_ORDER == BIG_ENDIAN)};
+			const int wordSize{sizeof(i16)};
+			const int isSigned{1};
 			int bitstream;	// unused
-			const int ret = ov_read(&vf, (char*)buffer+bytesRead, int(size-bytesRead), isBigEndian, wordSize, isSigned, &bitstream);
+			const int ret{static_cast<int>(ov_read(&vf, (char*)buffer+bytesRead, int(size-bytesRead), isBigEndian, wordSize, isSigned, &bitstream))};
 			if(ret == 0) {	// EOF
 				m_fileEOF = true;
 				return (Status)bytesRead;
