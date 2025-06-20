@@ -30,6 +30,7 @@
 #include "ps/CLogger.h"
 #include "ps/Filesystem.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 static Status LibErrorFromVorbis(int err)
@@ -87,7 +88,11 @@ public:
 		const off_t sizeRemaining{adapter->size - adapter->offset};
 		const size_t sizeToRead{static_cast<size_t>(std::min(sizeRequested, sizeRemaining))};
 
-		memcpy(bufferToFill, adapter->buffer.get() + adapter->offset, sizeToRead);
+		std::copy_n(
+			adapter->buffer.get() + adapter->offset,
+			sizeToRead,
+			static_cast<u8*>(bufferToFill)
+		);
 
 		adapter->offset += sizeToRead;
 		return sizeToRead;
