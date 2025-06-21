@@ -300,7 +300,7 @@ void CCameraController::Update(const float deltaRealTime)
 	if (m_ConstrainCamera)
 	{
 		if (m_BirdsEyeView)
-			m_RotateX.ClampSmoothly(M_PI / 2, M_PI / 2);
+			m_RotateX.ClampSmoothly(static_cast<float>(M_PI_2), static_cast<float>(M_PI_2));
 		else
 			m_RotateX.ClampSmoothly(DEGTORAD(m_ViewRotateXMin), DEGTORAD(m_ViewRotateXMax));
 	}
