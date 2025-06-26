@@ -19,7 +19,6 @@
 <script directory="gui/session/top_panel/"/>
 <script directory="gui/session/top_panel/IconButtons/"/>
 <script directory="gui/session/trade/"/>
-
 <object name="session">
 
 	<action on="Tick">
