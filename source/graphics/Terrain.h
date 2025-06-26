@@ -1,23 +1,20 @@
 /* Copyright (C) 2022 Wildfire Games.
- * This file is part of 0 A.D.
+ * 本文件是 0 A.D. 的一部分。
  *
- * 0 A.D. is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * 0 A.D. 是自由软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证
+ * (GNU General Public License) 的条款（许可证的第 2 版或您选择的任何更新版本）
+ * 对其进行再分发和/或修改。
  *
- * 0 A.D. is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * 0 A.D. 的分发是希望它能有用，但没有任何担保；甚至没有对“适销性”或
+ * “特定用途适用性”的默示担保。详见 GNU 通用公共许可证。
  *
- * You should have received a copy of the GNU General Public License
- * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
+ * 您应该已经随 0 A.D. 收到了一份 GNU 通用公共许可证的副本。
+ * 如果没有，请查阅 <http://www.gnu.org/licenses/>。
  */
 
-/*
- * Describes ground via heightmap and array of CPatch.
- */
+ /*
+  * 通过高度图和 CPatch 数组来描述地面。
+  */
 
 #ifndef INCLUDED_TERRAIN
 #define INCLUDED_TERRAIN
@@ -28,153 +25,184 @@
 #include "maths/Vector3D.h"
 #include "ps/CStr.h"
 
+ // 前向声明，避免不必要的头文件包含
 class CPatch;
 class CMiniPatch;
 class CFixedVector3D;
 class CBoundingBoxAligned;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Terrain Constants:
+// 地形常量:
 
-/// metres [world space units] per tile in x and z
+/// 每个地块在x和z方向上的米数 [世界空间单位]
 const ssize_t TERRAIN_TILE_SIZE = 4;
 
-/// number of u16 height units per metre
+/// 每米包含的u16高度单位数量
 const ssize_t HEIGHT_UNITS_PER_METRE = 92;
 
-/// metres per u16 height unit
+/// 每个u16高度单位对应的米数
 const float HEIGHT_SCALE = 1.f / HEIGHT_UNITS_PER_METRE;
 
 ///////////////////////////////////////////////////////////////////////////////
-// CTerrain: main terrain class; contains the heightmap describing elevation
-// data, and the smaller subpatches that form the terrain
+// CTerrain: 主要的地形类；包含描述高程数据的高度图，以及构成地形的更小的子地块
 class CTerrain
 {
 public:
+	// 构造函数
 	CTerrain();
+	// 析构函数
 	~CTerrain();
 
-	// Coordinate naming convention: world-space coordinates are float x,z;
-	// tile-space coordinates are ssize_t i,j. rationale: signed types can
-	// more efficiently be converted to/from floating point. use ssize_t
-	// instead of int/long because these are sizes.
+	// 坐标命名约定：世界空间坐标是 float 类型的 x,z；
+	// 地块空间坐标是 ssize_t 类型的 i,j。理由：有符号类型可以
+	// 更高效地与浮点数相互转换。使用 ssize_t
+	// 而不是 int/long 是因为这些是尺寸。
 
+	/**
+	 * 初始化地形
+	 * @param patchesPerSide 每边的区块（patch）数量
+	 * @param ptr 指向高度图数据的指针
+	 * @return 如果成功则返回 true
+	 */
 	bool Initialize(ssize_t patchesPerSide, const u16* ptr);
 
-	// return number of vertices along edge of the terrain
+	// 返回地形边缘的顶点数量
 	ssize_t GetVerticesPerSide() const { return m_MapSize; }
-	// return number of tiles along edge of the terrain
-	ssize_t GetTilesPerSide() const { return GetVerticesPerSide()-1; }
-	// return number of patches along edge of the terrain
+	// 返回地形边缘的地块数量
+	ssize_t GetTilesPerSide() const { return GetVerticesPerSide() - 1; }
+	// 返回地形边缘的区块数量
 	ssize_t GetPatchesPerSide() const { return m_MapSizePatches; }
 
+	// 获取X轴最小坐标
 	float GetMinX() const { return 0.0f; }
+	// 获取Z轴最小坐标
 	float GetMinZ() const { return 0.0f; }
-	float GetMaxX() const { return (float)((m_MapSize-1) * TERRAIN_TILE_SIZE); }
-	float GetMaxZ() const { return (float)((m_MapSize-1) * TERRAIN_TILE_SIZE); }
+	// 获取X轴最大坐标
+	float GetMaxX() const { return (float)((m_MapSize - 1) * TERRAIN_TILE_SIZE); }
+	// 获取Z轴最大坐标
+	float GetMaxZ() const { return (float)((m_MapSize - 1) * TERRAIN_TILE_SIZE); }
 
+	/**
+	 * 检查一个点是否在地图上
+	 * @param x X坐标
+	 * @param z Z坐标
+	 * @return 如果在地图上则返回 true
+	 */
 	bool IsOnMap(float x, float z) const
 	{
 		return ((x >= GetMinX()) && (x < GetMaxX())
-		     && (z >= GetMinZ()) && (z < GetMaxZ()));
+			&& (z >= GetMinZ()) && (z < GetMaxZ()));
 	}
 
+	// 获取指定顶点的地面高度
 	float GetVertexGroundLevel(ssize_t i, ssize_t j) const;
+	// 获取指定顶点的地面高度（定点数版本）
 	fixed GetVertexGroundLevelFixed(ssize_t i, ssize_t j) const;
+	// 获取指定精确坐标的地面高度（通过插值计算）
 	float GetExactGroundLevel(float x, float z) const;
+	// 获取指定精确坐标的地面高度（定点数版本）
 	fixed GetExactGroundLevelFixed(fixed x, fixed z) const;
+	// 获取指定点周围一个半径内经过滤波的地面高度
 	float GetFilteredGroundLevel(float x, float z, float radius) const;
 
-	// get the approximate slope of a tile
-	// (0 = horizontal, 0.5 = 30 degrees, 1.0 = 45 degrees, etc)
+	// 获取一个地块的大致坡度
+	// (0 = 水平, 0.5 = 30度, 1.0 = 45度, 等等)
 	fixed GetSlopeFixed(ssize_t i, ssize_t j) const;
 
-	// get the precise slope of a point, accounting for triangulation direction
+	// 获取一个点的精确坡度，考虑了三角化方向
 	fixed GetExactSlopeFixed(fixed x, fixed z) const;
 
-	// Returns true if the triangulation diagonal for tile (i, j)
-	// should be in the direction (1,-1); false if it should be (1,1)
+	// 如果地块 (i, j) 的三角化对角线方向应为 (1,-1)，则返回 true；
+	// 如果方向为 (1,1)，则返回 false
 	bool GetTriangulationDir(ssize_t i, ssize_t j) const;
 
-	// Resize this terrain such that each side has given number of patches,
-	// with the center offset in patches from the center of the source.
+	// 调整此地形的大小，使每边具有给定的区块数量，
+	// 并以区块为单位，相对于源中心进行中心偏移。
 	void ResizeAndOffset(ssize_t size, ssize_t horizontalOffset = 0, ssize_t verticalOffset = 0);
 
-	// set up a new heightmap from 16 bit data; assumes heightmap matches current terrain size
+	// 从16位数据设置一个新的高度图；假定高度图与当前地形大小匹配
 	void SetHeightMap(u16* heightmap);
-	// return a pointer to the heightmap
+	// 返回一个指向高度图的指针
 	u16* GetHeightMap() const { return m_Heightmap; }
 
-	// get patch at given coordinates, expressed in patch-space; return 0 if
-	// coordinates represent patch off the edge of the map
+	// 获取给定坐标（以区块空间表示）的区块；如果
+	// 坐标代表地图边缘之外的区块，则返回 0
 	CPatch* GetPatch(ssize_t i, ssize_t j) const;
-	// get tile at given coordinates, expressed in tile-space; return 0 if
-	// coordinates represent tile off the edge of the map
+	// 获取给定坐标（以地块空间表示）的地块；如果
+	// 坐标代表地图边缘之外的地块，则返回 0
 	CMiniPatch* GetTile(ssize_t i, ssize_t j) const;
 
-	// calculate the position of a given vertex
+	// 计算给定顶点的三维位置
 	void CalcPosition(ssize_t i, ssize_t j, CVector3D& pos) const;
 	void CalcPositionFixed(ssize_t i, ssize_t j, CFixedVector3D& pos) const;
-	// calculate the vertex under a given position (rounding down coordinates)
+	// 计算给定位置下的顶点（向下取整坐标）
 	static void CalcFromPosition(const CVector3D& pos, ssize_t& i, ssize_t& j)
 	{
-		i = (ssize_t)(pos.X/TERRAIN_TILE_SIZE);
-		j = (ssize_t)(pos.Z/TERRAIN_TILE_SIZE);
+		i = (ssize_t)(pos.X / TERRAIN_TILE_SIZE);
+		j = (ssize_t)(pos.Z / TERRAIN_TILE_SIZE);
 	}
-	// calculate the vertex under a given position (rounding down coordinates)
+	// 计算给定位置下的顶点（向下取整坐标）
 	static void CalcFromPosition(float x, float z, ssize_t& i, ssize_t& j)
 	{
-		i = (ssize_t)(x/TERRAIN_TILE_SIZE);
-		j = (ssize_t)(z/TERRAIN_TILE_SIZE);
+		i = (ssize_t)(x / TERRAIN_TILE_SIZE);
+		j = (ssize_t)(z / TERRAIN_TILE_SIZE);
 	}
-	// calculate the normal at a given vertex
+	// 计算给定顶点的法线
 	void CalcNormal(ssize_t i, ssize_t j, CVector3D& normal) const;
 	void CalcNormalFixed(ssize_t i, ssize_t j, CFixedVector3D& normal) const;
 
+	/**
+	 * 计算指定精确坐标的法线向量
+	 * @param x X坐标
+	 * @param z Z坐标
+	 * @return 法线向量
+	 */
 	CVector3D CalcExactNormal(float x, float z) const;
 
-	// Mark a specific square of tiles (inclusive lower bound, exclusive upper bound)
-	// as dirty - use this after modifying the heightmap.
-	// If you modify a vertex (i,j), you should dirty tiles
-	// from (i-1, j-1) [inclusive] to (i+1, j+1) [exclusive]
-	// since their geometry depends on that vertex.
-	// If you modify a tile (i,j), you should dirty tiles
-	// from (i-1, j-1) [inclusive] to (i+2, j+2) [exclusive]
-	// since their texture blends depend on that tile.
+	// 将一个特定的地块正方形区域（包含下界，不包含上界）
+	// 标记为“脏” - 在修改高度图后使用此函数。
+	// 如果你修改了一个顶点 (i,j)，你应该将从 (i-1, j-1) [包含] 到
+	// (i+1, j+1) [不包含] 的地块标记为脏，因为它们的几何形状依赖于该顶点。
+	// 如果你修改了一个地块 (i,j)，你应该将从 (i-1, j-1) [包含] 到
+	// (i+2, j+2) [不包含] 的地块标记为脏，因为它们的纹理混合依赖于该地块。
 	void MakeDirty(ssize_t i0, ssize_t j0, ssize_t i1, ssize_t j1, int dirtyFlags);
-	// mark the entire map as dirty
+	// 将整个地图标记为“脏”
 	void MakeDirty(int dirtyFlags);
 
 	/**
-	 * Returns a 3D bounding box encompassing the given vertex range (inclusive)
+	 * 返回一个包含给定顶点范围（包含）的三维包围盒
 	 */
 	CBoundingBoxAligned GetVertexesBound(ssize_t i0, ssize_t j0, ssize_t i1, ssize_t j1);
 
-	// get the base color for the terrain (typically pure white - other colors
-	// will interact badly with LOS - but used by the Actor Viewer tool)
+	// 获取地形的基础颜色（通常是纯白色 - 其他颜色
+	// 会与视野（LOS）产生不良交互 - 但在 Actor Viewer 工具中使用）
 	SColor4ub GetBaseColor() const { return m_BaseColor; }
-	// set the base color for the terrain
+	// 设置地形的基础颜色
 	void SetBaseColor(SColor4ub color) { m_BaseColor = color; }
 
+	/**
+	 * 获取高度图的多级渐进纹理（mipmap）
+	 * @return 对高度图 mipmap 的常量引用
+	 */
 	const CHeightMipmap& GetHeightMipmap() const { return m_HeightMipmap; }
 
 private:
-	// delete any data allocated by this terrain
+	// 删除此地形分配的任何数据
 	void ReleaseData();
-	// setup patch pointers etc
+	// 设置区块指针等
 	void InitialisePatches();
 
-	// size of this map in each direction, in vertices; ie. total tiles = sqr(m_MapSize-1)
+	// 以顶点为单位，此地图每个方向的大小；即总地块数 = sqr(m_MapSize-1)
 	ssize_t m_MapSize;
-	// size of this map in each direction, in patches; total patches = sqr(m_MapSizePatches)
+	// 以区块为单位，此地图每个方向的大小；总区块数 = sqr(m_MapSizePatches)
 	ssize_t m_MapSizePatches;
-	// the patches comprising this terrain
-	CPatch*	m_Patches;
-	// 16-bit heightmap data
+	// 构成此地形的区块数组
+	CPatch* m_Patches;
+	// 16位高度图数据
 	u16* m_Heightmap;
-	// base color (usually white)
+	// 基础颜色（通常为白色）
 	SColor4ub m_BaseColor;
-	// heightmap mipmap
+	// 高度图的多级渐进纹理
 	CHeightMipmap m_HeightMipmap;
 };
 
