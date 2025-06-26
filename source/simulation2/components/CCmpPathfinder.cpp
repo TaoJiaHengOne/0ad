@@ -1,24 +1,21 @@
 /* Copyright (C) 2025 Wildfire Games.
- * This file is part of 0 A.D.
+ * 本文件是 0 A.D. 的一部分。
  *
- * 0 A.D. is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * 0 A.D. 是自由软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证
+ * (GNU General Public License) 的条款（许可证的第 2 版或您选择的任何更新版本）
+ * 对其进行再分发和/或修改。
  *
- * 0 A.D. is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * 0 A.D. 的分发是希望它能有用，但没有任何担保；甚至没有对“适销性”或
+ * “特定用途适用性”的默示担保。详见 GNU 通用公共许可证。
  *
- * You should have received a copy of the GNU General Public License
- * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
+ * 您应该已经随 0 A.D. 收到了一份 GNU 通用公共许可证的副本。
+ * 如果没有，请查阅 <http://www.gnu.org/licenses/>。
  */
 
-/**
- * @file
- * Common code and setup code for CCmpPathfinder.
- */
+ /**
+  * @file
+  * CCmpPathfinder 的通用代码和设置代码。
+  */
 
 #include "precompiled.h"
 
@@ -46,49 +43,59 @@
 
 #include <type_traits>
 
+  // 向组件系统注册 Pathfinder 组件类型
 REGISTER_COMPONENT_TYPE(Pathfinder)
 
+// 组件初始化函数
 void CCmpPathfinder::Init(const CParamNode&)
 {
+	// 初始化成员变量
 	m_GridSize = 0;
 	m_Grid = NULL;
 	m_TerrainOnlyGrid = NULL;
 
+	// 清空AI寻路器的“脏”信息
 	FlushAIPathfinderDirtinessInformation();
 
+	// 初始化异步请求的唯一票据ID
 	m_NextAsyncTicket = 1;
 
+	// 初始化Atlas覆盖层指针
 	m_AtlasOverlay = NULL;
 
+	// 获取任务管理器的工作线程数量
 	size_t workerThreads = g_TaskManager.GetNumberOfWorkers();
-	// Store one vertex pathfinder for each thread (including the main thread).
+	// 为每个线程（包括主线程）存储一个顶点寻路器。
 	while (m_VertexPathfinders.size() < workerThreads + 1)
 		m_VertexPathfinders.emplace_back(m_GridSize, m_TerrainOnlyGrid);
+	// 创建远程寻路器实例
 	m_LongPathfinder = std::make_unique<LongPathfinder>();
+	// 创建分层寻路器实例
 	m_PathfinderHier = std::make_unique<HierarchicalPathfinder>();
 
-	// Set up one future for each worker thread.
+	// 为每个工作线程设置一个 future 对象。
 	m_Futures.resize(workerThreads);
 
-	// Register Relax NG validator
+	// 注册 Relax NG 验证器
 	g_Xeromyces.AddValidator(g_VFS, "pathfinder", "simulation/data/pathfinder.rng");
 
-	// Since this is used as a system component (not loaded from an entity template),
-	// we can't use the real paramNode (it won't get handled properly when deserializing),
-	// so load the data from a special XML file.
+	// 因为这是作为系统组件使用的（不是从实体模板加载），
+	// 我们不能使用真正的 paramNode（在反序列化时它不会被正确处理），
+	// 所以从一个特殊的XML文件加载数据。
 	CParamNode externalParamNode;
 	CParamNode::LoadXML(externalParamNode, L"simulation/data/pathfinder.xml", "pathfinder");
 
-	// Paths are computed:
-	//  - Before MT_Update
-	//  - Before MT_MotionUnitFormation
-	//  -  asynchronously between turn end and turn start.
-	// The latter of these must compute all outstanding requests, but the former two are capped
-	// to avoid spending too much time there (since the latter are threaded and thus much 'cheaper').
-	// This loads that maximum number (note that it's per computation call, not per turn for now).
+	// 路径计算发生在：
+	//  - MT_Update 之前
+	//  - MT_MotionUnitFormation 之前
+	//  - 在回合结束和回合开始之间异步进行。
+	// 后者必须计算所有未完成的请求，但前两者有上限
+	// 以避免在那里花费太多时间（因为后者是多线程的，因此开销“更小”）。
+	// 这里加载该最大数量（注意，它目前是每次计算调用的上限，而不是每回合）。
 	const CParamNode pathingSettings = externalParamNode.GetChild("Pathfinder");
 	m_MaxSameTurnMoves = (u16)pathingSettings.GetChild("MaxSameTurnMoves").ToInt();
 
+	// 加载通行性类别定义
 	const CParamNode::ChildrenMap& passClasses = externalParamNode.GetChild("Pathfinder").GetChild("PassabilityClasses").GetChildren();
 	for (CParamNode::ChildrenMap::const_iterator it = passClasses.begin(); it != passClasses.end(); ++it)
 	{
@@ -100,11 +107,13 @@ void CCmpPathfinder::Init(const CParamNode&)
 	}
 }
 
+// 析构函数
 CCmpPathfinder::~CCmpPathfinder() {};
 
+// 组件销毁函数
 void CCmpPathfinder::Deinit()
 {
-	SetDebugOverlay(false); // cleans up memory
+	SetDebugOverlay(false); // 清理内存
 
 	m_Futures.clear();
 
@@ -114,6 +123,7 @@ void CCmpPathfinder::Deinit()
 	SAFE_DELETE(m_TerrainOnlyGrid);
 }
 
+// 远程路径请求的序列化辅助模板
 template<>
 struct SerializeHelper<LongPathRequest>
 {
@@ -129,6 +139,7 @@ struct SerializeHelper<LongPathRequest>
 	}
 };
 
+// 短程路径请求的序列化辅助模板
 template<>
 struct SerializeHelper<ShortPathRequest>
 {
@@ -148,6 +159,7 @@ struct SerializeHelper<ShortPathRequest>
 	}
 };
 
+// 通用的序列化/反序列化函数
 template<typename S>
 void CCmpPathfinder::SerializeCommon(S& serialize)
 {
@@ -157,11 +169,13 @@ void CCmpPathfinder::SerializeCommon(S& serialize)
 	serialize.NumberU16_Unbounded("grid size", m_GridSize);
 }
 
+// 序列化函数
 void CCmpPathfinder::Serialize(ISerializer& serialize)
 {
 	SerializeCommon(serialize);
 }
 
+// 反序列化函数
 void CCmpPathfinder::Deserialize(const CParamNode& paramNode, IDeserializer& deserialize)
 {
 	Init(paramNode);
@@ -169,31 +183,32 @@ void CCmpPathfinder::Deserialize(const CParamNode& paramNode, IDeserializer& des
 	SerializeCommon(deserialize);
 }
 
+// 消息处理函数
 void CCmpPathfinder::HandleMessage(const CMessage& msg, bool UNUSED(global))
 {
 	switch (msg.GetType())
 	{
-	case MT_RenderSubmit:
+	case MT_RenderSubmit: // 渲染提交消息
 	{
 		const CMessageRenderSubmit& msgData = static_cast<const CMessageRenderSubmit&> (msg);
 		RenderSubmit(msgData.collector);
 		break;
 	}
-	case MT_TerrainChanged:
+	case MT_TerrainChanged: // 地形变更消息
 	{
 		const CMessageTerrainChanged& msgData = static_cast<const CMessageTerrainChanged&>(msg);
 		m_TerrainDirty = true;
 		MinimalTerrainUpdate(msgData.i0, msgData.j0, msgData.i1, msgData.j1);
 		break;
 	}
-	case MT_WaterChanged:
-	case MT_ObstructionMapShapeChanged:
+	case MT_WaterChanged: // 水体变更消息
+	case MT_ObstructionMapShapeChanged: // 障碍物地图形状变更消息
 		m_TerrainDirty = true;
 		UpdateGrid();
 		break;
-	case MT_Deserialized:
+	case MT_Deserialized: // 反序列化完成消息
 		UpdateGrid();
-		// In case we were serialised with requests pending, we need to process them.
+		// 如果我们序列化时有待处理的请求，我们需要处理它们。
 		if (!m_ShortPathRequests.m_Requests.empty() || !m_LongPathRequests.m_Requests.empty())
 		{
 			ENSURE(CmpPtr<ICmpObstructionManager>(GetSystemEntity()));
@@ -203,33 +218,39 @@ void CCmpPathfinder::HandleMessage(const CMessage& msg, bool UNUSED(global))
 	}
 }
 
+// 提交渲染任务
 void CCmpPathfinder::RenderSubmit(SceneCollector& collector)
 {
 	g_VertexPathfinderDebugOverlay.RenderSubmit(collector);
 	m_PathfinderHier->RenderSubmit(collector);
 }
 
+// 设置调试路径以供渲染
 void CCmpPathfinder::SetDebugPath(entity_pos_t x0, entity_pos_t z0, const PathGoal& goal, pass_class_t passClass)
 {
 	m_LongPathfinder->SetDebugPath(*m_PathfinderHier, x0, z0, goal, passClass);
 }
 
+// 设置调试覆盖层
 void CCmpPathfinder::SetDebugOverlay(bool enabled)
 {
 	g_VertexPathfinderDebugOverlay.SetDebugOverlay(enabled);
 	m_LongPathfinder->SetDebugOverlay(enabled);
 }
 
+// 设置分层寻路器的调试覆盖层
 void CCmpPathfinder::SetHierDebugOverlay(bool enabled)
 {
 	m_PathfinderHier->SetDebugOverlay(enabled, &GetSimContext());
 }
 
+// 获取调试数据
 void CCmpPathfinder::GetDebugData(u32& steps, double& time, Grid<u8>& grid) const
 {
 	m_LongPathfinder->GetDebugData(steps, time, grid);
 }
 
+// 在 Atlas 编辑器中设置覆盖层
 void CCmpPathfinder::SetAtlasOverlay(bool enable, pass_class_t passClass)
 {
 	if (enable)
@@ -242,6 +263,7 @@ void CCmpPathfinder::SetAtlasOverlay(bool enable, pass_class_t passClass)
 		SAFE_DELETE(m_AtlasOverlay);
 }
 
+// 根据名称获取通行性类别
 pass_class_t CCmpPathfinder::GetPassabilityClass(const std::string& name) const
 {
 	std::map<std::string, pass_class_t>::const_iterator it = m_PassClassMasks.find(name);
@@ -254,11 +276,13 @@ pass_class_t CCmpPathfinder::GetPassabilityClass(const std::string& name) const
 	return it->second;
 }
 
+// 获取所有通行性类别
 void CCmpPathfinder::GetPassabilityClasses(std::map<std::string, pass_class_t>& passClasses) const
 {
 	passClasses = m_PassClassMasks;
 }
 
+// 获取通行性类别，区分寻路和非寻路类别
 void CCmpPathfinder::GetPassabilityClasses(std::map<std::string, pass_class_t>& nonPathfindingPassClasses, std::map<std::string, pass_class_t>& pathfindingPassClasses) const
 {
 	for (const std::pair<const std::string, pass_class_t>& pair : m_PassClassMasks)
@@ -270,6 +294,7 @@ void CCmpPathfinder::GetPassabilityClasses(std::map<std::string, pass_class_t>& 
 	}
 }
 
+// 根据掩码获取通行性数据
 const PathfinderPassability* CCmpPathfinder::GetPassabilityFromMask(pass_class_t passClass) const
 {
 	for (const PathfinderPassability& passability : m_PassClasses)
@@ -281,6 +306,7 @@ const PathfinderPassability* CCmpPathfinder::GetPassabilityFromMask(pass_class_t
 	return NULL;
 }
 
+// 获取通行性格子图
 const Grid<NavcellData>& CCmpPathfinder::GetPassabilityGrid()
 {
 	if (!m_Grid)
@@ -290,16 +316,16 @@ const Grid<NavcellData>& CCmpPathfinder::GetPassabilityGrid()
 }
 
 /**
- * Given a grid of passable/impassable navcells (based on some passability mask),
- * computes a new grid where a navcell is impassable (per that mask) if
- * it is <=clearance navcells away from an impassable navcell in the original grid.
- * The results are ORed onto the original grid.
+ * 给定一个可通行/不可通行的导航单元格（navcell）网格（基于某个通行性掩码），
+ * 计算一个新的网格，其中一个导航单元格（根据该掩码）如果
+ * 距离原始网格中一个不可通行的导航单元格 <= clearance 个导航单元格，则该单元格也不可通行。
+ * 结果会通过“或”运算合并到原始网格上。
  *
- * This is used for adding clearance onto terrain-based navcell passability.
+ * 这用于在基于地形的导航单元格通行性上增加间隙。
  *
- * TODO PATHFINDER: might be nicer to get rounded corners by measuring clearances as
- * Euclidean distances; currently it effectively does dist=max(dx,dy) instead.
- * This would only really be a problem for big clearances.
+ * TODO PATHFINDER: 通过将间隙测量为欧几里得距离，可能会得到更圆滑的边角；
+ * 目前它实际上是使用 dist=max(dx,dy)。
+ * 这只对大的间隙才真正是个问题。
  */
 static void ExpandImpassableCells(Grid<NavcellData>& grid, u16 clearance, pass_class_t mask)
 {
@@ -308,13 +334,13 @@ static void ExpandImpassableCells(Grid<NavcellData>& grid, u16 clearance, pass_c
 	u16 w = grid.m_W;
 	u16 h = grid.m_H;
 
-	// First expand impassable cells horizontally into a temporary 1-bit grid
+	// 首先将不可通行的单元格水平扩展到一个临时的1位网格中
 	Grid<u8> tempGrid(w, h);
 	for (u16 j = 0; j < h; ++j)
 	{
-		// New cell (i,j) is blocked if (i',j) blocked for any i-clearance <= i' <= i+clearance
+		// 如果对于任何 i-clearance <= i' <= i+clearance，(i',j)被阻塞，则新单元格(i,j)也被阻塞
 
-		// Count the number of blocked cells around i=0
+		// 计算 i=0 周围被阻塞的单元格数量
 		u16 numBlocked = 0;
 		for (u16 i = 0; i <= clearance && i < w; ++i)
 			if (!IS_PASSABLE(grid.get(i, j), mask))
@@ -322,24 +348,25 @@ static void ExpandImpassableCells(Grid<NavcellData>& grid, u16 clearance, pass_c
 
 		for (u16 i = 0; i < w; ++i)
 		{
-			// Store a flag if blocked by at least one nearby cell
+			// 如果被至少一个附近的单元格阻塞，则存储一个标志
 			if (numBlocked)
 				tempGrid.set(i, j, 1);
 
-			// Slide the numBlocked window along:
-			// remove the old i-clearance value, add the new (i+1)+clearance
-			// (avoiding overflowing the grid)
-			if (i >= clearance && !IS_PASSABLE(grid.get(i-clearance, j), mask))
+			// 向前滑动 numBlocked 窗口：
+			// 移除旧的 i-clearance 值，添加新的 (i+1)+clearance 值
+			// （避免溢出网格）
+			if (i >= clearance && !IS_PASSABLE(grid.get(i - clearance, j), mask))
 				--numBlocked;
-			if (i+1+clearance < w && !IS_PASSABLE(grid.get(i+1+clearance, j), mask))
+			if (i + 1 + clearance < w && !IS_PASSABLE(grid.get(i + 1 + clearance, j), mask))
 				++numBlocked;
 		}
 	}
 
+	// 垂直扩展
 	for (u16 i = 0; i < w; ++i)
 	{
-		// New cell (i,j) is blocked if (i,j') blocked for any j-clearance <= j' <= j+clearance
-		// Count the number of blocked cells around j=0
+		// 如果对于任何 j-clearance <= j' <= j+clearance，(i,j')被阻塞，则新单元格(i,j)也被阻塞
+		// 计算 j=0 周围被阻塞的单元格数量
 		u16 numBlocked = 0;
 		for (u16 j = 0; j <= clearance && j < h; ++j)
 			if (tempGrid.get(i, j))
@@ -347,36 +374,37 @@ static void ExpandImpassableCells(Grid<NavcellData>& grid, u16 clearance, pass_c
 
 		for (u16 j = 0; j < h; ++j)
 		{
-			// Add the mask if blocked by at least one nearby cell
+			// 如果被至少一个附近的单元格阻塞，则添加掩码
 			if (numBlocked)
 				grid.set(i, j, grid.get(i, j) | mask);
 
-			// Slide the numBlocked window along:
-			// remove the old j-clearance value, add the new (j+1)+clearance
-			// (avoiding overflowing the grid)
-			if (j >= clearance && tempGrid.get(i, j-clearance))
+			// 向前滑动 numBlocked 窗口：
+			// 移除旧的 j-clearance 值，添加新的 (j+1)+clearance 值
+			// （避免溢出网格）
+			if (j >= clearance && tempGrid.get(i, j - clearance))
 				--numBlocked;
-			if (j+1+clearance < h && tempGrid.get(i, j+1+clearance))
+			if (j + 1 + clearance < h && tempGrid.get(i, j + 1 + clearance))
 				++numBlocked;
 		}
 	}
 }
 
+// 计算海岸线格子图
 Grid<u16> CCmpPathfinder::ComputeShoreGrid(bool expandOnWater)
 {
 	PROFILE3("ComputeShoreGrid");
 
 	CmpPtr<ICmpWaterManager> cmpWaterManager(GetSystemEntity());
 
-	// TODO: these bits should come from ICmpTerrain
+	// TODO: 这些位应该来自 ICmpTerrain
 	CTerrain& terrain = GetSimContext().GetTerrain();
 
-	// avoid integer overflow in intermediate calculation
+	// 避免中间计算中的整数溢出
 	const u16 shoreMax = 32767;
 
 	u16 shoreGridSize = terrain.GetTilesPerSide();
 
-	// First pass - find underwater tiles
+	// 第一遍 - 找到水下地块
 	Grid<u8> waterGrid(shoreGridSize, shoreGridSize);
 	for (u16 j = 0; j < shoreGridSize; ++j)
 	{
@@ -390,31 +418,31 @@ Grid<u16> CCmpPathfinder::ComputeShoreGrid(bool expandOnWater)
 		}
 	}
 
-	// Second pass - find shore tiles
+	// 第二遍 - 找到海岸地块
 	Grid<u16> shoreGrid(shoreGridSize, shoreGridSize);
 	for (u16 j = 0; j < shoreGridSize; ++j)
 	{
 		for (u16 i = 0; i < shoreGridSize; ++i)
 		{
-			// Find a land tile
+			// 找到一个陆地地块
 			if (!waterGrid.get(i, j))
 			{
-				// If it's bordered by water, it's a shore tile
-				if ((i > 0 && waterGrid.get(i-1, j)) || (i > 0 && j < shoreGridSize-1 && waterGrid.get(i-1, j+1)) || (i > 0 && j > 0 && waterGrid.get(i-1, j-1))
-					|| (i < shoreGridSize-1 && waterGrid.get(i+1, j)) || (i < shoreGridSize-1 && j < shoreGridSize-1 && waterGrid.get(i+1, j+1)) || (i < shoreGridSize-1 && j > 0 && waterGrid.get(i+1, j-1))
-					|| (j > 0 && waterGrid.get(i, j-1)) || (j < shoreGridSize-1 && waterGrid.get(i, j+1))
+				// 如果它与水相邻，它就是一个海岸地块
+				if ((i > 0 && waterGrid.get(i - 1, j)) || (i > 0 && j < shoreGridSize - 1 && waterGrid.get(i - 1, j + 1)) || (i > 0 && j > 0 && waterGrid.get(i - 1, j - 1))
+					|| (i < shoreGridSize - 1 && waterGrid.get(i + 1, j)) || (i < shoreGridSize - 1 && j < shoreGridSize - 1 && waterGrid.get(i + 1, j + 1)) || (i < shoreGridSize - 1 && j > 0 && waterGrid.get(i + 1, j - 1))
+					|| (j > 0 && waterGrid.get(i, j - 1)) || (j < shoreGridSize - 1 && waterGrid.get(i, j + 1))
 					)
 					shoreGrid.set(i, j, 0);
 				else
 					shoreGrid.set(i, j, shoreMax);
 			}
-			// If we want to expand on water, we want water tiles not to be shore tiles
+			// 如果我们想在水上扩展，我们希望水地块不是海岸地块
 			else if (expandOnWater)
 				shoreGrid.set(i, j, shoreMax);
 		}
 	}
 
-	// Expand influences on land to find shore distance
+	// 在陆地上扩展影响以找到海岸距离
 	for (u16 y = 0; y < shoreGridSize; ++y)
 	{
 		u16 min = shoreMax;
@@ -433,11 +461,11 @@ Grid<u16> CCmpPathfinder::ComputeShoreGrid(bool expandOnWater)
 		}
 		for (u16 x = shoreGridSize; x > 0; --x)
 		{
-			if (!waterGrid.get(x-1, y) || expandOnWater)
+			if (!waterGrid.get(x - 1, y) || expandOnWater)
 			{
-				u16 g = shoreGrid.get(x-1, y);
+				u16 g = shoreGrid.get(x - 1, y);
 				if (g > min)
-					shoreGrid.set(x-1, y, min);
+					shoreGrid.set(x - 1, y, min);
 				else if (g < min)
 					min = g;
 
@@ -463,11 +491,11 @@ Grid<u16> CCmpPathfinder::ComputeShoreGrid(bool expandOnWater)
 		}
 		for (u16 y = shoreGridSize; y > 0; --y)
 		{
-			if (!waterGrid.get(x, y-1) || expandOnWater)
+			if (!waterGrid.get(x, y - 1) || expandOnWater)
 			{
-				u16 g = shoreGrid.get(x, y-1);
+				u16 g = shoreGrid.get(x, y - 1);
 				if (g > min)
-					shoreGrid.set(x, y-1, min);
+					shoreGrid.set(x, y - 1, min);
 				else if (g < min)
 					min = g;
 
@@ -479,26 +507,27 @@ Grid<u16> CCmpPathfinder::ComputeShoreGrid(bool expandOnWater)
 	return shoreGrid;
 }
 
+// 更新格子图
 void CCmpPathfinder::UpdateGrid()
 {
 	PROFILE3("UpdateGrid");
 
 	CmpPtr<ICmpTerrain> cmpTerrain(GetSimContext(), SYSTEM_ENTITY);
 	if (!cmpTerrain)
-		return; // error
+		return; // 错误
 
 	u16 gridSize = cmpTerrain->GetMapSize() / Pathfinding::NAVCELL_SIZE_INT;
 	if (gridSize == 0)
 		return;
 
-	// If the terrain was resized then delete the old grid data
+	// 如果地形被调整大小，则删除旧的网格数据
 	if (m_Grid && m_GridSize != gridSize)
 	{
 		SAFE_DELETE(m_Grid);
 		SAFE_DELETE(m_TerrainOnlyGrid);
 	}
 
-	// Initialise the terrain data when first needed
+	// 首次需要时初始化地形数据
 	if (!m_Grid)
 	{
 		m_GridSize = gridSize;
@@ -512,7 +541,7 @@ void CCmpPathfinder::UpdateGrid()
 		m_TerrainDirty = true;
 	}
 
-	// The grid should be properly initialized and clean. Checking the latter is expensive so do it only for debugging.
+	// 网格应该被正确初始化和清理。检查后者开销很大，所以只在调试时进行。
 #ifdef NDEBUG
 	ENSURE(m_DirtinessInformation.dirtinessGrid.compare_sizes(m_Grid));
 #else
@@ -525,8 +554,8 @@ void CCmpPathfinder::UpdateGrid()
 	if (!m_DirtinessInformation.dirty && !m_TerrainDirty)
 		return;
 
-	// If the terrain has changed, recompute m_Grid
-	// Else, use data from m_TerrainOnlyGrid and add obstructions
+	// 如果地形已改变，重新计算 m_Grid
+	// 否则，使用 m_TerrainOnlyGrid 的数据并添加障碍物
 	if (m_TerrainDirty)
 	{
 		TerrainUpdateHelper();
@@ -539,7 +568,7 @@ void CCmpPathfinder::UpdateGrid()
 	else if (m_DirtinessInformation.globallyDirty)
 	{
 		ENSURE(m_Grid->compare_sizes(m_TerrainOnlyGrid));
-		memcpy(m_Grid->m_Data, m_TerrainOnlyGrid->m_Data, (m_Grid->m_W)*(m_Grid->m_H)*sizeof(NavcellData));
+		memcpy(m_Grid->m_Data, m_TerrainOnlyGrid->m_Data, (m_Grid->m_W) * (m_Grid->m_H) * sizeof(NavcellData));
 	}
 	else
 	{
@@ -551,10 +580,10 @@ void CCmpPathfinder::UpdateGrid()
 					m_Grid->set(i, j, m_TerrainOnlyGrid->get(i, j));
 	}
 
-	// Add obstructions onto the grid
+	// 将障碍物光栅化到网格上
 	cmpObstructionManager->Rasterize(*m_Grid, m_PassClasses, m_DirtinessInformation.globallyDirty);
 
-	// Update the long-range and hierarchical pathfinders.
+	// 更新远程和分层寻路器。
 	if (m_DirtinessInformation.globallyDirty)
 	{
 		std::map<std::string, pass_class_t> nonPathfindingPassClasses, pathfindingPassClasses;
@@ -568,15 +597,17 @@ void CCmpPathfinder::UpdateGrid()
 		m_PathfinderHier->Update(m_Grid, m_DirtinessInformation.dirtinessGrid);
 	}
 
-	// Remember the necessary updates that the AI pathfinder will have to perform as well
+	// 记住AI寻路器也需要执行的必要更新
 	m_AIPathfinderDirtinessInformation.MergeAndClear(m_DirtinessInformation);
 }
 
+// 最小化地形更新
 void CCmpPathfinder::MinimalTerrainUpdate(int itile0, int jtile0, int itile1, int jtile1)
 {
 	TerrainUpdateHelper(false, itile0, jtile0, itile1, jtile1);
 }
 
+// 地形更新辅助函数
 void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int jtile0, int itile1, int jtile1)
 {
 	PROFILE3("TerrainUpdateHelper");
@@ -601,7 +632,7 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 		SAFE_DELETE(m_TerrainOnlyGrid);
 		m_TerrainOnlyGrid = new Grid<NavcellData>(m_GridSize, m_GridSize);
 
-		// If this update comes from a map resizing, we must reinitialize the other grids as well
+		// 如果此更新来自地图大小调整，我们必须也重新初始化其他网格
 		if (!m_TerrainOnlyGrid->compare_sizes(m_Grid))
 		{
 			SAFE_DELETE(m_Grid);
@@ -621,29 +652,29 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 	int jstart = 0, jend = m_GridSize;
 	if (partialTerrainGridUpdate)
 	{
-		// We need to extend the boundaries by 1 tile, because slope and ground
-		// level are calculated by multiple neighboring tiles.
-		// TODO: add CTerrain constant instead of 1.
+		// 我们需要将边界扩展1个地块，因为坡度和地面
+		// 高度是由多个相邻地块计算的。
+		// TODO: 添加 CTerrain 常量而不是 1。
 		istart = Clamp<int>((itile0 - 1) * Pathfinding::NAVCELLS_PER_TERRAIN_TILE, 0, m_GridSize);
 		iend = Clamp<int>((itile1 + 1) * Pathfinding::NAVCELLS_PER_TERRAIN_TILE, 0, m_GridSize);
 		jstart = Clamp<int>((jtile0 - 1) * Pathfinding::NAVCELLS_PER_TERRAIN_TILE, 0, m_GridSize);
 		jend = Clamp<int>((jtile1 + 1) * Pathfinding::NAVCELLS_PER_TERRAIN_TILE, 0, m_GridSize);
 	}
 
-	// Compute initial terrain-dependent passability
+	// 计算初始的地形相关通行性
 	for (int j = jstart; j < jend; ++j)
 	{
 		for (int i = istart; i < iend; ++i)
 		{
-			// World-space coordinates for this navcell
+			// 此导航单元格的世界空间坐标
 			fixed x, z;
 			Pathfinding::NavcellCenter(i, j, x, z);
 
-			// Terrain-tile coordinates for this navcell
+			// 此导航单元格的地形地块坐标
 			int itile = i / Pathfinding::NAVCELLS_PER_TERRAIN_TILE;
 			int jtile = j / Pathfinding::NAVCELLS_PER_TERRAIN_TILE;
 
-			// Gather all the data potentially needed to determine passability:
+			// 收集所有可能需要用来确定通行性的数据：
 
 			fixed height = terrain.GetExactGroundLevelFixed(x, z);
 
@@ -653,13 +684,13 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 
 			fixed depth = water - height;
 
-			// Exact slopes give kind of weird output, so just use rough tile-based slopes
+			// 精确的坡度会给出有点奇怪的输出，所以只使用粗略的基于地块的坡度
 			fixed slope = terrain.GetSlopeFixed(itile, jtile);
 
-			// Get world-space coordinates from shoreGrid (which uses terrain tiles)
+			// 从 shoreGrid（使用地形地块）获取世界空间坐标
 			fixed shoredist = fixed::FromInt(shoreGrid.get(itile, jtile)).MultiplyClamp(TERRAIN_TILE_SIZE);
 
-			// Compute the passability for every class for this cell
+			// 为此单元格计算每个类别的通行性
 			NavcellData t = 0;
 			for (const PathfinderPassability& passability : m_PassClasses)
 				if (!passability.IsPassable(depth, slope, shoredist))
@@ -669,7 +700,7 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 		}
 	}
 
-	// Compute off-world passability
+	// 计算世界外的通行性
 	const int edgeSize = MAP_EDGE_TILES * Pathfinding::NAVCELLS_PER_TERRAIN_TILE;
 
 	NavcellData edgeMask = 0;
@@ -685,16 +716,16 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 		{
 			for (int i = istart; i < iend; ++i)
 			{
-				// Based on CCmpRangeManager::LosIsOffWorld
-				// but tweaked since it's tile-based instead.
-				// (We double all the values so we can handle half-tile coordinates.)
-				// This needs to be slightly tighter than the LOS circle,
-				// else units might get themselves lost in the SoD around the edge.
+				// 基于 CCmpRangeManager::LosIsOffWorld
+				// 但因为是基于地块的而做了调整。
+				// （我们将所有值加倍，以便处理半地块坐标。）
+				// 这需要比LOS圆圈稍微紧凑一些，
+				// 否则单位可能会在边缘的战争迷雾中迷路。
 
-				int dist2 = (i*2 + 1 - w)*(i*2 + 1 - w)
-					+ (j*2 + 1 - h)*(j*2 + 1 - h);
+				int dist2 = (i * 2 + 1 - w) * (i * 2 + 1 - w)
+					+ (j * 2 + 1 - h) * (j * 2 + 1 - h);
 
-				if (dist2 >= (w - 2*edgeSize) * (h - 2*edgeSize))
+				if (dist2 >= (w - 2 * edgeSize) * (h - 2 * edgeSize))
 					m_TerrainOnlyGrid->set(i, j, m_TerrainOnlyGrid->get(i, j) | edgeMask);
 			}
 		}
@@ -705,24 +736,23 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 			for (u16 i = 0; i < edgeSize; ++i)
 				m_TerrainOnlyGrid->set(i, j, m_TerrainOnlyGrid->get(i, j) | edgeMask);
 		for (u16 j = 0; j < h; ++j)
-			for (u16 i = w-edgeSize+1; i < w; ++i)
+			for (u16 i = w - edgeSize + 1; i < w; ++i)
 				m_TerrainOnlyGrid->set(i, j, m_TerrainOnlyGrid->get(i, j) | edgeMask);
 		for (u16 j = 0; j < edgeSize; ++j)
-			for (u16 i = edgeSize; i < w-edgeSize+1; ++i)
+			for (u16 i = edgeSize; i < w - edgeSize + 1; ++i)
 				m_TerrainOnlyGrid->set(i, j, m_TerrainOnlyGrid->get(i, j) | edgeMask);
-		for (u16 j = h-edgeSize+1; j < h; ++j)
-			for (u16 i = edgeSize; i < w-edgeSize+1; ++i)
+		for (u16 j = h - edgeSize + 1; j < h; ++j)
+			for (u16 i = edgeSize; i < w - edgeSize + 1; ++i)
 				m_TerrainOnlyGrid->set(i, j, m_TerrainOnlyGrid->get(i, j) | edgeMask);
 	}
 
 	if (!expandPassability)
 		return;
 
-	// Expand the impassability grid, for any class with non-zero clearance,
-	// so that we can stop units getting too close to impassable navcells.
-	// Note: It's not possible to perform this expansion once for all passabilities
-	// with the same clearance, because the impassable cells are not necessarily the
-	// same for all these passabilities.
+	// 对于任何具有非零间隙的类别，扩展不可通行网格，
+	// 以便我们可以阻止单位过于靠近不可通行的导航单元格。
+	// 注意：不可能一次为所有具有相同间隙的通行性类别执行此扩展，
+	// 因为对于所有这些通行性类别，不可通行的单元格不一定相同。
 	for (PathfinderPassability& passability : m_PassClasses)
 	{
 		if (passability.m_Clearance == fixed::Zero())
@@ -735,6 +765,7 @@ void CCmpPathfinder::TerrainUpdateHelper(bool expandPassability, int itile0, int
 
 //////////////////////////////////////////////////////////
 
+// 异步计算长程路径
 u32 CCmpPathfinder::ComputePathAsync(entity_pos_t x0, entity_pos_t z0, const PathGoal& goal, pass_class_t passClass, entity_id_t notify)
 {
 	LongPathRequest req = { m_NextAsyncTicket++, x0, z0, goal, passClass, notify };
@@ -742,99 +773,111 @@ u32 CCmpPathfinder::ComputePathAsync(entity_pos_t x0, entity_pos_t z0, const Pat
 	return req.ticket;
 }
 
+// 异步计算短程路径
 u32 CCmpPathfinder::ComputeShortPathAsync(entity_pos_t x0, entity_pos_t z0, entity_pos_t clearance, entity_pos_t range,
-                                          const PathGoal& goal, pass_class_t passClass, bool avoidMovingUnits,
-                                          entity_id_t group, entity_id_t notify)
+	const PathGoal& goal, pass_class_t passClass, bool avoidMovingUnits,
+	entity_id_t group, entity_id_t notify)
 {
 	ShortPathRequest req = { m_NextAsyncTicket++, x0, z0, clearance, range, goal, passClass, avoidMovingUnits, group, notify };
 	m_ShortPathRequests.m_Requests.push_back(req);
 	return req.ticket;
 }
 
+// 立即计算长程路径
 void CCmpPathfinder::ComputePathImmediate(entity_pos_t x0, entity_pos_t z0, const PathGoal& goal, pass_class_t passClass, WaypointPath& ret) const
 {
 	m_LongPathfinder->ComputePath(*m_PathfinderHier, x0, z0, goal, passClass, ret);
 }
 
+// 立即计算短程路径
 WaypointPath CCmpPathfinder::ComputeShortPathImmediate(const ShortPathRequest& request) const
 {
 	return m_VertexPathfinders.front().ComputeShortPath(request, CmpPtr<ICmpObstructionManager>(GetSystemEntity()));
 }
 
+// 模板函数，用于在工作线程中计算路径请求
 template<typename T>
 template<typename U>
 void CCmpPathfinder::PathRequests<T>::Compute(const CCmpPathfinder& cmpPathfinder, const U& pathfinder)
 {
+	// 静态断言，确保模板参数类型匹配
 	static_assert((std::is_same_v<T, LongPathRequest> && std::is_same_v<U, LongPathfinder>) ||
-				  (std::is_same_v<T, ShortPathRequest> && std::is_same_v<U, VertexPathfinder>));
+		(std::is_same_v<T, ShortPathRequest> && std::is_same_v<U, VertexPathfinder>));
 	size_t maxN = m_Results.size();
 	size_t startIndex = m_Requests.size() - m_Results.size();
 	do
 	{
+		// 原子地获取下一个要处理的任务索引
 		size_t workIndex = m_NextPathToCompute++;
 		if (workIndex >= maxN)
-			break;
+			break; // 所有任务已分配
 		const T& req = m_Requests[startIndex + workIndex];
 		PathResult& result = m_Results[workIndex];
 		result.ticket = req.ticket;
 		result.notify = req.notify;
+		// 根据请求类型调用不同的计算函数
 		if constexpr (std::is_same_v<T, LongPathRequest>)
 			pathfinder.ComputePath(*cmpPathfinder.m_PathfinderHier, req.x0, req.z0, req.goal, req.passClass, result.path);
 		else
 			result.path = pathfinder.ComputeShortPath(req, CmpPtr<ICmpObstructionManager>(cmpPathfinder.GetSystemEntity()));
+		// 如果是最后一个任务，则标记计算完成
 		if (workIndex == maxN - 1)
 			m_ComputeDone = true;
-	}
-	while (true);
+	} while (true);
 }
 
+// 发送已计算完成的路径请求结果
 void CCmpPathfinder::SendRequestedPaths()
 {
 	PROFILE2("SendRequestedPaths");
 
 	if (!m_LongPathRequests.m_ComputeDone || !m_ShortPathRequests.m_ComputeDone)
 	{
-		// Also start computing on the main thread to finish faster.
+		// 也在主线程上开始计算以更快地完成。
 		m_ShortPathRequests.Compute(*this, m_VertexPathfinders.front());
 		m_LongPathRequests.Compute(*this, *m_LongPathfinder);
 	}
-	// We're done, get the exceptions from the futures.
+	// 我们完成了，从 future 中获取异常。
 	for (Future<void>& future : m_Futures)
 		if (future.Valid())
 			future.Get();
 
 	{
 		PROFILE2("PostMessages");
+		// 发送短程路径结果消息
 		for (PathResult& path : m_ShortPathRequests.m_Results)
 		{
 			CMessagePathResult msg(path.ticket, path.path);
 			GetSimContext().GetComponentManager().PostMessage(path.notify, msg);
 		}
 
+		// 发送远程路径结果消息
 		for (PathResult& path : m_LongPathRequests.m_Results)
 		{
 			CMessagePathResult msg(path.ticket, path.path);
 			GetSimContext().GetComponentManager().PostMessage(path.notify, msg);
 		}
 	}
+	// 清理已完成的请求
 	m_ShortPathRequests.ClearComputed();
 	m_LongPathRequests.ClearComputed();
 }
 
+// 开始处理移动（寻路）请求
 void CCmpPathfinder::StartProcessingMoves(bool useMax)
 {
 	m_ShortPathRequests.PrepareForComputation(useMax ? m_MaxSameTurnMoves : 0);
 	m_LongPathRequests.PrepareForComputation(useMax ? m_MaxSameTurnMoves : 0);
 
-	// There's some overhead to waking threads, so don't do it unless we need to.
+	// 唤醒线程有一些开销，所以除非我们需要，否则不要这样做。
 	const size_t m = std::min(m_Futures.size(), m_ShortPathRequests.m_Requests.size() + m_LongPathRequests.m_Requests.size());
 	for (size_t i = 0; i < m; ++i)
 	{
 		ENSURE(!m_Futures[i].Valid());
-		// Pass the i+1th vertex pathfinder to keep the first for the main thread,
-		// each thread get its own instance to avoid conflicts in cached data.
+		// 传递 i+1 个顶点寻路器以保留第一个给主线程，
+		// 每个线程获取自己的实例以避免缓存数据中的冲突。
 		m_Futures[i] = g_TaskManager.PushTask(
-			[&pathfinder=*this, &vertexPfr=m_VertexPathfinders[i + 1]]()
+			[&pathfinder = *this, &vertexPfr = m_VertexPathfinders[i + 1]]()
 			{
 				PROFILE2("Async pathfinding");
 				pathfinder.m_ShortPathRequests.Compute(pathfinder, vertexPfr);
@@ -846,6 +889,7 @@ void CCmpPathfinder::StartProcessingMoves(bool useMax)
 
 //////////////////////////////////////////////////////////
 
+// 检查目标是否可达
 bool CCmpPathfinder::IsGoalReachable(entity_pos_t x0, entity_pos_t z0, const PathGoal& goal, pass_class_t passClass)
 {
 	PROFILE2("IsGoalReachable");
@@ -858,6 +902,7 @@ bool CCmpPathfinder::IsGoalReachable(entity_pos_t x0, entity_pos_t z0, const Pat
 	return m_PathfinderHier->IsGoalReachable(i, j, goal, passClass);
 }
 
+// 围绕一个点分布单位
 std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_id_t> units, entity_pos_t x, entity_pos_t z) const
 {
 	PROFILE2("DistributeAround");
@@ -868,12 +913,12 @@ std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_
 
 	positions.reserve(units.size());
 
-	// Initialize spiral parameters
+	// 初始化螺旋参数
 	fixed angle = fixed::Zero();
 	fixed radius = fixed::FromInt(1);
 	const fixed increment = fixed::FromInt(7) / 4;
 
-	// Calculate the angle step so that at this radius we don't crowd the units
+	// 计算角度步长，以便在此半径下我们不会让单位过于拥挤
 	fixed angleStep = fixed::FromInt(9).MulDiv(fixed::FromInt(1), fixed::Pi().Multiply(radius));
 
 	for (size_t i = 0; i < units.size(); ++i)
@@ -884,7 +929,7 @@ std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_
 		positions.emplace_back(x + offset.X, z + offset.Y);
 
 		angle += angleStep;
-		// If we complete a circle, increase radius and recalculate angle step
+		// 如果我们完成了一个圆周，增加半径并重新计算角度步长
 		if (angle >= fixed::Pi().Multiply(fixed::FromInt(2)))
 		{
 			angle = fixed::Zero();
@@ -893,7 +938,7 @@ std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_
 		}
 	}
 
-	// Get current unit positions to calculate travel distances
+	// 获取当前单位位置以计算行进距离
 	std::vector<CFixedVector2D> unitPositions;
 	unitPositions.reserve(units.size());
 
@@ -908,26 +953,26 @@ std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_
 		unitPositions.push_back(pos);
 	}
 
-	// Optimize positions by swapping them if it reduces total travel distance.
+	// 通过交换位置来优化位置，如果它能减少总行进距离。
 	bool improved;
 	do
 	{
 		improved = false;
 		for (size_t i = 0; i < positions.size(); ++i)
 		{
-			// Helper to compute squared distance between two points as integers
+			// 辅助函数，以整数计算两点之间的平方距离
 			auto distSq = [](const CFixedVector2D& p1, const CFixedVector2D& p2) -> u32 {
 				i32 dx = (p1.X - p2.X).ToInt_RoundToInfinity();
 				i32 dy = (p1.Y - p2.Y).ToInt_RoundToInfinity();
-				return dx*dx + dy*dy;
-			};
+				return dx * dx + dy * dy;
+				};
 
 			for (size_t j = i + 1; j < positions.size(); ++j)
 			{
 				u32 currentDistSq = distSq(positions[i], unitPositions[i]) + distSq(positions[j], unitPositions[j]);
 				u32 swappedDistSq = distSq(positions[j], unitPositions[i]) + distSq(positions[i], unitPositions[j]);
 
-				// Swap if it reduces total squared distance
+				// 如果能减少总平方距离，则交换
 				if (swappedDistSq < currentDistSq)
 				{
 					std::swap(positions[i], positions[j]);
@@ -940,26 +985,28 @@ std::vector<CFixedVector2D> CCmpPathfinder::DistributeAround(std::vector<entity_
 	return positions;
 }
 
+// 检查移动路线是否有效
 bool CCmpPathfinder::CheckMovement(const IObstructionTestFilter& filter,
 	entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1, entity_pos_t r,
 	pass_class_t passClass) const
 {
-	// Test against obstructions first. filter may discard pathfinding-blocking obstructions.
-	// Use more permissive version of TestLine to allow unit-unit collisions to overlap slightly.
-	// This makes movement smoother and more natural for units, overall.
+	// 首先测试障碍物。过滤器可能会丢弃阻挡寻路的障碍物。
+	// 使用更宽松版本的 TestLine 以允许单位-单位碰撞略微重叠。
+	// 这使得单位的移动总体上更平滑、更自然。
 	CmpPtr<ICmpObstructionManager> cmpObstructionManager(GetSystemEntity());
 	if (!cmpObstructionManager || cmpObstructionManager->TestLine(filter, x0, z0, x1, z1, r, true))
 		return false;
 
-	// Then test against the terrain grid. This should not be necessary
-	// But in case we allow terrain to change it will become so.
+	// 然后测试地形网格。这应该是不必要的
+	// 但如果我们允许地形改变，它就会变得必要。
 	return Pathfinding::CheckLineMovement(x0, z0, x1, z1, passClass, *m_TerrainOnlyGrid);
 }
 
+// 检查单位放置位置
 ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckUnitPlacement(const IObstructionTestFilter& filter,
-	entity_pos_t x, entity_pos_t z, entity_pos_t r,	pass_class_t passClass, bool UNUSED(onlyCenterPoint)) const
+	entity_pos_t x, entity_pos_t z, entity_pos_t r, pass_class_t passClass, bool UNUSED(onlyCenterPoint)) const
 {
-	// Check unit obstruction
+	// 检查单位障碍物
 	CmpPtr<ICmpObstructionManager> cmpObstructionManager(GetSystemEntity());
 	if (!cmpObstructionManager)
 		return ICmpObstruction::FOUNDATION_CHECK_FAIL_ERROR;
@@ -967,20 +1014,20 @@ ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckUnitPlacement(const IObst
 	if (cmpObstructionManager->TestUnitShape(filter, x, z, r, NULL))
 		return ICmpObstruction::FOUNDATION_CHECK_FAIL_OBSTRUCTS_FOUNDATION;
 
-	// Test against terrain and static obstructions:
+	// 测试地形和静态障碍物：
 
 	u16 i, j;
 	Pathfinding::NearestNavcell(x, z, i, j, m_GridSize, m_GridSize);
 	if (!IS_PASSABLE(m_Grid->get(i, j), passClass))
 		return ICmpObstruction::FOUNDATION_CHECK_FAIL_TERRAIN_CLASS;
 
-	// (Static obstructions will be redundantly tested against in both the
-	// obstruction-shape test and navcell-passability test, which is slightly
-	// inefficient but shouldn't affect behaviour)
+	// （静态障碍物将在障碍物形状测试和导航单元格通行性测试中
+	// 被冗余地测试，这有点低效，但不应影响行为）
 
 	return ICmpObstruction::FOUNDATION_CHECK_SUCCESS;
 }
 
+// 检查建筑放置位置
 ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckBuildingPlacement(const IObstructionTestFilter& filter,
 	entity_pos_t x, entity_pos_t z, entity_pos_t a, entity_pos_t w,
 	entity_pos_t h, entity_id_t id, pass_class_t passClass) const
@@ -988,12 +1035,12 @@ ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckBuildingPlacement(const I
 	return CCmpPathfinder::CheckBuildingPlacement(filter, x, z, a, w, h, id, passClass, false);
 }
 
-
+// 检查建筑放置位置 (重载版本)
 ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckBuildingPlacement(const IObstructionTestFilter& filter,
 	entity_pos_t x, entity_pos_t z, entity_pos_t a, entity_pos_t w,
 	entity_pos_t h, entity_id_t id, pass_class_t passClass, bool UNUSED(onlyCenterPoint)) const
 {
-	// Check unit obstruction
+	// 检查单位障碍物
 	CmpPtr<ICmpObstructionManager> cmpObstructionManager(GetSystemEntity());
 	if (!cmpObstructionManager)
 		return ICmpObstruction::FOUNDATION_CHECK_FAIL_ERROR;
@@ -1001,7 +1048,7 @@ ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckBuildingPlacement(const I
 	if (cmpObstructionManager->TestStaticShape(filter, x, z, a, w, h, NULL))
 		return ICmpObstruction::FOUNDATION_CHECK_FAIL_OBSTRUCTS_FOUNDATION;
 
-	// Test against terrain:
+	// 测试地形：
 
 	ICmpObstructionManager::ObstructionSquare square;
 	CmpPtr<ICmpObstruction> cmpObstruction(GetSimContext(), id);
@@ -1021,11 +1068,11 @@ ICmpObstruction::EFoundationCheck CCmpPathfinder::CheckBuildingPlacement(const I
 		i16 i1 = span.i1;
 		i16 j = span.j;
 
-		// Fail if any span extends outside the grid
+		// 如果任何跨度超出了网格，则失败
 		if (i0 < 0 || i1 > m_TerrainOnlyGrid->m_W || j < 0 || j > m_TerrainOnlyGrid->m_H)
 			return ICmpObstruction::FOUNDATION_CHECK_FAIL_TERRAIN_CLASS;
 
-		// Fail if any span includes an impassable tile
+		// 如果任何跨度包含不可通行的地块，则失败
 		for (i16 i = i0; i < i1; ++i)
 			if (!IS_PASSABLE(m_TerrainOnlyGrid->get(i, j), passClass))
 				return ICmpObstruction::FOUNDATION_CHECK_FAIL_TERRAIN_CLASS;

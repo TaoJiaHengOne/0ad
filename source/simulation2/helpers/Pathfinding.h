@@ -1,18 +1,15 @@
 /* Copyright (C) 2022 Wildfire Games.
- * This file is part of 0 A.D.
+ * 本文件是 0 A.D. 的一部分。
  *
- * 0 A.D. is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * 0 A.D. 是自由软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证
+ * (GNU General Public License) 的条款（许可证的第 2 版或您选择的任何更新版本）
+ * 对其进行再分发和/或修改。
  *
- * 0 A.D. is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * 0 A.D. 的分发是希望它能有用，但没有任何担保；甚至没有对“适销性”或
+ * “特定用途适用性”的默示担保。详见 GNU 通用公共许可证。
  *
- * You should have received a copy of the GNU General Public License
- * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
+ * 您应该已经随 0 A.D. 收到了一份 GNU 通用公共许可证的副本。
+ * 如果没有，请查阅 <http://www.gnu.org/licenses/>。
  */
 
 #ifndef INCLUDED_PATHFINDING
@@ -24,77 +21,90 @@
 #include "simulation2/system/Entity.h"
 #include "PathGoal.h"
 
+ // 前向声明，避免不必要的头文件包含
 class CParamNode;
 
+// 定义通行性类别的类型别名
 typedef u16 pass_class_t;
+// 前向声明 Grid 模板类
 template<typename T>
 class Grid;
 
+/**
+ * 远程路径请求的结构体
+ */
 struct LongPathRequest
 {
-	u32 ticket;
-	entity_pos_t x0;
-	entity_pos_t z0;
-	PathGoal goal;
-	pass_class_t passClass;
-	entity_id_t notify;
-};
-
-struct ShortPathRequest
-{
-	u32 ticket;
-	entity_pos_t x0;
-	entity_pos_t z0;
-	entity_pos_t clearance;
-	entity_pos_t range;
-	PathGoal goal;
-	pass_class_t passClass;
-	bool avoidMovingUnits;
-	entity_id_t group;
-	entity_id_t notify;
-};
-
-struct Waypoint
-{
-	entity_pos_t x, z;
+	u32 ticket;               // 路径请求的唯一标识票据
+	entity_pos_t x0;          // 起点 X 坐标
+	entity_pos_t z0;          // 起点 Z 坐标
+	PathGoal goal;            // 路径目标
+	pass_class_t passClass;   // 通行性类别
+	entity_id_t notify;       // 接收路径结果通知的实体ID
 };
 
 /**
- * Returned path.
- * Waypoints are in *reverse* order (the earliest is at the back of the list)
+ * 短程路径请求的结构体
+ */
+struct ShortPathRequest
+{
+	u32 ticket;               // 路径请求的唯一标识票据
+	entity_pos_t x0;          // 起点 X 坐标
+	entity_pos_t z0;          // 起点 Z 坐标
+	entity_pos_t clearance;   // 单位的间隙（半径）
+	entity_pos_t range;       // 寻路范围
+	PathGoal goal;            // 路径目标
+	pass_class_t passClass;   // 通行性类别
+	bool avoidMovingUnits;    // 是否避开移动中的单位
+	entity_id_t group;        // 控制组ID
+	entity_id_t notify;       // 接收路径结果通知的实体ID
+};
+
+/**
+ * 路径点结构体
+ */
+struct Waypoint
+{
+	entity_pos_t x, z; // 路径点的 X 和 Z 坐标
+};
+
+/**
+ * 返回的路径。
+ * 路径点是以*相反*的顺序存储的（最早的路径点在列表的末尾）
  */
 struct WaypointPath
 {
-	std::vector<Waypoint> m_Waypoints;
+	std::vector<Waypoint> m_Waypoints; // 存储路径点的向量
 };
 
 /**
- * Represents the cost of a path consisting of horizontal/vertical and
- * diagonal movements over a uniform-cost grid.
- * Maximum path length before overflow is about 45K steps.
+ * 表示在统一成本网格上由水平/垂直和对角线移动组成的路径成本。
+ * 在溢出前，最大路径长度约为 45K 步。
  */
 struct PathCost
 {
+	// 默认构造函数
 	PathCost() : data(0) { }
 
-	/// Construct from a number of horizontal/vertical and diagonal steps
+	/// 从水平/垂直和对角线移动的步数构造
 	PathCost(u16 hv, u16 d)
-		: data(hv * 65536 + d * 92682) // 2^16 * sqrt(2) == 92681.9
+		: data(hv * 65536 + d * 92682) // 2^16 * sqrt(2) ≈ 92681.9
 	{
 	}
 
-	/// Construct for horizontal/vertical movement of given number of steps
+	/// 为给定步数的水平/垂直移动构造
 	static PathCost horizvert(u16 n)
 	{
 		return PathCost(n, 0);
 	}
 
-	/// Construct for diagonal movement of given number of steps
+	/// 为给定步数的对角线移动构造
 	static PathCost diag(u16 n)
 	{
 		return PathCost(0, n);
 	}
 
+	// 加法运算符重载
 	PathCost operator+(const PathCost& a) const
 	{
 		PathCost c;
@@ -102,81 +112,94 @@ struct PathCost
 		return c;
 	}
 
+	// 加法赋值运算符重载
 	PathCost& operator+=(const PathCost& a)
 	{
 		data += a.data;
 		return *this;
 	}
 
+	// 比较运算符重载
 	bool operator<=(const PathCost& b) const { return data <= b.data; }
-	bool operator< (const PathCost& b) const { return data <  b.data; }
+	bool operator< (const PathCost& b) const { return data < b.data; }
 	bool operator>=(const PathCost& b) const { return data >= b.data; }
-	bool operator>(const PathCost& b) const { return data >  b.data; }
+	bool operator>(const PathCost& b) const { return data > b.data; }
 
+	// 转换为整数
 	u32 ToInt()
 	{
 		return data;
 	}
 
 private:
-	u32 data;
+	u32 data; // 存储成本的内部数据
 };
 
+// 定义通行性类别可用的位数
 inline constexpr int PASS_CLASS_BITS = 16;
-typedef u16 NavcellData; // 1 bit per passability class (up to PASS_CLASS_BITS)
+// 定义导航单元格的数据类型，每个通行性类别占1位
+typedef u16 NavcellData;
+// 宏：检查指定类别掩码在此单元格上是否可通行
 #define IS_PASSABLE(item, classmask) (((item) & (classmask)) == 0)
+// 宏：根据索引创建通行性类别掩码
 #define PASS_CLASS_MASK_FROM_INDEX(id) ((pass_class_t)(1u << id))
-#define SPECIAL_PASS_CLASS PASS_CLASS_MASK_FROM_INDEX((PASS_CLASS_BITS-1)) // 16th bit, used for special in-place computations
+// 宏：定义一个特殊的通行性类别掩码，用于临时的就地计算
+#define SPECIAL_PASS_CLASS PASS_CLASS_MASK_FROM_INDEX((PASS_CLASS_BITS-1)) // 第16位
 
+/**
+ * 寻路相关的常量和辅助函数命名空间
+ */
 namespace Pathfinding
 {
 	/**
-	 * The long-range pathfinder operates primarily over a navigation grid (a uniform-cost
-	 * 2D passability grid, with horizontal/vertical (not diagonal) connectivity).
-	 * This is based on the terrain tile passability, plus the rasterized shapes of
-	 * obstructions, all expanded outwards by the radius of the units.
-	 * Since units are much smaller than terrain tiles, the nav grid should be
-	 * higher resolution than the tiles.
-	 * We therefore split each the world into NxN "nav cells" (for some integer N,
-	 * preferably a power of two).
+	 * 远程寻路器主要在一个导航网格（一个统一成本的二维通行性网格，
+	 * 具有水平/垂直（非对角线）连接性）上操作。
+	 * 这是基于地形地块的通行性，加上障碍物形状的光栅化结果，
+	 * 所有这些都按单位半径向外扩展。
+	 * 由于单位远小于地形地块，导航网格的分辨率应高于地块。
+	 * 因此，我们将世界划分为 NxN 个“导航单元格”（nav cell）（其中N为整数，
+	 * 最好是2的幂）。
 	 */
-	inline constexpr fixed NAVCELL_SIZE = fixed::FromInt(1);
-	inline constexpr int NAVCELL_SIZE_INT = 1;
-	inline constexpr int NAVCELL_SIZE_LOG2 = 0;
+	inline constexpr fixed NAVCELL_SIZE = fixed::FromInt(1); // 导航单元格的大小
+	inline constexpr int NAVCELL_SIZE_INT = 1; // 导航单元格大小的整数形式
+	inline constexpr int NAVCELL_SIZE_LOG2 = 0; // 导航单元格大小的以2为底的对数
 
 	/**
-	 * The terrain grid is coarser, and it is often convenient to convert from one to the other.
+	 * 地形网格更粗糙，从一种转换到另一种通常很方便。
 	 */
-	inline constexpr int NAVCELLS_PER_TERRAIN_TILE = TERRAIN_TILE_SIZE / NAVCELL_SIZE_INT;
-	static_assert(TERRAIN_TILE_SIZE % NAVCELL_SIZE_INT == 0, "Terrain tile size is not a multiple of navcell size");
+	inline constexpr int NAVCELLS_PER_TERRAIN_TILE = TERRAIN_TILE_SIZE / NAVCELL_SIZE_INT; // 每个地形地块包含的导航单元格数量
+	static_assert(TERRAIN_TILE_SIZE% NAVCELL_SIZE_INT == 0, "Terrain tile size is not a multiple of navcell size");
 
 	/**
-	 * To make sure the long-range pathfinder is more strict than the short-range one,
-	 * we need to slightly over-rasterize. So we extend the clearance radius by 1.
+	 * 为了确保远程寻路器比短程寻路器更严格，
+	 * 我们需要稍微过度光栅化。所以我们将间隙半径扩展1。
 	 */
 	inline constexpr entity_pos_t CLEARANCE_EXTENSION_RADIUS = fixed::FromInt(1);
 
 	/**
-	 * Compute the navcell indexes on the grid nearest to a given point
-	 * w, h are the grid dimensions, i.e. the number of navcells per side
+	 * 计算离给定点最近的网格上的导航单元格索引
+	 * w, h 是网格维度，即每边的导航单元格数量
 	 */
 	inline void NearestNavcell(entity_pos_t x, entity_pos_t z, u16& i, u16& j, u16 w, u16 h)
 	{
-		// Use NAVCELL_SIZE_INT to save the cost of dividing by a fixed
+		// 使用 NAVCELL_SIZE_INT 以节省定点数除法的开销
 		i = static_cast<u16>(Clamp((x / NAVCELL_SIZE_INT).ToInt_RoundToNegInfinity(), 0, w - 1));
 		j = static_cast<u16>(Clamp((z / NAVCELL_SIZE_INT).ToInt_RoundToNegInfinity(), 0, h - 1));
 	}
 
 	/**
-	 * Returns the position of the center of the given terrain tile
+	 * 返回给定地形地块中心的位置
 	 */
 	inline void TerrainTileCenter(u16 i, u16 j, entity_pos_t& x, entity_pos_t& z)
 	{
 		static_assert(TERRAIN_TILE_SIZE % 2 == 0);
-		x = entity_pos_t::FromInt(i*(int)TERRAIN_TILE_SIZE + (int)TERRAIN_TILE_SIZE / 2);
-		z = entity_pos_t::FromInt(j*(int)TERRAIN_TILE_SIZE + (int)TERRAIN_TILE_SIZE / 2);
+		x = entity_pos_t::FromInt(i * (int)TERRAIN_TILE_SIZE + (int)TERRAIN_TILE_SIZE / 2);
+		z = entity_pos_t::FromInt(j * (int)TERRAIN_TILE_SIZE + (int)TERRAIN_TILE_SIZE / 2);
 	}
 
+	/**
+	 * 返回给定导航单元格中心的位置
+	 */
 	inline void NavcellCenter(u16 i, u16 j, entity_pos_t& x, entity_pos_t& z)
 	{
 		x = entity_pos_t::FromInt(i * 2 + 1).Multiply(NAVCELL_SIZE / 2);
@@ -184,60 +207,62 @@ namespace Pathfinding
 	}
 
 	/*
-	 * Checks that the line (x0,z0)-(x1,z1) does not intersect any impassable navcells.
+	 * 检查线段 (x0,z0)-(x1,z1) 是否与任何不可通行的导航单元格相交。
 	 */
 	bool CheckLineMovement(entity_pos_t x0, entity_pos_t z0, entity_pos_t x1, entity_pos_t z1,
-	                              pass_class_t passClass, const Grid<NavcellData>& grid);
+		pass_class_t passClass, const Grid<NavcellData>& grid);
 }
 
 /*
- * For efficient pathfinding we want to try hard to minimise the per-tile search cost,
- * so we precompute the tile passability flags for the various different types of unit.
- * We also want to minimise memory usage (there can easily be 100K tiles so we don't want
- * to store many bytes for each).
+ * 为了高效寻路，我们希望努力最小化每个地块的搜索成本，
+ * 所以我们为不同类型的单位预计算地块的通行性标志。
+ * 我们也希望最小化内存使用（很容易有10万个地块，所以我们不想
+ * 为每个地块存储很多字节）。
  *
- * To handle passability efficiently, we have a small number of passability classes
- * (e.g. "infantry", "ship"). Each unit belongs to a single passability class, and
- * uses that for all its pathfinding.
- * Passability is determined by water depth, terrain slope, forestness, buildingness.
- * We need at least one bit per class per tile to represent passability.
+ * 为高效处理通行性，我们有少量的通行性类别
+ * （例如“步兵”、“船只”）。每个单位属于单个通行性类别，并
+ * 用它来进行所有寻路。
+ * 通行性由水深、地形坡度、森林密集度、建筑密集度决定。
+ * 每个地块每种类别至少需要一个比特位来表示通行性。
  *
- * Not all pass classes are used for actual pathfinding. The pathfinder calls
- * CCmpObstructionManager's Rasterize() to add shapes onto the passability grid.
- * Which shapes are rasterized depend on the value of the m_Obstructions of each passability
- * class.
+ * 并非所有通行性类别都用于实际寻路。寻路器调用
+ * CCmpObstructionManager 的 Rasterize() 方法将形状添加到通行性网格上。
+ * 光栅化哪些形状取决于每个通行性类别的 m_Obstructions 值。
  *
- * Passabilities not used for unit pathfinding should not use the Clearance attribute, and
- * will get a zero clearance value.
+ * 不用于单位寻路的通行性类别不应使用 Clearance 属性，
+ * 并将获得零间隙值。
  */
 class PathfinderPassability
 {
 public:
+	// 构造函数，从 XML 节点初始化
 	PathfinderPassability(pass_class_t mask, const CParamNode& node);
 
+	// 检查在给定条件下是否可通行
 	bool IsPassable(fixed waterdepth, fixed steepness, fixed shoredist) const
 	{
 		return ((m_MinDepth <= waterdepth && waterdepth <= m_MaxDepth) && (steepness < m_MaxSlope) && (m_MinShore <= shoredist && shoredist <= m_MaxShore));
 	}
 
-	pass_class_t m_Mask;
+	pass_class_t m_Mask; // 通行性类别的位掩码
 
-	fixed m_Clearance; // min distance from static obstructions
+	fixed m_Clearance; // 与静态障碍物的最小距离
 
+	// 障碍物处理方式枚举
 	enum ObstructionHandling
 	{
-		NONE,
-		PATHFINDING,
-		FOUNDATION
+		NONE,        // 不处理障碍物
+		PATHFINDING, // 用于寻路的障碍物
+		FOUNDATION   // 用于地基的障碍物
 	};
-	ObstructionHandling m_Obstructions;
+	ObstructionHandling m_Obstructions; // 障碍物处理方式
 
 private:
-	fixed m_MinDepth;
-	fixed m_MaxDepth;
-	fixed m_MaxSlope;
-	fixed m_MinShore;
-	fixed m_MaxShore;
+	fixed m_MinDepth; // 最小水深
+	fixed m_MaxDepth; // 最大水深
+	fixed m_MaxSlope; // 最大坡度
+	fixed m_MinShore; // 最小离岸距离
+	fixed m_MaxShore; // 最大离岸距离
 };
 
 #endif // INCLUDED_PATHFINDING

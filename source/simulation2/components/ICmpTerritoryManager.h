@@ -1,18 +1,15 @@
 /* Copyright (C) 2024 Wildfire Games.
- * This file is part of 0 A.D.
+ * 本文件是 0 A.D. 的一部分。
  *
- * 0 A.D. is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * 0 A.D. 是自由软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证
+ * (GNU General Public License) 的条款（许可证的第 2 版或您选择的任何更新版本）
+ * 对其进行再分发和/或修改。
  *
- * 0 A.D. is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * 0 A.D. 的分发是希望它能有用，但没有任何担保；甚至没有对“适销性”或
+ * “特定用途适用性”的默示担保。详见 GNU 通用公共许可证。
  *
- * You should have received a copy of the GNU General Public License
- * along with 0 A.D.  If not, see <http://www.gnu.org/licenses/>.
+ * 您应该已经随 0 A.D. 收到了一份 GNU 通用公共许可证的副本。
+ * 如果没有，请查阅 <http://www.gnu.org/licenses/>。
  */
 
 #ifndef INCLUDED_ICMPTERRITORYMANAGER
@@ -25,91 +22,96 @@
 
 #include <vector>
 
+ // 前向声明 Grid 模板类
 template<typename T>
 class Grid;
 
+/**
+ * 领土管理器组件接口
+ */
 class ICmpTerritoryManager : public IComponent
 {
 public:
 	/**
-	 * Returns whether the territory texture needs to be updated.
+	 * 返回领土纹理是否需要更新。
 	 */
 	virtual bool NeedUpdateTexture(size_t* dirtyID) = 0;
 
 	/**
-	 * Returns whether the AI territory map needs to be updated.
+	 * 返回 AI 领土图是否需要更新。
 	 */
 	virtual bool NeedUpdateAI(size_t* dirtyID, size_t* dirtyBlinkingID) const = 0;
 
 	/**
-	 * Number of pathfinder navcells per territory tile.
-	 * Passability data is stored per navcell, but we probably don't need that much
-	 * resolution, and a lower resolution can make the boundary lines look prettier
-	 * and will take less memory, so we downsample the passability data.
+	 * 每个领土地块包含的寻路导航单元格（navcell）数量。
+	 * 通行性数据是按导航单元格存储的，但我们可能不需要那么高的
+	 * 分辨率，较低的分辨率可以使边界线看起来更漂亮，
+	 * 并且占用更少的内存，所以我们对通行性数据进行降采样。
 	 */
 	static const int NAVCELLS_PER_TERRITORY_TILE = 8;
 
-	static const int TERRITORY_PLAYER_MASK = 0x1F;
-	static const int TERRITORY_CONNECTED_MASK = 0x20;
-	static const int TERRITORY_BLINKING_MASK = 0x40;
-	static const int TERRITORY_PROCESSED_MASK = 0x80; //< For internal use; marks a tile as processed.
+	// 定义用于领土数据的位掩码
+	static const int TERRITORY_PLAYER_MASK = 0x1F;      // 玩家ID掩码 (支持最多31个玩家)
+	static const int TERRITORY_CONNECTED_MASK = 0x20;   // “已连接”标志位掩码
+	static const int TERRITORY_BLINKING_MASK = 0x40;    // “闪烁”标志位掩码
+	static const int TERRITORY_PROCESSED_MASK = 0x80;   //< 内部使用；标记一个地块为已处理。
 
 	/**
-	 * For each tile, the TERRITORY_PLAYER_MASK bits are player ID;
-	 * TERRITORY_CONNECTED_MASK is set if the tile is connected to a root object
-	 * (civ center etc).
+	 * 对于每个地块，TERRITORY_PLAYER_MASK 位是玩家ID；
+	 * 如果地块连接到一个根对象（市政中心等），则 TERRITORY_CONNECTED_MASK 位被设置。
 	 */
 	virtual const Grid<u8>& GetTerritoryGrid() = 0;
 
 	/**
-	 * Get owner of territory at given position.
-	 * @return player ID of owner; 0 if neutral territory
+	 * 获取给定位置的领土所有者。
+	 * @return 所有者的玩家ID；如果是中立领土，则返回0
 	 */
 	virtual player_id_t GetOwner(entity_pos_t x, entity_pos_t z) = 0;
 
 	/**
-	 * get the number of neighbour tiles for per player for the selected position
-	 * @return A list with the number of neighbour tiles per player
+	 * 获取所选位置的每个玩家的相邻地块数量
+	 * @return 一个包含每个玩家相邻地块数量的列表
 	 */
 	virtual std::vector<u32> GetNeighbours(entity_pos_t x, entity_pos_t z, bool filterConnected) = 0;
 
 	/**
-	 * Get whether territory at given position is connected to a root object
-	 * (civ center etc) owned by that territory's player.
+	 * 获取给定位置的领土是否连接到该领土玩家所拥有的一个根对象
+	 * （市政中心等）。
 	 */
 	virtual bool IsConnected(entity_pos_t x, entity_pos_t z) = 0;
 
 	/**
-	 * Set a piece of territory to blinking. Must be updated on every territory calculation
+	 * 将一块领土设置为闪烁状态。必须在每次领土计算时更新。
 	 */
 	virtual void SetTerritoryBlinking(entity_pos_t x, entity_pos_t z, bool enable) = 0;
 
 	/**
-	 * Check if a piece of territory is blinking.
+	 * 检查一块领土是否正在闪烁。
 	 */
 	virtual bool IsTerritoryBlinking(entity_pos_t x, entity_pos_t z) = 0;
 
 	/**
-	 * Returns the percentage of the world controlled by a given player as defined by
-	 * the number of territory cells the given player owns
+	 * 返回由给定玩家控制的世界百分比，该百分比由
+	 * 该玩家拥有的领土地块数量定义。
 	 */
-	 virtual u8 GetTerritoryPercentage(player_id_t player) = 0;
+	virtual u8 GetTerritoryPercentage(player_id_t player) = 0;
 
 	/**
-	 * Enables or disables rendering of an territory borders.
+	 * 启用或禁用领土边界的渲染。
 	 */
 	virtual void SetVisibility(bool visible) = 0;
 
 	/**
-	 * Updates the boundary and territory colors.
+	 * 更新边界和领土颜色。
 	 */
 	virtual void UpdateColors() = 0;
 
 	/**
-	 * Whether the territory lines are visible.
+	 * 领土边界线是否可见。
 	 */
 	virtual bool IsVisible() const = 0;
 
+	// 声明组件的接口类型
 	DECLARE_INTERFACE_TYPE(TerritoryManager)
 };
 
