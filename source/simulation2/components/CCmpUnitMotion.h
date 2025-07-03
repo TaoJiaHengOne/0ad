@@ -667,7 +667,7 @@ public:
 	{
 		return m_FacePointAfterMove;
 	}
-
+		
 	// 设置是否启用调试覆盖层
 	void SetDebugOverlay(bool enabled) override
 	{
